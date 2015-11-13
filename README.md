@@ -13,5 +13,19 @@ Getting Started
 2. Have a look at [integrating SDK article](https://vwo.com/knowledge/integrating-android-sdk/)
    on the VWO Knowledge Base Website.
 
+## Requirements
+
+* Android 4.0 (API 14) or later
+
+## Credentials
+
+This SDK requires an app key. You can sign up for an account at [VWO][]. Once there, you can add a new Android App, and use the generated app key in the app.
+
+
+## Setting up VWO account
+* Sign Up for VWO account at http://vwo.com
+* Create a new androud app from create menu
+* Use the app generated app key, while integrating SDK into android app.
+* Create and run campaigns.
 
 [VWO]: https://vwo.com/
