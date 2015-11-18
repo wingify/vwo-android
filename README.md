@@ -59,10 +59,6 @@ By using this SDK, you agree to abide by the [VWO Terms & Conditions](http://vwo
 
 >i: app key, generated on vwo.com, when app is added. The key generated is of format, appkey-accountId, only pass in app key.
 
->dt: device type, example, 
-	"iPhone7,1": on iPhone 6 Plus
-	"iPhone5,3": on iPhone 5c (model A1456, A1532 | GSM)
-
 >os: operating system of mobile, example
 	"iOS 9", "API 21"
 
