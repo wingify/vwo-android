@@ -28,6 +28,21 @@ This SDK requires an app key. You can sign up for an account at [VWO][]. Once th
 * Use the app generated app key, while integrating SDK into android app.
 * Create and run campaigns.
 
+## How to import in gradle:
+In your top level build.gradle file add the following code under dependencies.
+
+	maven { url 'https://raw.githubusercontent.com/wingify/vwo-mobile-android/0.2.0/' }
+	
+Add vwo and socket.io dependency to app/build.gradle file
+
+	dependencies {
+	    ...
+	    compile io.socket:io-client:0.6.1'
+	    compile 'com.vwo:socket.mobile:0.1.1'
+	    ...
+	}
+
+
 ## License
 
 By using this SDK, you agree to abide by the [VWO Terms & Conditions](http://vwo.com/terms-conditions).
@@ -138,7 +153,7 @@ combination: variation id for the campaign
 * Response:
 1 pixel image
 
-# Points to consider while using API 
+## Points to consider while using API 
 
 * Trigger l.gif only once per campaign.
 * Trigger c.gif only once per goal, even if the goal is triggered multiple times.
