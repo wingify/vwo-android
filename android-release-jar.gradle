@@ -1,0 +1,64 @@
+// ./gradlew clean build generateRelease
+apply plugin: 'maven'
+
+def groupId = project.PUBLISH_GROUP_ID
+def artifactId = project.PUBLISH_ARTIFACT_ID
+def version = project.PUBLISH_VERSION
+
+def localReleaseDest = "/Users/abhishek/Cloned/vwo-mobile-android"
+
+android.libraryVariants.all { variant ->
+    def name = variant.buildType.name
+    if (!name.equals("debug")) {
+        def task = project.tasks.create "jar${name.capitalize()}", Jar
+        task.dependsOn variant.javaCompile
+        task.from variant.javaCompile.destinationDir
+        artifacts.add('archives', task);
+    }
+}
+
+task androidJavadocs(type: Javadoc) {
+    source = android.sourceSets.main.java.srcDirs
+    ext.androidJar = "${android.sdkDirectory}/platforms/${android.compileSdkVersion}/android.jar"
+    classpath += files(ext.androidJar)
+}
+
+task androidJavadocsJar(type: Jar, dependsOn: androidJavadocs) {
+    classifier = 'javadoc'
+    from androidJavadocs.destinationDir
+}
+
+task androidSourcesJar(type: Jar) {
+    classifier = 'sources'
+    from android.sourceSets.main.java.srcDirs
+}
+
+uploadArchives {
+    repositories.mavenDeployer {
+        pom.groupId = groupId
+        pom.artifactId = artifactId
+        pom.version = version
+
+        pom.project {
+            name 'Vwo Mobile SDK'
+            packaging 'jar'
+            description 'Vwo mobile SDK for A/B Testing android apps'
+            url 'https://github.com/wingify/vwo-mobile-android'
+        }
+        
+        // Add other pom properties here if you want (developer details / licenses)
+        repository(url: "file://${localReleaseDest}")
+    }
+}
+
+task generateRelease << {
+    println "Release ${version} can be found at ${localReleaseDest}/"
+}
+
+generateRelease.dependsOn(uploadArchives)
+
+
+artifacts {
+    archives androidSourcesJar
+    archives androidJavadocsJar
+}
