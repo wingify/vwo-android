@@ -1,4 +1,4 @@
-[VWO][] Android SDK
+VWO Android SDK
 ======================================
 
 This open source library allows you to A/B Test your Android app.
