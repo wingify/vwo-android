@@ -38,7 +38,7 @@ Add vwo and socket.io dependency to app/build.gradle file
 	dependencies {
 	    ...
 	    compile io.socket:io-client:0.6.1'
-	    compile 'com.vwo:socket.mobile:0.1.1'
+	    compile 'com.vwo:mobile:0.2.0'
 	    ...
 	}
 
