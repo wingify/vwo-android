@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="engine.io-client-0.6.1">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.socket/engine.io-client/0.6.1/39d4884a8c83649a24538ebc3674110d8b26db38/engine.io-client-0.6.1.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.socket/engine.io-client/0.6.1/741a2fecc31e16b5c17d63b72a9cda25be4dbe7f/engine.io-client-0.6.1-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

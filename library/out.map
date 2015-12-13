@@ -1,0 +1,713 @@
+com.vwo.mobile.BuildConfig -> com.vwo.mobile.BuildConfig:
+    boolean DEBUG -> DEBUG
+    java.lang.String APPLICATION_ID -> APPLICATION_ID
+    java.lang.String BUILD_TYPE -> BUILD_TYPE
+    java.lang.String FLAVOR -> FLAVOR
+    int VERSION_CODE -> VERSION_CODE
+    java.lang.String VERSION_NAME -> VERSION_NAME
+    6:6:void <init>() -> <init>
+com.vwo.mobile.Vwo -> com.vwo.mobile.Vwo:
+    com.vwo.mobile.Vwo sSharedInstance -> a
+    boolean mIsEditMode -> b
+    boolean mIsSyncMode -> c
+    android.content.Context mContext -> d
+    com.vwo.mobile.network.VwoDownloader mVwoDownloader -> e
+    com.vwo.mobile.data.VwoData mVwoData -> f
+    com.vwo.mobile.utils.VwoUrlBuilder mVwoUrlBuilder -> g
+    com.vwo.mobile.utils.VwoUtils mVwoUtils -> h
+    com.vwo.mobile.utils.VwoPreference mVwoPreference -> i
+    com.vwo.mobile.VwoSocket mVwoSocket -> j
+    com.vwo.mobile.data.VwoLocalData mVwoLocalData -> k
+    java.lang.String mAppKey -> l
+    java.lang.String mAccountId -> m
+    android.app.Application mApplication -> n
+    com.vwo.mobile.events.VwoStatusListener mStatusListener -> o
+    com.vwo.mobile.enums.VwoStartState mVwoStartState -> p
+    52:56:void <init>(android.content.Context) -> <init>
+    58:64:void <init>() -> <init>
+    68:70:void startAsync(java.lang.String,android.app.Application) -> startAsync
+    74:77:void startAsync(java.lang.String,android.app.Application,com.vwo.mobile.events.VwoStatusListener) -> startAsync
+    81:83:void start(java.lang.String,android.app.Application) -> start
+    86:90:com.vwo.mobile.Vwo sharedInstance() -> a
+    97:109:java.lang.Object getObjectForKey(java.lang.String) -> getObjectForKey
+    115:120:java.lang.Object getObjectForKey(java.lang.String,java.lang.Object) -> getObjectForKey
+    128:139:java.lang.Object getAllObject() -> getAllObject
+    144:155:void markConversionForGoal(java.lang.String) -> markConversionForGoal
+    159:168:void markConversionForGoal(java.lang.String,double) -> markConversionForGoal
+    173:277:boolean startVwoInstance(java.lang.String,android.app.Application) -> startVwoInstance
+    283:291:void initializeComponents() -> b
+    295:303:boolean isAndroidSDKSupported() -> c
+    308:308:boolean validateVwoAppKey(java.lang.String) -> a
+    313:316:void addVwoStatusListener(com.vwo.mobile.events.VwoStatusListener) -> addVwoStatusListener
+    320:320:android.content.Context getCurrentContext() -> getCurrentContext
+    324:324:android.app.Application getApplication() -> getApplication
+    328:328:boolean isEditMode() -> isEditMode
+    332:333:void setIsEditMode(boolean) -> setIsEditMode
+    336:336:com.vwo.mobile.VwoSocket getVwoSocket() -> getVwoSocket
+    340:340:com.vwo.mobile.data.VwoData getVwoData() -> getVwoData
+    344:344:com.vwo.mobile.utils.VwoUrlBuilder getVwoUrlBuilder() -> getVwoUrlBuilder
+    348:348:java.lang.String getAppKey() -> getAppKey
+    352:352:java.lang.String getAccountId() -> getAccountId
+    356:356:com.vwo.mobile.utils.VwoUtils getVwoUtils() -> getVwoUtils
+    360:360:com.vwo.mobile.utils.VwoPreference getVwoPreference() -> getVwoPreference
+    364:364:boolean isSyncMode() -> isSyncMode
+    30:30:com.vwo.mobile.data.VwoData access$000(com.vwo.mobile.Vwo) -> a
+    30:30:com.vwo.mobile.network.VwoDownloader access$100(com.vwo.mobile.Vwo) -> b
+    30:30:com.vwo.mobile.VwoSocket access$200(com.vwo.mobile.Vwo) -> c
+    30:30:com.vwo.mobile.data.VwoLocalData access$300(com.vwo.mobile.Vwo) -> d
+    30:30:com.vwo.mobile.enums.VwoStartState access$402(com.vwo.mobile.Vwo,com.vwo.mobile.enums.VwoStartState) -> a
+    30:30:com.vwo.mobile.events.VwoStatusListener access$500(com.vwo.mobile.Vwo) -> e
+com.vwo.mobile.Vwo$1 -> com.vwo.mobile.Vwo$1:
+    android.app.Application val$application -> a
+    com.vwo.mobile.Vwo this$0 -> b
+    207:207:void <init>(com.vwo.mobile.Vwo,android.app.Application) -> <init>
+    210:238:void onDownloadSuccess(org.json.JSONArray) -> onDownloadSuccess
+    242:274:void onDownloadError(java.lang.Exception) -> onDownloadError
+com.vwo.mobile.Vwo$1$1 -> com.vwo.mobile.Vwo$1$1:
+    com.vwo.mobile.Vwo$1 this$1 -> a
+    228:228:void <init>(com.vwo.mobile.Vwo$1) -> <init>
+    231:232:void run() -> run
+com.vwo.mobile.Vwo$1$2 -> com.vwo.mobile.Vwo$1$2:
+    com.vwo.mobile.Vwo$1 this$1 -> a
+    250:250:void <init>(com.vwo.mobile.Vwo$1) -> <init>
+    253:254:void run() -> run
+com.vwo.mobile.Vwo$1$3 -> com.vwo.mobile.Vwo$1$3:
+    com.vwo.mobile.Vwo$1 this$1 -> a
+    263:263:void <init>(com.vwo.mobile.Vwo$1) -> <init>
+    266:267:void run() -> run
+com.vwo.mobile.VwoSocket -> com.vwo.mobile.VwoSocket:
+    io.socket.client.Socket mSocket -> a
+    java.lang.String mAppKey -> b
+    com.vwo.mobile.Vwo mVwo -> c
+    java.util.Map mVariationKeys -> d
+    org.json.JSONObject mVariation -> e
+    io.socket.emitter.Emitter$Listener mServerConnected -> f
+    io.socket.emitter.Emitter$Listener mServerDisconnected -> g
+    io.socket.emitter.Emitter$Listener mVariationListener -> h
+    io.socket.emitter.Emitter$Listener mBrowserConnectedListener -> i
+    io.socket.emitter.Emitter$Listener mBrowserDisconnectedListener -> j
+    53:188:void <init>(com.vwo.mobile.Vwo) -> <init>
+    77:101:void connectToSocket() -> connectToSocket
+    104:114:void registerDevice() -> a
+    117:125:void triggerGoal(java.lang.String) -> triggerGoal
+    171:186:void generateVariationHash() -> b
+    198:198:org.json.JSONObject getVariation() -> getVariation
+    203:206:java.lang.Object getObjectForKey(java.lang.String) -> getObjectForKey
+    23:23:void access$000(com.vwo.mobile.VwoSocket) -> a
+    23:23:com.vwo.mobile.Vwo access$100(com.vwo.mobile.VwoSocket) -> b
+    23:23:org.json.JSONObject access$202(com.vwo.mobile.VwoSocket,org.json.JSONObject) -> a
+    23:23:void access$300(com.vwo.mobile.VwoSocket) -> c
+    23:23:io.socket.client.Socket access$400(com.vwo.mobile.VwoSocket) -> d
+com.vwo.mobile.VwoSocket$1 -> com.vwo.mobile.VwoSocket$1:
+    com.vwo.mobile.VwoSocket this$0 -> a
+    53:53:void <init>(com.vwo.mobile.VwoSocket) -> <init>
+    56:58:void call(java.lang.Object[]) -> call
+com.vwo.mobile.VwoSocket$2 -> com.vwo.mobile.VwoSocket$2:
+    com.vwo.mobile.VwoSocket this$0 -> a
+    60:60:void <init>(com.vwo.mobile.VwoSocket) -> <init>
+    63:65:void call(java.lang.Object[]) -> call
+com.vwo.mobile.VwoSocket$3 -> com.vwo.mobile.VwoSocket$3:
+    com.vwo.mobile.VwoSocket this$0 -> a
+    127:127:void <init>(com.vwo.mobile.VwoSocket) -> <init>
+    131:150:void call(java.lang.Object[]) -> call
+com.vwo.mobile.VwoSocket$4 -> com.vwo.mobile.VwoSocket$4:
+    com.vwo.mobile.VwoSocket this$0 -> a
+    153:153:void <init>(com.vwo.mobile.VwoSocket) -> <init>
+    156:167:void call(java.lang.Object[]) -> call
+com.vwo.mobile.VwoSocket$5 -> com.vwo.mobile.VwoSocket$5:
+    com.vwo.mobile.VwoSocket this$0 -> a
+    188:188:void <init>(com.vwo.mobile.VwoSocket) -> <init>
+    191:194:void call(java.lang.Object[]) -> call
+com.vwo.mobile.constants.ApiConstant -> com.vwo.mobile.constants.ApiConstant:
+    java.lang.String SOCKET_URL -> SOCKET_URL
+    java.lang.String SENTRY -> SENTRY
+    6:6:void <init>() -> <init>
+com.vwo.mobile.constants.AppConstants -> com.vwo.mobile.constants.AppConstants:
+    java.lang.String CONFIG_FILE -> CONFIG_FILE
+    java.lang.String CONFIG_FILE_EDIT -> CONFIG_FILE_EDIT
+    java.lang.String persistFile -> persistFile
+    java.lang.String VWO_PREFERENCE_FILE -> VWO_PREFERENCE_FILE
+    java.lang.String PREF_EDITOR_MODE -> PREF_EDITOR_MODE
+    java.lang.String EXPERIMENT_ID -> EXPERIMENT_ID
+    java.lang.String VARIATION_ID -> VARIATION_ID
+    java.lang.String DEVICE_UUID -> DEVICE_UUID
+    java.lang.String DEVICE_SESSION -> DEVICE_SESSION
+    java.lang.String IS_RETURNING_USER -> IS_RETURNING_USER
+    java.lang.String ANDROID_VERSION -> ANDROID_VERSION
+    java.lang.String DAY_OF_WEEK -> DAY_OF_WEEK
+    java.lang.String HOUR_OF_DAY -> HOUR_OF_DAY
+    java.lang.String LOCATION -> LOCATION
+    java.lang.String APP_VERSION -> APP_VERSION
+    int EQUAL_TO -> EQUAL_TO
+    int NOT_EQUAL_TO -> NOT_EQUAL_TO
+    int MATCHES_REGEX -> MATCHES_REGEX
+    int CONTAINS -> CONTAINS
+    int STARTS_WITH -> STARTS_WITH
+    java.lang.String DEVICE -> DEVICE
+    java.lang.String RETURNING_USER -> RETURNING_USER
+    6:6:void <init>() -> <init>
+com.vwo.mobile.constants.GlobalConstants -> com.vwo.mobile.constants.GlobalConstants:
+    java.lang.String SDK_VERSION -> SDK_VERSION
+    6:6:void <init>() -> <init>
+com.vwo.mobile.data.VwoData -> com.vwo.mobile.data.VwoData:
+    java.lang.String CAMPAIGN_RUNNING -> CAMPAIGN_RUNNING
+    java.lang.String CAMPAIGN_EXCLUDED -> CAMPAIGN_EXCLUDED
+    java.lang.String VWO_QUEUE -> VWO_QUEUE
+    java.util.ArrayList mCampaigns -> a
+    java.util.Map mVariations -> b
+    com.vwo.mobile.Vwo mVwo -> c
+    36:39:void <init>(com.vwo.mobile.Vwo) -> <init>
+    43:89:void parseData(org.json.JSONArray) -> parseData
+    93:101:java.lang.Object getVariationForKey(java.lang.String) -> getVariationForKey
+    105:117:java.lang.Object getAllVariations() -> getAllVariations
+    124:149:void saveGoal(java.lang.String) -> saveGoal
+    153:178:void saveGoal(java.lang.String,double) -> saveGoal
+    181:192:void generateVariationHash() -> a
+    196:231:boolean evaluateSegmentation(com.vwo.mobile.Vwo,com.vwo.mobile.models.Campaign) -> a
+com.vwo.mobile.data.VwoLocalData -> com.vwo.mobile.data.VwoLocalData:
+    com.vwo.mobile.Vwo mVwo -> a
+    18:20:void <init>(com.vwo.mobile.Vwo) -> <init>
+    23:31:boolean isLocalDataPresent() -> isLocalDataPresent
+    37:38:void saveData(org.json.JSONArray) -> saveData
+    41:45:org.json.JSONArray getData() -> getData
+com.vwo.mobile.data.VwoPersistData -> com.vwo.mobile.data.VwoPersistData:
+    java.lang.String CAMPAIGN_ID -> CAMPAIGN_ID
+    java.lang.String VARIATION_ID -> VARIATION_ID
+    java.lang.String GOALS -> GOALS
+    java.lang.String CAMPAIGN_KEY -> CAMPAIGN_KEY
+    java.lang.String CAMPAIGN_LIST -> CAMPAIGN_LIST
+    long mCampaignId -> a
+    int mVariationId -> b
+    java.util.ArrayList mGoals -> c
+    28:33:void <init>(long,int) -> <init>
+    35:43:void <init>(org.json.JSONObject) -> <init>
+    46:51:org.json.JSONObject getPersistCampaignAsJsonObject() -> getPersistCampaignAsJsonObject
+    55:60:org.json.JSONArray getGoalsAsJsonArray() -> a
+    64:72:void setGoalsFromJsonArray(org.json.JSONArray) -> a
+    75:79:void addGoal(int) -> addGoal
+    82:92:boolean isGoalExists(int) -> isGoalExists
+    97:119:void saveCampaign(com.vwo.mobile.utils.VwoPreference) -> saveCampaign
+    122:126:void addToQueue(com.vwo.mobile.utils.VwoPreference,java.lang.String) -> addToQueue
+    129:131:boolean isExistingCampaign(com.vwo.mobile.Vwo,java.lang.String) -> isExistingCampaign
+    136:138:void updateReturningUser(com.vwo.mobile.Vwo) -> updateReturningUser
+    141:141:boolean isReturningUser(com.vwo.mobile.Vwo) -> isReturningUser
+com.vwo.mobile.enums.VwoStartState -> com.vwo.mobile.enums.VwoStartState:
+    com.vwo.mobile.enums.VwoStartState NOT_STARTED -> NOT_STARTED
+    com.vwo.mobile.enums.VwoStartState STARTING -> STARTING
+    com.vwo.mobile.enums.VwoStartState STARTED -> STARTED
+    com.vwo.mobile.enums.VwoStartState NO_INTERNET -> NO_INTERNET
+    int mValue -> a
+    com.vwo.mobile.enums.VwoStartState[] $VALUES -> b
+    6:6:com.vwo.mobile.enums.VwoStartState[] values() -> values
+    6:6:com.vwo.mobile.enums.VwoStartState valueOf(java.lang.String) -> valueOf
+    16:18:void <init>(java.lang.String,int,int) -> <init>
+    20:20:int getValue() -> getValue
+    6:11:void <clinit>() -> <clinit>
+com.vwo.mobile.events.VwoStatusListener -> com.vwo.mobile.events.VwoStatusListener:
+    void onVwoLoaded() -> onVwoLoaded
+    void onVwoLoadFailure() -> onVwoLoadFailure
+com.vwo.mobile.listeners.VwoActivityLifeCycle -> com.vwo.mobile.listeners.VwoActivityLifeCycle:
+    int sResumed -> a
+    int sPaused -> b
+    int sStarted -> c
+    int sStopped -> d
+    10:10:void <init>() -> <init>
+    21:21:void onActivityCreated(android.app.Activity,android.os.Bundle) -> onActivityCreated
+    25:26:void onActivityStarted(android.app.Activity) -> onActivityStarted
+    30:31:void onActivityResumed(android.app.Activity) -> onActivityResumed
+    35:36:void onActivityPaused(android.app.Activity) -> onActivityPaused
+    40:41:void onActivityStopped(android.app.Activity) -> onActivityStopped
+    46:46:void onActivitySaveInstanceState(android.app.Activity,android.os.Bundle) -> onActivitySaveInstanceState
+    51:51:void onActivityDestroyed(android.app.Activity) -> onActivityDestroyed
+    55:55:boolean isApplicationVisible() -> isApplicationVisible
+    59:59:boolean isApplicationInForeground() -> isApplicationInForeground
+com.vwo.mobile.models.Campaign -> com.vwo.mobile.models.Campaign:
+    java.lang.String ID -> ID
+    java.lang.String VERSION -> VERSION
+    java.lang.String STATUS -> STATUS
+    java.lang.String TRAFFIC -> TRAFFIC
+    java.lang.String TYPE -> TYPE
+    java.lang.String VARIATION -> VARIATION
+    java.lang.String GOALS -> GOALS
+    java.lang.String COUNT_GOAL_ONCE -> COUNT_GOAL_ONCE
+    java.lang.String CLICK_MAP -> CLICK_MAP
+    java.lang.String SEGMENT_CUSTOM -> SEGMENT_CUSTOM
+    java.lang.String SEGMENT_PREDEFINED -> SEGMENT_PREDEFINED
+    java.lang.String SEGMENT_DEFAULT -> SEGMENT_DEFAULT
+    long mId -> a
+    int mVersion -> b
+    int mTraffic -> c
+    com.vwo.mobile.models.CampaignTypeEnum mType -> d
+    boolean mCountGoalOnce -> e
+    boolean mIsClickMap -> f
+    java.util.ArrayList mGoals -> g
+    com.vwo.mobile.models.Variation mVariation -> h
+    boolean isExperimentServed -> i
+    java.lang.String mSegmentType -> j
+    java.util.ArrayList mSegments -> k
+    54:109:void <init>(org.json.JSONObject) -> <init>
+    112:112:long getId() -> getId
+    116:116:int getVersion() -> getVersion
+    120:120:int getTraffic() -> getTraffic
+    124:124:com.vwo.mobile.models.CampaignTypeEnum getType() -> getType
+    128:128:boolean isCountGoalOnce() -> isCountGoalOnce
+    132:132:boolean isClickMap() -> isClickMap
+    136:136:java.util.ArrayList getGoals() -> getGoals
+    140:140:com.vwo.mobile.models.Variation getVariation() -> getVariation
+    144:144:boolean isExperimentServed() -> isExperimentServed
+    148:149:void setIsExperimentServed(boolean) -> setIsExperimentServed
+    152:152:java.util.ArrayList getSegments() -> getSegments
+    157:172:org.json.JSONObject getCampaignAsJsonObject() -> getCampaignAsJsonObject
+    176:176:java.lang.String getSegmentType() -> getSegmentType
+com.vwo.mobile.models.CampaignTypeEnum -> com.vwo.mobile.models.CampaignTypeEnum:
+    com.vwo.mobile.models.CampaignTypeEnum VISUAL_AB -> VISUAL_AB
+    java.lang.String mType -> a
+    com.vwo.mobile.models.CampaignTypeEnum[] $VALUES -> b
+    6:6:com.vwo.mobile.models.CampaignTypeEnum[] values() -> values
+    6:6:com.vwo.mobile.models.CampaignTypeEnum valueOf(java.lang.String) -> valueOf
+    12:14:void <init>(java.lang.String,int,java.lang.String) -> <init>
+    18:26:com.vwo.mobile.models.CampaignTypeEnum getEnumFromCampaign(java.lang.String) -> getEnumFromCampaign
+    30:30:java.lang.String getType() -> getType
+    6:7:void <clinit>() -> <clinit>
+com.vwo.mobile.models.Goal -> com.vwo.mobile.models.Goal:
+    java.lang.String TYPE -> TYPE
+    java.lang.String IDENTIFIER -> IDENTIFIER
+    java.lang.String ID -> ID
+    java.lang.String GOAL_TRIGGERED -> GOAL_TRIGGERED
+    com.vwo.mobile.models.GoalEnum mGoalType -> a
+    java.lang.String mIdentifier -> b
+    int mId -> c
+    boolean mIsGoalTriggered -> d
+    21:35:void <init>(org.json.JSONObject) -> <init>
+    38:38:boolean isGoalTriggered() -> isGoalTriggered
+    42:43:void setIsGoalTriggered(boolean) -> setIsGoalTriggered
+    46:46:com.vwo.mobile.models.GoalEnum getGoalType() -> getGoalType
+    50:50:java.lang.String getIdentifier() -> getIdentifier
+    54:54:int getId() -> getId
+    59:64:org.json.JSONObject getGoalAsJsonObject() -> getGoalAsJsonObject
+com.vwo.mobile.models.GoalEnum -> com.vwo.mobile.models.GoalEnum:
+    com.vwo.mobile.models.GoalEnum REVENUE_TRACKING -> REVENUE_TRACKING
+    com.vwo.mobile.models.GoalEnum CUSTOM_GOAL -> CUSTOM_GOAL
+    java.lang.String mGoalType -> a
+    com.vwo.mobile.models.GoalEnum[] $VALUES -> b
+    6:6:com.vwo.mobile.models.GoalEnum[] values() -> values
+    6:6:com.vwo.mobile.models.GoalEnum valueOf(java.lang.String) -> valueOf
+    12:14:void <init>(java.lang.String,int,java.lang.String) -> <init>
+    18:25:com.vwo.mobile.models.GoalEnum getEnumFromGoal(java.lang.String) -> getEnumFromGoal
+    29:29:java.lang.String getGoalType() -> getGoalType
+    6:8:void <clinit>() -> <clinit>
+com.vwo.mobile.models.Variation -> com.vwo.mobile.models.Variation:
+    int EMPTY_VARIATION -> EMPTY_VARIATION
+    java.lang.String JSON_CONTENT -> JSON_CONTENT
+    java.lang.String ID -> ID
+    java.lang.String WEIGHT -> WEIGHT
+    java.lang.String NAME -> NAME
+    int mId -> a
+    java.lang.String mName -> b
+    org.json.JSONObject mServeObject -> c
+    double mWeight -> d
+    java.util.Map mKeysObjects -> e
+    29:34:void <init>() -> <init>
+    36:52:void <init>(org.json.JSONObject) -> <init>
+    55:55:int getId() -> getId
+    59:59:java.lang.String getName() -> getName
+    63:63:org.json.JSONObject getServeObject() -> getServeObject
+    67:67:double getWeight() -> getWeight
+    71:81:void generateKeyPairs() -> a
+    84:88:java.lang.Object getKey(java.lang.String) -> getKey
+    94:102:org.json.JSONObject getVariationAsJsonObject() -> getVariationAsJsonObject
+com.vwo.mobile.models.VwoDumper -> com.vwo.mobile.models.VwoDumper:
+    java.lang.String dump() -> dump
+com.vwo.mobile.network.VwoDownloader -> com.vwo.mobile.network.VwoDownloader:
+    com.vwo.mobile.Vwo mVwo -> a
+    34:36:void <init>(com.vwo.mobile.Vwo) -> <init>
+    40:63:void fetchFromServer(com.vwo.mobile.network.VwoDownloader$DownloadResult) -> fetchFromServer
+    106:148:void startUpload() -> startUpload
+    29:29:com.vwo.mobile.Vwo access$000(com.vwo.mobile.network.VwoDownloader) -> a
+com.vwo.mobile.network.VwoDownloader$1 -> com.vwo.mobile.network.VwoDownloader$1:
+    com.squareup.okhttp.OkHttpClient val$client -> a
+    com.vwo.mobile.network.VwoDownloader this$0 -> b
+    108:108:void <init>(com.vwo.mobile.network.VwoDownloader,com.squareup.okhttp.OkHttpClient) -> <init>
+    113:146:void run() -> run
+com.vwo.mobile.network.VwoDownloader$1$1 -> com.vwo.mobile.network.VwoDownloader$1$1:
+    java.util.ArrayList val$urls -> a
+    java.lang.String val$url -> b
+    com.vwo.mobile.network.VwoDownloader$1 this$1 -> c
+    130:130:void <init>(com.vwo.mobile.network.VwoDownloader$1,java.util.ArrayList,java.lang.String) -> <init>
+    133:134:void onFailure(com.squareup.okhttp.Request,java.io.IOException) -> onFailure
+    138:141:void onResponse(com.squareup.okhttp.Response) -> onResponse
+com.vwo.mobile.network.VwoDownloader$DownloadData -> com.vwo.mobile.network.VwoDownloader$DownloadData:
+    java.lang.String mUrl -> b
+    com.vwo.mobile.network.VwoDownloader$DownloadResult mDownloadResult -> c
+    com.vwo.mobile.network.VwoDownloader this$0 -> a
+    70:73:void <init>(com.vwo.mobile.network.VwoDownloader,java.lang.String,com.vwo.mobile.network.VwoDownloader$DownloadResult) -> <init>
+    78:101:java.lang.Void doInBackground(java.lang.Void[]) -> doInBackground
+    65:65:java.lang.Object doInBackground(java.lang.Object[]) -> doInBackground
+com.vwo.mobile.network.VwoDownloader$DownloadResult -> com.vwo.mobile.network.VwoDownloader$DownloadResult:
+    void onDownloadSuccess(org.json.JSONArray) -> onDownloadSuccess
+    void onDownloadError(java.lang.Exception) -> onDownloadError
+com.vwo.mobile.segmentation.CustomSegment -> com.vwo.mobile.segmentation.CustomSegment:
+    boolean mLeftBracket -> a
+    boolean mRightBracket -> b
+    org.json.JSONArray mOperandValue -> c
+    com.vwo.mobile.segmentation.LogicalOperator mPreviousLogicalOperator -> d
+    int mSegmentOperator -> e
+    java.lang.String mType -> f
+    28:58:void <init>(org.json.JSONObject) -> <init>
+    61:61:boolean isLeftBracket() -> isLeftBracket
+    65:65:boolean isRightBracket() -> isRightBracket
+    69:69:com.vwo.mobile.segmentation.LogicalOperator getPreviousLogicalOperator() -> getPreviousLogicalOperator
+    73:73:java.lang.String getType() -> getType
+    78:78:boolean evaluate(com.vwo.mobile.Vwo) -> evaluate
+    83:83:boolean isCustomSegment() -> isCustomSegment
+com.vwo.mobile.segmentation.CustomSegmentEvaluateEnum -> com.vwo.mobile.segmentation.CustomSegmentEvaluateEnum:
+    com.vwo.mobile.segmentation.CustomSegmentEvaluateEnum ANDROID_VERSION_EQUAL_TO -> ANDROID_VERSION_EQUAL_TO
+    com.vwo.mobile.segmentation.CustomSegmentEvaluateEnum ANDROID_VERSION_NOT_EQUAL_TO -> ANDROID_VERSION_NOT_EQUAL_TO
+    com.vwo.mobile.segmentation.CustomSegmentEvaluateEnum DAY_OF_WEEK_EQUAL_TO -> DAY_OF_WEEK_EQUAL_TO
+    com.vwo.mobile.segmentation.CustomSegmentEvaluateEnum DAY_OF_WEEK_NOT_EQUAL_TO -> DAY_OF_WEEK_NOT_EQUAL_TO
+    com.vwo.mobile.segmentation.CustomSegmentEvaluateEnum HOUR_OF_DAY_EQUAL_TO -> HOUR_OF_DAY_EQUAL_TO
+    com.vwo.mobile.segmentation.CustomSegmentEvaluateEnum HOUR_OF_DAY_NOT_EQUAL_TO -> HOUR_OF_DAY_NOT_EQUAL_TO
+    com.vwo.mobile.segmentation.CustomSegmentEvaluateEnum LOCATION_EQUAL_TO -> LOCATION_EQUAL_TO
+    com.vwo.mobile.segmentation.CustomSegmentEvaluateEnum LOCATION_NOT_EQUAL_TO -> LOCATION_NOT_EQUAL_TO
+    com.vwo.mobile.segmentation.CustomSegmentEvaluateEnum APP_VERSION_EQUAL_TO -> APP_VERSION_EQUAL_TO
+    com.vwo.mobile.segmentation.CustomSegmentEvaluateEnum APP_VERSION_NOT_EQUAL_TO -> APP_VERSION_NOT_EQUAL_TO
+    com.vwo.mobile.segmentation.CustomSegmentEvaluateEnum APP_VERSION_MATCHES_REGEX -> APP_VERSION_MATCHES_REGEX
+    com.vwo.mobile.segmentation.CustomSegmentEvaluateEnum APP_VERSION_CONTAINS -> APP_VERSION_CONTAINS
+    com.vwo.mobile.segmentation.CustomSegmentEvaluateEnum APP_VERSION_STARTS_WITH -> APP_VERSION_STARTS_WITH
+    com.vwo.mobile.segmentation.CustomSegmentEvaluateEnum DEFAULT -> DEFAULT
+    int mOperator -> a
+    java.lang.String mType -> b
+    com.vwo.mobile.segmentation.CustomSegmentEvaluateEnum$EvaluateSegment mSegmentFunction -> c
+    com.vwo.mobile.segmentation.CustomSegmentEvaluateEnum[] $VALUES -> d
+    19:19:com.vwo.mobile.segmentation.CustomSegmentEvaluateEnum[] values() -> values
+    19:19:com.vwo.mobile.segmentation.CustomSegmentEvaluateEnum valueOf(java.lang.String) -> valueOf
+    274:278:void <init>(java.lang.String,int,java.lang.String,int,com.vwo.mobile.segmentation.CustomSegmentEvaluateEnum$EvaluateSegment) -> <init>
+    281:287:com.vwo.mobile.segmentation.CustomSegmentEvaluateEnum$EvaluateSegment getEvaluator(java.lang.String,int) -> getEvaluator
+    291:291:int getOperator() -> getOperator
+    295:295:java.lang.String getType() -> getType
+    299:299:com.vwo.mobile.segmentation.CustomSegmentEvaluateEnum$EvaluateSegment getSegmentFunction() -> getSegmentFunction
+    19:262:void <clinit>() -> <clinit>
+com.vwo.mobile.segmentation.CustomSegmentEvaluateEnum$1 -> com.vwo.mobile.segmentation.CustomSegmentEvaluateEnum$1:
+    22:22:void <init>() -> <init>
+    25:34:boolean evaluate(com.vwo.mobile.Vwo,org.json.JSONArray) -> evaluate
+com.vwo.mobile.segmentation.CustomSegmentEvaluateEnum$10 -> com.vwo.mobile.segmentation.CustomSegmentEvaluateEnum$2:
+    190:190:void <init>() -> <init>
+    193:204:boolean evaluate(com.vwo.mobile.Vwo,org.json.JSONArray) -> evaluate
+com.vwo.mobile.segmentation.CustomSegmentEvaluateEnum$11 -> com.vwo.mobile.segmentation.CustomSegmentEvaluateEnum$3:
+    208:208:void <init>() -> <init>
+    211:223:boolean evaluate(com.vwo.mobile.Vwo,org.json.JSONArray) -> evaluate
+com.vwo.mobile.segmentation.CustomSegmentEvaluateEnum$12 -> com.vwo.mobile.segmentation.CustomSegmentEvaluateEnum$4:
+    227:227:void <init>() -> <init>
+    230:241:boolean evaluate(com.vwo.mobile.Vwo,org.json.JSONArray) -> evaluate
+com.vwo.mobile.segmentation.CustomSegmentEvaluateEnum$13 -> com.vwo.mobile.segmentation.CustomSegmentEvaluateEnum$5:
+    245:245:void <init>() -> <init>
+    248:259:boolean evaluate(com.vwo.mobile.Vwo,org.json.JSONArray) -> evaluate
+com.vwo.mobile.segmentation.CustomSegmentEvaluateEnum$14 -> com.vwo.mobile.segmentation.CustomSegmentEvaluateEnum$6:
+    262:262:void <init>() -> <init>
+    265:265:boolean evaluate(com.vwo.mobile.Vwo,org.json.JSONArray) -> evaluate
+com.vwo.mobile.segmentation.CustomSegmentEvaluateEnum$2 -> com.vwo.mobile.segmentation.CustomSegmentEvaluateEnum$7:
+    38:38:void <init>() -> <init>
+    41:50:boolean evaluate(com.vwo.mobile.Vwo,org.json.JSONArray) -> evaluate
+com.vwo.mobile.segmentation.CustomSegmentEvaluateEnum$3 -> com.vwo.mobile.segmentation.CustomSegmentEvaluateEnum$8:
+    54:54:void <init>() -> <init>
+    58:69:boolean evaluate(com.vwo.mobile.Vwo,org.json.JSONArray) -> evaluate
+com.vwo.mobile.segmentation.CustomSegmentEvaluateEnum$4 -> com.vwo.mobile.segmentation.CustomSegmentEvaluateEnum$9:
+    73:73:void <init>() -> <init>
+    77:88:boolean evaluate(com.vwo.mobile.Vwo,org.json.JSONArray) -> evaluate
+com.vwo.mobile.segmentation.CustomSegmentEvaluateEnum$5 -> com.vwo.mobile.segmentation.CustomSegmentEvaluateEnum$10:
+    92:92:void <init>() -> <init>
+    95:106:boolean evaluate(com.vwo.mobile.Vwo,org.json.JSONArray) -> evaluate
+com.vwo.mobile.segmentation.CustomSegmentEvaluateEnum$6 -> com.vwo.mobile.segmentation.CustomSegmentEvaluateEnum$11:
+    110:110:void <init>() -> <init>
+    113:124:boolean evaluate(com.vwo.mobile.Vwo,org.json.JSONArray) -> evaluate
+com.vwo.mobile.segmentation.CustomSegmentEvaluateEnum$7 -> com.vwo.mobile.segmentation.CustomSegmentEvaluateEnum$12:
+    128:128:void <init>() -> <init>
+    131:146:boolean evaluate(com.vwo.mobile.Vwo,org.json.JSONArray) -> evaluate
+com.vwo.mobile.segmentation.CustomSegmentEvaluateEnum$8 -> com.vwo.mobile.segmentation.CustomSegmentEvaluateEnum$13:
+    150:150:void <init>() -> <init>
+    153:168:boolean evaluate(com.vwo.mobile.Vwo,org.json.JSONArray) -> evaluate
+com.vwo.mobile.segmentation.CustomSegmentEvaluateEnum$9 -> com.vwo.mobile.segmentation.CustomSegmentEvaluateEnum$14:
+    172:172:void <init>() -> <init>
+    175:186:boolean evaluate(com.vwo.mobile.Vwo,org.json.JSONArray) -> evaluate
+com.vwo.mobile.segmentation.CustomSegmentEvaluateEnum$EvaluateSegment -> com.vwo.mobile.segmentation.CustomSegmentEvaluateEnum$EvaluateSegment:
+    boolean evaluate(com.vwo.mobile.Vwo,org.json.JSONArray) -> evaluate
+com.vwo.mobile.segmentation.DefaultSegment -> com.vwo.mobile.segmentation.DefaultSegment:
+    8:8:void <init>() -> <init>
+    13:13:boolean evaluate(com.vwo.mobile.Vwo) -> evaluate
+    18:18:boolean isCustomSegment() -> isCustomSegment
+com.vwo.mobile.segmentation.LogicalOperator -> com.vwo.mobile.segmentation.LogicalOperator:
+    com.vwo.mobile.segmentation.LogicalOperator OR -> OR
+    com.vwo.mobile.segmentation.LogicalOperator AND -> AND
+    java.lang.String mOperator -> a
+    com.vwo.mobile.segmentation.LogicalOperator[] $VALUES -> b
+    7:7:com.vwo.mobile.segmentation.LogicalOperator[] values() -> values
+    7:7:com.vwo.mobile.segmentation.LogicalOperator valueOf(java.lang.String) -> valueOf
+    14:16:void <init>(java.lang.String,int,java.lang.String) -> <init>
+    19:25:com.vwo.mobile.segmentation.LogicalOperator fromString(java.lang.String) -> fromString
+    29:29:java.lang.String toString() -> toString
+    33:36:boolean evaluate(boolean,boolean) -> evaluate
+    7:10:void <clinit>() -> <clinit>
+com.vwo.mobile.segmentation.PredefinedSegment -> com.vwo.mobile.segmentation.PredefinedSegment:
+    java.lang.String mId -> a
+    java.lang.String mSegmentKey -> b
+    java.lang.Object mSegmentValue -> c
+    24:37:void <init>(org.json.JSONObject) -> <init>
+    41:41:boolean evaluate(com.vwo.mobile.Vwo) -> evaluate
+    46:46:boolean isCustomSegment() -> isCustomSegment
+com.vwo.mobile.segmentation.PredefinedSegmentEnum -> com.vwo.mobile.segmentation.PredefinedSegmentEnum:
+    com.vwo.mobile.segmentation.PredefinedSegmentEnum DEVICE -> DEVICE
+    com.vwo.mobile.segmentation.PredefinedSegmentEnum RETURNING_USER -> RETURNING_USER
+    com.vwo.mobile.segmentation.PredefinedSegmentEnum DEFAULT -> DEFAULT
+    java.lang.String mType -> a
+    com.vwo.mobile.segmentation.PredefinedSegmentEnum$EvaluateSegment mEvaluateSegment -> b
+    com.vwo.mobile.segmentation.PredefinedSegmentEnum[] $VALUES -> c
+    11:11:com.vwo.mobile.segmentation.PredefinedSegmentEnum[] values() -> values
+    11:11:com.vwo.mobile.segmentation.PredefinedSegmentEnum valueOf(java.lang.String) -> valueOf
+    50:53:void <init>(java.lang.String,int,java.lang.String,com.vwo.mobile.segmentation.PredefinedSegmentEnum$EvaluateSegment) -> <init>
+    57:62:com.vwo.mobile.segmentation.PredefinedSegmentEnum$EvaluateSegment getEvaluator(java.lang.String) -> getEvaluator
+    71:71:java.lang.String getType() -> getType
+    75:75:com.vwo.mobile.segmentation.PredefinedSegmentEnum$EvaluateSegment getEvaluateSegment() -> getEvaluateSegment
+    11:39:void <clinit>() -> <clinit>
+com.vwo.mobile.segmentation.PredefinedSegmentEnum$1 -> com.vwo.mobile.segmentation.PredefinedSegmentEnum$1:
+    14:14:void <init>() -> <init>
+    17:24:boolean evaluate(com.vwo.mobile.Vwo,java.lang.Object) -> evaluate
+com.vwo.mobile.segmentation.PredefinedSegmentEnum$2 -> com.vwo.mobile.segmentation.PredefinedSegmentEnum$2:
+    27:27:void <init>() -> <init>
+    30:36:boolean evaluate(com.vwo.mobile.Vwo,java.lang.Object) -> evaluate
+com.vwo.mobile.segmentation.PredefinedSegmentEnum$3 -> com.vwo.mobile.segmentation.PredefinedSegmentEnum$3:
+    39:39:void <init>() -> <init>
+    42:42:boolean evaluate(com.vwo.mobile.Vwo,java.lang.Object) -> evaluate
+com.vwo.mobile.segmentation.PredefinedSegmentEnum$EvaluateSegment -> com.vwo.mobile.segmentation.PredefinedSegmentEnum$EvaluateSegment:
+    boolean evaluate(com.vwo.mobile.Vwo,java.lang.Object) -> evaluate
+com.vwo.mobile.segmentation.Segment -> com.vwo.mobile.segmentation.Segment:
+    boolean evaluate(com.vwo.mobile.Vwo) -> evaluate
+    boolean isCustomSegment() -> isCustomSegment
+com.vwo.mobile.utils.NetworkUtils -> com.vwo.mobile.utils.NetworkUtils:
+    int TYPE_WIFI -> TYPE_WIFI
+    int TYPE_MOBILE -> TYPE_MOBILE
+    int TYPE_NOT_CONNECTED -> TYPE_NOT_CONNECTED
+    14:14:void <init>() -> <init>
+    22:37:int getConnectivityStatus(com.vwo.mobile.Vwo) -> getConnectivityStatus
+    42:44:boolean checkAccessNetworkStatePermission(android.content.Context) -> checkAccessNetworkStatePermission
+    48:56:boolean shouldAttemptNetworkCall(com.vwo.mobile.Vwo) -> shouldAttemptNetworkCall
+    16:18:void <clinit>() -> <clinit>
+com.vwo.mobile.utils.Sentry -> com.vwo.mobile.utils.Sentry:
+    android.content.Context context -> a
+    java.lang.String baseUrl -> b
+    java.lang.String dsn -> c
+    java.lang.String packageName -> d
+    int verifySsl -> e
+    com.vwo.mobile.utils.Sentry$SentryEventCaptureListener captureListener -> f
+    71:73:void <init>() -> <init>
+    76:76:com.vwo.mobile.utils.Sentry getInstance() -> d
+    80:81:void init(android.content.Context,java.lang.String) -> init
+    84:93:void init(android.content.Context,java.lang.String,java.lang.String) -> init
+    97:113:java.lang.String createXSentryAuthHeader() -> e
+    117:121:java.lang.String getProjectId() -> f
+    125:130:void sendAllCachedCapturedEvents() -> sendAllCachedCapturedEvents
+    136:137:void setCaptureListener(com.vwo.mobile.utils.Sentry$SentryEventCaptureListener) -> setCaptureListener
+    140:141:void captureMessage(java.lang.String) -> captureMessage
+    144:148:void captureMessage(java.lang.String,com.vwo.mobile.utils.Sentry$SentryEventBuilder$SentryEventLevel) -> captureMessage
+    151:152:void captureException(java.lang.Throwable) -> captureException
+    155:164:void captureException(java.lang.Throwable,com.vwo.mobile.utils.Sentry$SentryEventBuilder$SentryEventLevel) -> captureException
+    167:190:void captureUncaughtException(android.content.Context,java.lang.Throwable) -> captureUncaughtException
+    193:200:java.lang.String getCause(java.lang.Throwable,java.lang.String) -> b
+    204:204:java.io.File getStacktraceLocation(android.content.Context) -> a
+    216:250:void captureEvent(com.vwo.mobile.utils.Sentry$SentryEventBuilder) -> captureEvent
+    253:261:boolean shouldAttemptPost() -> g
+    266:289:com.squareup.okhttp.OkHttpClient getHttpsClient() -> getHttpsClient
+    295:378:void doCaptureEventPost(com.vwo.mobile.utils.Sentry$SentryEventRequest) -> b
+    382:395:void setupUncaughtExceptionHandler() -> h
+    59:59:void access$200(com.vwo.mobile.utils.Sentry$SentryEventRequest) -> a
+    59:59:com.vwo.mobile.utils.Sentry access$300() -> a
+    59:59:int access$400(com.vwo.mobile.utils.Sentry) -> a
+    59:59:java.lang.String access$500() -> b
+    59:59:java.lang.String access$600(com.vwo.mobile.utils.Sentry) -> b
+    59:59:java.lang.String access$700() -> c
+    59:59:void <init>(com.vwo.mobile.utils.Sentry$1) -> <init>
+    59:59:android.content.Context access$900(com.vwo.mobile.utils.Sentry) -> c
+    59:59:java.lang.String access$1400(java.lang.Throwable,java.lang.String) -> a
+    59:59:com.vwo.mobile.utils.Sentry$SentryEventCaptureListener access$1600(com.vwo.mobile.utils.Sentry) -> d
+com.vwo.mobile.utils.Sentry$1 -> com.vwo.mobile.utils.Sentry$1:
+    236:236:void <init>(java.lang.String) -> <init>
+com.vwo.mobile.utils.Sentry$2 -> com.vwo.mobile.utils.Sentry$2:
+    com.vwo.mobile.utils.Sentry$SentryEventRequest val$request -> a
+    239:239:void <init>(com.vwo.mobile.utils.Sentry$SentryEventRequest) -> <init>
+    242:243:void run() -> run
+com.vwo.mobile.utils.Sentry$3 -> com.vwo.mobile.utils.Sentry$3:
+    267:267:void <init>() -> <init>
+    271:271:void checkClientTrusted(java.security.cert.X509Certificate[],java.lang.String) -> checkClientTrusted
+    276:276:void checkServerTrusted(java.security.cert.X509Certificate[],java.lang.String) -> checkServerTrusted
+    280:280:java.security.cert.X509Certificate[] getAcceptedIssuers() -> getAcceptedIssuers
+com.vwo.mobile.utils.Sentry$4 -> com.vwo.mobile.utils.Sentry$4:
+    com.vwo.mobile.utils.Sentry$SentryEventRequest val$request -> a
+    300:300:void <init>(com.vwo.mobile.utils.Sentry$SentryEventRequest) -> <init>
+    305:373:java.lang.Void doInBackground(java.lang.Void[]) -> a
+    300:300:java.lang.Object doInBackground(java.lang.Object[]) -> doInBackground
+com.vwo.mobile.utils.Sentry$InternalStorage -> com.vwo.mobile.utils.Sentry$a:
+    java.util.ArrayList unsentRequests -> a
+    406:408:void <init>() -> <init>
+    411:411:com.vwo.mobile.utils.Sentry$InternalStorage getInstance() -> c
+    418:418:java.util.ArrayList getUnsentRequests() -> a
+    422:429:void addRequest(com.vwo.mobile.utils.Sentry$SentryEventRequest) -> a
+    432:437:void removeBuilder(com.vwo.mobile.utils.Sentry$SentryEventRequest) -> b
+    441:451:void writeObject(android.content.Context,java.util.ArrayList) -> a
+    455:468:java.util.ArrayList readObject(android.content.Context) -> a
+    401:401:com.vwo.mobile.utils.Sentry$InternalStorage access$100() -> b
+    401:401:void <init>(com.vwo.mobile.utils.Sentry$1) -> <init>
+com.vwo.mobile.utils.Sentry$InternalStorage$LazyHolder -> com.vwo.mobile.utils.Sentry$a$a:
+    com.vwo.mobile.utils.Sentry$InternalStorage instance -> a
+    471:471:com.vwo.mobile.utils.Sentry$InternalStorage access$1000() -> a
+    472:472:void <clinit>() -> <clinit>
+com.vwo.mobile.utils.Sentry$LazyHolder -> com.vwo.mobile.utils.Sentry$b:
+    com.vwo.mobile.utils.Sentry instance -> a
+    397:397:com.vwo.mobile.utils.Sentry access$000() -> a
+    398:398:void <clinit>() -> <clinit>
+com.vwo.mobile.utils.Sentry$SentryEventBuilder -> com.vwo.mobile.utils.Sentry$SentryEventBuilder:
+    java.text.SimpleDateFormat sdf -> a
+    java.util.Map event -> b
+    530:534:void <init>() -> <init>
+    537:545:void <init>(java.lang.Throwable,com.vwo.mobile.utils.Sentry$SentryEventBuilder$SentryEventLevel) -> <init>
+    548:585:org.json.JSONObject getStackTrace(java.lang.Throwable) -> getStackTrace
+    595:596:com.vwo.mobile.utils.Sentry$SentryEventBuilder setMessage(java.lang.String) -> setMessage
+    606:607:com.vwo.mobile.utils.Sentry$SentryEventBuilder setTimestamp(long) -> setTimestamp
+    617:618:com.vwo.mobile.utils.Sentry$SentryEventBuilder setLevel(com.vwo.mobile.utils.Sentry$SentryEventBuilder$SentryEventLevel) -> setLevel
+    628:629:com.vwo.mobile.utils.Sentry$SentryEventBuilder setLogger(java.lang.String) -> setLogger
+    639:640:com.vwo.mobile.utils.Sentry$SentryEventBuilder setCulprit(java.lang.String) -> setCulprit
+    648:649:com.vwo.mobile.utils.Sentry$SentryEventBuilder setTags(java.util.Map) -> setTags
+    653:657:org.json.JSONObject getTags() -> getTags
+    661:662:com.vwo.mobile.utils.Sentry$SentryEventBuilder setTags(org.json.JSONObject) -> setTags
+    670:671:com.vwo.mobile.utils.Sentry$SentryEventBuilder setServerName(java.lang.String) -> setServerName
+    681:693:com.vwo.mobile.utils.Sentry$SentryEventBuilder addModule(java.lang.String,java.lang.String) -> addModule
+    701:702:com.vwo.mobile.utils.Sentry$SentryEventBuilder setExtra(java.util.Map) -> setExtra
+    706:710:org.json.JSONObject getExtra() -> getExtra
+    714:715:com.vwo.mobile.utils.Sentry$SentryEventBuilder setExtra(org.json.JSONObject) -> setExtra
+    723:751:com.vwo.mobile.utils.Sentry$SentryEventBuilder setException(java.lang.Throwable) -> setException
+    518:518:java.util.Map access$1300(com.vwo.mobile.utils.Sentry$SentryEventBuilder) -> a
+    522:526:void <clinit>() -> <clinit>
+com.vwo.mobile.utils.Sentry$SentryEventBuilder$SentryEventLevel -> com.vwo.mobile.utils.Sentry$SentryEventBuilder$SentryEventLevel:
+    com.vwo.mobile.utils.Sentry$SentryEventBuilder$SentryEventLevel FATAL -> FATAL
+    com.vwo.mobile.utils.Sentry$SentryEventBuilder$SentryEventLevel ERROR -> ERROR
+    com.vwo.mobile.utils.Sentry$SentryEventBuilder$SentryEventLevel WARNING -> WARNING
+    com.vwo.mobile.utils.Sentry$SentryEventBuilder$SentryEventLevel INFO -> INFO
+    com.vwo.mobile.utils.Sentry$SentryEventBuilder$SentryEventLevel DEBUG -> DEBUG
+    java.lang.String value -> a
+    com.vwo.mobile.utils.Sentry$SentryEventBuilder$SentryEventLevel[] $VALUES -> b
+    754:754:com.vwo.mobile.utils.Sentry$SentryEventBuilder$SentryEventLevel[] values() -> values
+    754:754:com.vwo.mobile.utils.Sentry$SentryEventBuilder$SentryEventLevel valueOf(java.lang.String) -> valueOf
+    764:766:void <init>(java.lang.String,int,java.lang.String) -> <init>
+    754:754:java.lang.String access$1500(com.vwo.mobile.utils.Sentry$SentryEventBuilder$SentryEventLevel) -> a
+    754:760:void <clinit>() -> <clinit>
+com.vwo.mobile.utils.Sentry$SentryEventCaptureListener -> com.vwo.mobile.utils.Sentry$SentryEventCaptureListener:
+    476:476:void <init>() -> <init>
+    com.vwo.mobile.utils.Sentry$SentryEventBuilder beforeCapture(com.vwo.mobile.utils.Sentry$SentryEventBuilder) -> beforeCapture
+com.vwo.mobile.utils.Sentry$SentryEventRequest -> com.vwo.mobile.utils.Sentry$SentryEventRequest:
+    java.lang.String requestData -> a
+    java.util.UUID uuid -> b
+    486:489:void <init>(com.vwo.mobile.utils.Sentry$SentryEventBuilder) -> <init>
+    495:495:java.lang.String getRequestData() -> getRequestData
+    502:502:java.util.UUID getUuid() -> getUuid
+    507:513:boolean equals(java.lang.Object) -> equals
+    482:482:java.util.UUID access$1100(com.vwo.mobile.utils.Sentry$SentryEventRequest) -> a
+com.vwo.mobile.utils.Sentry$SentryUncaughtExceptionHandler -> com.vwo.mobile.utils.Sentry$c:
+    java.lang.Thread$UncaughtExceptionHandler defaultExceptionHandler -> b
+    android.content.Context context -> c
+    com.vwo.mobile.utils.Sentry this$0 -> a
+    777:780:void <init>(com.vwo.mobile.utils.Sentry,java.lang.Thread$UncaughtExceptionHandler,android.content.Context) -> <init>
+    785:798:void uncaughtException(java.lang.Thread,java.lang.Throwable) -> uncaughtException
+com.vwo.mobile.utils.TestUtils -> com.vwo.mobile.utils.TestUtils:
+    23:23:void <init>() -> <init>
+    30:46:org.json.JSONObject loadTestData(android.content.Context,boolean) -> loadTestData
+    52:62:void saveExperiments(android.content.Context,org.json.JSONObject,boolean) -> saveExperiments
+    65:78:org.json.JSONObject mergeJsonObjects(org.json.JSONObject,org.json.JSONObject) -> mergeJsonObjects
+    82:91:java.lang.String getDeviceName() -> getDeviceName
+    95:111:java.lang.String capitalize(java.lang.String) -> a
+com.vwo.mobile.utils.VwoLog -> com.vwo.mobile.utils.VwoLog:
+    boolean ENABLE_LOGS -> ENABLE_LOGS
+    int INFO -> INFO
+    int WARNING -> WARNING
+    int ERROR -> ERROR
+    8:8:void <init>() -> <init>
+    21:21:void d(java.lang.String) -> d
+    27:27:void d(java.lang.String,java.lang.String) -> d
+    33:33:void i(java.lang.String,java.lang.String) -> i
+    36:43:void e(java.lang.String,java.lang.Exception) -> e
+    46:48:void e(java.lang.String,java.lang.String) -> e
+    51:60:void log(java.lang.String,int) -> log
+com.vwo.mobile.utils.VwoPreference -> com.vwo.mobile.utils.VwoPreference:
+    android.content.SharedPreferences preferences -> a
+    java.lang.String DEFAULT_APP_IMAGEDATA_DIRECTORY -> b
+    java.lang.String lastImagePath -> c
+    27:31:void <init>(com.vwo.mobile.Vwo) -> <init>
+    40:49:android.graphics.Bitmap getImage(java.lang.String) -> getImage
+    58:58:java.lang.String getSavedImagePath() -> getSavedImagePath
+    70:81:boolean putImage(java.lang.String,java.lang.String,android.graphics.Bitmap) -> putImage
+    92:92:boolean putImageWithFullPath(java.lang.String,android.graphics.Bitmap) -> putImageWithFullPath
+    101:110:java.lang.String setupFullPath(java.lang.String) -> a
+    120:163:boolean saveBitmap(java.lang.String,android.graphics.Bitmap) -> a
+    175:175:int getInt(java.lang.String,int) -> getInt
+    184:191:java.util.ArrayList getListInt(java.lang.String) -> getListInt
+    201:201:long getLong(java.lang.String,long) -> getLong
+    211:211:float getFloat(java.lang.String,float) -> getFloat
+    221:227:double getDouble(java.lang.String,double) -> getDouble
+    237:244:java.util.ArrayList getListDouble(java.lang.String) -> getListDouble
+    253:253:java.lang.String getString(java.lang.String) -> getString
+    262:262:java.util.ArrayList getListString(java.lang.String) -> getListString
+    272:272:boolean getBoolean(java.lang.String,boolean) -> getBoolean
+    281:292:java.util.ArrayList getListBoolean(java.lang.String) -> getListBoolean
+    303:304:void putInt(java.lang.String,int) -> putInt
+    312:314:void putListInt(java.lang.String,java.util.ArrayList) -> putListInt
+    322:323:void putLong(java.lang.String,long) -> putLong
+    331:332:void putFloat(java.lang.String,float) -> putFloat
+    340:341:void putDouble(java.lang.String,double) -> putDouble
+    349:351:void putListDouble(java.lang.String,java.util.ArrayList) -> putListDouble
+    359:360:void putString(java.lang.String,java.lang.String) -> putString
+    368:370:void putListString(java.lang.String,java.util.ArrayList) -> putListString
+    378:379:void putBoolean(java.lang.String,boolean) -> putBoolean
+    387:398:void putListBoolean(java.lang.String,java.util.ArrayList) -> putListBoolean
+    406:407:void remove(java.lang.String) -> remove
+    415:415:boolean deleteImage(java.lang.String) -> deleteImage
+    423:424:void clear() -> clear
+    431:431:java.util.Map getAll() -> getAll
+    442:443:void registerOnSharedPreferenceChangeListener(android.content.SharedPreferences$OnSharedPreferenceChangeListener) -> registerOnSharedPreferenceChangeListener
+    452:453:void unregisterOnSharedPreferenceChangeListener(android.content.SharedPreferences$OnSharedPreferenceChangeListener) -> unregisterOnSharedPreferenceChangeListener
+    461:461:boolean isExternalStorageWritable() -> isExternalStorageWritable
+    469:471:boolean isExternalStorageReadable() -> isExternalStorageReadable
+com.vwo.mobile.utils.VwoUrlBuilder -> com.vwo.mobile.utils.VwoUrlBuilder:
+    java.lang.String DACDN_GOAL -> DACDN_GOAL
+    java.lang.String DACDN_CAMPAIGN -> DACDN_CAMPAIGN
+    com.vwo.mobile.Vwo vwo -> a
+    31:33:void <init>(com.vwo.mobile.Vwo) -> <init>
+    36:53:java.lang.String getDownloadUrl() -> getDownloadUrl
+    57:64:java.lang.String add(java.lang.String) -> a
+    70:88:java.lang.String getCampaignUrl(long,int) -> getCampaignUrl
+    92:111:java.lang.String getGoalUrl(long,int,int) -> getGoalUrl
+    115:118:java.lang.String getGoalUrl(long,int,int,float) -> getGoalUrl
+    123:136:java.lang.String getExtraData() -> a
+com.vwo.mobile.utils.VwoUtils -> com.vwo.mobile.utils.VwoUtils:
+    java.lang.Boolean mIsAppStoreApp -> mIsAppStoreApp
+    boolean FORCE_APP_STORE -> b
+    com.vwo.mobile.Vwo mVwo -> c
+    boolean $assertionsDisabled -> a
+    33:35:void <init>(com.vwo.mobile.Vwo) -> <init>
+    38:38:java.lang.String deviceId() -> deviceId
+    42:42:java.lang.String deviceName() -> deviceName
+    46:46:java.lang.String getVwoSdkVersion() -> getVwoSdkVersion
+    50:58:java.lang.String getDeviceUUID(com.vwo.mobile.Vwo) -> getDeviceUUID
+    62:62:java.lang.String deviceModel() -> deviceModel
+    66:73:java.lang.String applicationName(android.content.Context) -> applicationName
+    77:77:java.lang.String androidVersion() -> androidVersion
+    81:88:boolean isTablet(android.content.Context) -> isTablet
+    92:99:java.util.Map getScreenSizeMap(android.content.Context) -> getScreenSizeMap
+    103:107:java.util.Map getScaledScreenSizeMap(android.content.Context) -> getScaledScreenSizeMap
+    111:123:java.lang.String applicationVersion(com.vwo.mobile.Vwo) -> applicationVersion
+    127:128:double getRandomNumber() -> getRandomNumber
+    134:134:java.lang.String getLanguage() -> getLanguage
+    138:138:java.lang.String getLocale() -> getLocale
+    142:142:java.lang.String getLocaleTag() -> getLocaleTag
+    146:152:boolean isAppStoreApp(android.content.Context) -> isAppStoreApp
+    156:160:float getScreenshotScaling(android.content.Context) -> getScreenshotScaling
+    164:165:boolean isDebudMode() -> isDebudMode
+    169:185:boolean checkForInternetPermissions(android.content.Context) -> checkForInternetPermissions
+    190:194:boolean checkIfClassExists(java.lang.String) -> checkIfClassExists
+    27:30:void <clinit>() -> <clinit>
