@@ -1,0 +1,41 @@
+<resources>
+
+    <style name="Base.AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">@color/primary_500</item>
+        <item name="colorPrimaryDark">@color/primary_700</item>
+        <item name="colorAccent">@color/color_accent</item>
+        <item name="colorButtonNormal">@color/primary_700</item>
+        <item name="android:textColorLink">?attr/colorAccent</item>
+    </style>
+
+    <style name="AppTheme" parent="Base.AppTheme">
+        <item name="android:textColorPrimary">@color/black_primary_text</item>
+        <item name="android:textColorSecondary">@color/black_secondary_text</item>
+        <item name="android:listViewStyle">@style/ListView</item>
+        <item name="android:scrollViewStyle">@style/ScrollView</item>
+    </style>
+
+    <style name="FullScreen" parent="AppTheme">
+        <item name="windowActionBar">false</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowFullscreen">true</item>
+        <!-- Allows the action mode icons to be shown on top of the Toolbar -->
+        <item name="windowActionModeOverlay">true</item>
+    </style>
+
+    <style name="ScrollView" parent="android:Widget.ScrollView">
+        <!-- Fading edges were enabled by default on older devices and are now deprecated. -->
+        <item name="android:fadingEdge">none</item>
+    </style>
+
+    <style name="ListView" parent="android:Widget.ListView.White">
+        <item name="android:listSelector">?attr/selectableItemBackground</item>
+        <item name="android:fadingEdge">none</item>
+    </style>
+
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>
+
+
+</resources>

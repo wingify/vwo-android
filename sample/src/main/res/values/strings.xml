@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Sample</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_detail">Details</string>
+    <string name="title_activity_experiment_text">Text and Banner</string>
+    <string name="title_activity_experiment_variable">Discount Variable</string>
+    <string name="title_activity_experiment_nav_flow">ExperimentNavFlow</string>
+    <string name="title_activity_experiment_images">Images</string>
+</resources>
