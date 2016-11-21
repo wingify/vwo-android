@@ -19,7 +19,7 @@ Getting Started
 
 ## Credentials
 
-This SDK requires an app key. You can sign up for an account at [VWO][]. Once there, you can add a new Android App, and use the generated app key in the app.
+This SDK requires an app key. You can sign up for an account at [VWO](https://vwo.com). Once there, you can add a new Android App, and use the generated app key in the app.
 
 
 ## Setting up VWO account
