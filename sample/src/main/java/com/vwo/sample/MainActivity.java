@@ -15,7 +15,7 @@ import com.vwo.mobile.events.VwoStatusListener;
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "Main Activity";
-    private static final String VWO_APP_KEY = "Your Vwo App Key";
+    private static final String VWO_APP_KEY = BuildConfig.VWO_API_KEY;
 
 
     @Override

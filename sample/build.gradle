@@ -17,6 +17,10 @@ android {
         }
     }
 
+    buildTypes.each {
+        it.buildConfigField 'String', 'VWO_API_KEY', VWO_API_KEY
+    }
+
 }
 
 dependencies {
