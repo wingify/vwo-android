@@ -3,7 +3,6 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion parent.ext.compileSDKVersion
     buildToolsVersion parent.ext.buildToolsVersion
-
     defaultConfig {
         applicationId "com.vwo.sample"
         minSdkVersion parent.ext.minSDKVersion
