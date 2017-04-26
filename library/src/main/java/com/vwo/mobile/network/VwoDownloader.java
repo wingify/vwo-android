@@ -2,10 +2,6 @@ package com.vwo.mobile.network;
 
 import android.os.AsyncTask;
 
-import com.squareup.okhttp.Callback;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
 import com.vwo.mobile.Vwo;
 import com.vwo.mobile.data.VwoData;
 import com.vwo.mobile.listeners.VwoActivityLifeCycle;
@@ -22,6 +18,12 @@ import java.util.TimerTask;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 /**
  * Created by abhishek on 17/09/15 at 11:39 PM.
@@ -79,7 +81,7 @@ public class VwoDownloader {
                 mDownloadResult.onDownloadError(new Exception("No internet"));
                 return null;
             }
-            final OkHttpClient client = new OkHttpClient();
+            final OkHttpClient client = new OkHttpClient.Builder().build();
 
             Request httpRequest = new Request.Builder().url(mUrl).build();
             try {
@@ -129,13 +131,13 @@ public class VwoDownloader {
 
                     client.newCall(request).enqueue(new Callback() {
                         @Override
-                        public void onFailure(Request request, IOException e) {
-                            VwoLog.e(TAG, e);
+                        public void onFailure(Call call, IOException e) {
+
                         }
 
                         @Override
-                        public void onResponse(Response response) throws IOException {
-                            VwoLog.d("Completed: " + response.request().urlString());
+                        public void onResponse(Call call, Response response) throws IOException {
+                            VwoLog.d("Completed: " + response.request().url().toString());
                             urls.remove(url);
                             mVwo.getVwoPreference().putListString(VwoData.VWO_QUEUE, urls);
                         }

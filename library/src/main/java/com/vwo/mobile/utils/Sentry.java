@@ -12,10 +12,6 @@ import android.os.HandlerThread;
 import android.os.Looper;
 import android.util.Log;
 
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -55,6 +51,10 @@ import java.util.concurrent.TimeUnit;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
+
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 public class Sentry {
 
@@ -261,9 +261,9 @@ public class Sentry {
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
-    public static OkHttpClient getHttpsClient() {
+    private static OkHttpClient.Builder getHttpsClient() {
         try {
-            OkHttpClient okHttpClient = new OkHttpClient();
+            OkHttpClient.Builder okHttpClientBuilder = new OkHttpClient.Builder();
             X509TrustManager x509TrustManager = new X509TrustManager() {
                 @Override
                 public void checkClientTrusted(X509Certificate[] chain,
@@ -283,8 +283,8 @@ public class Sentry {
 
             SSLContext sslContext = SSLContext.getInstance("TLS");
             sslContext.init(null, new TrustManager[]{x509TrustManager}, null);
-            okHttpClient.setSslSocketFactory(sslContext.getSocketFactory());
-            return okHttpClient;
+            okHttpClientBuilder.sslSocketFactory(sslContext.getSocketFactory(), x509TrustManager);
+            return okHttpClientBuilder;
         } catch (Exception ex) {
             return null;
         }
@@ -301,16 +301,16 @@ public class Sentry {
             @Override
             protected Void doInBackground(Void... params) {
 
-                OkHttpClient httpClient;
+                OkHttpClient.Builder httpClientBuilder;
                 if (Sentry.getInstance().verifySsl != 0) {
-                    httpClient = new OkHttpClient();
+                    httpClientBuilder = new OkHttpClient.Builder();
                 } else {
-                    httpClient = getHttpsClient();
+                    httpClientBuilder = getHttpsClient();
                 }
 
-                httpClient.setConnectTimeout(10, TimeUnit.SECONDS);
-                httpClient.setWriteTimeout(10, TimeUnit.SECONDS);
-                httpClient.setReadTimeout(10, TimeUnit.SECONDS);
+                httpClientBuilder.connectTimeout(10, TimeUnit.SECONDS);
+                httpClientBuilder.writeTimeout(10, TimeUnit.SECONDS);
+                httpClientBuilder.readTimeout(10, TimeUnit.SECONDS);
 
                 boolean success = false;
                 try {
@@ -322,6 +322,7 @@ public class Sentry {
                             .build();
 
                     Response response;
+                    OkHttpClient httpClient = httpClientBuilder.build();
                     try {
                         response = httpClient.newCall(request1).execute();
                     } catch (UnknownHostException e) {
