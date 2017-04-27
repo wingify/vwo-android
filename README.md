@@ -29,16 +29,34 @@ This SDK requires an app key. You can sign up for an account at [VWO](https://vw
 * Create and run campaigns.
 
 ## How to import in gradle:
-In your top level build.gradle file add the following code under dependencies.
+In your top level build.gradle file add the following code under repositories.
 
-	maven { url 'https://raw.githubusercontent.com/wingify/vwo-mobile-android/0.2.0/' }
+    buildscript {
+        ...
+        repositories {
+            ...
+        }
+    }
+    
+    allprojects {
+        repositories {
+            ...
+            maven { 
+                url 'https://raw.githubusercontent.com/wingify/vwo-mobile-android/0.2.0/' 
+            }
+            ...
+        }
+    }
 	
 Add vwo and socket.io dependency to app/build.gradle file
 
 	dependencies {
 	    ...
-	    compile 'io.socket:io-client:0.6.1'
 	    compile 'com.vwo:mobile:0.2.0'
+        compile ('io.socket:socket.io-client:0.8.3') {
+                // excluding org.json which is provided by Android
+                exclude group: 'org.json', module: 'json'
+        }
 	    ...
 	}
 
