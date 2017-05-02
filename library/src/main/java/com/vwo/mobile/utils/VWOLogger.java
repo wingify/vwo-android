@@ -5,6 +5,7 @@ import java.util.logging.Formatter;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 
 /**
  * Created by aman on 26/04/17.
@@ -24,8 +25,8 @@ public class VWOLogger {
         ConsoleHandler consoleHTML = new ConsoleHandler();
 
         // create an HTML formatter
-        Formatter formatterHTML = new HTMLLogFormatter();
-        consoleHTML.setFormatter(formatterHTML);
+        Formatter simpleFormatter = new SimpleFormatter();
+        consoleHTML.setFormatter(simpleFormatter);
         logger.addHandler(consoleHTML);
         return logger;
     }
