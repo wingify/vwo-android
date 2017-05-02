@@ -11,19 +11,19 @@ import org.json.JSONObject;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Locale;
-import java.util.UUID;
+import java.util.logging.Logger;
 
 /**
  * Created by abhishek on 16/09/15 at 10:18 PM.
  */
 public class VwoUrlBuilder {
+    private static final Logger LOGGER = VWOLogger.getLogger(VwoUrlBuilder.class.getCanonicalName());
 
     private static final String DACDN_URL = "https://dacdn.vwo.com/";
     private static final String DACDN_FETCH_URL_WITH_K = DACDN_URL + "mobile?a=%s&v=%s&i=%s&dt=%s&os=%s&r=%f&k=%s";
     private static final String DACDN_FETCH_URL_WITHOUT_K = DACDN_URL + "mobile?a=%s&v=%s&i=%s&dt=%s&os=%s&r=%f";
     public static final String DACDN_GOAL = DACDN_URL + "c.gif";
     public static final String DACDN_CAMPAIGN = DACDN_URL + "l.gif";
-    private static final String TAG = "Vwo Url Builder";
 
 
     private final Vwo vwo;
@@ -48,7 +48,7 @@ public class VwoUrlBuilder {
             url = String.format(Locale.ENGLISH, DACDN_FETCH_URL_WITH_K, accountId, sdkVersion, appKey, deviceType, currentDeviceSystemVersion, randomNo, k);
         }
 
-        VwoLog.d(TAG, url);
+        LOGGER.info("Url : " + url);
 
         return url;
     }
@@ -59,8 +59,8 @@ public class VwoUrlBuilder {
         }
         try {
             return URLEncoder.encode(data, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-           VwoLog.e(TAG, e);
+        } catch (UnsupportedEncodingException exception) {
+            LOGGER.throwing(VwoUrlBuilder.class.getSimpleName(), "add(String)", exception);
             return "";
         }
     }
@@ -84,7 +84,7 @@ public class VwoUrlBuilder {
         url = String.format(Locale.ENGLISH, url, experimentId, accountId, variationId, uuid, session, VwoUtils.getRandomNumber());
         String extraData = add(getExtraData());
         url += "&ed=" + extraData;
-        VwoLog.d(TAG, url);
+        LOGGER.info("URL: " + url);
         return url;
     }
 
@@ -107,7 +107,7 @@ public class VwoUrlBuilder {
 
         String extraData = add(getExtraData());
         url += "&ed=" + extraData;
-        VwoLog.d(TAG, url);
+        LOGGER.info("URL: " + url);
         return url;
     }
 
@@ -130,8 +130,8 @@ public class VwoUrlBuilder {
             jsonObject.put("os", VwoUtils.androidVersion());
 
             return jsonObject.toString();
-        } catch (JSONException e) {
-            VwoLog.e(TAG, e);
+        } catch (JSONException exception) {
+            LOGGER.throwing(VwoUrlBuilder.class.getSimpleName(), "getExtraData()", exception);
         }
         return "";
     }

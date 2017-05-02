@@ -15,7 +15,7 @@ import com.vwo.mobile.events.VwoStatusListener;
 import com.vwo.mobile.listeners.VwoActivityLifeCycle;
 import com.vwo.mobile.network.VwoDownloader;
 import com.vwo.mobile.utils.Sentry;
-import com.vwo.mobile.utils.VwoLog;
+import com.vwo.mobile.utils.VWOLogger;
 import com.vwo.mobile.utils.VwoPreference;
 import com.vwo.mobile.utils.VwoUrlBuilder;
 import com.vwo.mobile.utils.VwoUtils;
@@ -24,12 +24,15 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.logging.Logger;
+
 /**
  * Created by abhishek on 17/09/15 at 10:02 PM.
  */
 public class Vwo {
+    private static final Logger LOGGER = VWOLogger.getLogger(Vwo.class.getCanonicalName());
 
-    private static final String TAG = "VWO Mobile";
+//    private static final String TAG = "VWO Mobile";
 
     private static Vwo sSharedInstance;
 
@@ -114,7 +117,7 @@ public class Vwo {
 
         Object data = getObjectForKey(key);
         if (data == null) {
-            VwoLog.d(TAG, "No Key Value found. Serving Control");
+            LOGGER.warning("No Key Value found. Serving Control");
             return control;
         } else {
             return data;
@@ -169,8 +172,7 @@ public class Vwo {
 
     @SuppressWarnings("SpellCheckingInspection")
     protected boolean startVwoInstance(String appKey, final Application application) {
-
-        VwoLog.log("**** Starting VWO ver " + VwoUtils.getVwoSdkVersion() + " ****", VwoLog.INFO);
+        LOGGER.entering(Vwo.class.getSimpleName(), "startVwoInstance(String, Application)", "**** Starting VWO ver " + VwoUtils.getVwoSdkVersion() + " ****");
 
         if (!VwoUtils.checkForInternetPermissions(application.getApplicationContext())) {
             return false;
@@ -178,18 +180,18 @@ public class Vwo {
             String errMsg = "VWO is dependent on Socket.IO library.\n" +
                     "In application level build.gradle file add\t" +
                     "compile 'io.socket:socket.io-client:0.6.2'";
-            VwoLog.log(errMsg, VwoLog.ERROR);
+            LOGGER.finer(errMsg);
             return false;
         } else if (!isAndroidSDKSupported()) {
             Sentry.init(application, ApiConstant.SENTRY);
-            VwoLog.log("Minimum SDK version should be 14", VwoLog.ERROR);
+            LOGGER.finer("Minimum SDK version should be 14");
             return false;
         } else if (!validateVwoAppKey(appKey)) {
             Sentry.init(application, ApiConstant.SENTRY);
-            VwoLog.log("Invalid App Key: " + appKey, VwoLog.ERROR);
+            LOGGER.finer("Invalid App Key: " + appKey);
             return false;
         } else if (this.mVwoStartState != VwoStartState.NOT_STARTED) {
-            VwoLog.log("VWO already started", VwoLog.INFO);
+            LOGGER.warning("VWO already started");
             return true;
         } else {
             // Everything is good so far
@@ -209,13 +211,14 @@ public class Vwo {
                 public void onDownloadSuccess(JSONArray data) {
                     Sentry.init(application, ApiConstant.SENTRY);
                     if (data.length() == 0) {
-                        VwoLog.d("Empty data downloaded");
+                        LOGGER.warning("Empty data downloaded");
                         // FIXME: Handle this. Can crash here.
                     } else {
                         try {
-                            VwoLog.d(data.toString(4));
-                        } catch (JSONException e) {
-                            VwoLog.d(TAG, "Data not Downloaded: " + e.getLocalizedMessage());
+                            LOGGER.info(data.toString(4));
+                        } catch (JSONException exception) {
+                            LOGGER.finer("Data not Downloaded: " + exception.getLocalizedMessage());
+                            LOGGER.throwing(Vwo.class.getSimpleName(), "DownloadSuccess", exception);
                         }
                     }
                     mVwoData.parseData(data);

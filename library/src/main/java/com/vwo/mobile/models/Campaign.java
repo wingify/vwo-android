@@ -2,19 +2,15 @@ package com.vwo.mobile.models;
 
 
 import com.vwo.mobile.segmentation.CustomSegment;
-import com.vwo.mobile.segmentation.CustomSegmentEvaluateEnum;
 import com.vwo.mobile.segmentation.DefaultSegment;
-import com.vwo.mobile.segmentation.LogicalOperator;
 import com.vwo.mobile.segmentation.PredefinedSegment;
 import com.vwo.mobile.segmentation.Segment;
-import com.vwo.mobile.utils.VwoLog;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Stack;
 
 /**
  * Created by abhishek on 17/09/15 at 12:08 PM.

@@ -2,7 +2,7 @@ package com.vwo.mobile.segmentation;
 
 import com.vwo.mobile.Vwo;
 import com.vwo.mobile.constants.AppConstants;
-import com.vwo.mobile.utils.VwoLog;
+import com.vwo.mobile.utils.VWOLogger;
 import com.vwo.mobile.utils.VwoUtils;
 
 import org.json.JSONArray;
@@ -18,7 +18,6 @@ import java.util.regex.Pattern;
  */
 public enum CustomSegmentEvaluateEnum {
 
-
     ANDROID_VERSION_EQUAL_TO(AppConstants.ANDROID_VERSION, AppConstants.EQUAL_TO, new EvaluateSegment() {
         @Override
         public boolean evaluate(Vwo vwo, JSONArray data) {
@@ -28,7 +27,8 @@ public enum CustomSegmentEvaluateEnum {
                         return true;
                     }
                 } catch (NumberFormatException | JSONException ex) {
-                    VwoLog.e("CustomSegmentEvaluateEnum", ex);
+                    VWOLogger.getLogger("CustomSegmentEvaluateEnum").throwing(CustomSegmentEvaluateEnum.class.getSimpleName(), "AndroidEqualVersion", ex);
+//                    VwoLog.e("CustomSegmentEvaluateEnum", ex);
                 }
             }
             return false;
@@ -44,7 +44,7 @@ public enum CustomSegmentEvaluateEnum {
                         return false;
                     }
                 } catch (NumberFormatException | JSONException ex) {
-                    VwoLog.e("CustomSegmentEvaluateEnum", ex);
+                    VWOLogger.getLogger("CustomSegmentEvaluateEnum").throwing(CustomSegmentEvaluateEnum.class.getSimpleName(), "AndroidNotEqualVersion", ex);
                 }
             }
             return true;
@@ -63,7 +63,7 @@ public enum CustomSegmentEvaluateEnum {
                         return true;
                     }
                 } catch (NumberFormatException | JSONException ex) {
-                    VwoLog.e("CustomSegmentEvaluateEnum", ex);
+                    VWOLogger.getLogger("CustomSegmentEvaluateEnum").throwing(CustomSegmentEvaluateEnum.class.getSimpleName(), "DayOfWeekEqual", ex);
                 }
             }
             return false;
@@ -82,7 +82,7 @@ public enum CustomSegmentEvaluateEnum {
                         return false;
                     }
                 } catch (NumberFormatException | JSONException ex) {
-                    VwoLog.e("CustomSegmentEvaluateEnum", ex);
+                    VWOLogger.getLogger("CustomSegmentEvaluateEnum").throwing(CustomSegmentEvaluateEnum.class.getSimpleName(), "DayOfWeekNotEqual", ex);
                 }
             }
             return true;
@@ -100,7 +100,7 @@ public enum CustomSegmentEvaluateEnum {
                         return true;
                     }
                 } catch (NumberFormatException | JSONException ex) {
-                    VwoLog.e("CustomSegmentEvaluateEnum", ex);
+                    VWOLogger.getLogger("CustomSegmentEvaluateEnum").throwing(CustomSegmentEvaluateEnum.class.getSimpleName(), "HourOfDayEqual", ex);
                 }
             }
             return false;
@@ -118,7 +118,7 @@ public enum CustomSegmentEvaluateEnum {
                         return false;
                     }
                 } catch (NumberFormatException | JSONException ex) {
-                    VwoLog.e("CustomSegmentEvaluateEnum", ex);
+                    VWOLogger.getLogger("CustomSegmentEvaluateEnum").throwing(CustomSegmentEvaluateEnum.class.getSimpleName(), "HourOfDayNotEqual", ex);
                 }
             }
             return true;
@@ -139,8 +139,8 @@ public enum CustomSegmentEvaluateEnum {
                     if (data.getString(i).equalsIgnoreCase(locale)) {
                         return true;
                     }
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                } catch (JSONException exception) {
+                    VWOLogger.getLogger("CustomSegmentEvaluateEnum").throwing(CustomSegmentEvaluateEnum.class.getSimpleName(), "LocationEqual", exception);
                 }
             }
             return false;
@@ -161,8 +161,8 @@ public enum CustomSegmentEvaluateEnum {
                     if (data.getString(i).equalsIgnoreCase(locale)) {
                         return false;
                     }
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                } catch (JSONException exception) {
+                    VWOLogger.getLogger("CustomSegmentEvaluateEnum").throwing(CustomSegmentEvaluateEnum.class.getSimpleName(), "LocationNotEqual", exception);
                 }
             }
             return true;
@@ -179,8 +179,8 @@ public enum CustomSegmentEvaluateEnum {
                     if (version.equals(appVersion)) {
                         return true;
                     }
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                } catch (JSONException exception) {
+                    VWOLogger.getLogger("CustomSegmentEvaluateEnum").throwing(CustomSegmentEvaluateEnum.class.getSimpleName(), "AppVersionEqual", exception);
                 }
             }
             return false;
@@ -197,8 +197,8 @@ public enum CustomSegmentEvaluateEnum {
                     if (version.equals(appVersion)) {
                         return false;
                     }
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                } catch (JSONException exception) {
+                    VWOLogger.getLogger("CustomSegmentEvaluateEnum").throwing(CustomSegmentEvaluateEnum.class.getSimpleName(), "AppVersionNotEqual", exception);
                 }
             }
             return true;
@@ -216,8 +216,8 @@ public enum CustomSegmentEvaluateEnum {
                     if (matcher.find()) {
                         return true;
                     }
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                } catch (JSONException exception) {
+                    VWOLogger.getLogger("CustomSegmentEvaluateEnum").throwing(CustomSegmentEvaluateEnum.class.getSimpleName(), "AppVersionMatches", exception);
                 }
             }
             return false;
@@ -234,8 +234,8 @@ public enum CustomSegmentEvaluateEnum {
                     if (appVersion.contains(version)) {
                         return true;
                     }
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                } catch (JSONException exception) {
+                    VWOLogger.getLogger("CustomSegmentEvaluateEnum").throwing(CustomSegmentEvaluateEnum.class.getSimpleName(), "AppVersionContains", exception);
                 }
             }
             return false;
@@ -252,8 +252,8 @@ public enum CustomSegmentEvaluateEnum {
                     if (appVersion.startsWith(version)) {
                         return true;
                     }
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                } catch (JSONException exception) {
+                    VWOLogger.getLogger("CustomSegmentEvaluateEnum").throwing(CustomSegmentEvaluateEnum.class.getSimpleName(), "AppVersionStartsWith", exception);
                 }
             }
             return false;

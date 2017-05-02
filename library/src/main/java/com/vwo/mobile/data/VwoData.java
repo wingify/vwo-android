@@ -7,7 +7,7 @@ import com.vwo.mobile.models.Goal;
 import com.vwo.mobile.segmentation.CustomSegment;
 import com.vwo.mobile.segmentation.LogicalOperator;
 import com.vwo.mobile.segmentation.Segment;
-import com.vwo.mobile.utils.VwoLog;
+import com.vwo.mobile.utils.VWOLogger;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -18,16 +18,17 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Stack;
+import java.util.logging.Logger;
 
 /**
  * Created by abhishek on 17/09/15 at 10:10 PM.
  */
 public class VwoData {
+    private static final Logger LOGGER = VWOLogger.getLogger(VwoData.class.getCanonicalName());
 
     public static final String CAMPAIGN_RUNNING = "RUNNING";
     public static final String CAMPAIGN_EXCLUDED = "EXCLUED";
 
-    private static final String TAG = "VWO Data";
     public static final String VWO_QUEUE = "VWO_QUEUE";
     private ArrayList<Campaign> mCampaigns;
     private Map<String, Campaign> mVariations;
@@ -52,19 +53,19 @@ public class VwoData {
                         if (VwoPersistData.isExistingCampaign(mVwo, VwoPersistData.CAMPAIGN_KEY + tempCampaign.getId())) {
                             // Already part of campaign. Just add to campaigns list
                             mCampaigns.add(tempCampaign);
-                            VwoLog.i(TAG, "Campaign " + tempCampaign.getId() + " is already a part");
+                            LOGGER.warning("Campaign " + tempCampaign.getId() + " is already a part");
 
                         } else {
                             if (evaluateSegmentation(mVwo, tempCampaign)) {
                                 mCampaigns.add(tempCampaign);
 
                                 String campaignRecordUrl = mVwo.getVwoUrlBuilder().getCampaignUrl(tempCampaign.getId(), tempCampaign.getVariation().getId());
-                                VwoLog.i(TAG, "Campaign " + tempCampaign.getId() + " is a new and valid campaign");
+                                LOGGER.info("Campaign " + tempCampaign.getId() + " is a new and valid campaign");
                                 VwoPersistData vwoPersistData = new VwoPersistData(tempCampaign.getId(), tempCampaign.getVariation().getId());
                                 vwoPersistData.saveCampaign(mVwo.getVwoPreference());
                                 VwoPersistData.addToQueue(mVwo.getVwoPreference(), campaignRecordUrl);
                             } else {
-                                VwoLog.i(TAG, "Campaign " + tempCampaign.getId() + ", Segmentation Condition not met, discarding");
+                                LOGGER.finest("Campaign " + tempCampaign.getId() + ", Segmentation Condition not met, discarding");
                             }
                         }
                     }
@@ -73,15 +74,15 @@ public class VwoData {
                     VwoPersistData vwoPersistData = new VwoPersistData(campaignId, 0);
                     vwoPersistData.saveCampaign(mVwo.getVwoPreference());
                 } else {
-                    VwoLog.i(TAG, "Campaign " + data.getJSONObject(i).getInt("id") + ", Discarding because it is not running");
+                    LOGGER.finer("Campaign " + data.getJSONObject(i).getInt("id") + ", Discarding because it is not running");
                 }
 
-            } catch (JSONException e) {
-                VwoLog.e(TAG, e);
+            } catch (JSONException exception) {
+                LOGGER.throwing(VwoData.class.getSimpleName(), "parseData(JSONArray)", exception);
             }
         }
 
-        if(mCampaigns.size() >0) {
+        if (mCampaigns.size() > 0) {
             VwoPersistData.updateReturningUser(mVwo);
         }
 
@@ -107,11 +108,11 @@ public class VwoData {
         } else {
 
             JSONObject data = new JSONObject();
-            for(Map.Entry<String, Campaign> variation : mVariations.entrySet()) {
+            for (Map.Entry<String, Campaign> variation : mVariations.entrySet()) {
                 try {
                     data.put(variation.getKey(), variation.getValue().getVariation().getKey(variation.getKey()));
-                } catch (JSONException e) {
-                    VwoLog.e(TAG, e);
+                } catch (JSONException exception) {
+                    LOGGER.throwing(VwoData.class.getSimpleName(), "getAllVariations()", exception);
                 }
             }
             return data;
@@ -136,10 +137,10 @@ public class VwoData {
                                 String goalUrl = mVwo.getVwoUrlBuilder().getGoalUrl(campaign.getId(), campaign.getVariation().getId(), goal.getId());
                                 VwoPersistData.addToQueue(mVwo.getVwoPreference(), goalUrl);
                             } else {
-                                VwoLog.i(TAG, goalIdentifier + " found in existing data");
+                                LOGGER.info(goalIdentifier + " found in existing data");
                             }
-                        } catch (JSONException e) {
-                            VwoLog.e(TAG, e);
+                        } catch (JSONException exception) {
+                            LOGGER.throwing(VwoData.class.getSimpleName(), "saveGoal(String)", exception);
                         }
 
                     }
@@ -165,10 +166,10 @@ public class VwoData {
                                 String goalUrl = mVwo.getVwoUrlBuilder().getGoalUrl(campaign.getId(), campaign.getVariation().getId(), goal.getId(), (float) value);
                                 VwoPersistData.addToQueue(mVwo.getVwoPreference(), goalUrl);
                             } else {
-                                VwoLog.i(TAG, goalIdentifier + " found in existing data");
+                                LOGGER.info(goalIdentifier + " found in existing data");
                             }
-                        } catch (JSONException e) {
-                            VwoLog.e(TAG, e);
+                        } catch (JSONException exception) {
+                            LOGGER.throwing(VwoData.class.getSimpleName(), "saveGoal(String, double)", exception);
                         }
 
                     }

@@ -1,26 +1,27 @@
 package com.vwo.mobile.utils;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Map;
-
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
 import android.os.Environment;
-import android.preference.PreferenceManager;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.vwo.mobile.Vwo;
+import com.vwo.mobile.segmentation.CustomSegmentEvaluateEnum;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Map;
+import java.util.logging.Logger;
 
 
 public class VwoPreference {
+    private static final Logger LOGGER = VWOLogger.getLogger(VwoPreference.class.getCanonicalName());
 
     private SharedPreferences preferences;
     private String DEFAULT_APP_IMAGEDATA_DIRECTORY;
@@ -41,9 +42,9 @@ public class VwoPreference {
         try {
             bitmapFromPath = BitmapFactory.decodeFile(path);
 
-        } catch (Exception e) {
+        } catch (Exception exception) {
             // TODO: handle exception
-            e.printStackTrace();
+            VWOLogger.getLogger("VwoPreference").throwing(CustomSegmentEvaluateEnum.class.getSimpleName(), "getImage", exception);
         }
 
         return bitmapFromPath;
@@ -102,7 +103,7 @@ public class VwoPreference {
 
         if (isExternalStorageReadable() && isExternalStorageWritable() && !mFolder.exists()) {
             if (!mFolder.mkdirs()) {
-                Log.e("ERROR", "Failed to setup folder");
+                LOGGER.fine("Failed to setup folder.");
                 return "";
             }
         }
@@ -133,8 +134,8 @@ public class VwoPreference {
         try {
             fileCreated = imageFile.createNewFile();
 
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException exception) {
+            LOGGER.throwing(CustomSegmentEvaluateEnum.class.getSimpleName(), "saveBitmap(String, Bitmap)", exception);
         }
 
         FileOutputStream out = null;
@@ -142,8 +143,8 @@ public class VwoPreference {
             out = new FileOutputStream(imageFile);
             bitmapCompressed = bitmap.compress(CompressFormat.PNG, 100, out);
 
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception exception) {
+            LOGGER.throwing(CustomSegmentEvaluateEnum.class.getSimpleName(), "saveBitmap(String, Bitmap)", exception);
             bitmapCompressed = false;
 
         } finally {
@@ -153,8 +154,8 @@ public class VwoPreference {
                     out.close();
                     streamClosed = true;
 
-                } catch (IOException e) {
-                    e.printStackTrace();
+                } catch (IOException exception) {
+                    LOGGER.throwing(CustomSegmentEvaluateEnum.class.getSimpleName(), "saveBitmap(String, Bitmap)", exception);
                     streamClosed = false;
                 }
             }

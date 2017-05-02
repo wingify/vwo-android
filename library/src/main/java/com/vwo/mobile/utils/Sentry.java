@@ -6,7 +6,6 @@ import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
@@ -297,84 +296,75 @@ public class Sentry {
             return;
         }
 
-        new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected Void doInBackground(Void... params) {
+        OkHttpClient.Builder httpClientBuilder;
+        if (Sentry.getInstance().verifySsl != 0) {
+            httpClientBuilder = new OkHttpClient.Builder();
+        } else {
+            httpClientBuilder = getHttpsClient();
+        }
 
-                OkHttpClient.Builder httpClientBuilder;
-                if (Sentry.getInstance().verifySsl != 0) {
-                    httpClientBuilder = new OkHttpClient.Builder();
-                } else {
-                    httpClientBuilder = getHttpsClient();
-                }
+        httpClientBuilder.connectTimeout(10, TimeUnit.SECONDS);
+        httpClientBuilder.writeTimeout(10, TimeUnit.SECONDS);
+        httpClientBuilder.readTimeout(10, TimeUnit.SECONDS);
 
-                httpClientBuilder.connectTimeout(10, TimeUnit.SECONDS);
-                httpClientBuilder.writeTimeout(10, TimeUnit.SECONDS);
-                httpClientBuilder.readTimeout(10, TimeUnit.SECONDS);
+        boolean success = false;
+        try {
+            Request request1 = new Request.Builder()
+                    .url(Sentry.getInstance().baseUrl + "/api/" + getProjectId() + "/store/")
+                    .header("X-Sentry-Auth", createXSentryAuthHeader())
+                    .addHeader("User-Agent", "sentry-android/" + VERSION)
+                    .addHeader("Content-Type", "text/html; charset=utf-8")
+                    .build();
 
-                boolean success = false;
-                try {
-                    Request request1 = new Request.Builder()
-                            .url(Sentry.getInstance().baseUrl + "/api/" + getProjectId() + "/store/")
-                            .header("X-Sentry-Auth", createXSentryAuthHeader())
-                            .addHeader("User-Agent", "sentry-android/" + VERSION)
-                            .addHeader("Content-Type", "text/html; charset=utf-8")
-                            .build();
-
-                    Response response;
-                    OkHttpClient httpClient = httpClientBuilder.build();
-                    try {
-                        response = httpClient.newCall(request1).execute();
-                    } catch (UnknownHostException e) {
-                        return null;
-                    }
-
-                    int status = response.code();
-
-                    byte[] byteResp = null;
-
-                    if (response.body() != null) {
-                        try {
-                            byteResp = response.body().bytes();
-
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-
-
-                    String stringResponse = null;
-                    Charset charsetInput = Charset.forName("UTF-8");
-                    CharsetDecoder decoder = charsetInput.newDecoder();
-                    CharBuffer cbuf = null;
-                    try {
-                        cbuf = decoder.decode(ByteBuffer.wrap(byteResp));
-                        stringResponse = cbuf.toString();
-                    } catch (CharacterCodingException e) {
-                        e.printStackTrace();
-                    }
-
-                    success = (status == 200 || status >= 400);
-
-                    Log.d(LOG_TAG, "SendEvent - " + status + " " + stringResponse);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
-                if (success) {
-                    Log.d(LOG_TAG, "Removing request");
-                    InternalStorage.getInstance().removeBuilder(request);
-                } else {
-                    Log.d(LOG_TAG, "Adding request");
-                    InternalStorage.getInstance().addRequest(request);
-                }
-
-                return null;
+            Response response;
+            OkHttpClient httpClient = httpClientBuilder.build();
+            try {
+                response = httpClient.newCall(request1).execute();
+            } catch (UnknownHostException e) {
+                throw e;
             }
 
-        }.execute();
+            int status = response.code();
+
+            byte[] byteResp = null;
+
+            if (response.body() != null) {
+                try {
+                    byteResp = response.body().bytes();
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+
+            String stringResponse = null;
+            Charset charsetInput = Charset.forName("UTF-8");
+            CharsetDecoder decoder = charsetInput.newDecoder();
+            CharBuffer cbuf;
+            try {
+                cbuf = decoder.decode(ByteBuffer.wrap(byteResp));
+                stringResponse = cbuf.toString();
+            } catch (CharacterCodingException e) {
+                e.printStackTrace();
+            }
+
+            success = (status == 200 || status >= 400);
+
+            Log.d(LOG_TAG, "SendEvent - " + status + " " + stringResponse);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        if (success) {
+            Log.d(LOG_TAG, "Removing request");
+            InternalStorage.getInstance().removeBuilder(request);
+        } else {
+            Log.d(LOG_TAG, "Adding request");
+            InternalStorage.getInstance().addRequest(request);
+        }
 
     }
 

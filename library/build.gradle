@@ -31,6 +31,10 @@ android {
     lintOptions {
         disable 'InvalidPackage'
     }
+
+    buildTypes.each {
+        it.buildConfigField 'String', 'SENTRY', SENTRY
+    }
 }
 
 dependencies {

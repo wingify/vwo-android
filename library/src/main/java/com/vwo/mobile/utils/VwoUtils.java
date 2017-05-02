@@ -12,20 +12,19 @@ import com.vwo.mobile.Vwo;
 import com.vwo.mobile.constants.AppConstants;
 import com.vwo.mobile.constants.GlobalConstants;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
+import java.util.logging.Logger;
 
 /**
  * Created by abhishek on 18/09/15 at 1:34 AM.
  */
 public class VwoUtils {
-    private static final String TAG = "VWO Utils";
+    private static final Logger LOGGER = VWOLogger.getLogger(VwoUtils.class.getCanonicalName());
+
     public static Boolean mIsAppStoreApp;
     private static boolean FORCE_APP_STORE = false;
     private Vwo mVwo;
@@ -39,7 +38,7 @@ public class VwoUtils {
     }
 
     public static String deviceName() {
-        return String.format("%s %s", new Object[]{Build.MANUFACTURER.toUpperCase(Locale.ENGLISH), Build.MODEL});
+        return String.format("%s %s", Build.MANUFACTURER.toUpperCase(Locale.ENGLISH), Build.MODEL);
     }
 
     public static String getVwoSdkVersion() {
@@ -93,17 +92,17 @@ public class VwoUtils {
 
         assert metrics != null;
 
-        HashMap screenMap = new HashMap();
-        screenMap.put("height", Integer.valueOf(metrics.heightPixels));
-        screenMap.put("width", Integer.valueOf(metrics.widthPixels));
+        HashMap<String, Integer> screenMap = new HashMap<>();
+        screenMap.put("height", metrics.heightPixels);
+        screenMap.put("width", metrics.widthPixels);
         return screenMap;
     }
 
     public static Map<String, Integer> getScaledScreenSizeMap(Context context) {
-        Map toReturn = getScreenSizeMap(context);
+        Map<String, Integer> toReturn = getScreenSizeMap(context);
         double scaling = (double) getScreenshotScaling(context);
-        toReturn.put("height", Integer.valueOf((int) ((double) ((Integer) toReturn.get("height")).intValue() * scaling)));
-        toReturn.put("width", Integer.valueOf((int) ((double) ((Integer) toReturn.get("width")).intValue() * scaling)));
+        toReturn.put("height", (int) ((double) (Integer) toReturn.get("height") * scaling));
+        toReturn.put("width", (int) ((double) (Integer) toReturn.get("width") * scaling));
         return toReturn;
     }
 
@@ -115,8 +114,9 @@ public class VwoUtils {
                 if (packageInfo != null && packageInfo.versionName != null) {
                     return packageInfo.versionName;
                 }
-            } catch (PackageManager.NameNotFoundException e) {
-                VwoLog.e(TAG, "Failed to get packaging info");
+            } catch (PackageManager.NameNotFoundException exception) {
+                LOGGER.fine("Failed to get packaging info");
+                LOGGER.throwing(VwoUtils.class.getSimpleName(), "applicationVersion(Vwo)", exception);
             }
         }
 
@@ -146,10 +146,10 @@ public class VwoUtils {
         if (mIsAppStoreApp == null) {
             PackageManager packageManager = context.getPackageManager();
             String installer = packageManager.getInstallerPackageName(context.getPackageName());
-            mIsAppStoreApp = Boolean.valueOf(FORCE_APP_STORE || installer != null && !installer.isEmpty());
+            mIsAppStoreApp = FORCE_APP_STORE || installer != null && !installer.isEmpty();
         }
 
-        return mIsAppStoreApp.booleanValue();
+        return mIsAppStoreApp;
     }
 
     public static float getScreenshotScaling(Context context) {
@@ -160,9 +160,8 @@ public class VwoUtils {
         return metrics.densityDpi >= 240 ? 0.5F : 1.0F;
     }
 
-    public boolean isDebudMode() {
-        boolean isDebuggable = (0 != (mVwo.getApplication().getApplicationInfo().flags &= ApplicationInfo.FLAG_DEBUGGABLE));
-        return isDebuggable;
+    public boolean isDebugMode() {
+        return (0 != (mVwo.getApplication().getApplicationInfo().flags &= ApplicationInfo.FLAG_DEBUGGABLE));
     }
 
     public static boolean checkForInternetPermissions(Context context) {
@@ -171,7 +170,7 @@ public class VwoUtils {
         if (hasPerm == PackageManager.PERMISSION_DENIED) {
             String errorMsg = "VWO requires Internet permission.\n" +
                     "Add <uses-permission android:name=\"android.permission.INTERNET\"/> in AndroidManifest.xml";
-            VwoLog.log(errorMsg, VwoLog.ERROR);
+            LOGGER.fine(errorMsg);
             return false;
         }
 
@@ -180,7 +179,7 @@ public class VwoUtils {
         if (hasPerm == PackageManager.PERMISSION_DENIED) {
             String errorMsg = "Granting ACCESS_NETWORK_STATE permission makes VWO work smarter.\n" +
                     "Add <uses-permission android:name=\"android.permission.ACCESS_NETWORK_STATE\"/> in AndroidManifest.xml";
-            VwoLog.log(errorMsg, VwoLog.WARNING);
+            LOGGER.fine(errorMsg);
         }
         return true;
     }

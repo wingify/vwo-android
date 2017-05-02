@@ -8,10 +8,13 @@ import android.net.NetworkInfo;
 
 import com.vwo.mobile.Vwo;
 
+import java.util.logging.Logger;
+
 /**
  * Created by abhishek on 19/10/15 at 12:46 AM.
  */
 public class NetworkUtils {
+    private static final Logger LOGGER = VWOLogger.getLogger(NetworkUtils.class.getCanonicalName());
 
     public static int TYPE_WIFI = 1;
     public static int TYPE_MOBILE = 2;
@@ -20,7 +23,7 @@ public class NetworkUtils {
     public static int getConnectivityStatus(Vwo vwo) {
 
         if (!checkAccessNetworkStatePermission(vwo.getCurrentContext())) {
-            VwoLog.d("Network Access permission not granted. Returning connected to Wifi");
+            LOGGER.fine("Network Access permission not granted. Returning connected to Wifi");
             return TYPE_WIFI;
         }
 
