@@ -14,7 +14,6 @@ import com.vwo.mobile.enums.VwoStartState;
 import com.vwo.mobile.events.VwoStatusListener;
 import com.vwo.mobile.listeners.VwoActivityLifeCycle;
 import com.vwo.mobile.network.VwoDownloader;
-import com.vwo.mobile.utils.Sentry;
 import com.vwo.mobile.utils.VWOLogger;
 import com.vwo.mobile.utils.VwoPreference;
 import com.vwo.mobile.utils.VwoUrlBuilder;
@@ -25,6 +24,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.logging.Logger;
+
+import io.sentry.Sentry;
+import io.sentry.android.AndroidSentryClientFactory;
+import io.sentry.dsn.Dsn;
 
 /**
  * Created by abhishek on 17/09/15 at 10:02 PM.
@@ -174,6 +177,9 @@ public class Vwo {
     protected boolean startVwoInstance(String appKey, final Application application) {
         LOGGER.entering(Vwo.class.getSimpleName(), "startVwoInstance(String, Application)", "**** Starting VWO ver " + VwoUtils.getVwoSdkVersion() + " ****");
 
+        final AndroidSentryClientFactory factory = new AndroidSentryClientFactory(application.getApplicationContext());
+//        factory.createSentryClient(new Dsn(ApiConstant.SENTRY));
+
         if (!VwoUtils.checkForInternetPermissions(application.getApplicationContext())) {
             return false;
         } else if (!VwoUtils.checkIfClassExists("io.socket.client.Socket") && !VwoUtils.checkIfClassExists("com.squareup.okhttp.OkHttpClient")) {
@@ -183,11 +189,11 @@ public class Vwo {
             LOGGER.finer(errMsg);
             return false;
         } else if (!isAndroidSDKSupported()) {
-            Sentry.init(application, ApiConstant.SENTRY);
+            Sentry.init(factory);
             LOGGER.finer("Minimum SDK version should be 14");
             return false;
         } else if (!validateVwoAppKey(appKey)) {
-            Sentry.init(application, ApiConstant.SENTRY);
+            Sentry.init(factory);
             LOGGER.finer("Invalid App Key: " + appKey);
             return false;
         } else if (this.mVwoStartState != VwoStartState.NOT_STARTED) {
@@ -209,7 +215,7 @@ public class Vwo {
             this.mVwoDownloader.fetchFromServer(new VwoDownloader.DownloadResult() {
                 @Override
                 public void onDownloadSuccess(JSONArray data) {
-                    Sentry.init(application, ApiConstant.SENTRY);
+                    Sentry.init(factory);
                     if (data.length() == 0) {
                         LOGGER.warning("Empty data downloaded");
                         // FIXME: Handle this. Can crash here.
@@ -242,7 +248,7 @@ public class Vwo {
 
                 @Override
                 public void onDownloadError(Exception ex) {
-                    Sentry.init(application, ApiConstant.SENTRY);
+                    Sentry.init(ApiConstant.SENTRY, factory);
                     mVwoDownloader.startUpload();
                     mVwoSocket.connectToSocket();
                     if (mVwoLocalData.isLocalDataPresent()) {

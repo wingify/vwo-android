@@ -2,6 +2,8 @@ package com.vwo.mobile.utils;
 
 import android.util.Log;
 
+import io.sentry.Sentry;
+
 /**
  * Created by abhishek on 29/07/15 at 1:41 PM.
  */
@@ -33,7 +35,7 @@ public class VwoLog {
     }
 
     public static void e(String tag, Exception ex) {
-        Sentry.captureException(ex);
+        Sentry.capture(ex);
         try {
             Log.e("**" + tag, ex.getLocalizedMessage());
             ex.printStackTrace();
@@ -43,7 +45,7 @@ public class VwoLog {
     }
 
     public static void e(String tag, String msg) {
-        Sentry.captureException(new Exception(tag + ": " + msg));
+        Sentry.capture(new Exception(tag + ": " + msg));
         Log.e("**" + tag, msg);
     }
 
