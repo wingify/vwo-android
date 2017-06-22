@@ -115,8 +115,6 @@ public class VwoDownloader {
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-
-
                 final ArrayList<String> urls = mVwo.getVwoPreference().getListString(VwoData.VWO_QUEUE);
 
                 if (urls.size() != 0) {

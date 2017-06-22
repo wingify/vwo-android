@@ -17,9 +17,9 @@ public enum CampaignTypeEnum {
 
         CampaignTypeEnum[] enums = CampaignTypeEnum.values();
 
-        for (int i = 0; i < enums.length; i++) {
-            if (enums[i].getType().equals(campaignStatus)) {
-                return enums[i];
+        for (CampaignTypeEnum anEnum : enums) {
+            if (anEnum.getType().equals(campaignStatus)) {
+                return anEnum;
             }
         }
 

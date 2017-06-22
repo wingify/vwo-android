@@ -23,6 +23,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import io.sentry.Sentry;
@@ -215,7 +217,7 @@ public class Vwo {
             this.mVwoDownloader.fetchFromServer(new VwoDownloader.DownloadResult() {
                 @Override
                 public void onDownloadSuccess(JSONArray data) {
-                    Sentry.init(factory);
+                    Sentry.init(ApiConstant.SENTRY, factory);
                     if (data.length() == 0) {
                         LOGGER.warning("Empty data downloaded");
                         // FIXME: Handle this. Can crash here.
@@ -288,12 +290,12 @@ public class Vwo {
     }
 
     private void initializeComponents() {
-
         this.mVwoLocalData = new VwoLocalData(this);
         this.mVwoUtils = new VwoUtils(this);
         this.mVwoDownloader = new VwoDownloader(this);
         this.mVwoUrlBuilder = new VwoUrlBuilder(this);
-        this.mVwoData = new VwoData(this);
+        // TODO: write a function to pass custom segment keys.
+        this.mVwoData = new VwoData(this, null);
         this.mVwoSocket = new VwoSocket(this);
         this.mVwoPreference = new VwoPreference(this);
 

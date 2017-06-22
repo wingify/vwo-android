@@ -1,12 +1,12 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion parent.ext.compileSDKVersion
-    buildToolsVersion parent.ext.buildToolsVersion
+    compileSdkVersion 25
+    buildToolsVersion '25.0.2'
     defaultConfig {
         versionCode 1
-        minSdkVersion parent.ext.minSDKVersion
-        targetSdkVersion parent.ext.targetSDKVersion
+        minSdkVersion 14
+        targetSdkVersion 25
         versionName "0.2.0"
     }
 
@@ -25,6 +25,15 @@ android {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.config
+            it.buildConfigField 'String', 'DACDN_URL', RELEASE_DACDN_URL
+        }
+        debug {
+            debuggable false
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.config
+            it.buildConfigField 'String', 'DACDN_URL', DEBUG_DACDN_URL
+
         }
     }
 
@@ -34,6 +43,7 @@ android {
 
     buildTypes.each {
         it.buildConfigField 'String', 'SENTRY', SENTRY
+        it.buildConfigField 'String', 'SOCKET_URL', SOCKET_URL
     }
 }
 

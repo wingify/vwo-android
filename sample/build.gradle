@@ -11,20 +11,22 @@ android {
         versionName "1.0.0"
     }
     buildTypes {
+        debug {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            it.buildConfigField 'String', 'VWO_API_KEY', DEBUG_VWO_API_KEY
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            it.buildConfigField 'String', 'VWO_API_KEY', RELEASE_VWO_API_KEY
         }
-    }
-
-    buildTypes.each {
-        it.buildConfigField 'String', 'VWO_API_KEY', VWO_API_KEY
     }
 }
 
 dependencies {
-    compile 'com.android.support:appcompat-v7:25.3.1'
-    compile 'com.android.support:design:25.3.1'
+    compile 'com.android.support:appcompat-v7:25.4.0'
+    compile 'com.android.support:design:25.4.0'
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile project(':library')
 }

@@ -27,10 +27,15 @@ public enum CustomSegmentEvaluateEnum {
                         return true;
                     }
                 } catch (NumberFormatException | JSONException ex) {
-                    VWOLogger.getLogger("CustomSegmentEvaluateEnum").throwing(CustomSegmentEvaluateEnum.class.getSimpleName(), "AndroidEqualVersion", ex);
+                    VWOLogger.getLogger("CustomSegmentEvaluateEnum").throwing(CustomSegmentEvaluateEnum.class.getSimpleName(), "ANDROID_VERSION_EQUAL_TO", ex);
 //                    VwoLog.e("CustomSegmentEvaluateEnum", ex);
                 }
             }
+            return false;
+        }
+
+        @Override
+        public boolean evaluate(Vwo vwo, JSONArray data, String key) {
             return false;
         }
     }),
@@ -44,10 +49,15 @@ public enum CustomSegmentEvaluateEnum {
                         return false;
                     }
                 } catch (NumberFormatException | JSONException ex) {
-                    VWOLogger.getLogger("CustomSegmentEvaluateEnum").throwing(CustomSegmentEvaluateEnum.class.getSimpleName(), "AndroidNotEqualVersion", ex);
+                    VWOLogger.getLogger("CustomSegmentEvaluateEnum").throwing(CustomSegmentEvaluateEnum.class.getSimpleName(), "ANDROID_VERSION_NOT_EQUAL_TO", ex);
                 }
             }
             return true;
+        }
+
+        @Override
+        public boolean evaluate(Vwo vwo, JSONArray data, String key) {
+            return false;
         }
     }),
 
@@ -63,9 +73,14 @@ public enum CustomSegmentEvaluateEnum {
                         return true;
                     }
                 } catch (NumberFormatException | JSONException ex) {
-                    VWOLogger.getLogger("CustomSegmentEvaluateEnum").throwing(CustomSegmentEvaluateEnum.class.getSimpleName(), "DayOfWeekEqual", ex);
+                    VWOLogger.getLogger("CustomSegmentEvaluateEnum").throwing(CustomSegmentEvaluateEnum.class.getSimpleName(), "DAY_OF_WEEK_EQUAL_TO", ex);
                 }
             }
+            return false;
+        }
+
+        @Override
+        public boolean evaluate(Vwo vwo, JSONArray data, String key) {
             return false;
         }
     }),
@@ -82,10 +97,15 @@ public enum CustomSegmentEvaluateEnum {
                         return false;
                     }
                 } catch (NumberFormatException | JSONException ex) {
-                    VWOLogger.getLogger("CustomSegmentEvaluateEnum").throwing(CustomSegmentEvaluateEnum.class.getSimpleName(), "DayOfWeekNotEqual", ex);
+                    VWOLogger.getLogger("CustomSegmentEvaluateEnum").throwing(CustomSegmentEvaluateEnum.class.getSimpleName(), "DAY_OF_WEEK_NOT_EQUAL_TO", ex);
                 }
             }
             return true;
+        }
+
+        @Override
+        public boolean evaluate(Vwo vwo, JSONArray data, String key) {
+            return false;
         }
     }),
 
@@ -100,9 +120,14 @@ public enum CustomSegmentEvaluateEnum {
                         return true;
                     }
                 } catch (NumberFormatException | JSONException ex) {
-                    VWOLogger.getLogger("CustomSegmentEvaluateEnum").throwing(CustomSegmentEvaluateEnum.class.getSimpleName(), "HourOfDayEqual", ex);
+                    VWOLogger.getLogger("CustomSegmentEvaluateEnum").throwing(CustomSegmentEvaluateEnum.class.getSimpleName(), "HOUR_OF_DAY_EQUAL_TO", ex);
                 }
             }
+            return false;
+        }
+
+        @Override
+        public boolean evaluate(Vwo vwo, JSONArray data, String key) {
             return false;
         }
     }),
@@ -118,10 +143,15 @@ public enum CustomSegmentEvaluateEnum {
                         return false;
                     }
                 } catch (NumberFormatException | JSONException ex) {
-                    VWOLogger.getLogger("CustomSegmentEvaluateEnum").throwing(CustomSegmentEvaluateEnum.class.getSimpleName(), "HourOfDayNotEqual", ex);
+                    VWOLogger.getLogger("CustomSegmentEvaluateEnum").throwing(CustomSegmentEvaluateEnum.class.getSimpleName(), "HOUR_OF_DAY_NOT_EQUAL_TO", ex);
                 }
             }
             return true;
+        }
+
+        @Override
+        public boolean evaluate(Vwo vwo, JSONArray data, String key) {
+            return false;
         }
     }),
 
@@ -140,9 +170,14 @@ public enum CustomSegmentEvaluateEnum {
                         return true;
                     }
                 } catch (JSONException exception) {
-                    VWOLogger.getLogger("CustomSegmentEvaluateEnum").throwing(CustomSegmentEvaluateEnum.class.getSimpleName(), "LocationEqual", exception);
+                    VWOLogger.getLogger("CustomSegmentEvaluateEnum").throwing(CustomSegmentEvaluateEnum.class.getSimpleName(), "LOCATION_EQUAL_TO", exception);
                 }
             }
+            return false;
+        }
+
+        @Override
+        public boolean evaluate(Vwo vwo, JSONArray data, String key) {
             return false;
         }
     }),
@@ -162,10 +197,15 @@ public enum CustomSegmentEvaluateEnum {
                         return false;
                     }
                 } catch (JSONException exception) {
-                    VWOLogger.getLogger("CustomSegmentEvaluateEnum").throwing(CustomSegmentEvaluateEnum.class.getSimpleName(), "LocationNotEqual", exception);
+                    VWOLogger.getLogger("CustomSegmentEvaluateEnum").throwing(CustomSegmentEvaluateEnum.class.getSimpleName(), "LOCATION_NOT_EQUAL_TO", exception);
                 }
             }
             return true;
+        }
+
+        @Override
+        public boolean evaluate(Vwo vwo, JSONArray data, String key) {
+            return false;
         }
     }),
 
@@ -180,9 +220,14 @@ public enum CustomSegmentEvaluateEnum {
                         return true;
                     }
                 } catch (JSONException exception) {
-                    VWOLogger.getLogger("CustomSegmentEvaluateEnum").throwing(CustomSegmentEvaluateEnum.class.getSimpleName(), "AppVersionEqual", exception);
+                    VWOLogger.getLogger("CustomSegmentEvaluateEnum").throwing(CustomSegmentEvaluateEnum.class.getSimpleName(), "APP_VERSION_EQUAL_TO", exception);
                 }
             }
+            return false;
+        }
+
+        @Override
+        public boolean evaluate(Vwo vwo, JSONArray data, String key) {
             return false;
         }
     }),
@@ -198,10 +243,15 @@ public enum CustomSegmentEvaluateEnum {
                         return false;
                     }
                 } catch (JSONException exception) {
-                    VWOLogger.getLogger("CustomSegmentEvaluateEnum").throwing(CustomSegmentEvaluateEnum.class.getSimpleName(), "AppVersionNotEqual", exception);
+                    VWOLogger.getLogger("CustomSegmentEvaluateEnum").throwing(CustomSegmentEvaluateEnum.class.getSimpleName(), "APP_VERSION_NOT_EQUAL_TO", exception);
                 }
             }
             return true;
+        }
+
+        @Override
+        public boolean evaluate(Vwo vwo, JSONArray data, String key) {
+            return false;
         }
     }),
 
@@ -217,9 +267,14 @@ public enum CustomSegmentEvaluateEnum {
                         return true;
                     }
                 } catch (JSONException exception) {
-                    VWOLogger.getLogger("CustomSegmentEvaluateEnum").throwing(CustomSegmentEvaluateEnum.class.getSimpleName(), "AppVersionMatches", exception);
+                    VWOLogger.getLogger("CustomSegmentEvaluateEnum").throwing(CustomSegmentEvaluateEnum.class.getSimpleName(), "APP_VERSION_MATCHES_REGEX", exception);
                 }
             }
+            return false;
+        }
+
+        @Override
+        public boolean evaluate(Vwo vwo, JSONArray data, String key) {
             return false;
         }
     }),
@@ -235,9 +290,14 @@ public enum CustomSegmentEvaluateEnum {
                         return true;
                     }
                 } catch (JSONException exception) {
-                    VWOLogger.getLogger("CustomSegmentEvaluateEnum").throwing(CustomSegmentEvaluateEnum.class.getSimpleName(), "AppVersionContains", exception);
+                    VWOLogger.getLogger("CustomSegmentEvaluateEnum").throwing(CustomSegmentEvaluateEnum.class.getSimpleName(), "APP_VERSION_CONTAINS", exception);
                 }
             }
+            return false;
+        }
+
+        @Override
+        public boolean evaluate(Vwo vwo, JSONArray data, String key) {
             return false;
         }
     }),
@@ -253,15 +313,142 @@ public enum CustomSegmentEvaluateEnum {
                         return true;
                     }
                 } catch (JSONException exception) {
-                    VWOLogger.getLogger("CustomSegmentEvaluateEnum").throwing(CustomSegmentEvaluateEnum.class.getSimpleName(), "AppVersionStartsWith", exception);
+                    VWOLogger.getLogger("CustomSegmentEvaluateEnum").throwing(CustomSegmentEvaluateEnum.class.getSimpleName(), "APP_VERSION_STARTS_WITH", exception);
+                }
+            }
+            return false;
+        }
+
+        @Override
+        public boolean evaluate(Vwo vwo, JSONArray data, String key) {
+            return false;
+        }
+    }),
+
+    CUSTOM_SEGMENT_EQUAL_TO(AppConstants.CUSTOM_SEGMENT, AppConstants.EQUAL_TO, new EvaluateSegment() {
+        @Override
+        public boolean evaluate(Vwo vwo, JSONArray data) {
+            return false;
+        }
+
+        @Override
+        public boolean evaluate(Vwo vwo, JSONArray data, String key) {
+            String customVariable = vwo.getVwoData().getValueForCustomSegment(key);
+            for (int i = 0; i < data.length(); i++) {
+                try {
+                    String customVar = data.getString(i);
+                    if (customVar.equals(customVariable)) {
+                        return true;
+                    }
+                } catch (JSONException exception) {
+                    VWOLogger.getLogger("CustomSegmentEvaluateEnum").throwing(CustomSegmentEvaluateEnum.class.getSimpleName(), "CUSTOM_SEGMENT_EQUAL_TO", exception);
                 }
             }
             return false;
         }
     }),
+
+    CUSTOM_SEGMENT_NOT_EQUAL_TO(AppConstants.CUSTOM_SEGMENT, AppConstants.NOT_EQUAL_TO, new EvaluateSegment() {
+        @Override
+        public boolean evaluate(Vwo vwo, JSONArray data) {
+            return false;
+        }
+
+        @Override
+        public boolean evaluate(Vwo vwo, JSONArray data, String key) {
+            String customVariable = vwo.getVwoData().getValueForCustomSegment(key);
+            for (int i = 0; i < data.length(); i++) {
+                try {
+                    String customVar = data.getString(i);
+                    if (customVar.equals(customVariable)) {
+                        return false;
+                    }
+                } catch (JSONException exception) {
+                    VWOLogger.getLogger("CustomSegmentEvaluateEnum").throwing(CustomSegmentEvaluateEnum.class.getSimpleName(), "CUSTOM_SEGMENT_NOT_EQUAL_TO", exception);
+                }
+            }
+            return true;
+        }
+    }),
+
+    CUSTOM_SEGMENT_MATCHES_REGEX(AppConstants.CUSTOM_SEGMENT, AppConstants.MATCHES_REGEX, new EvaluateSegment() {
+        @Override
+        public boolean evaluate(Vwo vwo, JSONArray data) {
+            return false;
+        }
+
+        @Override
+        public boolean evaluate(Vwo vwo, JSONArray data, String key) {
+            String customVariable = vwo.getVwoData().getValueForCustomSegment(key);
+            for (int i = 0; i < data.length(); i++) {
+                try {
+                    Pattern pattern = Pattern.compile(data.getString(i));
+                    Matcher matcher = pattern.matcher(customVariable);
+                    if (matcher.find()) {
+                        return true;
+                    }
+                } catch (JSONException exception) {
+                    VWOLogger.getLogger("CustomSegmentEvaluateEnum").throwing(CustomSegmentEvaluateEnum.class.getSimpleName(), "CUSTOM_SEGMENT_MATCHES_REGEX", exception);
+                }
+            }
+            return false;
+        }
+    }),
+
+    CUSTOM_SEGMENT_CONTAINS(AppConstants.CUSTOM_SEGMENT, AppConstants.CONTAINS, new EvaluateSegment() {
+        @Override
+        public boolean evaluate(Vwo vwo, JSONArray data) {
+            return false;
+        }
+
+        @Override
+        public boolean evaluate(Vwo vwo, JSONArray data, String key) {
+            String customVariable = vwo.getVwoData().getValueForCustomSegment(key);
+            for (int i = 0; i < data.length(); i++) {
+                try {
+                    String customVar = data.getString(i);
+                    if (customVariable.contains(customVar)) {
+                        return true;
+                    }
+                } catch (JSONException exception) {
+                    VWOLogger.getLogger("CustomSegmentEvaluateEnum").throwing(CustomSegmentEvaluateEnum.class.getSimpleName(), "CUSTOM_SEGMENT_CONTAINS", exception);
+                }
+            }
+            return false;
+        }
+    }),
+
+    CUSTOM_SEGMENT_STARTS_WITH(AppConstants.CUSTOM_SEGMENT, AppConstants.STARTS_WITH, new EvaluateSegment() {
+        @Override
+        public boolean evaluate(Vwo vwo, JSONArray data) {
+            return false;
+        }
+
+        @Override
+        public boolean evaluate(Vwo vwo, JSONArray data, String key) {
+            String customVariable = vwo.getVwoData().getValueForCustomSegment(key);
+            for (int i = 0; i < data.length(); i++) {
+                try {
+                    String customVar = data.getString(i);
+                    if (customVariable.startsWith(customVar)) {
+                        return true;
+                    }
+                } catch (JSONException exception) {
+                    VWOLogger.getLogger("CustomSegmentEvaluateEnum").throwing(CustomSegmentEvaluateEnum.class.getSimpleName(), "CUSTOM_SEGMENT_STARTS_WITH", exception);
+                }
+            }
+            return false;
+        }
+    }),
+
     DEFAULT("", -11, new EvaluateSegment() {
         @Override
         public boolean evaluate(Vwo vwo, JSONArray data) {
+            return false;
+        }
+
+        @Override
+        public boolean evaluate(Vwo vwo, JSONArray data, String key) {
             return false;
         }
     });
@@ -301,5 +488,6 @@ public enum CustomSegmentEvaluateEnum {
 
     public interface EvaluateSegment {
         boolean evaluate(Vwo vwo, JSONArray data);
+        boolean evaluate(Vwo vwo, JSONArray data, String key);
     }
 }

@@ -1,6 +1,8 @@
 package com.vwo.mobile.data;
 
 
+import android.util.ArrayMap;
+
 import com.vwo.mobile.Vwo;
 import com.vwo.mobile.models.Campaign;
 import com.vwo.mobile.models.Goal;
@@ -34,9 +36,65 @@ public class VwoData {
     private Map<String, Campaign> mVariations;
     private Vwo mVwo;
 
+    /**
+     *  For adding a custom segmentation.
+     *  <Custom_key> : <Custom_value>
+     */
+    private Map<String, String> customSegmentKeys;
+
     public VwoData(Vwo vwo) {
         this.mVwo = vwo;
         mCampaigns = new ArrayList<>();
+    }
+
+    public VwoData(Vwo vwo, Map<String, String> customSegmentKeys) {
+        this(vwo);
+        if(customSegmentKeys == null) {
+            this.customSegmentKeys = new HashMap<>();
+        } else {
+            this.customSegmentKeys = new HashMap<>(customSegmentKeys);
+        }
+    }
+
+    /**
+     *
+     * @returns {@link Map} of key value pairs of custom segmentation
+     */
+    public Map<String, String> getCustomSegmentKeys() {
+        return customSegmentKeys;
+    }
+
+    /**
+     *
+     * @param customSegmentKeys is the keymap for custom segmentation variables
+     */
+    public void setCustomSegmentKeys(Map<String, String> customSegmentKeys) {
+        this.customSegmentKeys = customSegmentKeys;
+    }
+
+    /**
+     * Function to add custom key value pair to segment
+     *
+     * @param key {@link String} is the key for custom segment
+     * @param value {@link String} is the value of custom segment.
+     */
+    public void addCustomSegment(String key, String value) {
+        this.customSegmentKeys.put(key, value);
+    }
+
+    /**
+     * @param customSegments add multiple custom segment key value pairs
+     */
+    public void addCustomSegments(Map<String, String> customSegments) {
+        this.customSegmentKeys.putAll(customSegments);
+    }
+
+    public String getValueForCustomSegment(String key) {
+        if(this.customSegmentKeys != null && customSegmentKeys.size() > 0) {
+            return this.customSegmentKeys.get(key);
+        }
+
+        return null;
     }
 
     public void parseData(JSONArray data) {
@@ -232,5 +290,4 @@ public class VwoData {
             return campaign.getSegments().get(0).evaluate(vwo);
         }
     }
-
 }

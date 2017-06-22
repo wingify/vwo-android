@@ -39,7 +39,7 @@ public class ExperimentText extends AppCompatActivity {
             Log.d("QOL", data.toString());
         }
 
-        ((TextView) findViewById(R.id.buttonText)).setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.buttonText).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Vwo.markConversionForGoal("buttonClick");

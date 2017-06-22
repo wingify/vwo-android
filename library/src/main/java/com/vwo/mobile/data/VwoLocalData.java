@@ -1,5 +1,7 @@
 package com.vwo.mobile.data;
 
+import android.text.TextUtils;
+
 import com.vwo.mobile.Vwo;
 
 import org.json.JSONArray;
@@ -21,7 +23,7 @@ public class VwoLocalData {
 
     public boolean isLocalDataPresent() {
         String data = mVwo.getVwoPreference().getString(LOCAL_DATA);
-        if (data.equals("") || data.length() == 0) {
+        if (TextUtils.isEmpty(data)) {
             return false;
         } else {
             try {

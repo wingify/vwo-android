@@ -1,5 +1,6 @@
 package com.vwo.mobile.utils;
 
+import com.vwo.mobile.BuildConfig;
 import com.vwo.mobile.Vwo;
 import com.vwo.mobile.constants.AppConstants;
 import com.vwo.mobile.constants.GlobalConstants;
@@ -19,7 +20,7 @@ import java.util.logging.Logger;
 public class VwoUrlBuilder {
     private static final Logger LOGGER = VWOLogger.getLogger(VwoUrlBuilder.class.getCanonicalName());
 
-    private static final String DACDN_URL = "https://dacdn.vwo.com/";
+    private static final String DACDN_URL = BuildConfig.DACDN_URL;
     private static final String DACDN_FETCH_URL_WITH_K = DACDN_URL + "mobile?a=%s&v=%s&i=%s&dt=%s&os=%s&r=%f&k=%s";
     private static final String DACDN_FETCH_URL_WITHOUT_K = DACDN_URL + "mobile?a=%s&v=%s&i=%s&dt=%s&os=%s&r=%f";
     public static final String DACDN_GOAL = DACDN_URL + "c.gif";
