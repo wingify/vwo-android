@@ -36,24 +36,9 @@ public class VwoData {
     private Map<String, Campaign> mVariations;
     private Vwo mVwo;
 
-    /**
-     *  For adding a custom segmentation.
-     *  <Custom_key> : <Custom_value>
-     */
-    private Map<String, String> customSegmentKeys;
-
     public VwoData(Vwo vwo) {
         this.mVwo = vwo;
         mCampaigns = new ArrayList<>();
-    }
-
-    public VwoData(Vwo vwo, Map<String, String> customSegmentKeys) {
-        this(vwo);
-        if(customSegmentKeys == null) {
-            this.customSegmentKeys = new HashMap<>();
-        } else {
-            this.customSegmentKeys = new HashMap<>(customSegmentKeys);
-        }
     }
 
     public void parseData(JSONArray data) {
