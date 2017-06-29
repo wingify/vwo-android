@@ -35,8 +35,8 @@ public class VwoUrlBuilder {
 
     public String getDownloadUrl() {
         String sdkVersion = add(GlobalConstants.SDK_VERSION);
-        String accountId = vwo.getAccountId();
-        String appKey = vwo.getAppKey();
+        String accountId = vwo.getConfig().getAccountId();
+        String appKey = vwo.getConfig().getAppKey();
         String deviceType = "android";
         String currentDeviceSystemVersion = VwoUtils.androidVersion();
         String k = add(vwo.getVwoPreference().getString(VwoPersistData.CAMPAIGN_LIST));
@@ -70,7 +70,7 @@ public class VwoUrlBuilder {
 
         String deviceUuid = VwoUtils.getDeviceUUID(vwo);
 
-        String accountId = vwo.getAccountId();
+        String accountId = vwo.getConfig().getAccountId();
         String uuid = add(deviceUuid);
         String url = DACDN_CAMPAIGN + "?experiment_id=%d" +
                 "&account_id=%s" +
@@ -90,7 +90,7 @@ public class VwoUrlBuilder {
     }
 
     public String getGoalUrl(long experimentId, int variationId, int goalId) {
-        String accountId = vwo.getAccountId();
+        String accountId = vwo.getConfig().getAccountId();
         String deviceUuid = VwoUtils.getDeviceUUID(vwo);
 
         String uuid = add(deviceUuid);
@@ -125,7 +125,7 @@ public class VwoUrlBuilder {
         try {
             jsonObject.put("lt", System.currentTimeMillis() / 1000);
             jsonObject.put("v", VwoUtils.getVwoSdkVersion());
-            jsonObject.put("ai", vwo.getAppKey());
+            jsonObject.put("ai", vwo.getConfig().getAppKey());
             jsonObject.put("av", VwoUtils.applicationVersion(vwo));
             jsonObject.put("dt", "android");
             jsonObject.put("os", VwoUtils.androidVersion());

@@ -52,6 +52,7 @@ dependencies {
         exclude group: 'org.json', module: 'json'
     }
     compile 'io.sentry:sentry-android:1.1.0'
+    compile 'com.android.support:support-annotations:25.4.0'
 }
 
 ext {

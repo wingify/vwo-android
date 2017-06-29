@@ -56,47 +56,6 @@ public class VwoData {
         }
     }
 
-    /**
-     *
-     * @returns {@link Map} of key value pairs of custom segmentation
-     */
-    public Map<String, String> getCustomSegmentKeys() {
-        return customSegmentKeys;
-    }
-
-    /**
-     *
-     * @param customSegmentKeys is the keymap for custom segmentation variables
-     */
-    public void setCustomSegmentKeys(Map<String, String> customSegmentKeys) {
-        this.customSegmentKeys = customSegmentKeys;
-    }
-
-    /**
-     * Function to add custom key value pair to segment
-     *
-     * @param key {@link String} is the key for custom segment
-     * @param value {@link String} is the value of custom segment.
-     */
-    public void addCustomSegment(String key, String value) {
-        this.customSegmentKeys.put(key, value);
-    }
-
-    /**
-     * @param customSegments add multiple custom segment key value pairs
-     */
-    public void addCustomSegments(Map<String, String> customSegments) {
-        this.customSegmentKeys.putAll(customSegments);
-    }
-
-    public String getValueForCustomSegment(String key) {
-        if(this.customSegmentKeys != null && customSegmentKeys.size() > 0) {
-            return this.customSegmentKeys.get(key);
-        }
-
-        return null;
-    }
-
     public void parseData(JSONArray data) {
 
         for (int i = 0; i < data.length(); i++) {

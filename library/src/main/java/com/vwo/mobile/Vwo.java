@@ -1,10 +1,13 @@
 package com.vwo.mobile;
 
+import android.annotation.SuppressLint;
 import android.app.Application;
 import android.content.Context;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.vwo.mobile.constants.ApiConstant;
 import com.vwo.mobile.constants.AppConstants;
@@ -23,13 +26,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.logging.Logger;
 
 import io.sentry.Sentry;
 import io.sentry.android.AndroidSentryClientFactory;
-import io.sentry.dsn.Dsn;
 
 /**
  * Created by abhishek on 17/09/15 at 10:02 PM.
@@ -39,65 +39,71 @@ public class Vwo {
 
 //    private static final String TAG = "VWO Mobile";
 
+    @SuppressLint("StaticFieldLeak")
     private static Vwo sSharedInstance;
 
     private boolean mIsEditMode;
-    private boolean mIsSyncMode;
-    private Context mContext;
+    @Nullable
+    private final Context mContext;
     private VwoDownloader mVwoDownloader;
-    private VwoData mVwoData;
     private VwoUrlBuilder mVwoUrlBuilder;
     private VwoUtils mVwoUtils;
     private VwoPreference mVwoPreference;
     private VwoSocket mVwoSocket;
+
+    private VwoData mVwoData;
     private VwoLocalData mVwoLocalData;
-    private String mAppKey;
-    private String mAccountId;
-    private Application mApplication;
+    private VwoConfig vwoConfig;
+
     private VwoStatusListener mStatusListener;
     private VwoStartState mVwoStartState;
 
-    protected Vwo(Context context) {
+    private Vwo(@NonNull Context context, @NonNull VwoConfig vwoConfig) {
         this.mContext = context;
         this.mIsEditMode = false;
-
+        this.vwoConfig = vwoConfig;
+        this.mVwoStartState = VwoStartState.NOT_STARTED;
     }
 
     private Vwo() {
-        this.mVwoStartState = VwoStartState.NOT_STARTED;
+        this.mContext = null;
         this.mIsEditMode = false;
         this.mVwoDownloader = new VwoDownloader(this);
         this.mVwoUrlBuilder = new VwoUrlBuilder(this);
         this.mVwoLocalData = new VwoLocalData(this);
     }
 
-    @SuppressWarnings("unused")
-    public static void startAsync(String appKey, Application application) {
-        sharedInstance().startVwoInstance(appKey, application);
-        sharedInstance().mIsSyncMode = false;
+    /*private Vwo() {
+
+    }*/
+
+    public static Creator with(Context context) {
+        if (context == null) {
+            throw new IllegalArgumentException("context == null");
+        }
+        if (sSharedInstance == null) {
+            synchronized (Vwo.class) {
+                if (sSharedInstance == null) {
+                    VwoConfig config = new VwoConfig
+                            .Builder()
+                            .build();
+                    sSharedInstance = new Builder(context)
+                            .setConfig(config)
+                            .build();
+                }
+            }
+        }
+        return new Creator(sSharedInstance);
     }
 
-    @SuppressWarnings("unused")
-    public static void startAsync(String appKey, Application application, VwoStatusListener statusListener) {
-        sharedInstance().startVwoInstance(appKey, application);
-        sharedInstance().mStatusListener = statusListener;
-        sharedInstance().mIsSyncMode = false;
-    }
-
-    @SuppressWarnings("unused")
-    public static void start(String appKey, Application application) {
-        sharedInstance().mIsSyncMode = true;
-        sharedInstance().startVwoInstance(appKey, application);
-    }
-
-    private static synchronized Vwo sharedInstance() {
+    /*private static synchronized Vwo sharedInstance() {
         if (sSharedInstance != null) {
             return sSharedInstance;
         } else {
             sSharedInstance = new Vwo();
             return sSharedInstance;
         }
-    }
+    }*/
 
     @SuppressWarnings("unused")
     public static Object getObjectForKey(String key) {
@@ -151,7 +157,7 @@ public class Vwo {
 
         if (sSharedInstance != null && sSharedInstance.mVwoStartState.getValue() >= VwoStartState.STARTED.getValue()) {
 
-            Vwo vwo = sharedInstance();
+            Vwo vwo = new Builder().build();
 
             if (vwo.isEditMode()) {
                 vwo.getVwoSocket().triggerGoal(goalIdentifier);
@@ -176,13 +182,15 @@ public class Vwo {
     }
 
     @SuppressWarnings("SpellCheckingInspection")
-    protected boolean startVwoInstance(String appKey, final Application application) {
+    boolean startVwoInstance() {
         LOGGER.entering(Vwo.class.getSimpleName(), "startVwoInstance(String, Application)", "**** Starting VWO ver " + VwoUtils.getVwoSdkVersion() + " ****");
 
-        final AndroidSentryClientFactory factory = new AndroidSentryClientFactory(application.getApplicationContext());
+        assert mContext != null;
+
+        final AndroidSentryClientFactory factory = new AndroidSentryClientFactory(mContext);
 //        factory.createSentryClient(new Dsn(ApiConstant.SENTRY));
 
-        if (!VwoUtils.checkForInternetPermissions(application.getApplicationContext())) {
+        if (!VwoUtils.checkForInternetPermissions(mContext)) {
             return false;
         } else if (!VwoUtils.checkIfClassExists("io.socket.client.Socket") && !VwoUtils.checkIfClassExists("com.squareup.okhttp.OkHttpClient")) {
             String errMsg = "VWO is dependent on Socket.IO library.\n" +
@@ -191,24 +199,20 @@ public class Vwo {
             LOGGER.finer(errMsg);
             return false;
         } else if (!isAndroidSDKSupported()) {
-            Sentry.init(factory);
+            Sentry.init(ApiConstant.SENTRY, factory);
             LOGGER.finer("Minimum SDK version should be 14");
             return false;
-        } else if (!validateVwoAppKey(appKey)) {
-            Sentry.init(factory);
-            LOGGER.finer("Invalid App Key: " + appKey);
+        } else if (!validateVwoAppKey(vwoConfig.getApiKey())) {
+            Sentry.init(ApiConstant.SENTRY, factory);
+            LOGGER.finer("Invalid App Key: " + vwoConfig.getAppKey());
             return false;
         } else if (this.mVwoStartState != VwoStartState.NOT_STARTED) {
             LOGGER.warning("VWO already started");
             return true;
         } else {
             // Everything is good so far
-            this.mApplication = application;
-            this.mContext = application;
             this.mVwoStartState = VwoStartState.STARTING;
-            this.mAccountId = appKey.substring(appKey.indexOf("-") + 1);
-            this.mAppKey = appKey.substring(0, appKey.indexOf("-"));
-            this.mApplication.registerActivityLifecycleCallbacks(new VwoActivityLifeCycle());
+            ((Application) (mContext)).registerActivityLifecycleCallbacks(new VwoActivityLifeCycle());
             this.initializeComponents();
 
             int vwoSession = this.mVwoPreference.getInt(AppConstants.DEVICE_SESSION, 0) + 1;
@@ -326,13 +330,54 @@ public class Vwo {
         }
     }
 
+    public static class Builder {
+        private final Context context;
+        private VwoConfig vwoConfig;
 
-    public Context getCurrentContext() {
-        return this.mContext;
+        Builder(@NonNull Context context) {
+            if (context == null) {
+                throw new IllegalArgumentException("Context must not be null.");
+            }
+            this.context = context.getApplicationContext();
+        }
+
+        public Builder() {
+            context = null;
+        }
+
+        public Vwo build() {
+            return new Vwo(context, vwoConfig);
+        }
+
+        public Builder setConfig(VwoConfig vwoConfig) {
+            if (vwoConfig == null) {
+                throw new IllegalArgumentException("Config must not be null.");
+            }
+            if (this.vwoConfig != null) {
+                throw new IllegalStateException("Config already set.");
+            }
+
+            this.vwoConfig = vwoConfig;
+            return this;
+        }
+
+        public Context getContext() {
+            return this.context;
+        }
+
     }
 
-    public Application getApplication() {
-        return mApplication;
+    public VwoStatusListener getStatusListener() {
+        return mStatusListener;
+    }
+
+    public void setStatusListener(VwoStatusListener mStatusListener) {
+        this.mStatusListener = mStatusListener;
+    }
+
+    @Nullable
+    public Context getCurrentContext() {
+        return this.mContext;
     }
 
     public boolean isEditMode() {
@@ -355,12 +400,12 @@ public class Vwo {
         return mVwoUrlBuilder;
     }
 
-    public String getAppKey() {
-        return mAppKey;
+    public VwoConfig getConfig() {
+        return this.vwoConfig;
     }
 
-    public String getAccountId() {
-        return mAccountId;
+    void setConfig(VwoConfig config) {
+        this.vwoConfig = config;
     }
 
     public VwoUtils getVwoUtils() {
@@ -371,7 +416,4 @@ public class Vwo {
         return mVwoPreference;
     }
 
-    public boolean isSyncMode() {
-        return mIsSyncMode;
-    }
 }

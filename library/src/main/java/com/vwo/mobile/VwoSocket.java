@@ -67,7 +67,7 @@ public class VwoSocket {
 
     public VwoSocket(Vwo vwo) {
         this.mVwo = vwo;
-        this.mAppKey = mVwo.getAppKey();
+        this.mAppKey = mVwo.getConfig().getAppKey();
     }
 
     /**

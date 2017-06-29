@@ -9,7 +9,11 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.vwo.mobile.Vwo;
+import com.vwo.mobile.VwoConfig;
 import com.vwo.mobile.events.VwoStatusListener;
+
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -26,11 +30,19 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        Map<String, String> customKeys = new HashMap<>();
+        customKeys.put("name", "aman");
+        VwoConfig vwoConfig = new VwoConfig
+                .Builder()
+                .setCustomSegmentationMapping(customKeys)
+                .build();
+
         // Start VWO SDK in Sync mode
-        Vwo.start(VWO_APP_KEY, getApplication());
+        Vwo.with(this).config(vwoConfig).start();
+//        Vwo.start(VWO_APP_KEY, getApplication());
 
         // Start VWO SDK in Async mode with callback
-        Vwo.startAsync(VWO_APP_KEY, getApplication(), new VwoStatusListener() {
+        Vwo.with(this).config(vwoConfig).startAsync(new VwoStatusListener() {
             @Override
             public void onVwoLoaded() {
                 // VWO loaded successfully
@@ -43,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // Start VWO SDK in Async mode
-        Vwo.startAsync(VWO_APP_KEY, getApplication());
+        Vwo.with(this).config(vwoConfig).startAsync();
     }
 
     public void gotoNext(View v) {

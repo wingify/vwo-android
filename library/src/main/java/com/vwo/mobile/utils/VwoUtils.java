@@ -1,11 +1,13 @@
 package com.vwo.mobile.utils;
 
 import android.Manifest;
+import android.app.Application;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
+import android.support.annotation.NonNull;
 import android.util.DisplayMetrics;
 
 import com.vwo.mobile.Vwo;
@@ -26,7 +28,7 @@ public class VwoUtils {
     private static final Logger LOGGER = VWOLogger.getLogger(VwoUtils.class.getCanonicalName());
 
     public static Boolean mIsAppStoreApp;
-    private static boolean FORCE_APP_STORE = false;
+    private static final boolean FORCE_APP_STORE = false;
     private Vwo mVwo;
 
     public VwoUtils(Vwo vwo) {
@@ -76,7 +78,7 @@ public class VwoUtils {
         return Build.VERSION.CODENAME.equals("REL") ? Integer.toString(Build.VERSION.SDK_INT) : Build.VERSION.CODENAME;
     }
 
-    public static boolean isTablet(Context context) {
+    public static boolean isTablet(@NonNull Context context) {
         DisplayMetrics metrics = context.getResources().getDisplayMetrics();
 
         assert metrics != null;
@@ -161,7 +163,8 @@ public class VwoUtils {
     }
 
     public boolean isDebugMode() {
-        return (0 != (mVwo.getApplication().getApplicationInfo().flags &= ApplicationInfo.FLAG_DEBUGGABLE));
+        assert mVwo.getCurrentContext() != null;
+        return (0 != (mVwo.getCurrentContext().getApplicationInfo().flags &= ApplicationInfo.FLAG_DEBUGGABLE));
     }
 
     public static boolean checkForInternetPermissions(Context context) {

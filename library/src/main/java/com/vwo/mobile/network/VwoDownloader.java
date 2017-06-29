@@ -42,10 +42,10 @@ public class VwoDownloader {
     public void fetchFromServer(final DownloadResult downloadResult) {
 
         String url = mVwo.getVwoUrlBuilder().getDownloadUrl();
-        DownloadData downloadData = new DownloadData(url, downloadResult);
+        DownloadData downloadData = new DownloadData(url, downloadResult, mVwo);
         downloadData.execute();
 
-        if (mVwo.isSyncMode()) {
+        if (mVwo.getConfig().isSync()) {
 
             try {
                 if (downloadData.getStatus() != AsyncTask.Status.FINISHED) {
@@ -69,20 +69,22 @@ public class VwoDownloader {
 
     }
 
-    public class DownloadData extends AsyncTask<Void, Void, Void> {
+    public static class DownloadData extends AsyncTask<Void, Void, Void> {
 
         private String mUrl;
         private DownloadResult mDownloadResult;
+        private Vwo lVwo;
 
-        public DownloadData(String url, DownloadResult downloadResult) {
+        public DownloadData(String url, DownloadResult downloadResult, Vwo vwo) {
             this.mUrl = url;
             this.mDownloadResult = downloadResult;
+            this.lVwo = vwo;
         }
 
         @Override
         protected Void doInBackground(Void... voids) {
 
-            if (!NetworkUtils.shouldAttemptNetworkCall(mVwo)) {
+            if (!NetworkUtils.shouldAttemptNetworkCall(lVwo)) {
                 mDownloadResult.onDownloadError(new Exception("No internet"));
                 return null;
             }

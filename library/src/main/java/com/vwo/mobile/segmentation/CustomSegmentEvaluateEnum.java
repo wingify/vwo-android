@@ -1,5 +1,8 @@
 package com.vwo.mobile.segmentation;
 
+import android.text.TextUtils;
+import android.util.Log;
+
 import com.vwo.mobile.Vwo;
 import com.vwo.mobile.constants.AppConstants;
 import com.vwo.mobile.utils.VWOLogger;
@@ -333,7 +336,12 @@ public enum CustomSegmentEvaluateEnum {
 
         @Override
         public boolean evaluate(Vwo vwo, JSONArray data, String key) {
-            String customVariable = vwo.getVwoData().getValueForCustomSegment(key);
+            String customVariable = vwo.getConfig().getValueForCustomSegment(key);
+            // Check if custom keys are set by developer or not if not return false otherwise evaluate.
+            if(TextUtils.isEmpty(customVariable)) {
+                Log.e(CustomSegmentEvaluateEnum.class.getSimpleName(), "Custom variable value is not set for key: " +  key);
+                return false;
+            }
             for (int i = 0; i < data.length(); i++) {
                 try {
                     String customVar = data.getString(i);
@@ -356,7 +364,12 @@ public enum CustomSegmentEvaluateEnum {
 
         @Override
         public boolean evaluate(Vwo vwo, JSONArray data, String key) {
-            String customVariable = vwo.getVwoData().getValueForCustomSegment(key);
+            String customVariable = vwo.getConfig().getValueForCustomSegment(key);
+            // Check if custom keys are set by developer or not if not return false otherwise evaluate.
+            if(TextUtils.isEmpty(customVariable)) {
+                Log.e(CustomSegmentEvaluateEnum.class.getSimpleName(), "Custom variable value is not set for key: " +  key);
+                return false;
+            }
             for (int i = 0; i < data.length(); i++) {
                 try {
                     String customVar = data.getString(i);
@@ -379,7 +392,12 @@ public enum CustomSegmentEvaluateEnum {
 
         @Override
         public boolean evaluate(Vwo vwo, JSONArray data, String key) {
-            String customVariable = vwo.getVwoData().getValueForCustomSegment(key);
+            String customVariable = vwo.getConfig().getValueForCustomSegment(key);
+            // Check if custom keys are set by developer or not if not return false otherwise evaluate.
+            if(TextUtils.isEmpty(customVariable)) {
+                Log.e(CustomSegmentEvaluateEnum.class.getSimpleName(), "Custom variable value is not set for key: " +  key);
+                return false;
+            }
             for (int i = 0; i < data.length(); i++) {
                 try {
                     Pattern pattern = Pattern.compile(data.getString(i));
@@ -403,7 +421,12 @@ public enum CustomSegmentEvaluateEnum {
 
         @Override
         public boolean evaluate(Vwo vwo, JSONArray data, String key) {
-            String customVariable = vwo.getVwoData().getValueForCustomSegment(key);
+            String customVariable = vwo.getConfig().getValueForCustomSegment(key);
+            // Check if custom keys are set by developer or not if not return false otherwise evaluate.
+            if(TextUtils.isEmpty(customVariable)) {
+                Log.e(CustomSegmentEvaluateEnum.class.getSimpleName(), "Custom variable value is not set for key: " +  key);
+                return false;
+            }
             for (int i = 0; i < data.length(); i++) {
                 try {
                     String customVar = data.getString(i);
@@ -426,7 +449,12 @@ public enum CustomSegmentEvaluateEnum {
 
         @Override
         public boolean evaluate(Vwo vwo, JSONArray data, String key) {
-            String customVariable = vwo.getVwoData().getValueForCustomSegment(key);
+            String customVariable = vwo.getConfig().getValueForCustomSegment(key);
+            // Check if custom keys are set by developer or not if not return false otherwise evaluate.
+            if(TextUtils.isEmpty(customVariable)) {
+                Log.e(CustomSegmentEvaluateEnum.class.getSimpleName(), "Custom variable value is not set for key: " +  key);
+                return false;
+            }
             for (int i = 0; i < data.length(); i++) {
                 try {
                     String customVar = data.getString(i);
