@@ -299,7 +299,7 @@ public class Vwo {
         this.mVwoDownloader = new VwoDownloader(this);
         this.mVwoUrlBuilder = new VwoUrlBuilder(this);
         // TODO: write a function to pass custom segment keys.
-        this.mVwoData = new VwoData(this, null);
+        this.mVwoData = new VwoData(this);
         this.mVwoSocket = new VwoSocket(this);
         this.mVwoPreference = new VwoPreference(this);
 
