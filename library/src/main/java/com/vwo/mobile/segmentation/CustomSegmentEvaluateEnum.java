@@ -3,10 +3,10 @@ package com.vwo.mobile.segmentation;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.vwo.mobile.Vwo;
+import com.vwo.mobile.VWO;
 import com.vwo.mobile.constants.AppConstants;
 import com.vwo.mobile.utils.VWOLogger;
-import com.vwo.mobile.utils.VwoUtils;
+import com.vwo.mobile.utils.VWOUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -23,10 +23,10 @@ public enum CustomSegmentEvaluateEnum {
 
     ANDROID_VERSION_EQUAL_TO(AppConstants.ANDROID_VERSION, AppConstants.EQUAL_TO, new EvaluateSegment() {
         @Override
-        public boolean evaluate(Vwo vwo, JSONArray data) {
+        public boolean evaluate(VWO vwo, JSONArray data) {
             for (int i = 0; i < data.length(); i++) {
                 try {
-                    if (Integer.parseInt(VwoUtils.androidVersion()) == Integer.parseInt(data.getString(i))) {
+                    if (Integer.parseInt(VWOUtils.androidVersion()) == Integer.parseInt(data.getString(i))) {
                         return true;
                     }
                 } catch (NumberFormatException | JSONException ex) {
@@ -38,17 +38,17 @@ public enum CustomSegmentEvaluateEnum {
         }
 
         @Override
-        public boolean evaluate(Vwo vwo, JSONArray data, String key) {
+        public boolean evaluate(VWO vwo, JSONArray data, String key) {
             return false;
         }
     }),
 
     ANDROID_VERSION_NOT_EQUAL_TO(AppConstants.ANDROID_VERSION, AppConstants.NOT_EQUAL_TO, new EvaluateSegment() {
         @Override
-        public boolean evaluate(Vwo vwo, JSONArray data) {
+        public boolean evaluate(VWO vwo, JSONArray data) {
             for (int i = 0; i < data.length(); i++) {
                 try {
-                    if (Integer.parseInt(VwoUtils.androidVersion()) == Integer.parseInt(data.getString(i))) {
+                    if (Integer.parseInt(VWOUtils.androidVersion()) == Integer.parseInt(data.getString(i))) {
                         return false;
                     }
                 } catch (NumberFormatException | JSONException ex) {
@@ -59,14 +59,14 @@ public enum CustomSegmentEvaluateEnum {
         }
 
         @Override
-        public boolean evaluate(Vwo vwo, JSONArray data, String key) {
+        public boolean evaluate(VWO vwo, JSONArray data, String key) {
             return false;
         }
     }),
 
     DAY_OF_WEEK_EQUAL_TO(AppConstants.DAY_OF_WEEK, AppConstants.EQUAL_TO, new EvaluateSegment() {
         @Override
-        public boolean evaluate(Vwo vwo, JSONArray data) {
+        public boolean evaluate(VWO vwo, JSONArray data) {
 
             Calendar c = GregorianCalendar.getInstance();
             int dayOfWeek = c.get(GregorianCalendar.DAY_OF_WEEK) - 1;
@@ -83,14 +83,14 @@ public enum CustomSegmentEvaluateEnum {
         }
 
         @Override
-        public boolean evaluate(Vwo vwo, JSONArray data, String key) {
+        public boolean evaluate(VWO vwo, JSONArray data, String key) {
             return false;
         }
     }),
 
     DAY_OF_WEEK_NOT_EQUAL_TO(AppConstants.DAY_OF_WEEK, AppConstants.NOT_EQUAL_TO, new EvaluateSegment() {
         @Override
-        public boolean evaluate(Vwo vwo, JSONArray data) {
+        public boolean evaluate(VWO vwo, JSONArray data) {
 
             Calendar c = GregorianCalendar.getInstance();
             int dayOfWeek = c.get(GregorianCalendar.DAY_OF_WEEK) - 1;
@@ -107,14 +107,14 @@ public enum CustomSegmentEvaluateEnum {
         }
 
         @Override
-        public boolean evaluate(Vwo vwo, JSONArray data, String key) {
+        public boolean evaluate(VWO vwo, JSONArray data, String key) {
             return false;
         }
     }),
 
     HOUR_OF_DAY_EQUAL_TO(AppConstants.HOUR_OF_DAY, AppConstants.EQUAL_TO, new EvaluateSegment() {
         @Override
-        public boolean evaluate(Vwo vwo, JSONArray data) {
+        public boolean evaluate(VWO vwo, JSONArray data) {
             Calendar c = GregorianCalendar.getInstance();
             int hourOfTheDay = c.get(GregorianCalendar.HOUR_OF_DAY);
             for (int i = 0; i < data.length(); i++) {
@@ -130,14 +130,14 @@ public enum CustomSegmentEvaluateEnum {
         }
 
         @Override
-        public boolean evaluate(Vwo vwo, JSONArray data, String key) {
+        public boolean evaluate(VWO vwo, JSONArray data, String key) {
             return false;
         }
     }),
 
     HOUR_OF_DAY_NOT_EQUAL_TO(AppConstants.HOUR_OF_DAY, AppConstants.NOT_EQUAL_TO, new EvaluateSegment() {
         @Override
-        public boolean evaluate(Vwo vwo, JSONArray data) {
+        public boolean evaluate(VWO vwo, JSONArray data) {
             Calendar c = GregorianCalendar.getInstance();
             int hourOfTheDay = c.get(GregorianCalendar.HOUR_OF_DAY);
             for (int i = 0; i < data.length(); i++) {
@@ -153,15 +153,15 @@ public enum CustomSegmentEvaluateEnum {
         }
 
         @Override
-        public boolean evaluate(Vwo vwo, JSONArray data, String key) {
+        public boolean evaluate(VWO vwo, JSONArray data, String key) {
             return false;
         }
     }),
 
     LOCATION_EQUAL_TO(AppConstants.LOCATION, AppConstants.EQUAL_TO, new EvaluateSegment() {
         @Override
-        public boolean evaluate(Vwo vwo, JSONArray data) {
-            String locale = VwoUtils.getLocale();
+        public boolean evaluate(VWO vwo, JSONArray data) {
+            String locale = VWOUtils.getLocale();
             if (locale.contains("_")) {
                 String[] tempLocale = locale.split("_");
                 locale = tempLocale[1];
@@ -180,15 +180,15 @@ public enum CustomSegmentEvaluateEnum {
         }
 
         @Override
-        public boolean evaluate(Vwo vwo, JSONArray data, String key) {
+        public boolean evaluate(VWO vwo, JSONArray data, String key) {
             return false;
         }
     }),
 
     LOCATION_NOT_EQUAL_TO(AppConstants.LOCATION, AppConstants.NOT_EQUAL_TO, new EvaluateSegment() {
         @Override
-        public boolean evaluate(Vwo vwo, JSONArray data) {
-            String locale = VwoUtils.getLocale();
+        public boolean evaluate(VWO vwo, JSONArray data) {
+            String locale = VWOUtils.getLocale();
             if (locale.contains("_")) {
                 String[] tempLocale = locale.split("_");
                 locale = tempLocale[1];
@@ -207,15 +207,15 @@ public enum CustomSegmentEvaluateEnum {
         }
 
         @Override
-        public boolean evaluate(Vwo vwo, JSONArray data, String key) {
+        public boolean evaluate(VWO vwo, JSONArray data, String key) {
             return false;
         }
     }),
 
     APP_VERSION_EQUAL_TO(AppConstants.APP_VERSION, AppConstants.EQUAL_TO, new EvaluateSegment() {
         @Override
-        public boolean evaluate(Vwo vwo, JSONArray data) {
-            String appVersion = VwoUtils.applicationVersion(vwo);
+        public boolean evaluate(VWO vwo, JSONArray data) {
+            String appVersion = VWOUtils.applicationVersion(vwo);
             for (int i = 0; i < data.length(); i++) {
                 try {
                     String version = data.getString(i);
@@ -230,15 +230,15 @@ public enum CustomSegmentEvaluateEnum {
         }
 
         @Override
-        public boolean evaluate(Vwo vwo, JSONArray data, String key) {
+        public boolean evaluate(VWO vwo, JSONArray data, String key) {
             return false;
         }
     }),
 
     APP_VERSION_NOT_EQUAL_TO(AppConstants.APP_VERSION, AppConstants.NOT_EQUAL_TO, new EvaluateSegment() {
         @Override
-        public boolean evaluate(Vwo vwo, JSONArray data) {
-            String appVersion = VwoUtils.applicationVersion(vwo);
+        public boolean evaluate(VWO vwo, JSONArray data) {
+            String appVersion = VWOUtils.applicationVersion(vwo);
             for (int i = 0; i < data.length(); i++) {
                 try {
                     String version = data.getString(i);
@@ -253,15 +253,15 @@ public enum CustomSegmentEvaluateEnum {
         }
 
         @Override
-        public boolean evaluate(Vwo vwo, JSONArray data, String key) {
+        public boolean evaluate(VWO vwo, JSONArray data, String key) {
             return false;
         }
     }),
 
     APP_VERSION_MATCHES_REGEX(AppConstants.APP_VERSION, AppConstants.MATCHES_REGEX, new EvaluateSegment() {
         @Override
-        public boolean evaluate(Vwo vwo, JSONArray data) {
-            String appVersion = VwoUtils.applicationVersion(vwo);
+        public boolean evaluate(VWO vwo, JSONArray data) {
+            String appVersion = VWOUtils.applicationVersion(vwo);
             for (int i = 0; i < data.length(); i++) {
                 try {
                     Pattern pattern = Pattern.compile(data.getString(i));
@@ -277,15 +277,15 @@ public enum CustomSegmentEvaluateEnum {
         }
 
         @Override
-        public boolean evaluate(Vwo vwo, JSONArray data, String key) {
+        public boolean evaluate(VWO vwo, JSONArray data, String key) {
             return false;
         }
     }),
 
     APP_VERSION_CONTAINS(AppConstants.APP_VERSION, AppConstants.CONTAINS, new EvaluateSegment() {
         @Override
-        public boolean evaluate(Vwo vwo, JSONArray data) {
-            String appVersion = VwoUtils.applicationVersion(vwo);
+        public boolean evaluate(VWO vwo, JSONArray data) {
+            String appVersion = VWOUtils.applicationVersion(vwo);
             for (int i = 0; i < data.length(); i++) {
                 try {
                     String version = data.getString(i);
@@ -300,15 +300,15 @@ public enum CustomSegmentEvaluateEnum {
         }
 
         @Override
-        public boolean evaluate(Vwo vwo, JSONArray data, String key) {
+        public boolean evaluate(VWO vwo, JSONArray data, String key) {
             return false;
         }
     }),
 
     APP_VERSION_STARTS_WITH(AppConstants.APP_VERSION, AppConstants.STARTS_WITH, new EvaluateSegment() {
         @Override
-        public boolean evaluate(Vwo vwo, JSONArray data) {
-            String appVersion = VwoUtils.applicationVersion(vwo);
+        public boolean evaluate(VWO vwo, JSONArray data) {
+            String appVersion = VWOUtils.applicationVersion(vwo);
             for (int i = 0; i < data.length(); i++) {
                 try {
                     String version = data.getString(i);
@@ -323,19 +323,19 @@ public enum CustomSegmentEvaluateEnum {
         }
 
         @Override
-        public boolean evaluate(Vwo vwo, JSONArray data, String key) {
+        public boolean evaluate(VWO vwo, JSONArray data, String key) {
             return false;
         }
     }),
 
     CUSTOM_SEGMENT_EQUAL_TO(AppConstants.CUSTOM_SEGMENT, AppConstants.EQUAL_TO, new EvaluateSegment() {
         @Override
-        public boolean evaluate(Vwo vwo, JSONArray data) {
+        public boolean evaluate(VWO vwo, JSONArray data) {
             return false;
         }
 
         @Override
-        public boolean evaluate(Vwo vwo, JSONArray data, String key) {
+        public boolean evaluate(VWO vwo, JSONArray data, String key) {
             String customVariable = vwo.getConfig().getValueForCustomSegment(key);
             // Check if custom keys are set by developer or not if not return false otherwise evaluate.
             if(TextUtils.isEmpty(customVariable)) {
@@ -358,12 +358,12 @@ public enum CustomSegmentEvaluateEnum {
 
     CUSTOM_SEGMENT_NOT_EQUAL_TO(AppConstants.CUSTOM_SEGMENT, AppConstants.NOT_EQUAL_TO, new EvaluateSegment() {
         @Override
-        public boolean evaluate(Vwo vwo, JSONArray data) {
+        public boolean evaluate(VWO vwo, JSONArray data) {
             return false;
         }
 
         @Override
-        public boolean evaluate(Vwo vwo, JSONArray data, String key) {
+        public boolean evaluate(VWO vwo, JSONArray data, String key) {
             String customVariable = vwo.getConfig().getValueForCustomSegment(key);
             // Check if custom keys are set by developer or not if not return false otherwise evaluate.
             if(TextUtils.isEmpty(customVariable)) {
@@ -386,12 +386,12 @@ public enum CustomSegmentEvaluateEnum {
 
     CUSTOM_SEGMENT_MATCHES_REGEX(AppConstants.CUSTOM_SEGMENT, AppConstants.MATCHES_REGEX, new EvaluateSegment() {
         @Override
-        public boolean evaluate(Vwo vwo, JSONArray data) {
+        public boolean evaluate(VWO vwo, JSONArray data) {
             return false;
         }
 
         @Override
-        public boolean evaluate(Vwo vwo, JSONArray data, String key) {
+        public boolean evaluate(VWO vwo, JSONArray data, String key) {
             String customVariable = vwo.getConfig().getValueForCustomSegment(key);
             // Check if custom keys are set by developer or not if not return false otherwise evaluate.
             if(TextUtils.isEmpty(customVariable)) {
@@ -415,12 +415,12 @@ public enum CustomSegmentEvaluateEnum {
 
     CUSTOM_SEGMENT_CONTAINS(AppConstants.CUSTOM_SEGMENT, AppConstants.CONTAINS, new EvaluateSegment() {
         @Override
-        public boolean evaluate(Vwo vwo, JSONArray data) {
+        public boolean evaluate(VWO vwo, JSONArray data) {
             return false;
         }
 
         @Override
-        public boolean evaluate(Vwo vwo, JSONArray data, String key) {
+        public boolean evaluate(VWO vwo, JSONArray data, String key) {
             String customVariable = vwo.getConfig().getValueForCustomSegment(key);
             // Check if custom keys are set by developer or not if not return false otherwise evaluate.
             if(TextUtils.isEmpty(customVariable)) {
@@ -443,12 +443,12 @@ public enum CustomSegmentEvaluateEnum {
 
     CUSTOM_SEGMENT_STARTS_WITH(AppConstants.CUSTOM_SEGMENT, AppConstants.STARTS_WITH, new EvaluateSegment() {
         @Override
-        public boolean evaluate(Vwo vwo, JSONArray data) {
+        public boolean evaluate(VWO vwo, JSONArray data) {
             return false;
         }
 
         @Override
-        public boolean evaluate(Vwo vwo, JSONArray data, String key) {
+        public boolean evaluate(VWO vwo, JSONArray data, String key) {
             String customVariable = vwo.getConfig().getValueForCustomSegment(key);
             // Check if custom keys are set by developer or not if not return false otherwise evaluate.
             if(TextUtils.isEmpty(customVariable)) {
@@ -471,12 +471,12 @@ public enum CustomSegmentEvaluateEnum {
 
     DEFAULT("", -11, new EvaluateSegment() {
         @Override
-        public boolean evaluate(Vwo vwo, JSONArray data) {
+        public boolean evaluate(VWO vwo, JSONArray data) {
             return false;
         }
 
         @Override
-        public boolean evaluate(Vwo vwo, JSONArray data, String key) {
+        public boolean evaluate(VWO vwo, JSONArray data, String key) {
             return false;
         }
     });
@@ -515,7 +515,7 @@ public enum CustomSegmentEvaluateEnum {
     }
 
     public interface EvaluateSegment {
-        boolean evaluate(Vwo vwo, JSONArray data);
-        boolean evaluate(Vwo vwo, JSONArray data, String key);
+        boolean evaluate(VWO vwo, JSONArray data);
+        boolean evaluate(VWO vwo, JSONArray data, String key);
     }
 }

@@ -10,7 +10,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
-import com.vwo.mobile.Vwo;
+import com.vwo.mobile.VWO;
 
 public class ExperimentImages extends AppCompatActivity {
 
@@ -28,7 +28,7 @@ public class ExperimentImages extends AppCompatActivity {
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
 
-                Vwo.markConversionForGoal("backgroundLoaded");
+                VWO.markConversionForGoal("backgroundLoaded");
             }
         });
 
@@ -36,7 +36,7 @@ public class ExperimentImages extends AppCompatActivity {
 
         ImageView varImage = (ImageView) findViewById(R.id.var_image);
 
-        Object urlObject = Vwo.getObjectForKey("bannerURL");
+        Object urlObject = VWO.getObjectForKey("bannerURL");
 
         if (urlObject != null) {
             Toast.makeText(this, urlObject.toString(), Toast.LENGTH_SHORT).show();

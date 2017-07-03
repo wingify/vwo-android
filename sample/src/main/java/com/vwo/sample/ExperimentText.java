@@ -10,7 +10,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
-import com.vwo.mobile.Vwo;
+import com.vwo.mobile.VWO;
 
 public class ExperimentText extends AppCompatActivity {
 
@@ -31,7 +31,7 @@ public class ExperimentText extends AppCompatActivity {
         });
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        Object data = Vwo.getObjectForKey("bannerText", "Buy Now");
+        Object data = VWO.getObjectForKey("bannerText", "Buy Now");
 
         if (data != null) {
             ((TextView) findViewById(R.id.buttonText)).setText(data.toString());
@@ -42,11 +42,11 @@ public class ExperimentText extends AppCompatActivity {
         findViewById(R.id.buttonText).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Vwo.markConversionForGoal("buttonClick");
+                VWO.markConversionForGoal("buttonClick");
             }
         });
 
-        data = Vwo.getObjectForKey("bannerColor");
+        data = VWO.getObjectForKey("bannerColor");
 
         if (data != null) {
             findViewById(R.id.banner).setBackgroundColor(Color.parseColor(data.toString()));

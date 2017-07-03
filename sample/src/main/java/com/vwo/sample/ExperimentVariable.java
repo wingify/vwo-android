@@ -9,7 +9,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.vwo.mobile.Vwo;
+import com.vwo.mobile.VWO;
 
 public class ExperimentVariable extends AppCompatActivity {
 
@@ -29,7 +29,7 @@ public class ExperimentVariable extends AppCompatActivity {
         price = (EditText) findViewById(R.id.amount);
         finalPrice = (TextView) findViewById(R.id.final_price);
 
-        Object varPrice = Vwo.getObjectForKey("discount", "20");
+        Object varPrice = VWO.getObjectForKey("discount", "20");
 
         discount = Float.parseFloat(varPrice.toString());
 
@@ -62,7 +62,7 @@ public class ExperimentVariable extends AppCompatActivity {
             int newAmount = (int) (amt * discount / 100);
 
             finalPrice.setText("Rs " + newAmount);
-            Vwo.markConversionForGoal("discountCalculated", newAmount);
+            VWO.markConversionForGoal("discountCalculated", newAmount);
 
 
         } catch (NumberFormatException e) {

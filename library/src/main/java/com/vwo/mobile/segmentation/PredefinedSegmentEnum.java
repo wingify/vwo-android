@@ -1,9 +1,9 @@
 package com.vwo.mobile.segmentation;
 
-import com.vwo.mobile.Vwo;
+import com.vwo.mobile.VWO;
 import com.vwo.mobile.constants.AppConstants;
-import com.vwo.mobile.data.VwoPersistData;
-import com.vwo.mobile.utils.VwoUtils;
+import com.vwo.mobile.data.VWOPersistData;
+import com.vwo.mobile.utils.VWOUtils;
 
 /**
  * Created by abhishek on 09/10/15 at 4:24 PM.
@@ -13,12 +13,12 @@ public enum PredefinedSegmentEnum {
 
     DEVICE(AppConstants.DEVICE, new EvaluateSegment() {
         @Override
-        public boolean evaluate(Vwo vwo, Object value) {
+        public boolean evaluate(VWO vwo, Object value) {
             String deviceType = value.toString();
             assert vwo.getCurrentContext() != null;
-            if (VwoUtils.isTablet(vwo.getCurrentContext()) && deviceType.equalsIgnoreCase("Tablet")) {
+            if (VWOUtils.isTablet(vwo.getCurrentContext()) && deviceType.equalsIgnoreCase("Tablet")) {
                 return true;
-            } else if (!VwoUtils.isTablet(vwo.getCurrentContext()) && deviceType.equalsIgnoreCase("phone")) {
+            } else if (!VWOUtils.isTablet(vwo.getCurrentContext()) && deviceType.equalsIgnoreCase("phone")) {
                 return true;
             }
             return false;
@@ -26,11 +26,11 @@ public enum PredefinedSegmentEnum {
     }),
     RETURNING_USER(AppConstants.RETURNING_USER, new EvaluateSegment() {
         @Override
-        public boolean evaluate(Vwo vwo, Object value) {
+        public boolean evaluate(VWO vwo, Object value) {
             boolean isReturningUser = (boolean) value;
-            if (VwoPersistData.isReturningUser(vwo) && isReturningUser) {
+            if (VWOPersistData.isReturningUser(vwo) && isReturningUser) {
                 return true;
-            } else if (!VwoPersistData.isReturningUser(vwo) && !isReturningUser) {
+            } else if (!VWOPersistData.isReturningUser(vwo) && !isReturningUser) {
                 return true;
             }
             return false;
@@ -38,7 +38,7 @@ public enum PredefinedSegmentEnum {
     }),
     DEFAULT("", new EvaluateSegment() {
         @Override
-        public boolean evaluate(Vwo vwo, Object value) {
+        public boolean evaluate(VWO vwo, Object value) {
             return true;
         }
     });
@@ -64,7 +64,7 @@ public enum PredefinedSegmentEnum {
     }
 
     public interface EvaluateSegment {
-        boolean evaluate(Vwo vwo, Object value);
+        boolean evaluate(VWO vwo, Object value);
     }
 
     public String getType() {

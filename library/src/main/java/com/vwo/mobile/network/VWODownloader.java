@@ -3,11 +3,11 @@ package com.vwo.mobile.network;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.vwo.mobile.Vwo;
-import com.vwo.mobile.data.VwoData;
-import com.vwo.mobile.listeners.VwoActivityLifeCycle;
+import com.vwo.mobile.VWO;
+import com.vwo.mobile.data.VWOData;
+import com.vwo.mobile.listeners.VWOActivityLifeCycle;
 import com.vwo.mobile.utils.NetworkUtils;
-import com.vwo.mobile.utils.VwoLog;
+import com.vwo.mobile.utils.VWOLog;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -30,20 +30,20 @@ import okhttp3.Response;
 /**
  * Created by abhishek on 17/09/15 at 11:39 PM.
  */
-public class VwoDownloader {
-    private final Vwo mVwo;
+public class VWODownloader {
+    private final VWO mVWO;
 
-    public VwoDownloader(Vwo vwo) {
-        mVwo = vwo;
+    public VWODownloader(VWO vwo) {
+        mVWO = vwo;
     }
 
     public void fetchFromServer(final DownloadResult downloadResult) {
 
-        String url = mVwo.getVwoUrlBuilder().getDownloadUrl();
-        DownloadData downloadData = new DownloadData(url, downloadResult, mVwo);
+        String url = mVWO.getVwoUrlBuilder().getDownloadUrl();
+        DownloadData downloadData = new DownloadData(url, downloadResult, mVWO);
         downloadData.execute();
 
-        if (mVwo.getConfig().isSync()) {
+        if (mVWO.getConfig().isSync()) {
 
             try {
                 if (downloadData.getStatus() != AsyncTask.Status.FINISHED) {
@@ -51,17 +51,17 @@ public class VwoDownloader {
                 }
             } catch (InterruptedException exception) {
                 downloadResult.onDownloadError(exception);
-                if (Log.isLoggable(VwoLog.DOWNLOAD_DATA_LOGS, Log.ERROR)) {
-                    Log.e(VwoLog.DOWNLOAD_DATA_LOGS, "**** Data Download Interrupted ****");
+                if (Log.isLoggable(VWOLog.DOWNLOAD_DATA_LOGS, Log.ERROR)) {
+                    Log.e(VWOLog.DOWNLOAD_DATA_LOGS, "**** Data Download Interrupted ****");
                 }
             } catch (ExecutionException exception) {
-                if (Log.isLoggable(VwoLog.DOWNLOAD_DATA_LOGS, Log.ERROR)) {
-                    Log.e(VwoLog.DOWNLOAD_DATA_LOGS, "**** Data Download Execution Exception ****");
+                if (Log.isLoggable(VWOLog.DOWNLOAD_DATA_LOGS, Log.ERROR)) {
+                    Log.e(VWOLog.DOWNLOAD_DATA_LOGS, "**** Data Download Execution Exception ****");
                 }
                 downloadResult.onDownloadError(exception);
             } catch (TimeoutException exception) {
-                if (Log.isLoggable(VwoLog.DOWNLOAD_DATA_LOGS, Log.ERROR)) {
-                    Log.e(VwoLog.DOWNLOAD_DATA_LOGS, "**** Data Download Timeout ****");
+                if (Log.isLoggable(VWOLog.DOWNLOAD_DATA_LOGS, Log.ERROR)) {
+                    Log.e(VWOLog.DOWNLOAD_DATA_LOGS, "**** Data Download Timeout ****");
                 }
                 downloadResult.onDownloadError(exception);
             }
@@ -74,18 +74,18 @@ public class VwoDownloader {
 
         private String mUrl;
         private DownloadResult mDownloadResult;
-        private Vwo lVwo;
+        private VWO lVWO;
 
-        public DownloadData(String url, DownloadResult downloadResult, Vwo vwo) {
+        public DownloadData(String url, DownloadResult downloadResult, VWO vwo) {
             this.mUrl = url;
             this.mDownloadResult = downloadResult;
-            this.lVwo = vwo;
+            this.lVWO = vwo;
         }
 
         @Override
         protected Void doInBackground(Void... voids) {
 
-            if (!NetworkUtils.shouldAttemptNetworkCall(lVwo)) {
+            if (!NetworkUtils.shouldAttemptNetworkCall(lVWO)) {
                 mDownloadResult.onDownloadError(new Exception("No internet"));
                 return null;
             }
@@ -118,16 +118,16 @@ public class VwoDownloader {
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                final ArrayList<String> urls = mVwo.getVwoPreference().getListString(VwoData.VWO_QUEUE);
+                final ArrayList<String> urls = mVWO.getVwoPreference().getListString(VWOData.VWO_QUEUE);
 
                 if (urls.size() != 0) {
-                    if(Log.isLoggable(VwoLog.UPLOAD_LOGS, Log.VERBOSE)) {
-                        Log.v(VwoLog.UPLOAD_LOGS, String.format(Locale.ENGLISH, "%d pending URLS", urls.size()));
+                    if(Log.isLoggable(VWOLog.UPLOAD_LOGS, Log.VERBOSE)) {
+                        Log.v(VWOLog.UPLOAD_LOGS, String.format(Locale.ENGLISH, "%d pending URLS", urls.size()));
                     }
                 }
 
-                if (!VwoActivityLifeCycle.isApplicationInForeground() || !NetworkUtils.shouldAttemptNetworkCall(mVwo)) {
-                    Log.e(VwoLog.UPLOAD_LOGS, "Either no network, or application is not in foreground");
+                if (!VWOActivityLifeCycle.isApplicationInForeground() || !NetworkUtils.shouldAttemptNetworkCall(mVWO)) {
+                    Log.e(VWOLog.UPLOAD_LOGS, "Either no network, or application is not in foreground");
                     return;
                 }
 
@@ -145,11 +145,11 @@ public class VwoDownloader {
 
                         @Override
                         public void onResponse(Call call, Response response) throws IOException {
-                            if(Log.isLoggable(VwoLog.UPLOAD_LOGS, Log.VERBOSE)) {
-                                Log.v(VwoLog.UPLOAD_LOGS, "Completed: " + response.request().url().toString());
+                            if(Log.isLoggable(VWOLog.UPLOAD_LOGS, Log.VERBOSE)) {
+                                Log.v(VWOLog.UPLOAD_LOGS, "Completed: " + response.request().url().toString());
                             }
                             urls.remove(url);
-                            mVwo.getVwoPreference().putListString(VwoData.VWO_QUEUE, urls);
+                            mVWO.getVwoPreference().putListString(VWOData.VWO_QUEUE, urls);
                         }
                     });
 

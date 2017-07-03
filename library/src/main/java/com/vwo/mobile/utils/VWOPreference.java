@@ -8,7 +8,7 @@ import android.graphics.BitmapFactory;
 import android.os.Environment;
 import android.text.TextUtils;
 
-import com.vwo.mobile.Vwo;
+import com.vwo.mobile.VWO;
 import com.vwo.mobile.segmentation.CustomSegmentEvaluateEnum;
 
 import java.io.File;
@@ -20,14 +20,14 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 
-public class VwoPreference {
-    private static final Logger LOGGER = VWOLogger.getLogger(VwoPreference.class.getCanonicalName());
+public class VWOPreference {
+    private static final Logger LOGGER = VWOLogger.getLogger(VWOPreference.class.getCanonicalName());
 
     private SharedPreferences preferences;
     private String DEFAULT_APP_IMAGEDATA_DIRECTORY;
     private String lastImagePath = "";
 
-    public VwoPreference(Vwo vwo) {
+    public VWOPreference(VWO vwo) {
         preferences = vwo.getCurrentContext().getSharedPreferences("VWO123", Context.MODE_PRIVATE);
     }
 

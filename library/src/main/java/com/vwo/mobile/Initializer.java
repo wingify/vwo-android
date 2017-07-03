@@ -5,18 +5,18 @@ import android.support.annotation.Nullable;
 import android.support.annotation.RestrictTo;
 import android.util.Log;
 
-import com.vwo.mobile.events.VwoStatusListener;
-import com.vwo.mobile.utils.VwoLog;
+import com.vwo.mobile.events.VWOStatusListener;
+import com.vwo.mobile.utils.VWOLog;
 
 /**
  * Created by aman on 28/06/17.
  */
 
 public class Initializer {
-    private final Vwo vwo;
+    private final VWO vwo;
     private final String apiKey;
 
-    Initializer(Vwo vwo, String apiKey) {
+    Initializer(VWO vwo, String apiKey) {
         this.vwo = vwo;
         this.apiKey = apiKey;
     }
@@ -41,7 +41,7 @@ public class Initializer {
      * This method will initialize the sdk either by fetching data from server or
      * from data of previous launch or from defaults(in case of network failure)
      */
-    public void launchAsync(VwoStatusListener statusListener) {
+    public void launchAsync(VWOStatusListener statusListener) {
         setup(vwo.getConfig(), false);
         vwo.startVwoInstance();
         vwo.setStatusListener(statusListener);
@@ -59,25 +59,25 @@ public class Initializer {
         vwo.startVwoInstance();
     }
 
-    public Initializer config(@NonNull VwoConfig vwoConfig) {
+    public Initializer config(@NonNull VWOConfig VWOConfig) {
         if(vwo.getConfig() != null) {
-            if(Log.isLoggable(VwoLog.INITIALIZATION_LOGS, Log.WARN)) {
-                Log.w(VwoLog.INITIALIZATION_LOGS, "Configuration already set");
+            if(Log.isLoggable(VWOLog.INITIALIZATION_LOGS, Log.WARN)) {
+                Log.w(VWOLog.INITIALIZATION_LOGS, "Configuration already set");
             }
         }
-        this.vwo.setConfig(vwoConfig);
+        this.vwo.setConfig(VWOConfig);
         return this;
     }
 
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    private void setup(@Nullable VwoConfig vwoConfig, boolean syncMode) {
-        if(vwoConfig == null) {
-            vwoConfig = new VwoConfig.Builder().apiKey(apiKey).build();
+    private void setup(@Nullable VWOConfig VWOConfig, boolean syncMode) {
+        if(VWOConfig == null) {
+            VWOConfig = new VWOConfig.Builder().apiKey(apiKey).build();
         } else {
-            vwoConfig.setApiKey(apiKey);
+            VWOConfig.setApiKey(apiKey);
         }
 
-        vwoConfig.setSync(syncMode);
-        vwo.setConfig(vwoConfig);
+        VWOConfig.setSync(syncMode);
+        vwo.setConfig(VWOConfig);
     }
 }

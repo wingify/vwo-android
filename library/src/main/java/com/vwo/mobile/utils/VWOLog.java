@@ -7,13 +7,13 @@ import io.sentry.Sentry;
 /**
  * Created by abhishek on 29/07/15 at 1:41 PM.
  */
-public class VwoLog {
+public class VWOLog {
 
     public static final String INITIALIZATION_LOGS = "com.vwo.init";
     public static final String DOWNLOAD_DATA_LOGS = "com.vwo.data.download";
     public static final String UPLOAD_LOGS = "com.vwo.data.upload";
 
-    public static final boolean ENABLE_LOGS = false;
+    private static final boolean ENABLE_LOGS = false;
 
     public static final int INFO = 0;
     public static final int WARNING = 1;

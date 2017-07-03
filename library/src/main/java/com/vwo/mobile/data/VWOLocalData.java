@@ -2,7 +2,7 @@ package com.vwo.mobile.data;
 
 import android.text.TextUtils;
 
-import com.vwo.mobile.Vwo;
+import com.vwo.mobile.VWO;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -10,19 +10,19 @@ import org.json.JSONException;
 /**
  * Created by abhishek on 07/10/15 at 6:07 PM.
  */
-public class VwoLocalData {
+public class VWOLocalData {
 
     @SuppressWarnings("SpellCheckingInspection")
     private static final String LOCAL_DATA = "truncDafavwo";
 
-    private Vwo mVwo;
+    private VWO mVWO;
 
-    public VwoLocalData(Vwo vwo) {
-        mVwo = vwo;
+    public VWOLocalData(VWO vwo) {
+        mVWO = vwo;
     }
 
     public boolean isLocalDataPresent() {
-        String data = mVwo.getVwoPreference().getString(LOCAL_DATA);
+        String data = mVWO.getVwoPreference().getString(LOCAL_DATA);
         if (TextUtils.isEmpty(data)) {
             return false;
         } else {
@@ -36,11 +36,11 @@ public class VwoLocalData {
     }
 
     public void saveData(JSONArray data) {
-        mVwo.getVwoPreference().putString(LOCAL_DATA, data.toString());
+        mVWO.getVwoPreference().putString(LOCAL_DATA, data.toString());
     }
 
     public JSONArray getData() {
-        String data = mVwo.getVwoPreference().getString(LOCAL_DATA);
+        String data = mVWO.getVwoPreference().getString(LOCAL_DATA);
         try {
             return new JSONArray(data);
         } catch (JSONException e) {

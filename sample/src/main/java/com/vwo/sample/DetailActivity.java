@@ -8,8 +8,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
-import com.vwo.mobile.Vwo;
-import com.vwo.mobile.VwoConfig;
+import com.vwo.mobile.VWO;
+import com.vwo.mobile.VWOConfig;
 
 public class DetailActivity extends AppCompatActivity {
 
@@ -19,7 +19,7 @@ public class DetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
 
-        Object data = Vwo.getObjectForKey("bannerText");
+        Object data = VWO.getObjectForKey("bannerText");
 
         if (data != null) {
             ((TextView) findViewById(R.id.text)).setText(data.toString());
@@ -27,16 +27,16 @@ public class DetailActivity extends AppCompatActivity {
         }
 
 
-        data = Vwo.getObjectForKey("bannerColor");
+        data = VWO.getObjectForKey("bannerColor");
 
         if (data != null) {
             findViewById(R.id.bg).setBackgroundColor(Color.parseColor(data.toString()));
             Log.d("QOL", data.toString());
         }
 
-        Vwo.markConversionForGoal("goal123");
-        Vwo.markConversionForGoal("goal456", 89.7);
-        VwoConfig config = new VwoConfig.Builder().build();
+        VWO.markConversionForGoal("goal123");
+        VWO.markConversionForGoal("goal456", 89.7);
+        VWOConfig config = new VWOConfig.Builder().build();
 
     }
 

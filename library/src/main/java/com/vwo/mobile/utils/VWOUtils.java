@@ -10,7 +10,7 @@ import android.support.annotation.NonNull;
 import android.util.DisplayMetrics;
 
 import com.vwo.mobile.BuildConfig;
-import com.vwo.mobile.Vwo;
+import com.vwo.mobile.VWO;
 import com.vwo.mobile.constants.AppConstants;
 
 import java.util.HashMap;
@@ -23,15 +23,15 @@ import java.util.logging.Logger;
 /**
  * Created by abhishek on 18/09/15 at 1:34 AM.
  */
-public class VwoUtils {
-    private static final Logger LOGGER = VWOLogger.getLogger(VwoUtils.class.getCanonicalName());
+public class VWOUtils {
+    private static final Logger LOGGER = VWOLogger.getLogger(VWOUtils.class.getCanonicalName());
 
     public static Boolean mIsAppStoreApp;
     private static final boolean FORCE_APP_STORE = false;
-    private Vwo mVwo;
+    private VWO mVWO;
 
-    public VwoUtils(Vwo vwo) {
-        mVwo = vwo;
+    public VWOUtils(VWO vwo) {
+        mVWO = vwo;
     }
 
     public static String deviceId() {
@@ -46,7 +46,7 @@ public class VwoUtils {
         return BuildConfig.VERSION_NAME;
     }
 
-    public static String getDeviceUUID(Vwo vwo) {
+    public static String getDeviceUUID(VWO vwo) {
         String deviceUuid = vwo.getVwoPreference().getString(AppConstants.DEVICE_UUID);
 
         if (deviceUuid == null || deviceUuid.equals("")) {
@@ -107,7 +107,7 @@ public class VwoUtils {
         return toReturn;
     }
 
-    public static String applicationVersion(Vwo vwo) {
+    public static String applicationVersion(VWO vwo) {
         Context context = vwo.getCurrentContext().getApplicationContext();
         if (context != null) {
             try {
@@ -117,7 +117,7 @@ public class VwoUtils {
                 }
             } catch (PackageManager.NameNotFoundException exception) {
                 LOGGER.fine("Failed to get packaging info");
-                LOGGER.throwing(VwoUtils.class.getSimpleName(), "applicationVersion(Vwo)", exception);
+                LOGGER.throwing(VWOUtils.class.getSimpleName(), "applicationVersion(Vwo)", exception);
             }
         }
 
@@ -162,8 +162,8 @@ public class VwoUtils {
     }
 
     public boolean isDebugMode() {
-        assert mVwo.getCurrentContext() != null;
-        return (0 != (mVwo.getCurrentContext().getApplicationInfo().flags &= ApplicationInfo.FLAG_DEBUGGABLE));
+        assert mVWO.getCurrentContext() != null;
+        return (0 != (mVWO.getCurrentContext().getApplicationInfo().flags &= ApplicationInfo.FLAG_DEBUGGABLE));
     }
 
     public static boolean checkForInternetPermissions(Context context) {

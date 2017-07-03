@@ -10,7 +10,7 @@ import java.util.Map;
  * Created by aman on 22/06/17.
  */
 
-public class VwoConfig {
+public class VWOConfig {
     // This variable
     private Map<String, String> customSegmentationMapping;
     private String mAppKey;
@@ -22,7 +22,7 @@ public class VwoConfig {
     // Is the VWO api key
     private String apiKey;
 
-    private VwoConfig(Map<String, String> customSegmentationMapping, @Nullable String apiKey) {
+    private VWOConfig(Map<String, String> customSegmentationMapping, @Nullable String apiKey) {
         this.customSegmentationMapping = customSegmentationMapping;
         if(apiKey != null) {
             setApiKey(apiKey);
@@ -102,8 +102,8 @@ public class VwoConfig {
         private Map<String, String> customSegmentationMapping;
         private String apiKey = null;
 
-        public VwoConfig build() {
-            return new VwoConfig(customSegmentationMapping, apiKey);
+        public VWOConfig build() {
+            return new VWOConfig(customSegmentationMapping, apiKey);
         }
 
         Builder apiKey(String apiKey) {

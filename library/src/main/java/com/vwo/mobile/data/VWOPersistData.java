@@ -1,8 +1,8 @@
 package com.vwo.mobile.data;
 
-import com.vwo.mobile.Vwo;
+import com.vwo.mobile.VWO;
 import com.vwo.mobile.constants.AppConstants;
-import com.vwo.mobile.utils.VwoPreference;
+import com.vwo.mobile.utils.VWOPreference;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -13,7 +13,7 @@ import java.util.ArrayList;
 /**
  * Created by abhishek on 24/09/15 at 1:28 PM.
  */
-public class VwoPersistData {
+public class VWOPersistData {
 
     /**
      * The constant CAMPAIGN_ID.
@@ -46,7 +46,7 @@ public class VwoPersistData {
      * @param campaignId  the campaign id
      * @param variationId the variation id
      */
-    public VwoPersistData(long campaignId, int variationId) {
+    public VWOPersistData(long campaignId, int variationId) {
         mCampaignId = campaignId;
         mVariationId = variationId;
         mGoals = new ArrayList<>();
@@ -58,7 +58,7 @@ public class VwoPersistData {
      *
      * @param data the data
      */
-    public VwoPersistData(JSONObject data) {
+    public VWOPersistData(JSONObject data) {
         try {
             mCampaignId = data.getLong(CAMPAIGN_ID);
             setGoalsFromJsonArray(data.getJSONArray(GOALS));
@@ -140,7 +140,7 @@ public class VwoPersistData {
      *
      * @param sharedPreference the shared preference
      */
-    public void saveCampaign(VwoPreference sharedPreference) {
+    public void saveCampaign(VWOPreference sharedPreference) {
 
         String campaignKey = CAMPAIGN_KEY + mCampaignId;
 
@@ -172,10 +172,10 @@ public class VwoPersistData {
      * @param sharedPreference the shared preference
      * @param url              the url
      */
-    public static void addToQueue(VwoPreference sharedPreference, String url) {
-        ArrayList<String> urls = sharedPreference.getListString(VwoData.VWO_QUEUE);
+    public static void addToQueue(VWOPreference sharedPreference, String url) {
+        ArrayList<String> urls = sharedPreference.getListString(VWOData.VWO_QUEUE);
         urls.add(url);
-        sharedPreference.putListString(VwoData.VWO_QUEUE, urls);
+        sharedPreference.putListString(VWOData.VWO_QUEUE, urls);
 
     }
 
@@ -186,7 +186,7 @@ public class VwoPersistData {
      * @param campaignKey the campaign key
      * @return the boolean
      */
-    public static boolean isExistingCampaign(Vwo vwo, String campaignKey) {
+    public static boolean isExistingCampaign(VWO vwo, String campaignKey) {
         String jsonAsString = vwo.getVwoPreference().getString(campaignKey);
         // Already part of campaign. Just add to campaigns list
         return jsonAsString != null && !jsonAsString.equals("");
@@ -195,9 +195,9 @@ public class VwoPersistData {
     /**
      * Mark user as returning user after user has opened app for the first time.
      *
-     * @param vwo {@link Vwo instance}
+     * @param vwo {@link VWO instance}
      */
-    public static void updateReturningUser(Vwo vwo) {
+    public static void updateReturningUser(VWO vwo) {
 
         vwo.getVwoPreference().putBoolean(AppConstants.IS_RETURNING_USER, true);
 
@@ -207,10 +207,10 @@ public class VwoPersistData {
      * Check if the user is starting the app for the first time or not.
      * Returns true is starting app for first time otherwise false
      *
-     * @param vwo {@link Vwo instance}
+     * @param vwo {@link VWO instance}
      * @return the boolean
      */
-    public static boolean isReturningUser(Vwo vwo) {
+    public static boolean isReturningUser(VWO vwo) {
         return vwo.getVwoPreference().getBoolean(AppConstants.IS_RETURNING_USER, false);
     }
 

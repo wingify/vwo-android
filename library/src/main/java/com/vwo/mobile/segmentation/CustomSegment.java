@@ -1,6 +1,6 @@
 package com.vwo.mobile.segmentation;
 
-import com.vwo.mobile.Vwo;
+import com.vwo.mobile.VWO;
 import com.vwo.mobile.constants.AppConstants;
 
 import org.json.JSONArray;
@@ -78,7 +78,7 @@ public class CustomSegment implements Segment {
     }
 
     @Override
-    public boolean evaluate(Vwo vwo) {
+    public boolean evaluate(VWO vwo) {
         if(mType.equals(AppConstants.CUSTOM_SEGMENT)) {
             return CustomSegmentEvaluateEnum.getEvaluator(mType, mSegmentOperator).evaluate(vwo, mOperandValue, lOperandValue);
         }

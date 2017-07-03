@@ -8,9 +8,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.vwo.mobile.Vwo;
-import com.vwo.mobile.VwoConfig;
-import com.vwo.mobile.events.VwoStatusListener;
+import com.vwo.mobile.VWO;
+import com.vwo.mobile.VWOConfig;
+import com.vwo.mobile.events.VWOStatusListener;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -32,16 +32,16 @@ public class MainActivity extends AppCompatActivity {
 
         Map<String, String> customKeys = new HashMap<>();
         customKeys.put("name", "aman");
-        VwoConfig vwoConfig = new VwoConfig
+        VWOConfig VWOConfig = new VWOConfig
                 .Builder()
                 .setCustomSegmentationMapping(customKeys)
                 .build();
 
         // Start VWO SDK in Sync mode
-        Vwo.with(this, VWO_APP_KEY).config(vwoConfig).launch();
+        VWO.with(this, VWO_APP_KEY).config(VWOConfig).launch();
 
         // Start VWO SDK in Async mode with callback
-        Vwo.with(this, VWO_APP_KEY).config(vwoConfig).launchAsync(new VwoStatusListener() {
+        VWO.with(this, VWO_APP_KEY).config(VWOConfig).launchAsync(new VWOStatusListener() {
             @Override
             public void onVwoLoaded() {
                 // VWO loaded successfully
@@ -54,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // Start VWO SDK in Async mode
-        Vwo.with(this, VWO_APP_KEY).config(vwoConfig).launchAsync();
+        VWO.with(this, VWO_APP_KEY).config(VWOConfig).launchAsync();
     }
 
     public void gotoNext(View v) {
@@ -64,15 +64,15 @@ public class MainActivity extends AppCompatActivity {
         switch (id) {
             case R.id.exp_image:
                 startActivity(new Intent(getApplicationContext(), ExperimentImages.class));
-                Vwo.markConversionForGoal("imageClicked");
+                VWO.markConversionForGoal("imageClicked");
                 break;
             case R.id.exp_var:
                 startActivity(new Intent(getApplicationContext(), ExperimentVariable.class));
-                Vwo.markConversionForGoal("twoInone", 9.0);
+                VWO.markConversionForGoal("twoInone", 9.0);
                 break;
             case R.id.exp_text:
                 startActivity(new Intent(getApplicationContext(), ExperimentText.class));
-                Vwo.markConversionForGoal("CCcode");
+                VWO.markConversionForGoal("CCcode");
                 break;
         }
     }
@@ -93,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            Vwo.markConversionForGoal("CCcode", 19.0);
+            VWO.markConversionForGoal("CCcode", 19.0);
             startActivity(new Intent(getApplicationContext(), DetailActivity.class));
             return true;
         }

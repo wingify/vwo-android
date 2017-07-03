@@ -1,9 +1,9 @@
 package com.vwo.mobile.utils;
 
 import com.vwo.mobile.BuildConfig;
-import com.vwo.mobile.Vwo;
+import com.vwo.mobile.VWO;
 import com.vwo.mobile.constants.AppConstants;
-import com.vwo.mobile.data.VwoPersistData;
+import com.vwo.mobile.data.VWOPersistData;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -16,8 +16,8 @@ import java.util.logging.Logger;
 /**
  * Created by abhishek on 16/09/15 at 10:18 PM.
  */
-public class VwoUrlBuilder {
-    private static final Logger LOGGER = VWOLogger.getLogger(VwoUrlBuilder.class.getCanonicalName());
+public class VWOUrlBuilder {
+    private static final Logger LOGGER = VWOLogger.getLogger(VWOUrlBuilder.class.getCanonicalName());
 
     private static final String DACDN_URL = BuildConfig.DACDN_URL;
     private static final String DACDN_FETCH_URL_WITH_K = DACDN_URL + "mobile?a=%s&v=%s&i=%s&dt=%s&os=%s&r=%f&k=%s";
@@ -26,9 +26,9 @@ public class VwoUrlBuilder {
     public static final String DACDN_CAMPAIGN = DACDN_URL + "l.gif";
 
 
-    private final Vwo vwo;
+    private final VWO vwo;
 
-    public VwoUrlBuilder(Vwo vwo) {
+    public VWOUrlBuilder(VWO vwo) {
         this.vwo = vwo;
     }
 
@@ -37,9 +37,9 @@ public class VwoUrlBuilder {
         String accountId = vwo.getConfig().getAccountId();
         String appKey = vwo.getConfig().getAppKey();
         String deviceType = "android";
-        String currentDeviceSystemVersion = VwoUtils.androidVersion();
-        String k = add(vwo.getVwoPreference().getString(VwoPersistData.CAMPAIGN_LIST));
-        double randomNo = VwoUtils.getRandomNumber();
+        String currentDeviceSystemVersion = VWOUtils.androidVersion();
+        String k = add(vwo.getVwoPreference().getString(VWOPersistData.CAMPAIGN_LIST));
+        double randomNo = VWOUtils.getRandomNumber();
 
         String url;
         if (k.equals("")) {
@@ -60,14 +60,14 @@ public class VwoUrlBuilder {
         try {
             return URLEncoder.encode(data, "UTF-8");
         } catch (UnsupportedEncodingException exception) {
-            LOGGER.throwing(VwoUrlBuilder.class.getSimpleName(), "add(String)", exception);
+            LOGGER.throwing(VWOUrlBuilder.class.getSimpleName(), "add(String)", exception);
             return "";
         }
     }
 
     public String getCampaignUrl(long experimentId, int variationId) {
 
-        String deviceUuid = VwoUtils.getDeviceUUID(vwo);
+        String deviceUuid = VWOUtils.getDeviceUUID(vwo);
 
         String accountId = vwo.getConfig().getAccountId();
         String uuid = add(deviceUuid);
@@ -81,7 +81,7 @@ public class VwoUrlBuilder {
 
         int session = vwo.getVwoPreference().getInt(AppConstants.DEVICE_SESSION, 0);
 
-        url = String.format(Locale.ENGLISH, url, experimentId, accountId, variationId, uuid, session, VwoUtils.getRandomNumber());
+        url = String.format(Locale.ENGLISH, url, experimentId, accountId, variationId, uuid, session, VWOUtils.getRandomNumber());
         String extraData = add(getExtraData());
         url += "&ed=" + extraData;
         LOGGER.info("URL: " + url);
@@ -90,7 +90,7 @@ public class VwoUrlBuilder {
 
     public String getGoalUrl(long experimentId, int variationId, int goalId) {
         String accountId = vwo.getConfig().getAccountId();
-        String deviceUuid = VwoUtils.getDeviceUUID(vwo);
+        String deviceUuid = VWOUtils.getDeviceUUID(vwo);
 
         String uuid = add(deviceUuid);
         String url = DACDN_GOAL + "?experiment_id=%d" +
@@ -103,7 +103,7 @@ public class VwoUrlBuilder {
 
         int session = vwo.getVwoPreference().getInt(AppConstants.DEVICE_SESSION, 0);
 
-        url = String.format(Locale.ENGLISH, url, experimentId, accountId, variationId, uuid, session, VwoUtils.getRandomNumber(), goalId);
+        url = String.format(Locale.ENGLISH, url, experimentId, accountId, variationId, uuid, session, VWOUtils.getRandomNumber(), goalId);
 
         String extraData = add(getExtraData());
         url += "&ed=" + extraData;
@@ -123,15 +123,15 @@ public class VwoUrlBuilder {
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("lt", System.currentTimeMillis() / 1000);
-            jsonObject.put("v", VwoUtils.getVwoSdkVersion());
+            jsonObject.put("v", VWOUtils.getVwoSdkVersion());
             jsonObject.put("ai", vwo.getConfig().getAppKey());
-            jsonObject.put("av", VwoUtils.applicationVersion(vwo));
+            jsonObject.put("av", VWOUtils.applicationVersion(vwo));
             jsonObject.put("dt", "android");
-            jsonObject.put("os", VwoUtils.androidVersion());
+            jsonObject.put("os", VWOUtils.androidVersion());
 
             return jsonObject.toString();
         } catch (JSONException exception) {
-            LOGGER.throwing(VwoUrlBuilder.class.getSimpleName(), "getExtraData()", exception);
+            LOGGER.throwing(VWOUrlBuilder.class.getSimpleName(), "getExtraData()", exception);
         }
         return "";
     }
