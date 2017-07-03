@@ -1,7 +1,6 @@
 package com.vwo.mobile.utils;
 
 import android.Manifest;
-import android.app.Application;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
@@ -10,9 +9,9 @@ import android.os.Build;
 import android.support.annotation.NonNull;
 import android.util.DisplayMetrics;
 
+import com.vwo.mobile.BuildConfig;
 import com.vwo.mobile.Vwo;
 import com.vwo.mobile.constants.AppConstants;
-import com.vwo.mobile.constants.GlobalConstants;
 
 import java.util.HashMap;
 import java.util.Locale;
@@ -44,7 +43,7 @@ public class VwoUtils {
     }
 
     public static String getVwoSdkVersion() {
-        return GlobalConstants.SDK_VERSION;
+        return BuildConfig.VERSION_NAME;
     }
 
     public static String getDeviceUUID(Vwo vwo) {

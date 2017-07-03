@@ -31,18 +31,17 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         Map<String, String> customKeys = new HashMap<>();
-        customKeys.put("name", "aman");
+        customKeys.put("userType", "free");
         VwoConfig vwoConfig = new VwoConfig
                 .Builder()
                 .setCustomSegmentationMapping(customKeys)
                 .build();
 
         // Start VWO SDK in Sync mode
-        Vwo.with(this).config(vwoConfig).start();
-//        Vwo.start(VWO_APP_KEY, getApplication());
+        Vwo.with(this, VWO_APP_KEY).config(vwoConfig).launch();
 
         // Start VWO SDK in Async mode with callback
-        Vwo.with(this).config(vwoConfig).startAsync(new VwoStatusListener() {
+        Vwo.with(this, VWO_APP_KEY).config(vwoConfig).launchAsync(new VwoStatusListener() {
             @Override
             public void onVwoLoaded() {
                 // VWO loaded successfully
@@ -55,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // Start VWO SDK in Async mode
-        Vwo.with(this).config(vwoConfig).startAsync();
+        Vwo.with(this, VWO_APP_KEY).config(vwoConfig).launchAsync();
     }
 
     public void gotoNext(View v) {

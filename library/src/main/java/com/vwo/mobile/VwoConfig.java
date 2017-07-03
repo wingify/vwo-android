@@ -1,5 +1,6 @@
 package com.vwo.mobile;
 
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
@@ -105,7 +106,7 @@ public class VwoConfig {
             return new VwoConfig(customSegmentationMapping, apiKey);
         }
 
-        public Builder apiKey(String apiKey) {
+        Builder apiKey(String apiKey) {
             if (TextUtils.isEmpty(apiKey)) {
                 throw new NullPointerException("Api key cannot be null");
             }
@@ -113,9 +114,14 @@ public class VwoConfig {
             return this;
         }
 
-        public Builder setCustomSegmentationMapping(Map<String, String> customSegmentationMapping) {
+        /**
+         *
+         * @param customSegmentationMapping is the key value pair mapping for custom segments
+         * @return
+         */
+        public Builder setCustomSegmentationMapping(@NonNull Map<String, String> customSegmentationMapping) {
             if (customSegmentationMapping == null) {
-                throw new NullPointerException("Mapping cannot be null");
+                throw new IllegalArgumentException("Mapping cannot be null");
             }
             this.customSegmentationMapping = customSegmentationMapping;
             return this;

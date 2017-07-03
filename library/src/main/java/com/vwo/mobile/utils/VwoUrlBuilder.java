@@ -3,7 +3,6 @@ package com.vwo.mobile.utils;
 import com.vwo.mobile.BuildConfig;
 import com.vwo.mobile.Vwo;
 import com.vwo.mobile.constants.AppConstants;
-import com.vwo.mobile.constants.GlobalConstants;
 import com.vwo.mobile.data.VwoPersistData;
 
 import org.json.JSONException;
@@ -34,7 +33,7 @@ public class VwoUrlBuilder {
     }
 
     public String getDownloadUrl() {
-        String sdkVersion = add(GlobalConstants.SDK_VERSION);
+        String sdkVersion = add(BuildConfig.VERSION_NAME);
         String accountId = vwo.getConfig().getAccountId();
         String appKey = vwo.getConfig().getAppKey();
         String deviceType = "android";

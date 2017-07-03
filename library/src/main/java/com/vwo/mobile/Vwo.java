@@ -77,23 +77,22 @@ public class Vwo {
 
     }*/
 
-    public static Creator with(Context context) {
+    public static Initializer with(@NonNull Context context, @NonNull String apiKey) {
         if (context == null) {
             throw new IllegalArgumentException("context == null");
+        }
+        if (apiKey == null) {
+            throw new IllegalArgumentException("key cannot be null");
         }
         if (sSharedInstance == null) {
             synchronized (Vwo.class) {
                 if (sSharedInstance == null) {
-                    VwoConfig config = new VwoConfig
-                            .Builder()
-                            .build();
                     sSharedInstance = new Builder(context)
-                            .setConfig(config)
                             .build();
                 }
             }
         }
-        return new Creator(sSharedInstance);
+        return new Initializer(sSharedInstance, apiKey);
     }
 
     /*private static synchronized Vwo sharedInstance() {
@@ -120,7 +119,7 @@ public class Vwo {
             return object;
 
         }
-        return null;
+        throw new IllegalStateException("Cannot call this method before initializing VWO sdk first.");
     }
 
     @SuppressWarnings("unused")
@@ -150,7 +149,7 @@ public class Vwo {
             }
             return object;
         }
-        return new JSONObject();
+        throw new IllegalStateException("Cannot call this method before initializing VWO sdk first.");
     }
 
     public static void markConversionForGoal(String goalIdentifier) {
@@ -165,7 +164,7 @@ public class Vwo {
                 sSharedInstance.mVwoData.saveGoal(goalIdentifier);
             }
         }
-
+        throw new IllegalStateException("Cannot call this method before initializing VWO sdk first.");
     }
 
     public static void markConversionForGoal(String goalIdentifier, double value) {
@@ -179,6 +178,7 @@ public class Vwo {
                 sSharedInstance.mVwoData.saveGoal(goalIdentifier, value);
             }
         }
+        throw new IllegalStateException("Cannot call this method before initializing VWO sdk first.");
     }
 
     @SuppressWarnings("SpellCheckingInspection")
@@ -298,7 +298,6 @@ public class Vwo {
         this.mVwoUtils = new VwoUtils(this);
         this.mVwoDownloader = new VwoDownloader(this);
         this.mVwoUrlBuilder = new VwoUrlBuilder(this);
-        // TODO: write a function to pass custom segment keys.
         this.mVwoData = new VwoData(this);
         this.mVwoSocket = new VwoSocket(this);
         this.mVwoPreference = new VwoPreference(this);
@@ -341,7 +340,7 @@ public class Vwo {
             this.context = context.getApplicationContext();
         }
 
-        public Builder() {
+        Builder() {
             context = null;
         }
 
@@ -349,7 +348,7 @@ public class Vwo {
             return new Vwo(context, vwoConfig);
         }
 
-        public Builder setConfig(VwoConfig vwoConfig) {
+        Builder setConfig(VwoConfig vwoConfig) {
             if (vwoConfig == null) {
                 throw new IllegalArgumentException("Config must not be null.");
             }
@@ -371,7 +370,7 @@ public class Vwo {
         return mStatusListener;
     }
 
-    public void setStatusListener(VwoStatusListener mStatusListener) {
+    void setStatusListener(VwoStatusListener mStatusListener) {
         this.mStatusListener = mStatusListener;
     }
 

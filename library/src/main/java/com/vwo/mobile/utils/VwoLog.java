@@ -9,6 +9,8 @@ import io.sentry.Sentry;
  */
 public class VwoLog {
 
+    public static final String INITIALIZATION_LOGS = "com.vwo.init";
+
     public static final boolean ENABLE_LOGS = false;
 
     public static final int INFO = 0;
