@@ -10,6 +10,8 @@ import io.sentry.Sentry;
 public class VwoLog {
 
     public static final String INITIALIZATION_LOGS = "com.vwo.init";
+    public static final String DOWNLOAD_DATA_LOGS = "com.vwo.data.download";
+    public static final String UPLOAD_LOGS = "com.vwo.data.upload";
 
     public static final boolean ENABLE_LOGS = false;
 

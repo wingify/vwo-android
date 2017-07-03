@@ -2,6 +2,7 @@ package com.vwo.mobile;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.RestrictTo;
 import android.util.Log;
 
 import com.vwo.mobile.events.VwoStatusListener;
@@ -68,6 +69,7 @@ public class Initializer {
         return this;
     }
 
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     private void setup(@Nullable VwoConfig vwoConfig, boolean syncMode) {
         if(vwoConfig == null) {
             vwoConfig = new VwoConfig.Builder().apiKey(apiKey).build();

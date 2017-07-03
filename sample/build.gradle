@@ -14,12 +14,35 @@ android {
         debug {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            it.buildConfigField 'String', 'VWO_API_KEY', DEBUG_VWO_API_KEY
         }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    // Specifies a flavor dimension.
+    flavorDimensions "vwo"
+
+    productFlavors {
+        local {
+            it.buildConfigField 'String', 'VWO_API_KEY', DEBUG_LOCAL_VWO_API_KEY
+            dimension "vwo"
+        }
+        remote {
+            it.buildConfigField 'String', 'VWO_API_KEY', DEBUG_REMOTE_VWO_API_KEY
+            dimension "vwo"
+        }
+        production {
             it.buildConfigField 'String', 'VWO_API_KEY', RELEASE_VWO_API_KEY
+            dimension "vwo"
+        }
+    }
+
+    variantFilter { variant ->
+        if (variant.name == "localRelease" || variant.name == "remoteRelease" || variant.name == "productionDebug") {
+            // Gradle ignores any variants that satisfy the conditions above.
+            variant.setIgnore(true)
         }
     }
 }

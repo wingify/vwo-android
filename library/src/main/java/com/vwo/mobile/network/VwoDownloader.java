@@ -1,12 +1,13 @@
 package com.vwo.mobile.network;
 
 import android.os.AsyncTask;
+import android.util.Log;
 
 import com.vwo.mobile.Vwo;
 import com.vwo.mobile.data.VwoData;
 import com.vwo.mobile.listeners.VwoActivityLifeCycle;
 import com.vwo.mobile.utils.NetworkUtils;
-import com.vwo.mobile.utils.VWOLogger;
+import com.vwo.mobile.utils.VwoLog;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -19,7 +20,6 @@ import java.util.TimerTask;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.logging.Logger;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -31,8 +31,6 @@ import okhttp3.Response;
  * Created by abhishek on 17/09/15 at 11:39 PM.
  */
 public class VwoDownloader {
-    private static final Logger LOGGER = VWOLogger.getLogger(VwoDownloader.class.getCanonicalName());
-
     private final Vwo mVwo;
 
     public VwoDownloader(Vwo vwo) {
@@ -53,15 +51,18 @@ public class VwoDownloader {
                 }
             } catch (InterruptedException exception) {
                 downloadResult.onDownloadError(exception);
-                LOGGER.fine("**** Data Download Interrupted ****");
-                LOGGER.throwing(VwoDownloader.class.getSimpleName(), "fetchFromServer(DownloadResult", exception);
+                if (Log.isLoggable(VwoLog.DOWNLOAD_DATA_LOGS, Log.ERROR)) {
+                    Log.e(VwoLog.DOWNLOAD_DATA_LOGS, "**** Data Download Interrupted ****");
+                }
             } catch (ExecutionException exception) {
-                LOGGER.fine("**** Data Download Execution Exception ****");
-                LOGGER.throwing(VwoDownloader.class.getSimpleName(), "fetchFromServer(DownloadResult", exception);
+                if (Log.isLoggable(VwoLog.DOWNLOAD_DATA_LOGS, Log.ERROR)) {
+                    Log.e(VwoLog.DOWNLOAD_DATA_LOGS, "**** Data Download Execution Exception ****");
+                }
                 downloadResult.onDownloadError(exception);
             } catch (TimeoutException exception) {
-                LOGGER.fine("**** Data Download Timeout ****");
-                LOGGER.throwing(VwoDownloader.class.getSimpleName(), "fetchFromServer(DownloadResult", exception);
+                if (Log.isLoggable(VwoLog.DOWNLOAD_DATA_LOGS, Log.ERROR)) {
+                    Log.e(VwoLog.DOWNLOAD_DATA_LOGS, "**** Data Download Timeout ****");
+                }
                 downloadResult.onDownloadError(exception);
             }
 
@@ -120,11 +121,13 @@ public class VwoDownloader {
                 final ArrayList<String> urls = mVwo.getVwoPreference().getListString(VwoData.VWO_QUEUE);
 
                 if (urls.size() != 0) {
-                    LOGGER.info(String.format(Locale.ENGLISH, "%d pending URLS", urls.size()));
+                    if(Log.isLoggable(VwoLog.UPLOAD_LOGS, Log.VERBOSE)) {
+                        Log.v(VwoLog.UPLOAD_LOGS, String.format(Locale.ENGLISH, "%d pending URLS", urls.size()));
+                    }
                 }
 
                 if (!VwoActivityLifeCycle.isApplicationInForeground() || !NetworkUtils.shouldAttemptNetworkCall(mVwo)) {
-                    LOGGER.fine("Either no network, or application is not in foreground");
+                    Log.e(VwoLog.UPLOAD_LOGS, "Either no network, or application is not in foreground");
                     return;
                 }
 
@@ -142,7 +145,9 @@ public class VwoDownloader {
 
                         @Override
                         public void onResponse(Call call, Response response) throws IOException {
-                            LOGGER.info("Completed: " + response.request().url().toString());
+                            if(Log.isLoggable(VwoLog.UPLOAD_LOGS, Log.VERBOSE)) {
+                                Log.v(VwoLog.UPLOAD_LOGS, "Completed: " + response.request().url().toString());
+                            }
                             urls.remove(url);
                             mVwo.getVwoPreference().putListString(VwoData.VWO_QUEUE, urls);
                         }

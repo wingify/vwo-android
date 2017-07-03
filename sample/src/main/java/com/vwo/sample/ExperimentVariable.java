@@ -29,7 +29,7 @@ public class ExperimentVariable extends AppCompatActivity {
         price = (EditText) findViewById(R.id.amount);
         finalPrice = (TextView) findViewById(R.id.final_price);
 
-        Object varPrice = Vwo.getObjectForKey("20", "discount");
+        Object varPrice = Vwo.getObjectForKey("discount", "20");
 
         discount = Float.parseFloat(varPrice.toString());
 

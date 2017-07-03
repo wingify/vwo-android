@@ -8,6 +8,8 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.RestrictTo;
+import android.util.Log;
 
 import com.vwo.mobile.constants.ApiConstant;
 import com.vwo.mobile.constants.AppConstants;
@@ -17,7 +19,7 @@ import com.vwo.mobile.enums.VwoStartState;
 import com.vwo.mobile.events.VwoStatusListener;
 import com.vwo.mobile.listeners.VwoActivityLifeCycle;
 import com.vwo.mobile.network.VwoDownloader;
-import com.vwo.mobile.utils.VWOLogger;
+import com.vwo.mobile.utils.VwoLog;
 import com.vwo.mobile.utils.VwoPreference;
 import com.vwo.mobile.utils.VwoUrlBuilder;
 import com.vwo.mobile.utils.VwoUtils;
@@ -26,8 +28,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.logging.Logger;
-
 import io.sentry.Sentry;
 import io.sentry.android.AndroidSentryClientFactory;
 
@@ -35,10 +35,6 @@ import io.sentry.android.AndroidSentryClientFactory;
  * Created by abhishek on 17/09/15 at 10:02 PM.
  */
 public class Vwo {
-    private static final Logger LOGGER = VWOLogger.getLogger(Vwo.class.getCanonicalName());
-
-//    private static final String TAG = "VWO Mobile";
-
     @SuppressLint("StaticFieldLeak")
     private static Vwo sSharedInstance;
 
@@ -127,7 +123,7 @@ public class Vwo {
 
         Object data = getObjectForKey(key);
         if (data == null) {
-            LOGGER.warning("No Key Value found. Serving Control");
+            Log.e(VwoLog.DOWNLOAD_DATA_LOGS, "No data found for key: " + key);
             return control;
         } else {
             return data;
@@ -149,7 +145,8 @@ public class Vwo {
             }
             return object;
         }
-        throw new IllegalStateException("Cannot call this method before initializing VWO sdk first.");
+        Log.w(VwoLog.INITIALIZATION_LOGS, "SDK not initialized completely");
+        return new JSONObject();
     }
 
     public static void markConversionForGoal(String goalIdentifier) {
@@ -164,7 +161,7 @@ public class Vwo {
                 sSharedInstance.mVwoData.saveGoal(goalIdentifier);
             }
         }
-        throw new IllegalStateException("Cannot call this method before initializing VWO sdk first.");
+        Log.w(VwoLog.INITIALIZATION_LOGS, "SDK not initialized completely");
     }
 
     public static void markConversionForGoal(String goalIdentifier, double value) {
@@ -178,12 +175,15 @@ public class Vwo {
                 sSharedInstance.mVwoData.saveGoal(goalIdentifier, value);
             }
         }
-        throw new IllegalStateException("Cannot call this method before initializing VWO sdk first.");
+        Log.w(VwoLog.INITIALIZATION_LOGS, "SDK not initialized completely");
     }
 
     @SuppressWarnings("SpellCheckingInspection")
+    @RestrictTo(RestrictTo.Scope.LIBRARY)
     boolean startVwoInstance() {
-        LOGGER.entering(Vwo.class.getSimpleName(), "startVwoInstance(String, Application)", "**** Starting VWO ver " + VwoUtils.getVwoSdkVersion() + " ****");
+        if(Log.isLoggable(VwoLog.INITIALIZATION_LOGS, Log.INFO)) {
+            Log.i(VwoLog.INITIALIZATION_LOGS, "**** Starting VWO ver " + VwoUtils.getVwoSdkVersion() + " ****");
+        }
 
         assert mContext != null;
 
@@ -195,19 +195,21 @@ public class Vwo {
         } else if (!VwoUtils.checkIfClassExists("io.socket.client.Socket") && !VwoUtils.checkIfClassExists("com.squareup.okhttp.OkHttpClient")) {
             String errMsg = "VWO is dependent on Socket.IO library.\n" +
                     "In application level build.gradle file add\t" +
-                    "compile 'io.socket:socket.io-client:0.6.2'";
-            LOGGER.finer(errMsg);
+                    "compile 'io.socket:socket.io-client:0.8.3'";
+            Log.e(VwoLog.INITIALIZATION_LOGS, errMsg);
             return false;
         } else if (!isAndroidSDKSupported()) {
             Sentry.init(ApiConstant.SENTRY, factory);
-            LOGGER.finer("Minimum SDK version should be 14");
+            Log.e(VwoLog.INITIALIZATION_LOGS, "Minimum SDK version should be 14");
             return false;
         } else if (!validateVwoAppKey(vwoConfig.getApiKey())) {
             Sentry.init(ApiConstant.SENTRY, factory);
-            LOGGER.finer("Invalid App Key: " + vwoConfig.getAppKey());
+            Log.e(VwoLog.INITIALIZATION_LOGS, "Invalid App Key: " + vwoConfig.getAppKey());
             return false;
         } else if (this.mVwoStartState != VwoStartState.NOT_STARTED) {
-            LOGGER.warning("VWO already started");
+            if(Log.isLoggable(VwoLog.INITIALIZATION_LOGS, Log.WARN)) {
+                Log.w(VwoLog.INITIALIZATION_LOGS, "VWO already started");
+            }
             return true;
         } else {
             // Everything is good so far
@@ -223,14 +225,20 @@ public class Vwo {
                 public void onDownloadSuccess(JSONArray data) {
                     Sentry.init(ApiConstant.SENTRY, factory);
                     if (data.length() == 0) {
-                        LOGGER.warning("Empty data downloaded");
+                        if(Log.isLoggable(VwoLog.INITIALIZATION_LOGS, Log.WARN)) {
+                            Log.w(VwoLog.INITIALIZATION_LOGS, "Empty data downloaded");
+                        }
                         // FIXME: Handle this. Can crash here.
                     } else {
                         try {
-                            LOGGER.info(data.toString(4));
+                            if(Log.isLoggable(VwoLog.INITIALIZATION_LOGS, Log.INFO)) {
+                                Log.i(VwoLog.INITIALIZATION_LOGS, data.toString(4));
+                            }
                         } catch (JSONException exception) {
-                            LOGGER.finer("Data not Downloaded: " + exception.getLocalizedMessage());
-                            LOGGER.throwing(Vwo.class.getSimpleName(), "DownloadSuccess", exception);
+                            if(Log.isLoggable(VwoLog.INITIALIZATION_LOGS, Log.ERROR)) {
+                                exception.printStackTrace();
+                                Log.e(VwoLog.INITIALIZATION_LOGS, "Data not Downloaded: " + exception.getLocalizedMessage());
+                            }
                         }
                     }
                     mVwoData.parseData(data);
@@ -306,8 +314,8 @@ public class Vwo {
 
     private boolean isAndroidSDKSupported() {
         try {
-            int e = Build.VERSION.SDK_INT;
-            if (e >= 14) {
+            int sdkVersion = Build.VERSION.SDK_INT;
+            if (sdkVersion >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
                 return true;
             }
         } catch (Exception var2) {

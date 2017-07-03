@@ -31,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         Map<String, String> customKeys = new HashMap<>();
-        customKeys.put("userType", "free");
+        customKeys.put("name", "aman");
         VwoConfig vwoConfig = new VwoConfig
                 .Builder()
                 .setCustomSegmentationMapping(customKeys)
