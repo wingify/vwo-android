@@ -17,8 +17,6 @@ import java.util.logging.Logger;
  * Created by abhishek on 16/09/15 at 10:18 PM.
  */
 public class VWOUrlBuilder {
-    private static final Logger LOGGER = VWOLogger.getLogger(VWOUrlBuilder.class.getCanonicalName());
-
     private static final String DACDN_URL = BuildConfig.DACDN_URL;
     private static final String DACDN_FETCH_URL_WITH_K = DACDN_URL + "mobile?a=%s&v=%s&i=%s&dt=%s&os=%s&r=%f&k=%s";
     private static final String DACDN_FETCH_URL_WITHOUT_K = DACDN_URL + "mobile?a=%s&v=%s&i=%s&dt=%s&os=%s&r=%f";
@@ -48,7 +46,7 @@ public class VWOUrlBuilder {
             url = String.format(Locale.ENGLISH, DACDN_FETCH_URL_WITH_K, accountId, sdkVersion, appKey, deviceType, currentDeviceSystemVersion, randomNo, k);
         }
 
-        LOGGER.info("Url : " + url);
+        VWOLog.v(VWOLog.URL_LOGS, "Campaign download url : " + url);
 
         return url;
     }
@@ -60,7 +58,7 @@ public class VWOUrlBuilder {
         try {
             return URLEncoder.encode(data, "UTF-8");
         } catch (UnsupportedEncodingException exception) {
-            LOGGER.throwing(VWOUrlBuilder.class.getSimpleName(), "add(String)", exception);
+            VWOLog.e(VWOLog.URL_LOGS, "Exception generation url", exception, true);
             return "";
         }
     }
@@ -84,7 +82,7 @@ public class VWOUrlBuilder {
         url = String.format(Locale.ENGLISH, url, experimentId, accountId, variationId, uuid, session, VWOUtils.getRandomNumber());
         String extraData = add(getExtraData());
         url += "&ed=" + extraData;
-        LOGGER.info("URL: " + url);
+        VWOLog.v(VWOLog.URL_LOGS, "Campaign url: " + url);
         return url;
     }
 
@@ -107,7 +105,7 @@ public class VWOUrlBuilder {
 
         String extraData = add(getExtraData());
         url += "&ed=" + extraData;
-        LOGGER.info("URL: " + url);
+        VWOLog.v(VWOLog.URL_LOGS, "Goal URL: " + url);
         return url;
     }
 
@@ -131,7 +129,7 @@ public class VWOUrlBuilder {
 
             return jsonObject.toString();
         } catch (JSONException exception) {
-            LOGGER.throwing(VWOUrlBuilder.class.getSimpleName(), "getExtraData()", exception);
+            VWOLog.e(VWOLog.URL_LOGS, "Exception parsing json object: \n" + jsonObject.toString(), exception, true);
         }
         return "";
     }

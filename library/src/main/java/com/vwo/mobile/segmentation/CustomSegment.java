@@ -79,7 +79,7 @@ public class CustomSegment implements Segment {
 
     @Override
     public boolean evaluate(VWO vwo) {
-        if(mType.equals(AppConstants.CUSTOM_SEGMENT)) {
+        if (mType.equals(AppConstants.CUSTOM_SEGMENT)) {
             return CustomSegmentEvaluateEnum.getEvaluator(mType, mSegmentOperator).evaluate(vwo, mOperandValue, lOperandValue);
         }
         return CustomSegmentEvaluateEnum.getEvaluator(mType, mSegmentOperator).evaluate(vwo, mOperandValue);

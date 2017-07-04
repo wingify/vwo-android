@@ -23,7 +23,7 @@ public class Initializer {
 
     /**
      * Start VWO sdk in Async mode.
-     *
+     * <p>
      * This method will initialize the sdk either by fetching data from server or
      * from data of previous launch or from defaults(in case of network failure)
      */
@@ -37,7 +37,7 @@ public class Initializer {
 
     /**
      * Start VWO sdk in Async mode.
-     *
+     * <p>
      * This method will initialize the sdk either by fetching data from server or
      * from data of previous launch or from defaults(in case of network failure)
      */
@@ -49,10 +49,9 @@ public class Initializer {
 
     /**
      * Start VWO sdk in sync mode(Not recommended. because it blocks UI thread for fetching data).
-     *
+     * <p>
      * This method will initialize the sdk either by fetching data from server or
      * from data of previous launch or from defaults(in case of network failure)
-     *
      */
     public void launch() {
         setup(vwo.getConfig(), true);
@@ -60,10 +59,8 @@ public class Initializer {
     }
 
     public Initializer config(@NonNull VWOConfig VWOConfig) {
-        if(vwo.getConfig() != null) {
-            if(Log.isLoggable(VWOLog.INITIALIZATION_LOGS, Log.WARN)) {
-                Log.w(VWOLog.INITIALIZATION_LOGS, "Configuration already set");
-            }
+        if (vwo.getConfig() != null) {
+            VWOLog.w(VWOLog.CONFIG_LOGS, "Configuration already set", true);
         }
         this.vwo.setConfig(VWOConfig);
         return this;
@@ -71,7 +68,7 @@ public class Initializer {
 
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     private void setup(@Nullable VWOConfig VWOConfig, boolean syncMode) {
-        if(VWOConfig == null) {
+        if (VWOConfig == null) {
             VWOConfig = new VWOConfig.Builder().apiKey(apiKey).build();
         } else {
             VWOConfig.setApiKey(apiKey);

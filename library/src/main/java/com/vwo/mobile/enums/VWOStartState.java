@@ -17,5 +17,7 @@ public enum VWOStartState {
         mValue = newValue;
     }
 
-    public int getValue() { return mValue; }
+    public int getValue() {
+        return mValue;
+    }
 }

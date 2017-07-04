@@ -9,7 +9,6 @@ import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RestrictTo;
-import android.util.Log;
 
 import com.vwo.mobile.constants.ApiConstant;
 import com.vwo.mobile.constants.AppConstants;
@@ -91,15 +90,6 @@ public class VWO {
         return new Initializer(sSharedInstance, apiKey);
     }
 
-    /*private static synchronized Vwo sharedInstance() {
-        if (sSharedInstance != null) {
-            return sSharedInstance;
-        } else {
-            sSharedInstance = new Vwo();
-            return sSharedInstance;
-        }
-    }*/
-
     @SuppressWarnings("unused")
     public static Object getObjectForKey(String key) {
 
@@ -115,7 +105,8 @@ public class VWO {
             return object;
 
         }
-        throw new IllegalStateException("Cannot call this method before initializing VWO sdk first.");
+        VWOLog.e(VWOLog.DATA_LOGS, new IllegalStateException("Cannot call this method before VWO SDK is completely initialized."), false);
+        return null;
     }
 
     @SuppressWarnings("unused")
@@ -123,7 +114,7 @@ public class VWO {
 
         Object data = getObjectForKey(key);
         if (data == null) {
-            Log.e(VWOLog.DOWNLOAD_DATA_LOGS, "No data found for key: " + key);
+            VWOLog.e(VWOLog.DATA_LOGS, "No data found for key: " + key, false);
             return control;
         } else {
             return data;
@@ -132,7 +123,7 @@ public class VWO {
     }
 
     @SuppressWarnings("unused")
-    public static Object getAllObject() {
+    public static Object getAllObjects() {
 
         if (sSharedInstance != null && sSharedInstance.mVWOStartState.getValue() >= VWOStartState.STARTED.getValue()) {
             // Only when the VWO has completely started or loaded from disk
@@ -145,10 +136,15 @@ public class VWO {
             }
             return object;
         }
-        Log.w(VWOLog.INITIALIZATION_LOGS, "SDK not initialized completely");
+        VWOLog.e(VWOLog.DATA_LOGS, new IllegalStateException("Cannot call this method before VWO SDK is completely initialized."), false);
         return new JSONObject();
     }
 
+    /**
+     * Function for mark a when a goal is achieved
+     *
+     * @param goalIdentifier is name of the goal set in VWO dashboard
+     */
     public static void markConversionForGoal(String goalIdentifier) {
 
         if (sSharedInstance != null && sSharedInstance.mVWOStartState.getValue() >= VWOStartState.STARTED.getValue()) {
@@ -161,9 +157,15 @@ public class VWO {
                 sSharedInstance.mVWOData.saveGoal(goalIdentifier);
             }
         }
-        Log.w(VWOLog.INITIALIZATION_LOGS, "SDK not initialized completely");
+        VWOLog.w(VWOLog.UPLOAD_LOGS, "SDK not initialized completely", true);
     }
 
+    /**
+     * Function to mark revenue goal when it is achieved
+     *
+     * @param goalIdentifier is name of the goal set in VWO dashboard
+     * @param value          is the value in double
+     */
     public static void markConversionForGoal(String goalIdentifier, double value) {
 
         if (sSharedInstance != null && sSharedInstance.mVWOStartState.getValue() >= VWOStartState.STARTED.getValue()) {
@@ -175,15 +177,13 @@ public class VWO {
                 sSharedInstance.mVWOData.saveGoal(goalIdentifier, value);
             }
         }
-        Log.w(VWOLog.INITIALIZATION_LOGS, "SDK not initialized completely");
+        VWOLog.w(VWOLog.UPLOAD_LOGS, "SDK not initialized completely", true);
     }
 
     @SuppressWarnings("SpellCheckingInspection")
     @RestrictTo(RestrictTo.Scope.LIBRARY)
     boolean startVwoInstance() {
-        if(Log.isLoggable(VWOLog.INITIALIZATION_LOGS, Log.INFO)) {
-            Log.i(VWOLog.INITIALIZATION_LOGS, "**** Starting VWO ver " + VWOUtils.getVwoSdkVersion() + " ****");
-        }
+        VWOLog.v(VWOLog.INITIALIZATION_LOGS, "**** Starting VWO ver " + VWOUtils.getVwoSdkVersion() + " ****");
 
         assert mContext != null;
 
@@ -196,20 +196,18 @@ public class VWO {
             String errMsg = "VWO is dependent on Socket.IO library.\n" +
                     "In application level build.gradle file add\t" +
                     "compile 'io.socket:socket.io-client:0.8.3'";
-            Log.e(VWOLog.INITIALIZATION_LOGS, errMsg);
+            VWOLog.e(VWOLog.INITIALIZATION_LOGS, errMsg, false);
             return false;
         } else if (!isAndroidSDKSupported()) {
             Sentry.init(ApiConstant.SENTRY, factory);
-            Log.e(VWOLog.INITIALIZATION_LOGS, "Minimum SDK version should be 14");
+            VWOLog.e(VWOLog.INITIALIZATION_LOGS, "Minimum SDK version should be 14", false);
             return false;
         } else if (!validateVwoAppKey(VWOConfig.getApiKey())) {
             Sentry.init(ApiConstant.SENTRY, factory);
-            Log.e(VWOLog.INITIALIZATION_LOGS, "Invalid App Key: " + VWOConfig.getAppKey());
+            VWOLog.e(VWOLog.INITIALIZATION_LOGS, "Invalid App Key: " + VWOConfig.getAppKey(), false);
             return false;
         } else if (this.mVWOStartState != VWOStartState.NOT_STARTED) {
-            if(Log.isLoggable(VWOLog.INITIALIZATION_LOGS, Log.WARN)) {
-                Log.w(VWOLog.INITIALIZATION_LOGS, "VWO already started");
-            }
+            VWOLog.w(VWOLog.INITIALIZATION_LOGS, "VWO already started", true);
             return true;
         } else {
             // Everything is good so far
@@ -225,20 +223,13 @@ public class VWO {
                 public void onDownloadSuccess(JSONArray data) {
                     Sentry.init(ApiConstant.SENTRY, factory);
                     if (data.length() == 0) {
-                        if(Log.isLoggable(VWOLog.INITIALIZATION_LOGS, Log.WARN)) {
-                            Log.w(VWOLog.INITIALIZATION_LOGS, "Empty data downloaded");
-                        }
+                        VWOLog.w(VWOLog.DOWNLOAD_DATA_LOGS, "Empty data downloaded", true);
                         // FIXME: Handle this. Can crash here.
                     } else {
                         try {
-                            if(Log.isLoggable(VWOLog.INITIALIZATION_LOGS, Log.INFO)) {
-                                Log.i(VWOLog.INITIALIZATION_LOGS, data.toString(4));
-                            }
+                            VWOLog.i(VWOLog.INITIALIZATION_LOGS, data.toString(4), true);
                         } catch (JSONException exception) {
-                            if(Log.isLoggable(VWOLog.INITIALIZATION_LOGS, Log.ERROR)) {
-                                exception.printStackTrace();
-                                Log.e(VWOLog.INITIALIZATION_LOGS, "Data not Downloaded: " + exception.getLocalizedMessage());
-                            }
+                            VWOLog.e(VWOLog.DOWNLOAD_DATA_LOGS, "Data not Downloaded", exception, true);
                         }
                     }
                     mVWOData.parseData(data);

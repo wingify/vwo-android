@@ -21,8 +21,6 @@ import java.util.logging.Logger;
 
 
 public class VWOPreference {
-    private static final Logger LOGGER = VWOLogger.getLogger(VWOPreference.class.getCanonicalName());
-
     private SharedPreferences preferences;
     private String DEFAULT_APP_IMAGEDATA_DIRECTORY;
     private String lastImagePath = "";
@@ -44,7 +42,7 @@ public class VWOPreference {
 
         } catch (Exception exception) {
             // TODO: handle exception
-            VWOLogger.getLogger("VwoPreference").throwing(CustomSegmentEvaluateEnum.class.getSimpleName(), "getImage", exception);
+            VWOLog.e(VWOLog.PREFERENCE_LOGS, "Unable to decode image: ", exception, true);
         }
 
         return bitmapFromPath;
@@ -103,7 +101,7 @@ public class VWOPreference {
 
         if (isExternalStorageReadable() && isExternalStorageWritable() && !mFolder.exists()) {
             if (!mFolder.mkdirs()) {
-                LOGGER.fine("Failed to setup folder.");
+                VWOLog.e(VWOLog.PREFERENCE_LOGS, "Failed to setup folder.", true);
                 return "";
             }
         }
@@ -135,7 +133,7 @@ public class VWOPreference {
             fileCreated = imageFile.createNewFile();
 
         } catch (IOException exception) {
-            LOGGER.throwing(CustomSegmentEvaluateEnum.class.getSimpleName(), "saveBitmap(String, Bitmap)", exception);
+            VWOLog.e(VWOLog.PREFERENCE_LOGS, "Unable to save bitmap.", exception, true);
         }
 
         FileOutputStream out = null;
@@ -144,7 +142,7 @@ public class VWOPreference {
             bitmapCompressed = bitmap.compress(CompressFormat.PNG, 100, out);
 
         } catch (Exception exception) {
-            LOGGER.throwing(CustomSegmentEvaluateEnum.class.getSimpleName(), "saveBitmap(String, Bitmap)", exception);
+            VWOLog.e(VWOLog.PREFERENCE_LOGS, "Unable to save bitmap.", exception, true);
             bitmapCompressed = false;
 
         } finally {
@@ -155,7 +153,7 @@ public class VWOPreference {
                     streamClosed = true;
 
                 } catch (IOException exception) {
-                    LOGGER.throwing(CustomSegmentEvaluateEnum.class.getSimpleName(), "saveBitmap(String, Bitmap)", exception);
+                    VWOLog.e(VWOLog.PREFERENCE_LOGS, "Unable to save bitmap.", exception, true);
                     streamClosed = false;
                 }
             }

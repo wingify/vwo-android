@@ -18,13 +18,11 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
-import java.util.logging.Logger;
 
 /**
  * Created by abhishek on 18/09/15 at 1:34 AM.
  */
 public class VWOUtils {
-    private static final Logger LOGGER = VWOLogger.getLogger(VWOUtils.class.getCanonicalName());
 
     public static Boolean mIsAppStoreApp;
     private static final boolean FORCE_APP_STORE = false;
@@ -116,8 +114,7 @@ public class VWOUtils {
                     return packageInfo.versionName;
                 }
             } catch (PackageManager.NameNotFoundException exception) {
-                LOGGER.fine("Failed to get packaging info");
-                LOGGER.throwing(VWOUtils.class.getSimpleName(), "applicationVersion(Vwo)", exception);
+                VWOLog.e(VWOLog.CONFIG_LOGS, "Failed to get packaging info", exception, true);
             }
         }
 
@@ -172,7 +169,7 @@ public class VWOUtils {
         if (hasPerm == PackageManager.PERMISSION_DENIED) {
             String errorMsg = "VWO requires Internet permission.\n" +
                     "Add <uses-permission android:name=\"android.permission.INTERNET\"/> in AndroidManifest.xml";
-            LOGGER.fine(errorMsg);
+            VWOLog.e(VWOLog.CONFIG_LOGS, errorMsg, false);
             return false;
         }
 
@@ -181,7 +178,7 @@ public class VWOUtils {
         if (hasPerm == PackageManager.PERMISSION_DENIED) {
             String errorMsg = "Granting ACCESS_NETWORK_STATE permission makes VWO work smarter.\n" +
                     "Add <uses-permission android:name=\"android.permission.ACCESS_NETWORK_STATE\"/> in AndroidManifest.xml";
-            LOGGER.fine(errorMsg);
+            VWOLog.e(VWOLog.CONFIG_LOGS, errorMsg, false);
         }
         return true;
     }

@@ -52,16 +52,16 @@ public class VWODownloader {
             } catch (InterruptedException exception) {
                 downloadResult.onDownloadError(exception);
                 if (Log.isLoggable(VWOLog.DOWNLOAD_DATA_LOGS, Log.ERROR)) {
-                    Log.e(VWOLog.DOWNLOAD_DATA_LOGS, "**** Data Download Interrupted ****");
+                    VWOLog.e(VWOLog.DOWNLOAD_DATA_LOGS, "**** Data Download Interrupted ****", true);
                 }
             } catch (ExecutionException exception) {
                 if (Log.isLoggable(VWOLog.DOWNLOAD_DATA_LOGS, Log.ERROR)) {
-                    Log.e(VWOLog.DOWNLOAD_DATA_LOGS, "**** Data Download Execution Exception ****");
+                    VWOLog.e(VWOLog.DOWNLOAD_DATA_LOGS, "**** Data Download Execution Exception ****", true);
                 }
                 downloadResult.onDownloadError(exception);
             } catch (TimeoutException exception) {
                 if (Log.isLoggable(VWOLog.DOWNLOAD_DATA_LOGS, Log.ERROR)) {
-                    Log.e(VWOLog.DOWNLOAD_DATA_LOGS, "**** Data Download Timeout ****");
+                    VWOLog.e(VWOLog.DOWNLOAD_DATA_LOGS, "**** Data Download Timeout ****", true);
                 }
                 downloadResult.onDownloadError(exception);
             }
@@ -121,13 +121,13 @@ public class VWODownloader {
                 final ArrayList<String> urls = mVWO.getVwoPreference().getListString(VWOData.VWO_QUEUE);
 
                 if (urls.size() != 0) {
-                    if(Log.isLoggable(VWOLog.UPLOAD_LOGS, Log.VERBOSE)) {
-                        Log.v(VWOLog.UPLOAD_LOGS, String.format(Locale.ENGLISH, "%d pending URLS", urls.size()));
+                    if (Log.isLoggable(VWOLog.UPLOAD_LOGS, Log.VERBOSE)) {
+                        VWOLog.v(VWOLog.UPLOAD_LOGS, String.format(Locale.ENGLISH, "%d pending URLS", urls.size()));
                     }
                 }
 
                 if (!VWOActivityLifeCycle.isApplicationInForeground() || !NetworkUtils.shouldAttemptNetworkCall(mVWO)) {
-                    Log.e(VWOLog.UPLOAD_LOGS, "Either no network, or application is not in foreground");
+                    VWOLog.e(VWOLog.UPLOAD_LOGS, "Either no network, or application is not in foreground", true);
                     return;
                 }
 
@@ -145,8 +145,8 @@ public class VWODownloader {
 
                         @Override
                         public void onResponse(Call call, Response response) throws IOException {
-                            if(Log.isLoggable(VWOLog.UPLOAD_LOGS, Log.VERBOSE)) {
-                                Log.v(VWOLog.UPLOAD_LOGS, "Completed: " + response.request().url().toString());
+                            if (Log.isLoggable(VWOLog.UPLOAD_LOGS, Log.VERBOSE)) {
+                                VWOLog.v(VWOLog.UPLOAD_LOGS, "Completed: " + response.request().url().toString());
                             }
                             urls.remove(url);
                             mVWO.getVwoPreference().putListString(VWOData.VWO_QUEUE, urls);

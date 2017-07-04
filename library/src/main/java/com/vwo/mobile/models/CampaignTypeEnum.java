@@ -4,8 +4,7 @@ package com.vwo.mobile.models;
  * Created by abhishek on 17/09/15 at 12:09 PM.
  */
 public enum CampaignTypeEnum {
-    VISUAL_AB("VISUAL_AB")
-    ;
+    VISUAL_AB("VISUAL_AB");
 
     private String mType;
 

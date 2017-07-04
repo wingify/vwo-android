@@ -24,7 +24,7 @@ public class VWOConfig {
 
     private VWOConfig(Map<String, String> customSegmentationMapping, @Nullable String apiKey) {
         this.customSegmentationMapping = customSegmentationMapping;
-        if(apiKey != null) {
+        if (apiKey != null) {
             setApiKey(apiKey);
         }
     }
@@ -65,7 +65,6 @@ public class VWOConfig {
     }
 
     /**
-     *
      * @param customSegmentKeys is the keymap for custom segmentation variables
      */
     void setCustomSegmentKeys(Map<String, String> customSegmentKeys) {
@@ -75,7 +74,7 @@ public class VWOConfig {
     /**
      * Function to add custom key value pair to segment
      *
-     * @param key {@link String} is the key for custom segment
+     * @param key   {@link String} is the key for custom segment
      * @param value {@link String} is the value of custom segment.
      */
     void addCustomSegment(String key, String value) {
@@ -90,7 +89,7 @@ public class VWOConfig {
     }
 
     public String getValueForCustomSegment(String key) {
-        if(this.customSegmentationMapping != null && customSegmentationMapping.size() > 0) {
+        if (this.customSegmentationMapping != null && customSegmentationMapping.size() > 0) {
             return this.customSegmentationMapping.get(key);
         }
 
@@ -115,7 +114,6 @@ public class VWOConfig {
         }
 
         /**
-         *
          * @param customSegmentationMapping is the key value pair mapping for custom segments
          * @return
          */

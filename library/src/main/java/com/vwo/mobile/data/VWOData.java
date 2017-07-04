@@ -7,7 +7,7 @@ import com.vwo.mobile.models.Goal;
 import com.vwo.mobile.segmentation.CustomSegment;
 import com.vwo.mobile.segmentation.LogicalOperator;
 import com.vwo.mobile.segmentation.Segment;
-import com.vwo.mobile.utils.VWOLogger;
+import com.vwo.mobile.utils.VWOLog;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -18,14 +18,11 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Stack;
-import java.util.logging.Logger;
 
 /**
  * Created by abhishek on 17/09/15 at 10:10 PM.
  */
 public class VWOData {
-    private static final Logger LOGGER = VWOLogger.getLogger(VWOData.class.getCanonicalName());
-
     public static final String CAMPAIGN_RUNNING = "RUNNING";
     public static final String CAMPAIGN_EXCLUDED = "EXCLUED";
 
@@ -53,19 +50,19 @@ public class VWOData {
                         if (VWOPersistData.isExistingCampaign(mVWO, VWOPersistData.CAMPAIGN_KEY + tempCampaign.getId())) {
                             // Already part of campaign. Just add to campaigns list
                             mCampaigns.add(tempCampaign);
-                            LOGGER.warning("Campaign " + tempCampaign.getId() + " is already a part");
-
+                            VWOLog.w(VWOLog.CAMPAIGN_LOGS, "Campaign " + tempCampaign.getId() + " is already a part", true);
                         } else {
                             if (evaluateSegmentation(mVWO, tempCampaign)) {
                                 mCampaigns.add(tempCampaign);
 
                                 String campaignRecordUrl = mVWO.getVwoUrlBuilder().getCampaignUrl(tempCampaign.getId(), tempCampaign.getVariation().getId());
-                                LOGGER.info("Campaign " + tempCampaign.getId() + " is a new and valid campaign");
+                                VWOLog.w(VWOLog.CAMPAIGN_LOGS, "Campaign " + tempCampaign.getId() + " is a new and valid campaign", true);
+
                                 VWOPersistData VWOPersistData = new VWOPersistData(tempCampaign.getId(), tempCampaign.getVariation().getId());
                                 VWOPersistData.saveCampaign(mVWO.getVwoPreference());
                                 VWOPersistData.addToQueue(mVWO.getVwoPreference(), campaignRecordUrl);
                             } else {
-                                LOGGER.finest("Campaign " + tempCampaign.getId() + ", Segmentation Condition not met, discarding");
+                                VWOLog.i(VWOLog.CAMPAIGN_LOGS, "Campaign " + tempCampaign.getId() + ", Segmentation Condition not met, discarding", true);
                             }
                         }
                     }
@@ -74,11 +71,11 @@ public class VWOData {
                     VWOPersistData VWOPersistData = new VWOPersistData(campaignId, 0);
                     VWOPersistData.saveCampaign(mVWO.getVwoPreference());
                 } else {
-                    LOGGER.finer("Campaign " + data.getJSONObject(i).getInt("id") + ", Discarding because it is not running");
+                    VWOLog.i(VWOLog.CAMPAIGN_LOGS, "Campaign " + data.getJSONObject(i).getInt("id") + ", Discarding because it is not running", true);
                 }
 
             } catch (JSONException exception) {
-                LOGGER.throwing(VWOData.class.getSimpleName(), "parseData(JSONArray)", exception);
+                VWOLog.e(VWOLog.CAMPAIGN_LOGS, "Unable to parse campaign data: " + data.toString(), exception, true);
             }
         }
 
@@ -112,7 +109,7 @@ public class VWOData {
                 try {
                     data.put(variation.getKey(), variation.getValue().getVariation().getKey(variation.getKey()));
                 } catch (JSONException exception) {
-                    LOGGER.throwing(VWOData.class.getSimpleName(), "getAllVariations()", exception);
+                    VWOLog.e(VWOLog.CAMPAIGN_LOGS, "Unable to generate variation object for campaign data", exception, true);
                 }
             }
             return data;
@@ -137,10 +134,10 @@ public class VWOData {
                                 String goalUrl = mVWO.getVwoUrlBuilder().getGoalUrl(campaign.getId(), campaign.getVariation().getId(), goal.getId());
                                 VWOPersistData.addToQueue(mVWO.getVwoPreference(), goalUrl);
                             } else {
-                                LOGGER.info(goalIdentifier + " found in existing data");
+                                VWOLog.w(VWOLog.CAMPAIGN_LOGS, "Duplicate goal identifier: " + goalIdentifier, true);
                             }
                         } catch (JSONException exception) {
-                            LOGGER.throwing(VWOData.class.getSimpleName(), "saveGoal(String)", exception);
+                            VWOLog.w(VWOLog.CAMPAIGN_LOGS, "Unable to generate goal data object", exception, true);
                         }
 
                     }
@@ -166,10 +163,10 @@ public class VWOData {
                                 String goalUrl = mVWO.getVwoUrlBuilder().getGoalUrl(campaign.getId(), campaign.getVariation().getId(), goal.getId(), (float) value);
                                 VWOPersistData.addToQueue(mVWO.getVwoPreference(), goalUrl);
                             } else {
-                                LOGGER.info(goalIdentifier + " found in existing data");
+                                VWOLog.w(VWOLog.CAMPAIGN_LOGS, "Duplicate goal identifier: " + goalIdentifier, true);
                             }
                         } catch (JSONException exception) {
-                            LOGGER.throwing(VWOData.class.getSimpleName(), "saveGoal(String, double)", exception);
+                            VWOLog.w(VWOLog.CAMPAIGN_LOGS, "Unable to generate goal data object", exception, true);
                         }
 
                     }

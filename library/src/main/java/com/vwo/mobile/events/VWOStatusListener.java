@@ -6,6 +6,7 @@ package com.vwo.mobile.events;
 public interface VWOStatusListener {
 
     void onVwoLoaded();
+
     void onVwoLoadFailure();
 
 }

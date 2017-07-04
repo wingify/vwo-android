@@ -8,5 +8,6 @@ import com.vwo.mobile.VWO;
 public interface Segment {
 
     boolean evaluate(VWO vwp);
+
     boolean isCustomSegment();
 }

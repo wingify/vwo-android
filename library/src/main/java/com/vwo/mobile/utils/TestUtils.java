@@ -22,8 +22,6 @@ import java.util.logging.Logger;
  * Created by abhishek on 10/06/15 at 5:44 PM.
  */
 public class TestUtils {
-    private static final Logger LOGGER = VWOLogger.getLogger(TestUtils.class.getCanonicalName());
-
     public static JSONObject loadTestData(Context context, boolean isEditMode) throws JSONException, IOException {
 
 
@@ -62,7 +60,7 @@ public class TestUtils {
     }
 
     public static JSONObject mergeJsonObjects(JSONObject topLevelJson, JSONObject fromJson) throws JSONException {
-        LOGGER.info(String.format(Locale.ENGLISH, "JSON 1: %s, JSON 2: %s", topLevelJson.toString(), fromJson.toString()));
+        VWOLog.v(VWOLog.TEST_LOGS, String.format(Locale.ENGLISH, "JSON 1: %s, JSON 2: %s", topLevelJson.toString(), fromJson.toString()));
 
         JSONObject merged = new JSONObject();
         JSONObject[] objs = new JSONObject[]{fromJson, topLevelJson};
@@ -73,7 +71,8 @@ public class TestUtils {
                 merged.put(key, obj.get(key));
             }
         }
-        LOGGER.info(String.format(Locale.ENGLISH, "Merged JSON : %s", merged.toString()));
+        VWOLog.v(VWOLog.TEST_LOGS, String.format(Locale.ENGLISH, String.format(Locale.ENGLISH,
+                "Merged JSON : %s", merged.toString()), fromJson.toString()));
 
         return merged;
     }
