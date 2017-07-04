@@ -31,7 +31,7 @@ public class ExperimentText extends AppCompatActivity {
         });
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        Object data = VWO.getObjectForKey("bannerText", "Buy Now");
+        Object data = VWO.getVariationForKey("bannerText", "Buy Now");
 
         if (data != null) {
             ((TextView) findViewById(R.id.buttonText)).setText(data.toString());
@@ -46,7 +46,7 @@ public class ExperimentText extends AppCompatActivity {
             }
         });
 
-        data = VWO.getObjectForKey("bannerColor");
+        data = VWO.getVariationForKey("bannerColor");
 
         if (data != null) {
             findViewById(R.id.banner).setBackgroundColor(Color.parseColor(data.toString()));

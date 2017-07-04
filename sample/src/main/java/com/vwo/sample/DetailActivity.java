@@ -19,7 +19,7 @@ public class DetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
 
-        Object data = VWO.getObjectForKey("bannerText");
+        Object data = VWO.getVariationForKey("bannerText");
 
         if (data != null) {
             ((TextView) findViewById(R.id.text)).setText(data.toString());
@@ -27,7 +27,7 @@ public class DetailActivity extends AppCompatActivity {
         }
 
 
-        data = VWO.getObjectForKey("bannerColor");
+        data = VWO.getVariationForKey("bannerColor");
 
         if (data != null) {
             findViewById(R.id.bg).setBackgroundColor(Color.parseColor(data.toString()));

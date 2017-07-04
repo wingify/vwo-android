@@ -25,7 +25,6 @@ import com.vwo.mobile.utils.VWOUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import io.sentry.Sentry;
 import io.sentry.android.AndroidSentryClientFactory;
@@ -91,7 +90,7 @@ public class VWO {
     }
 
     @SuppressWarnings("unused")
-    public static Object getObjectForKey(String key) {
+    public static Object getVariationForKey(String key) {
 
         if (sSharedInstance != null && sSharedInstance.mVWOStartState.getValue() >= VWOStartState.STARTED.getValue()) {
             // Only when the VWO has completely started or loaded from disk
@@ -110,9 +109,9 @@ public class VWO {
     }
 
     @SuppressWarnings("unused")
-    public static Object getObjectForKey(String key, Object control) {
+    public static Object getVariationForKey(String key, Object control) {
 
-        Object data = getObjectForKey(key);
+        Object data = getVariationForKey(key);
         if (data == null) {
             VWOLog.e(VWOLog.DATA_LOGS, "No data found for key: " + key, false);
             return control;
@@ -120,24 +119,6 @@ public class VWO {
             return data;
         }
 
-    }
-
-    @SuppressWarnings("unused")
-    public static Object getAllObjects() {
-
-        if (sSharedInstance != null && sSharedInstance.mVWOStartState.getValue() >= VWOStartState.STARTED.getValue()) {
-            // Only when the VWO has completely started or loaded from disk
-            Object object;
-
-            if (sSharedInstance.isEditMode()) {
-                object = sSharedInstance.getVwoSocket().getVariation();
-            } else {
-                object = sSharedInstance.getVwoData().getAllVariations();
-            }
-            return object;
-        }
-        VWOLog.e(VWOLog.DATA_LOGS, new IllegalStateException("Cannot call this method before VWO SDK is completely initialized."), false);
-        return new JSONObject();
     }
 
     /**
@@ -412,6 +393,10 @@ public class VWO {
 
     public VWOPreference getVwoPreference() {
         return mVWOPreference;
+    }
+
+    public static String sdkVersion() {
+        return BuildConfig.VERSION_NAME;
     }
 
 }

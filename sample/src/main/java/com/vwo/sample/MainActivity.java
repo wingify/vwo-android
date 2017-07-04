@@ -38,10 +38,10 @@ public class MainActivity extends AppCompatActivity {
                 .build();
 
         // Start VWO SDK in Sync mode
-        VWO.with(this, VWO_APP_KEY).config(VWOConfig).launch();
+        VWO.with(this, VWO_APP_KEY).config(VWOConfig).launchSynchronously();
 
         // Start VWO SDK in Async mode with callback
-        VWO.with(this, VWO_APP_KEY).config(VWOConfig).launchAsync(new VWOStatusListener() {
+        VWO.with(this, VWO_APP_KEY).config(VWOConfig).launch(new VWOStatusListener() {
             @Override
             public void onVwoLoaded() {
                 // VWO loaded successfully
@@ -54,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // Start VWO SDK in Async mode
-        VWO.with(this, VWO_APP_KEY).config(VWOConfig).launchAsync();
+        VWO.with(this, VWO_APP_KEY).config(VWOConfig).launch();
     }
 
     public void gotoNext(View v) {

@@ -36,7 +36,7 @@ public class ExperimentImages extends AppCompatActivity {
 
         ImageView varImage = (ImageView) findViewById(R.id.var_image);
 
-        Object urlObject = VWO.getObjectForKey("bannerURL");
+        Object urlObject = VWO.getVariationForKey("bannerURL");
 
         if (urlObject != null) {
             Toast.makeText(this, urlObject.toString(), Toast.LENGTH_SHORT).show();

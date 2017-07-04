@@ -27,7 +27,7 @@ public class Initializer {
      * This method will initialize the sdk either by fetching data from server or
      * from data of previous launch or from defaults(in case of network failure)
      */
-    public void launchAsync() {
+    public void launch() {
         if (vwo == null) {
             throw new IllegalArgumentException("You need to initialize vwo instance first");
         }
@@ -41,7 +41,7 @@ public class Initializer {
      * This method will initialize the sdk either by fetching data from server or
      * from data of previous launch or from defaults(in case of network failure)
      */
-    public void launchAsync(VWOStatusListener statusListener) {
+    public void launch(VWOStatusListener statusListener) {
         setup(vwo.getConfig(), false);
         vwo.startVwoInstance();
         vwo.setStatusListener(statusListener);
@@ -53,7 +53,7 @@ public class Initializer {
      * This method will initialize the sdk either by fetching data from server or
      * from data of previous launch or from defaults(in case of network failure)
      */
-    public void launch() {
+    public void launchSynchronously() {
         setup(vwo.getConfig(), true);
         vwo.startVwoInstance();
     }
