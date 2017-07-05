@@ -18,19 +18,19 @@ public class VWOPersistData {
     /**
      * The constant CAMPAIGN_ID.
      */
-    public final static String CAMPAIGN_ID = "campaignId";
+    private final static String CAMPAIGN_ID = "campaignId";
     /**
      * The constant VARIATION_ID.
      */
-    public static final String VARIATION_ID = "variationId";
+    private static final String VARIATION_ID = "variationId";
     /**
      * The constant GOALS.
      */
-    public static final String GOALS = "goals";
+    private static final String GOALS = "goals";
     /**
      * The constant CAMPAIGN_KEY.
      */
-    public static final String CAMPAIGN_KEY = "campaign_";
+    static final String CAMPAIGN_KEY = "campaign_";
     /**
      * The constant CAMPAIGN_LIST.
      */
@@ -46,7 +46,7 @@ public class VWOPersistData {
      * @param campaignId  the campaign id
      * @param variationId the variation id
      */
-    public VWOPersistData(long campaignId, int variationId) {
+    VWOPersistData(long campaignId, int variationId) {
         mCampaignId = campaignId;
         mVariationId = variationId;
         mGoals = new ArrayList<>();
@@ -58,7 +58,7 @@ public class VWOPersistData {
      *
      * @param data the data
      */
-    public VWOPersistData(JSONObject data) {
+    VWOPersistData(JSONObject data) {
         try {
             mCampaignId = data.getLong(CAMPAIGN_ID);
             setGoalsFromJsonArray(data.getJSONArray(GOALS));
@@ -74,7 +74,7 @@ public class VWOPersistData {
      * @return the persist campaign as json object
      * @throws JSONException the json exception
      */
-    public JSONObject getPersistCampaignAsJsonObject() throws JSONException {
+    private JSONObject getPersistCampaignAsJsonObject() throws JSONException {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put(CAMPAIGN_ID, mCampaignId);
         jsonObject.put(VARIATION_ID, mVariationId);
@@ -108,7 +108,7 @@ public class VWOPersistData {
      *
      * @param goalId the goal id
      */
-    public void addGoal(int goalId) {
+    void addGoal(int goalId) {
         if (mGoals == null) {
             mGoals = new ArrayList<>();
         }
@@ -121,7 +121,7 @@ public class VWOPersistData {
      * @param goalId the goal id
      * @return the boolean
      */
-    public boolean isGoalExists(int goalId) {
+    boolean isGoalExists(int goalId) {
         if (mGoals == null) {
             return false;
         }
@@ -140,7 +140,7 @@ public class VWOPersistData {
      *
      * @param sharedPreference the shared preference
      */
-    public void saveCampaign(VWOPreference sharedPreference) {
+    void saveCampaign(VWOPreference sharedPreference) {
 
         String campaignKey = CAMPAIGN_KEY + mCampaignId;
 
@@ -172,7 +172,7 @@ public class VWOPersistData {
      * @param sharedPreference the shared preference
      * @param url              the url
      */
-    public static void addToQueue(VWOPreference sharedPreference, String url) {
+    static void addToQueue(VWOPreference sharedPreference, String url) {
         ArrayList<String> urls = sharedPreference.getListString(VWOData.VWO_QUEUE);
         urls.add(url);
         sharedPreference.putListString(VWOData.VWO_QUEUE, urls);
@@ -186,7 +186,7 @@ public class VWOPersistData {
      * @param campaignKey the campaign key
      * @return the boolean
      */
-    public static boolean isExistingCampaign(VWO vwo, String campaignKey) {
+    static boolean isExistingCampaign(VWO vwo, String campaignKey) {
         String jsonAsString = vwo.getVwoPreference().getString(campaignKey);
         // Already part of campaign. Just add to campaigns list
         return jsonAsString != null && !jsonAsString.equals("");
@@ -197,7 +197,7 @@ public class VWOPersistData {
      *
      * @param vwo {@link VWO instance}
      */
-    public static void updateReturningUser(VWO vwo) {
+    static void updateReturningUser(VWO vwo) {
 
         vwo.getVwoPreference().putBoolean(AppConstants.IS_RETURNING_USER, true);
 

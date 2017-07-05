@@ -5,6 +5,7 @@ import com.vwo.mobile.segmentation.CustomSegment;
 import com.vwo.mobile.segmentation.DefaultSegment;
 import com.vwo.mobile.segmentation.PredefinedSegment;
 import com.vwo.mobile.segmentation.Segment;
+import com.vwo.mobile.utils.VWOLog;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -34,16 +35,21 @@ public class Campaign {
     public static final String SEGMENT_PREDEFINED = "predefined";
     public static final String SEGMENT_DEFAULT = "default";
 
+    // Track user automatically for a given campaign
+    public static final String TRACK_USER_AUTOMATICALLY = "track_user_on_launch";
+    private static final String PART_OF_CAMPAIGN = "part_of_campaign";
+
 
     private long mId;
     private int mVersion;
     private int mTraffic;
+    private boolean trackUserAutomatically;
     private CampaignTypeEnum mType;
     private boolean mCountGoalOnce;
     private boolean mIsClickMap;
     private ArrayList<Goal> mGoals;
     private Variation mVariation;
-    private boolean isExperimentServed;
+    private boolean partOfCampaign;
     private String mSegmentType;
     private ArrayList<Segment> mSegments;
 
@@ -60,6 +66,19 @@ public class Campaign {
                 JSONObject goal = goals.getJSONObject(i);
                 mGoals.add(new Goal(goal));
                 mVariation = new Variation(campaignData.getJSONObject(VARIATION));
+            }
+
+            try {
+                this.trackUserAutomatically = campaignData.getBoolean(TRACK_USER_AUTOMATICALLY);
+            } catch (JSONException exception) {
+                this.trackUserAutomatically = false;
+                VWOLog.e(VWOLog.DOWNLOAD_DATA_LOGS, "Cannot find or parse key: " + TRACK_USER_AUTOMATICALLY, exception, true);
+            }
+
+            if (campaignData.has(PART_OF_CAMPAIGN)) {
+                this.partOfCampaign = campaignData.getBoolean(PART_OF_CAMPAIGN);
+            } else {
+                this.partOfCampaign = this.trackUserAutomatically;
             }
 
             int clickMap = campaignData.getInt(CLICK_MAP);
@@ -136,16 +155,20 @@ public class Campaign {
         return mVariation;
     }
 
-    public boolean isExperimentServed() {
-        return isExperimentServed;
-    }
-
-    public void setIsExperimentServed(boolean isExperimentServed) {
-        this.isExperimentServed = isExperimentServed;
+    public boolean shouldTrackUserAutomatically() {
+        return trackUserAutomatically;
     }
 
     public ArrayList<Segment> getSegments() {
         return mSegments;
+    }
+
+    public boolean isPartOfCampaign() {
+        return partOfCampaign;
+    }
+
+    public void setPartOfCampaign(boolean partOfCampaign) {
+        this.partOfCampaign = partOfCampaign;
     }
 
     public JSONObject getCampaignAsJsonObject() throws JSONException {
@@ -158,6 +181,8 @@ public class Campaign {
         jsonObject.put(VARIATION, mVariation.getVariationAsJsonObject());
         jsonObject.put(COUNT_GOAL_ONCE, mCountGoalOnce);
         jsonObject.put(CLICK_MAP, mIsClickMap);
+        jsonObject.put(TRACK_USER_AUTOMATICALLY, trackUserAutomatically);
+        jsonObject.put(PART_OF_CAMPAIGN, this.partOfCampaign);
 
         JSONArray goalArray = new JSONArray();
 

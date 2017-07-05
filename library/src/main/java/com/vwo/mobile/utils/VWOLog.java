@@ -1,8 +1,10 @@
 package com.vwo.mobile.utils;
 
+import android.support.annotation.IntDef;
 import android.util.Log;
 
-import java.util.logging.Level;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 import io.sentry.Sentry;
 
@@ -23,6 +25,11 @@ public class VWOLog {
     public static final String TEST_LOGS = "test";
     public static final String SEGMENTATION_LOGS = "segmentation";
     public static final String CAMPAIGN_LOGS = "campaign";
+
+
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({OFF, SEVERE, WARNING, CONFIG, INFO, ALL})
+    public @interface LogLevel{}
 
     /**
      * OFF is a special level that can be used to turn off logging.
@@ -71,14 +78,18 @@ public class VWOLog {
     public static final int ALL = Integer.MIN_VALUE;
 
 
-    private static final int LEVEL = ALL;
+    @LogLevel
+    private static int LEVEL = ALL;
+
+    public static void setLogLevel(@LogLevel int logLevel) {
+        VWOLog.LEVEL = logLevel;
+    }
 
     /**
      * Always check if loggable
      */
 
 
-    @SuppressWarnings("ConstantConditions")
     public static void v(String tag, String msg) {
         if (LEVEL <= INFO) {
             if (Log.isLoggable(tag, Log.VERBOSE)) {
@@ -87,7 +98,6 @@ public class VWOLog {
         }
     }
 
-    @SuppressWarnings("ConstantConditions")
     public static void v(String tag, String msg, Throwable exception) {
         if (LEVEL <= INFO) {
             if (Log.isLoggable(tag, Log.VERBOSE)) {
@@ -102,7 +112,6 @@ public class VWOLog {
      */
 
 
-    @SuppressWarnings("ConstantConditions")
     public static void d(String tag, String msg, boolean checkLoggable) {
         if (LEVEL <= CONFIG) {
             if (checkLoggable) {
@@ -115,7 +124,6 @@ public class VWOLog {
         }
     }
 
-    @SuppressWarnings("ConstantConditions")
     public static void d(String tag, String msg, Throwable exception, boolean checkLoggable) {
         if (LEVEL <= CONFIG) {
             if (checkLoggable) {
@@ -128,7 +136,6 @@ public class VWOLog {
         }
     }
 
-    @SuppressWarnings("ConstantConditions")
     public static void i(String tag, String msg, boolean checkLoggable) {
         if (LEVEL <= INFO) {
             if (checkLoggable) {
@@ -141,7 +148,6 @@ public class VWOLog {
         }
     }
 
-    @SuppressWarnings("ConstantConditions")
     public static void i(String tag, String msg, Throwable exception, boolean checkLoggable) {
         if (LEVEL <= INFO) {
             if (checkLoggable) {
@@ -154,7 +160,6 @@ public class VWOLog {
         }
     }
 
-    @SuppressWarnings("ConstantConditions")
     public static void e(String tag, Exception ex, boolean checkLoggable) {
         if (LEVEL <= SEVERE) {
             if (checkLoggable) {
@@ -179,7 +184,6 @@ public class VWOLog {
         }
     }
 
-    @SuppressWarnings("ConstantConditions")
     public static void e(String tag, String msg, boolean checkLoggable) {
         if (LEVEL <= SEVERE) {
             if (checkLoggable) {
@@ -194,7 +198,6 @@ public class VWOLog {
         }
     }
 
-    @SuppressWarnings("ConstantConditions")
     public static void e(String tag, String msg, Throwable exception, boolean checkLoggable) {
         if (LEVEL <= SEVERE) {
             if (checkLoggable) {
@@ -209,7 +212,6 @@ public class VWOLog {
         }
     }
 
-    @SuppressWarnings("ConstantConditions")
     public static void w(String tag, String msg, boolean checkLoggable) {
         if (LEVEL <= WARNING) {
             if (checkLoggable) {
@@ -222,7 +224,6 @@ public class VWOLog {
         }
     }
 
-    @SuppressWarnings("ConstantConditions")
     public static void w(String tag, String msg, Throwable exception, boolean checkLoggable) {
         if (LEVEL <= WARNING) {
             if (checkLoggable) {
@@ -236,7 +237,6 @@ public class VWOLog {
     }
 
 
-    @SuppressWarnings("ConstantConditions")
     public static void wtf(String tag, String msg, boolean checkLoggable) {
         if (LEVEL <= SEVERE) {
             if (checkLoggable) {
@@ -249,7 +249,6 @@ public class VWOLog {
         }
     }
 
-    @SuppressWarnings("ConstantConditions")
     public static void wtf(String tag, Throwable exception, boolean checkLoggable) {
         if (LEVEL <= SEVERE) {
             if (checkLoggable) {
@@ -264,7 +263,6 @@ public class VWOLog {
         }
     }
 
-    @SuppressWarnings("ConstantConditions")
     public static void wtf(String tag, String msg, Throwable exception, boolean checkLoggable) {
         if (LEVEL <= SEVERE) {
             if (checkLoggable) {

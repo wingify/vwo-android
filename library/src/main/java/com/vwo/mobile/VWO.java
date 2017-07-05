@@ -90,14 +90,14 @@ public class VWO {
     }
 
     @SuppressWarnings("unused")
-    public static Object getVariationForKey(String key) {
+    public static Object getVariationForKey(@NonNull String key) {
 
         if (sSharedInstance != null && sSharedInstance.mVWOStartState.getValue() >= VWOStartState.STARTED.getValue()) {
             // Only when the VWO has completely started or loaded from disk
             Object object;
 
             if (sSharedInstance.isEditMode()) {
-                object = sSharedInstance.getVwoSocket().getObjectForKey(key);
+                object = sSharedInstance.getVwoSocket().getVariationForKey(key);
             } else {
                 object = sSharedInstance.getVwoData().getVariationForKey(key);
             }
@@ -367,19 +367,19 @@ public class VWO {
         return this.mContext;
     }
 
-    public boolean isEditMode() {
+    private boolean isEditMode() {
         return mIsEditMode;
     }
 
-    public void setIsEditMode(boolean isEditMode) {
+    void setIsEditMode(boolean isEditMode) {
         mIsEditMode = isEditMode;
     }
 
-    public VWOSocket getVwoSocket() {
+    private VWOSocket getVwoSocket() {
         return mVWOSocket;
     }
 
-    public VWOData getVwoData() {
+    private VWOData getVwoData() {
         return mVWOData;
     }
 
@@ -395,7 +395,7 @@ public class VWO {
         this.vwoConfig = config;
     }
 
-    public VWOUtils getVwoUtils() {
+    VWOUtils getVwoUtils() {
         return mVWOUtils;
     }
 

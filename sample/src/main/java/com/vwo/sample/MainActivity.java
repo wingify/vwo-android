@@ -30,10 +30,9 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-
-
         // Start VWO SDK in Sync mode
         VWO.with(this, VWO_APP_KEY).launch();
+        VWO.addCustomVariable("name", "aman");
 
         Map<String, String> customKeys = new HashMap<>();
         customKeys.put("name", "aman");
@@ -54,6 +53,9 @@ public class MainActivity extends AppCompatActivity {
                 // VWO not loaded
             }
         });
+
+        VWO.with(this, VWO_APP_KEY).config(vwoConfig).launchSynchronously();
+
     }
 
     public void gotoNext(View v) {

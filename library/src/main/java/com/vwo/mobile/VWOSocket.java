@@ -197,7 +197,7 @@ public class VWOSocket {
         return mVariation;
     }
 
-    public Object getObjectForKey(String key) {
+    public Object getVariationForKey(String key) {
 
         if (mVariationKeys != null && mVariationKeys.containsKey(key)) {
             return mVariationKeys.get(key);
