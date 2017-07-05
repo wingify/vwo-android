@@ -9,7 +9,6 @@ import android.view.MenuItem;
 import android.widget.TextView;
 
 import com.vwo.mobile.VWO;
-import com.vwo.mobile.VWOConfig;
 
 public class DetailActivity extends AppCompatActivity {
 
@@ -36,8 +35,6 @@ public class DetailActivity extends AppCompatActivity {
 
         VWO.markConversionForGoal("goal123");
         VWO.markConversionForGoal("goal456", 89.7);
-        VWOConfig config = new VWOConfig.Builder().build();
-
     }
 
     @Override

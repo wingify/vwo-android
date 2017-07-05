@@ -11,18 +11,18 @@ import io.sentry.Sentry;
  */
 public class VWOLog {
 
-    public static final String INITIALIZATION_LOGS = "com.vwo.init";
-    public static final String SOCKET_LOGS = "com.vwo.socket";
-    public static final String INIT_SOCKET_LOGS = "com.vwo.socket.init";
-    public static final String DOWNLOAD_DATA_LOGS = "com.vwo.data.download";
-    public static final String UPLOAD_LOGS = "com.vwo.data.upload";
-    public static final String DATA_LOGS = "com.vwo.data";
-    public static final String CONFIG_LOGS = "com.vwo.config";
-    public static final String PREFERENCE_LOGS = "com.vwo.preference";
-    public static final String URL_LOGS = "com.vwo.url";
-    public static final String TEST_LOGS = "com.vwo.test";
-    public static final String SEGMENTATION_LOGS = "com.vwo.segmentation";
-    public static final String CAMPAIGN_LOGS = "com.vwo.campaign";
+    public static final String INITIALIZATION_LOGS = "init";
+    public static final String SOCKET_LOGS = "socket";
+    public static final String INIT_SOCKET_LOGS = "socketInit";
+    public static final String DATA_LOGS = "data";
+    public static final String DOWNLOAD_DATA_LOGS = "downloadData";
+    public static final String UPLOAD_LOGS = "uploadData";
+    public static final String CONFIG_LOGS = "config";
+    public static final String PREFERENCE_LOGS = "preference";
+    public static final String URL_LOGS = "url";
+    public static final String TEST_LOGS = "test";
+    public static final String SEGMENTATION_LOGS = "segmentation";
+    public static final String CAMPAIGN_LOGS = "campaign";
 
     /**
      * OFF is a special level that can be used to turn off logging.
@@ -80,7 +80,7 @@ public class VWOLog {
 
     @SuppressWarnings("ConstantConditions")
     public static void v(String tag, String msg) {
-        if (LEVEL <= WARNING) {
+        if (LEVEL <= INFO) {
             if (Log.isLoggable(tag, Log.VERBOSE)) {
                 Log.v(tag, msg);
             }
@@ -89,7 +89,7 @@ public class VWOLog {
 
     @SuppressWarnings("ConstantConditions")
     public static void v(String tag, String msg, Throwable exception) {
-        if (LEVEL <= WARNING) {
+        if (LEVEL <= INFO) {
             if (Log.isLoggable(tag, Log.VERBOSE)) {
                 Log.v(tag, msg, exception);
             }
@@ -238,7 +238,7 @@ public class VWOLog {
 
     @SuppressWarnings("ConstantConditions")
     public static void wtf(String tag, String msg, boolean checkLoggable) {
-        if (LEVEL <= WARNING) {
+        if (LEVEL <= SEVERE) {
             if (checkLoggable) {
                 if (Log.isLoggable(tag, Log.ERROR)) {
                     Log.wtf(tag, msg);
@@ -251,7 +251,7 @@ public class VWOLog {
 
     @SuppressWarnings("ConstantConditions")
     public static void wtf(String tag, Throwable exception, boolean checkLoggable) {
-        if (LEVEL <= WARNING) {
+        if (LEVEL <= SEVERE) {
             if (checkLoggable) {
                 if (Log.isLoggable(tag, Log.ERROR)) {
                     Sentry.capture(exception);
@@ -266,7 +266,7 @@ public class VWOLog {
 
     @SuppressWarnings("ConstantConditions")
     public static void wtf(String tag, String msg, Throwable exception, boolean checkLoggable) {
-        if (LEVEL <= WARNING) {
+        if (LEVEL <= SEVERE) {
             if (checkLoggable) {
                 if (Log.isLoggable(tag, Log.ERROR)) {
                     Sentry.capture(msg);

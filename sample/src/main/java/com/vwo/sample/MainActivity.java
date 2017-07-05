@@ -30,18 +30,20 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+
+
+        // Start VWO SDK in Sync mode
+        VWO.with(this, VWO_APP_KEY).launch();
+
         Map<String, String> customKeys = new HashMap<>();
         customKeys.put("name", "aman");
-        VWOConfig VWOConfig = new VWOConfig
+        VWOConfig vwoConfig = new VWOConfig
                 .Builder()
                 .setCustomSegmentationMapping(customKeys)
                 .build();
 
-        // Start VWO SDK in Sync mode
-        VWO.with(this, VWO_APP_KEY).config(VWOConfig).launchSynchronously();
-
         // Start VWO SDK in Async mode with callback
-        VWO.with(this, VWO_APP_KEY).config(VWOConfig).launch(new VWOStatusListener() {
+        VWO.with(this, VWO_APP_KEY).config(vwoConfig).launch(new VWOStatusListener() {
             @Override
             public void onVwoLoaded() {
                 // VWO loaded successfully
@@ -52,9 +54,6 @@ public class MainActivity extends AppCompatActivity {
                 // VWO not loaded
             }
         });
-
-        // Start VWO SDK in Async mode
-        VWO.with(this, VWO_APP_KEY).config(VWOConfig).launch();
     }
 
     public void gotoNext(View v) {

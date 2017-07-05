@@ -47,15 +47,15 @@ public class VWO {
 
     private VWOData mVWOData;
     private VWOLocalData mVWOLocalData;
-    private VWOConfig VWOConfig;
+    private VWOConfig vwoConfig;
 
     private VWOStatusListener mStatusListener;
     private VWOStartState mVWOStartState;
 
-    private VWO(@NonNull Context context, @NonNull VWOConfig VWOConfig) {
+    private VWO(@NonNull Context context, @NonNull VWOConfig vwoConfig) {
         this.mContext = context;
         this.mIsEditMode = false;
-        this.VWOConfig = VWOConfig;
+        this.vwoConfig = vwoConfig;
         this.mVWOStartState = VWOStartState.NOT_STARTED;
     }
 
@@ -183,9 +183,9 @@ public class VWO {
             Sentry.init(ApiConstant.SENTRY, factory);
             VWOLog.e(VWOLog.INITIALIZATION_LOGS, "Minimum SDK version should be 14", false);
             return false;
-        } else if (!validateVwoAppKey(VWOConfig.getApiKey())) {
+        } else if (!validateVwoAppKey(vwoConfig.getApiKey())) {
             Sentry.init(ApiConstant.SENTRY, factory);
-            VWOLog.e(VWOLog.INITIALIZATION_LOGS, "Invalid App Key: " + VWOConfig.getAppKey(), false);
+            VWOLog.e(VWOLog.INITIALIZATION_LOGS, "Invalid App Key: " + vwoConfig.getAppKey(), false);
             return false;
         } else if (this.mVWOStartState != VWOStartState.NOT_STARTED) {
             VWOLog.w(VWOLog.INITIALIZATION_LOGS, "VWO already started", true);
@@ -311,7 +311,7 @@ public class VWO {
 
     public static class Builder {
         private final Context context;
-        private VWOConfig VWOConfig;
+        private VWOConfig vwoConfig;
 
         Builder(@NonNull Context context) {
             if (context == null) {
@@ -325,18 +325,18 @@ public class VWO {
         }
 
         public VWO build() {
-            return new VWO(context, VWOConfig);
+            return new VWO(context, vwoConfig);
         }
 
-        Builder setConfig(VWOConfig VWOConfig) {
-            if (VWOConfig == null) {
+        Builder setConfig(VWOConfig vwoConfig) {
+            if (vwoConfig == null) {
                 throw new IllegalArgumentException("Config must not be null.");
             }
-            if (this.VWOConfig != null) {
+            if (this.vwoConfig != null) {
                 throw new IllegalStateException("Config already set.");
             }
 
-            this.VWOConfig = VWOConfig;
+            this.vwoConfig = vwoConfig;
             return this;
         }
 
@@ -352,6 +352,14 @@ public class VWO {
 
     void setStatusListener(VWOStatusListener mStatusListener) {
         this.mStatusListener = mStatusListener;
+    }
+
+    public static void addCustomVariable(String name, String value) {
+        if(sSharedInstance == null) {
+            throw new IllegalStateException("You need to initialize VWO SDK first and the try calling this function.");
+        }
+
+        sSharedInstance.getConfig().addCustomSegment(name, value);
     }
 
     @Nullable
@@ -380,11 +388,11 @@ public class VWO {
     }
 
     public VWOConfig getConfig() {
-        return this.VWOConfig;
+        return this.vwoConfig;
     }
 
     void setConfig(VWOConfig config) {
-        this.VWOConfig = config;
+        this.vwoConfig = config;
     }
 
     public VWOUtils getVwoUtils() {

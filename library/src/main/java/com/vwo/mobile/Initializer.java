@@ -58,23 +58,23 @@ public class Initializer {
         vwo.startVwoInstance();
     }
 
-    public Initializer config(@NonNull VWOConfig VWOConfig) {
+    public Initializer config(@NonNull VWOConfig vwoConfig) {
         if (vwo.getConfig() != null) {
             VWOLog.w(VWOLog.CONFIG_LOGS, "Configuration already set", true);
         }
-        this.vwo.setConfig(VWOConfig);
+        this.vwo.setConfig(vwoConfig);
         return this;
     }
 
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    private void setup(@Nullable VWOConfig VWOConfig, boolean syncMode) {
-        if (VWOConfig == null) {
-            VWOConfig = new VWOConfig.Builder().apiKey(apiKey).build();
+    private void setup(@Nullable VWOConfig vwoConfig, boolean syncMode) {
+        if (vwoConfig == null) {
+            vwoConfig = new VWOConfig.Builder().apiKey(apiKey).build();
         } else {
-            VWOConfig.setApiKey(apiKey);
+            vwoConfig.setApiKey(apiKey);
         }
 
-        VWOConfig.setSync(syncMode);
-        vwo.setConfig(VWOConfig);
+        vwoConfig.setSync(syncMode);
+        vwo.setConfig(vwoConfig);
     }
 }

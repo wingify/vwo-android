@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -68,7 +69,7 @@ public class VWOConfig {
      * @param customSegmentKeys is the keymap for custom segmentation variables
      */
     void setCustomSegmentKeys(Map<String, String> customSegmentKeys) {
-        this.customSegmentationMapping = customSegmentKeys;
+        this.customSegmentationMapping = new HashMap<>(customSegmentKeys);
     }
 
     /**
@@ -78,6 +79,9 @@ public class VWOConfig {
      * @param value {@link String} is the value of custom segment.
      */
     void addCustomSegment(String key, String value) {
+        if(customSegmentationMapping == null) {
+            customSegmentationMapping = new HashMap<>();
+        }
         this.customSegmentationMapping.put(key, value);
     }
 
@@ -85,6 +89,9 @@ public class VWOConfig {
      * @param customSegments add multiple custom segment key value pairs
      */
     void addCustomSegments(Map<String, String> customSegments) {
+        if(customSegmentationMapping == null) {
+            customSegmentationMapping = new HashMap<>();
+        }
         this.customSegmentationMapping.putAll(customSegments);
     }
 
