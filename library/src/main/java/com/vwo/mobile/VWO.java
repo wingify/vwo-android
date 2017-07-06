@@ -7,7 +7,6 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.annotation.RestrictTo;
 
 import com.vwo.mobile.constants.ApiConstant;
@@ -37,7 +36,7 @@ public class VWO {
     private static VWO sSharedInstance;
 
     private boolean mIsEditMode;
-    @Nullable
+    @NonNull
     private final Context mContext;
     private VWODownloader mVWODownloader;
     private VWOUrlBuilder mVWOUrlBuilder;
@@ -165,8 +164,6 @@ public class VWO {
     @RestrictTo(RestrictTo.Scope.LIBRARY)
     boolean startVwoInstance() {
         VWOLog.v(VWOLog.INITIALIZATION_LOGS, "**** Starting VWO ver " + VWOUtils.getVwoSdkVersion() + " ****");
-
-        assert mContext != null;
 
         final AndroidSentryClientFactory factory = new AndroidSentryClientFactory(mContext);
 //        factory.createSentryClient(new Dsn(ApiConstant.SENTRY));
@@ -362,7 +359,6 @@ public class VWO {
         sSharedInstance.getConfig().addCustomSegment(name, value);
     }
 
-    @Nullable
     public Context getCurrentContext() {
         return this.mContext;
     }

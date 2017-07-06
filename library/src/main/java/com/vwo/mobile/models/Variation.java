@@ -17,8 +17,6 @@ public class Variation {
     public static final String ID = "id";
     public static final String WEIGHT = "weight";
     public static final String NAME = "name";
-    private static final String TAG = "VARIATION";
-
 
     private int mId;
     private String mName;
