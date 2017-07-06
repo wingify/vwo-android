@@ -13,20 +13,59 @@ import io.sentry.Sentry;
  */
 public class VWOLog {
 
+    /**
+     * The constant INITIALIZATION_LOGS.
+     */
     public static final String INITIALIZATION_LOGS = "init";
+    /**
+     * The constant SOCKET_LOGS.
+     */
     public static final String SOCKET_LOGS = "socket";
+    /**
+     * The constant INIT_SOCKET_LOGS.
+     */
     public static final String INIT_SOCKET_LOGS = "socketInit";
+    /**
+     * The constant DATA_LOGS.
+     */
     public static final String DATA_LOGS = "data";
+    /**
+     * The constant DOWNLOAD_DATA_LOGS.
+     */
     public static final String DOWNLOAD_DATA_LOGS = "downloadData";
+    /**
+     * The constant UPLOAD_LOGS.
+     */
     public static final String UPLOAD_LOGS = "uploadData";
+    /**
+     * The constant CONFIG_LOGS.
+     */
     public static final String CONFIG_LOGS = "config";
+    /**
+     * The constant PREFERENCE_LOGS.
+     */
     public static final String PREFERENCE_LOGS = "preference";
+    /**
+     * The constant URL_LOGS.
+     */
     public static final String URL_LOGS = "url";
+    /**
+     * The constant TEST_LOGS.
+     */
     public static final String TEST_LOGS = "test";
+    /**
+     * The constant SEGMENTATION_LOGS.
+     */
     public static final String SEGMENTATION_LOGS = "segmentation";
+    /**
+     * The constant CAMPAIGN_LOGS.
+     */
     public static final String CAMPAIGN_LOGS = "campaign";
 
 
+    /**
+     * The interface Log level.
+     */
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({OFF, SEVERE, WARNING, CONFIG, INFO, ALL})
     public @interface LogLevel{}
@@ -58,6 +97,9 @@ public class VWOLog {
      */
     public static final int WARNING = 900;
 
+    /**
+     * The constant CONFIG.
+     */
     public static final int CONFIG = 700;
 
     /**
@@ -81,6 +123,11 @@ public class VWOLog {
     @LogLevel
     private static int LEVEL = ALL;
 
+    /**
+     * Sets log level.
+     *
+     * @param logLevel the log level
+     */
     public static void setLogLevel(@LogLevel int logLevel) {
         VWOLog.LEVEL = logLevel;
     }
@@ -90,6 +137,12 @@ public class VWOLog {
      */
 
 
+    /**
+     * V.
+     *
+     * @param tag is the log tag
+     * @param msg is the message to log.
+     */
     public static void v(String tag, String msg) {
         if (LEVEL <= INFO) {
             if (Log.isLoggable(tag, Log.VERBOSE)) {
@@ -98,6 +151,13 @@ public class VWOLog {
         }
     }
 
+    /**
+     * V.
+     *
+     * @param tag       is the log tag to identify log in logcat
+     * @param msg       is the log message
+     * @param exception is the exception to be logged
+     */
     public static void v(String tag, String msg, Throwable exception) {
         if (LEVEL <= INFO) {
             if (Log.isLoggable(tag, Log.VERBOSE)) {
@@ -112,6 +172,13 @@ public class VWOLog {
      */
 
 
+    /**
+     * D.
+     *
+     * @param tag           the tag
+     * @param msg           the msg
+     * @param checkLoggable the check loggable
+     */
     public static void d(String tag, String msg, boolean checkLoggable) {
         if (LEVEL <= CONFIG) {
             if (checkLoggable) {
@@ -124,6 +191,14 @@ public class VWOLog {
         }
     }
 
+    /**
+     * D.
+     *
+     * @param tag           the tag
+     * @param msg           the msg
+     * @param exception     the exception
+     * @param checkLoggable the check loggable
+     */
     public static void d(String tag, String msg, Throwable exception, boolean checkLoggable) {
         if (LEVEL <= CONFIG) {
             if (checkLoggable) {
@@ -136,6 +211,13 @@ public class VWOLog {
         }
     }
 
+    /**
+     * .
+     *
+     * @param tag           the tag
+     * @param msg           the msg
+     * @param checkLoggable the check loggable
+     */
     public static void i(String tag, String msg, boolean checkLoggable) {
         if (LEVEL <= INFO) {
             if (checkLoggable) {
@@ -148,6 +230,14 @@ public class VWOLog {
         }
     }
 
+    /**
+     * .
+     *
+     * @param tag           the tag
+     * @param msg           the msg
+     * @param exception     the exception
+     * @param checkLoggable the check loggable
+     */
     public static void i(String tag, String msg, Throwable exception, boolean checkLoggable) {
         if (LEVEL <= INFO) {
             if (checkLoggable) {
@@ -160,6 +250,13 @@ public class VWOLog {
         }
     }
 
+    /**
+     * E.
+     *
+     * @param tag           the tag
+     * @param ex            the ex
+     * @param checkLoggable the check loggable
+     */
     public static void e(String tag, Exception ex, boolean checkLoggable) {
         if (LEVEL <= SEVERE) {
             if (checkLoggable) {
@@ -184,6 +281,13 @@ public class VWOLog {
         }
     }
 
+    /**
+     * E.
+     *
+     * @param tag           the tag
+     * @param msg           the msg
+     * @param checkLoggable the check loggable
+     */
     public static void e(String tag, String msg, boolean checkLoggable) {
         if (LEVEL <= SEVERE) {
             if (checkLoggable) {
@@ -198,6 +302,14 @@ public class VWOLog {
         }
     }
 
+    /**
+     * E.
+     *
+     * @param tag           the tag
+     * @param msg           the msg
+     * @param exception     the exception
+     * @param checkLoggable the check loggable
+     */
     public static void e(String tag, String msg, Throwable exception, boolean checkLoggable) {
         if (LEVEL <= SEVERE) {
             if (checkLoggable) {
@@ -212,6 +324,13 @@ public class VWOLog {
         }
     }
 
+    /**
+     * W.
+     *
+     * @param tag           the tag
+     * @param msg           the msg
+     * @param checkLoggable the check loggable
+     */
     public static void w(String tag, String msg, boolean checkLoggable) {
         if (LEVEL <= WARNING) {
             if (checkLoggable) {
@@ -224,6 +343,14 @@ public class VWOLog {
         }
     }
 
+    /**
+     * W.
+     *
+     * @param tag           the tag
+     * @param msg           the msg
+     * @param exception     the exception
+     * @param checkLoggable the check loggable
+     */
     public static void w(String tag, String msg, Throwable exception, boolean checkLoggable) {
         if (LEVEL <= WARNING) {
             if (checkLoggable) {
@@ -237,6 +364,13 @@ public class VWOLog {
     }
 
 
+    /**
+     * Wtf.
+     *
+     * @param tag           the tag
+     * @param msg           the msg
+     * @param checkLoggable the check loggable
+     */
     public static void wtf(String tag, String msg, boolean checkLoggable) {
         if (LEVEL <= SEVERE) {
             if (checkLoggable) {
@@ -249,6 +383,12 @@ public class VWOLog {
         }
     }
 
+    /**
+     *
+     * @param tag           the tag
+     * @param exception     the exception
+     * @param checkLoggable check if message is loggable. @see Log#isLoggable(String, int)
+     */
     public static void wtf(String tag, Throwable exception, boolean checkLoggable) {
         if (LEVEL <= SEVERE) {
             if (checkLoggable) {
@@ -263,6 +403,13 @@ public class VWOLog {
         }
     }
 
+    /**
+     *
+     * @param tag           the log tag
+     * @param msg           the message to be logged
+     * @param exception     the exception to be logged
+     * @param checkLoggable the check loggable {@link Log#isLoggable(String, int)}
+     */
     public static void wtf(String tag, String msg, Throwable exception, boolean checkLoggable) {
         if (LEVEL <= SEVERE) {
             if (checkLoggable) {

@@ -63,7 +63,10 @@ public class VWOData {
                                 if(tempCampaign.shouldTrackUserAutomatically()) {
                                     // TODO: Mark user as a part of campaign and save it locally to avoid hitting server again and again
                                     // Make user part of campaign
-                                    VWOPersistData.addToQueue(mVWO.getVwoPreference(), campaignRecordUrl);
+                                    if(!mVWO.getVwoPreference().isPartOfCampaign(String.valueOf(tempCampaign.getId()))) {
+                                        mVWO.getVwoPreference().setPartOfCampaign(String.valueOf(tempCampaign.getId()));
+                                        VWOPersistData.addToQueue(mVWO.getVwoPreference(), campaignRecordUrl);
+                                    }
                                 }
                             } else {
                                 VWOLog.i(VWOLog.CAMPAIGN_LOGS, "Campaign " + tempCampaign.getId() + ", Segmentation Condition not met, discarding", true);
@@ -97,13 +100,24 @@ public class VWOData {
         }
 
         if (mVariations.containsKey(key)) {
+
             Campaign campaign = mVariations.get(key);
+
+            if(!mVWO.getVwoPreference().isPartOfCampaign(String.valueOf(campaign.getId()))) {
+                mVWO.getVwoPreference().setPartOfCampaign(String.valueOf(campaign.getId()));
+
+                String campaignRecordUrl = mVWO.getVwoUrlBuilder().getCampaignUrl(campaign.getId(), campaign.getVariation().getId());
+                VWOLog.w(VWOLog.CAMPAIGN_LOGS, "Campaign " + campaign.getId() + " is a new and valid campaign", true);
+
+                VWOPersistData.addToQueue(mVWO.getVwoPreference(), campaignRecordUrl);
+            }
+
             return campaign.getVariation().getKey(key);
         }
         return null;
     }
 
-    public Object getAllVariations() {
+    /*public Object getAllVariations() {
         if (mVariations == null) {
             return new JSONObject();
         } else {
@@ -118,7 +132,7 @@ public class VWOData {
             }
             return data;
         }
-    }
+    }*/
 
     public void saveGoal(String goalIdentifier) {
         for (Campaign campaign : mCampaigns) {

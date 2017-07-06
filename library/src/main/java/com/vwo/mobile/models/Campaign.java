@@ -37,7 +37,6 @@ public class Campaign {
 
     // Track user automatically for a given campaign
     public static final String TRACK_USER_AUTOMATICALLY = "track_user_on_launch";
-    private static final String PART_OF_CAMPAIGN = "part_of_campaign";
 
 
     private long mId;
@@ -49,7 +48,6 @@ public class Campaign {
     private boolean mIsClickMap;
     private ArrayList<Goal> mGoals;
     private Variation mVariation;
-    private boolean partOfCampaign;
     private String mSegmentType;
     private ArrayList<Segment> mSegments;
 
@@ -73,12 +71,6 @@ public class Campaign {
             } catch (JSONException exception) {
                 this.trackUserAutomatically = false;
                 VWOLog.e(VWOLog.DOWNLOAD_DATA_LOGS, "Cannot find or parse key: " + TRACK_USER_AUTOMATICALLY, exception, true);
-            }
-
-            if (campaignData.has(PART_OF_CAMPAIGN)) {
-                this.partOfCampaign = campaignData.getBoolean(PART_OF_CAMPAIGN);
-            } else {
-                this.partOfCampaign = this.trackUserAutomatically;
             }
 
             int clickMap = campaignData.getInt(CLICK_MAP);
@@ -163,14 +155,6 @@ public class Campaign {
         return mSegments;
     }
 
-    public boolean isPartOfCampaign() {
-        return partOfCampaign;
-    }
-
-    public void setPartOfCampaign(boolean partOfCampaign) {
-        this.partOfCampaign = partOfCampaign;
-    }
-
     public JSONObject getCampaignAsJsonObject() throws JSONException {
 
         JSONObject jsonObject = new JSONObject();
@@ -182,7 +166,6 @@ public class Campaign {
         jsonObject.put(COUNT_GOAL_ONCE, mCountGoalOnce);
         jsonObject.put(CLICK_MAP, mIsClickMap);
         jsonObject.put(TRACK_USER_AUTOMATICALLY, trackUserAutomatically);
-        jsonObject.put(PART_OF_CAMPAIGN, this.partOfCampaign);
 
         JSONArray goalArray = new JSONArray();
 
