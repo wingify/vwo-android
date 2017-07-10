@@ -30,6 +30,7 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        // Config for adding custom parameters before launch.
         Map<String, String> customKeys = new HashMap<>();
         customKeys.put("name", "value");
         VWOConfig vwoConfig = new VWOConfig
@@ -37,8 +38,9 @@ public class MainActivity extends AppCompatActivity {
                 .setCustomSegmentationMapping(customKeys)
                 .build();
 
-        // Start VWO SDK in Sync mode
+        // Start VWO SDK in Async mode
         VWO.with(this, VWO_APP_KEY).config(vwoConfig).launch();
+        // Config for adding custom parameters for after launch.
         VWO.addCustomVariable("key", "value");
 
 
@@ -55,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        // Start VWO SDK in Sync mode
         VWO.with(this, VWO_APP_KEY).config(vwoConfig).launchSynchronously();
 
     }
