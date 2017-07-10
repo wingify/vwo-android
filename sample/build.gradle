@@ -37,10 +37,14 @@ android {
             it.buildConfigField 'String', 'VWO_API_KEY', RELEASE_VWO_API_KEY
             dimension "vwo"
         }
+        manualTesting {
+            it.buildConfigField 'String', 'VWO_API_KEY', TESTING_VWO_API_KEY
+            dimension "vwo"
+        }
     }
 
     variantFilter { variant ->
-        if (variant.name == "localRelease" || variant.name == "remoteRelease" || variant.name == "productionDebug") {
+        if (variant.name == "localRelease" || variant.name == "remoteRelease" || variant.name == "productionDebug" || variant.name == "manualTestingRelease") {
             // Gradle ignores any variants that satisfy the conditions above.
             variant.setIgnore(true)
         }

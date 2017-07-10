@@ -41,7 +41,7 @@ public class Initializer {
      * This method will initialize the sdk either by fetching data from server or
      * from data of previous launch or from defaults(in case of network failure)
      */
-    public void launch(VWOStatusListener statusListener) {
+    public void launch(@NonNull VWOStatusListener statusListener) {
         setup(vwo.getConfig(), false);
         vwo.startVwoInstance();
         vwo.setStatusListener(statusListener);
@@ -66,7 +66,7 @@ public class Initializer {
         return this;
     }
 
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    @RestrictTo(RestrictTo.Scope.LIBRARY)
     private void setup(@Nullable VWOConfig vwoConfig, boolean syncMode) {
         if (vwoConfig == null) {
             vwoConfig = new VWOConfig.Builder().apiKey(apiKey).build();

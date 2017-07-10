@@ -96,30 +96,35 @@ public class VWOData {
             return null;
         }
 
+        Object variation = null;
+
         // Check is user is accessing key for the campaign that user is already part of.
         if (mVariations.containsKey(key)) {
             Campaign campaign = mVariations.get(key);
             Log.v(VWOLog.CAMPAIGN_LOGS, "User already part of campaign with id: " + campaign.getId());
 
-            return campaign.getVariation().getKey(key);
-        } else {
-            boolean foundAnyCampaign = false;
-            List<Campaign> campaignsToBeRemoved = new ArrayList<>();
-            for(Campaign campaign : mUntrackedCampaigns) {
-                if(campaign.getVariation().getKey(key) != null) {
-                    evaluateAndMakeUserPartOfCampaign(campaign);
-                    campaignsToBeRemoved.add(campaign);
-                    foundAnyCampaign = true;
-                }
-            }
+            variation = campaign.getVariation().getKey(key);
+        }
 
-            if(foundAnyCampaign) {
-                mUntrackedCampaigns.removeAll(campaignsToBeRemoved);
-                generateVariationHash();
-                return getVariationForKey(key);
+        // Check if key exists in campaigns that user is not part of.
+
+        boolean foundAnyCampaign = false;
+        List<Campaign> campaignsToBeRemoved = new ArrayList<>();
+        for(Campaign campaign : mUntrackedCampaigns) {
+            if(campaign.getVariation().getKey(key) != null) {
+                evaluateAndMakeUserPartOfCampaign(campaign);
+                campaignsToBeRemoved.add(campaign);
+                foundAnyCampaign = true;
             }
         }
-        return null;
+
+        if(foundAnyCampaign) {
+            mUntrackedCampaigns.removeAll(campaignsToBeRemoved);
+            generateVariationHash();
+            variation = getVariationForKey(key);
+        }
+
+        return variation;
     }
 
     private void evaluateAndMakeUserPartOfCampaign(Campaign campaign) {
