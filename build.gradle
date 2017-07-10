@@ -37,7 +37,7 @@ buildscript {
         ]
 
         okHttpDependencies = [
-                okHttp3            : "com.squareup.okhttp3:okhttp:${okHttpVersion}",
+                okHttp3           : "com.squareup.okhttp3:okhttp:${okHttpVersion}",
                 loggingInterceptor: "com.squareup.okhttp3:logging-interceptor:${okHttpVersion}"
         ]
 

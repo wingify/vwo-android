@@ -123,20 +123,8 @@ public class Campaign {
         return mVersion;
     }
 
-    public int getTraffic() {
-        return mTraffic;
-    }
-
     public CampaignTypeEnum getType() {
         return mType;
-    }
-
-    public boolean isCountGoalOnce() {
-        return mCountGoalOnce;
-    }
-
-    public boolean isClickMap() {
-        return mIsClickMap;
     }
 
     public ArrayList<Goal> getGoals() {
@@ -178,5 +166,10 @@ public class Campaign {
 
     public String getSegmentType() {
         return mSegmentType;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof Campaign && ((Campaign) obj).getId() == this.mId || super.equals(obj);
     }
 }

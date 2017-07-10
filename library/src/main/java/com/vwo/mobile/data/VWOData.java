@@ -1,6 +1,8 @@
 package com.vwo.mobile.data;
 
 
+import android.util.Log;
+
 import com.vwo.mobile.VWO;
 import com.vwo.mobile.models.Campaign;
 import com.vwo.mobile.models.Goal;
@@ -16,6 +18,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
@@ -29,11 +32,13 @@ public class VWOData {
     public static final String VWO_QUEUE = "VWO_QUEUE";
     private ArrayList<Campaign> mCampaigns;
     private Map<String, Campaign> mVariations;
+    private ArrayList<Campaign> mUntrackedCampaigns;
     private VWO mVWO;
 
     public VWOData(VWO vwo) {
         this.mVWO = vwo;
         mCampaigns = new ArrayList<>();
+        mUntrackedCampaigns = new ArrayList<>();
     }
 
     public void parseData(JSONArray data) {
@@ -52,24 +57,10 @@ public class VWOData {
                             mCampaigns.add(tempCampaign);
                             VWOLog.w(VWOLog.CAMPAIGN_LOGS, "Campaign " + tempCampaign.getId() + " is already a part", true);
                         } else {
-                            if (evaluateSegmentation(mVWO, tempCampaign)) {
-                                mCampaigns.add(tempCampaign);
-
-                                String campaignRecordUrl = mVWO.getVwoUrlBuilder().getCampaignUrl(tempCampaign.getId(), tempCampaign.getVariation().getId());
-                                VWOLog.w(VWOLog.CAMPAIGN_LOGS, "Campaign " + tempCampaign.getId() + " is a new and valid campaign", true);
-
-                                VWOPersistData vwoPersistData = new VWOPersistData(tempCampaign.getId(), tempCampaign.getVariation().getId());
-                                vwoPersistData.saveCampaign(mVWO.getVwoPreference());
-                                if(tempCampaign.shouldTrackUserAutomatically()) {
-                                    // TODO: Mark user as a part of campaign and save it locally to avoid hitting server again and again
-                                    // Make user part of campaign
-                                    if(!mVWO.getVwoPreference().isPartOfCampaign(String.valueOf(tempCampaign.getId()))) {
-                                        mVWO.getVwoPreference().setPartOfCampaign(String.valueOf(tempCampaign.getId()));
-                                        VWOPersistData.addToQueue(mVWO.getVwoPreference(), campaignRecordUrl);
-                                    }
-                                }
+                            if (tempCampaign.shouldTrackUserAutomatically()) {
+                                evaluateAndMakeUserPartOfCampaign(tempCampaign);
                             } else {
-                                VWOLog.i(VWOLog.CAMPAIGN_LOGS, "Campaign " + tempCampaign.getId() + ", Segmentation Condition not met, discarding", true);
+                                mUntrackedCampaigns.add(tempCampaign);
                             }
                         }
                     }
@@ -93,28 +84,62 @@ public class VWOData {
         generateVariationHash();
     }
 
+    /**
+     * Returns the value corresponding to he key for a any variation.
+     * @param key is the identifier corresponding to which a value needs to be fetched.
+     *
+     * @return the variation value for the given {@param key}
+     */
     public Object getVariationForKey(String key) {
 
         if (mVariations == null) {
             return null;
         }
 
+        // Check is user is accessing key for the campaign that user is already part of.
         if (mVariations.containsKey(key)) {
-
             Campaign campaign = mVariations.get(key);
-
-            if(!mVWO.getVwoPreference().isPartOfCampaign(String.valueOf(campaign.getId()))) {
-                mVWO.getVwoPreference().setPartOfCampaign(String.valueOf(campaign.getId()));
-
-                String campaignRecordUrl = mVWO.getVwoUrlBuilder().getCampaignUrl(campaign.getId(), campaign.getVariation().getId());
-                VWOLog.w(VWOLog.CAMPAIGN_LOGS, "Campaign " + campaign.getId() + " is a new and valid campaign", true);
-
-                VWOPersistData.addToQueue(mVWO.getVwoPreference(), campaignRecordUrl);
-            }
+            Log.v(VWOLog.CAMPAIGN_LOGS, "User already part of campaign with id: " + campaign.getId());
 
             return campaign.getVariation().getKey(key);
+        } else {
+            boolean foundAnyCampaign = false;
+            List<Campaign> campaignsToBeRemoved = new ArrayList<>();
+            for(Campaign campaign : mUntrackedCampaigns) {
+                if(campaign.getVariation().getKey(key) != null) {
+                    evaluateAndMakeUserPartOfCampaign(campaign);
+                    campaignsToBeRemoved.add(campaign);
+                    foundAnyCampaign = true;
+                }
+            }
+
+            if(foundAnyCampaign) {
+                mUntrackedCampaigns.removeAll(campaignsToBeRemoved);
+                generateVariationHash();
+                return getVariationForKey(key);
+            }
         }
         return null;
+    }
+
+    private void evaluateAndMakeUserPartOfCampaign(Campaign campaign) {
+        if (evaluateSegmentation(mVWO, campaign)) {
+            mCampaigns.add(campaign);
+
+            String campaignRecordUrl = mVWO.getVwoUrlBuilder().getCampaignUrl(campaign.getId(), campaign.getVariation().getId());
+            VWOLog.w(VWOLog.CAMPAIGN_LOGS, "Campaign " + campaign.getId() + " is a new and valid campaign", true);
+
+            VWOPersistData vwoPersistData = new VWOPersistData(campaign.getId(), campaign.getVariation().getId());
+            vwoPersistData.saveCampaign(mVWO.getVwoPreference());
+
+            // Make user part of campaign and avoid duplication
+            if (!mVWO.getVwoPreference().isPartOfCampaign(String.valueOf(campaign.getId()))) {
+                mVWO.getVwoPreference().setPartOfCampaign(String.valueOf(campaign.getId()));
+                VWOPersistData.addToQueue(mVWO.getVwoPreference(), campaignRecordUrl);
+            }
+        } else {
+            VWOLog.i(VWOLog.CAMPAIGN_LOGS, "Campaign " + campaign.getId() + ", Segmentation Condition not met, discarding", true);
+        }
     }
 
     /*public Object getAllVariations() {
@@ -157,6 +182,8 @@ public class VWOData {
                         }
 
                     }
+                } else {
+                    Log.v(VWOLog.CAMPAIGN_LOGS, "Goal not matched");
                 }
             }
         }
@@ -194,6 +221,8 @@ public class VWOData {
     private void generateVariationHash() {
         if (mVariations == null) {
             mVariations = new HashMap<>();
+        } else {
+            mVariations.clear();
         }
 
         for (Campaign campaign : mCampaigns) {

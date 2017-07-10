@@ -36,6 +36,7 @@ public class ExperimentImages extends AppCompatActivity {
 
         ImageView varImage = (ImageView) findViewById(R.id.var_image);
 
+
         Object urlObject = VWO.getVariationForKey("bannerURL");
 
         if (urlObject != null) {
