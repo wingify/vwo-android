@@ -56,8 +56,8 @@ public class VWOData {
                         if (VWOPersistData.isExistingCampaign(mVWO, VWOPersistData.CAMPAIGN_KEY + tempCampaign.getId())) {
                             // Already part of campaign. Just add to campaigns list
                             mCampaigns.add(tempCampaign);
-                            VWOLog.w(VWOLog.CAMPAIGN_LOGS, "User already part of campaign with id: "
-                                    + tempCampaign.getId() + "\nAnd variation with id : " + tempCampaign.getVariation().getId(),
+                            VWOLog.w(VWOLog.CAMPAIGN_LOGS, "User already part of campaign \""
+                                    + tempCampaign.getName() + "\"\nAnd variation \"" + tempCampaign.getVariation().getName() +"\"",
                                     true);
                         } else {
                             if (tempCampaign.shouldTrackUserAutomatically()) {
@@ -72,11 +72,11 @@ public class VWOData {
                     VWOPersistData vwoPersistData = new VWOPersistData(campaignId, 0);
                     vwoPersistData.saveCampaign(mVWO.getVwoPreference());
                 } else {
-                    VWOLog.i(VWOLog.CAMPAIGN_LOGS, "Campaign " + data.getJSONObject(i).getInt("id") + ", Discarding because it is not running", true);
+                    VWOLog.i(VWOLog.CAMPAIGN_LOGS, "Discarding Campaign \"" + data.getJSONObject(i).getString(Campaign.NAME) + "\", because it is not running", true);
                 }
 
             } catch (JSONException exception) {
-                VWOLog.e(VWOLog.CAMPAIGN_LOGS, "Unable to parse campaign data: " + data.toString(), exception, true, true);
+                VWOLog.e(VWOLog.CAMPAIGN_LOGS, "Unable to parse campaign data: \n" + data.toString(), exception, true, true);
             }
         }
 
@@ -104,7 +104,6 @@ public class VWOData {
         // Check is user is accessing key for the campaign that user is already part of.
         if (mVariations.containsKey(key)) {
             Campaign campaign = mVariations.get(key);
-            Log.v(VWOLog.CAMPAIGN_LOGS, "User already part of campaign with id: " + campaign.getId());
 
             variation = campaign.getVariation().getKey(key);
         }
@@ -135,8 +134,8 @@ public class VWOData {
             mCampaigns.add(campaign);
 
             String campaignRecordUrl = mVWO.getVwoUrlBuilder().getCampaignUrl(campaign.getId(), campaign.getVariation().getId());
-            VWOLog.v(VWOLog.CAMPAIGN_LOGS, "Campaign " + campaign.getId() + " is a new and valid campaign");
-            VWOLog.v(VWOLog.CAMPAIGN_LOGS, "Making user part of campaign with id: " + campaign.getId() + "\nand variation with id: "
+            VWOLog.v(VWOLog.CAMPAIGN_LOGS, "Campaign \"" + campaign.getName() + "\" is a new and valid campaign");
+            VWOLog.v(VWOLog.CAMPAIGN_LOGS, "Making user part of campaign \"" + campaign.getId() + "\"\nand variation with id: "
                             + campaign.getVariation().getId());
 
             VWOPersistData vwoPersistData = new VWOPersistData(campaign.getId(), campaign.getVariation().getId());
@@ -148,7 +147,8 @@ public class VWOData {
                 VWOPersistData.addToQueue(mVWO.getVwoPreference(), campaignRecordUrl);
             }
         } else {
-            VWOLog.i(VWOLog.CAMPAIGN_LOGS, "Campaign " + campaign.getId() + ", Segmentation Condition not met, discarding", true);
+            VWOLog.i(VWOLog.CAMPAIGN_LOGS, "Segmentation Condition for Campaign \"" +
+                    campaign.getId() + "\" not met", true);
         }
     }
 

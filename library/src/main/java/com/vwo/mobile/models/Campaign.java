@@ -23,6 +23,7 @@ public class Campaign {
     public final static String STATUS = "status";
     public final static String TRAFFIC = "pc_traffic";
     public final static String TYPE = "type";
+    public final static String NAME = "name";
     public final static String VARIATION = "variations";
     public final static String GOALS = "goals";
     public static final String COUNT_GOAL_ONCE = "count_goal_once";
@@ -49,6 +50,7 @@ public class Campaign {
     private ArrayList<Goal> mGoals;
     private Variation mVariation;
     private String mSegmentType;
+    private String name;
     private ArrayList<Segment> mSegments;
 
     public Campaign(JSONObject campaignData) {
@@ -58,6 +60,7 @@ public class Campaign {
             mGoals = new ArrayList<>();
             this.mTraffic = campaignData.getInt(TRAFFIC);
             this.mType = CampaignTypeEnum.getEnumFromCampaign(campaignData.getString(TYPE));
+            this.name = campaignData.getString(NAME);
 
             JSONArray goals = campaignData.getJSONArray(GOALS);
             for (int i = 0; i < goals.length(); i++) {
@@ -120,6 +123,10 @@ public class Campaign {
         return mId;
     }
 
+    public String getName() {
+        return this.name;
+    }
+
     public int getVersion() {
         return mVersion;
     }
@@ -154,6 +161,7 @@ public class Campaign {
         jsonObject.put(VARIATION, mVariation.getVariationAsJsonObject());
         jsonObject.put(COUNT_GOAL_ONCE, mCountGoalOnce);
         jsonObject.put(CLICK_MAP, mIsClickMap);
+        jsonObject.put(NAME, this.name);
         jsonObject.put(TRACK_USER_AUTOMATICALLY, trackUserAutomatically);
 
         JSONArray goalArray = new JSONArray();
