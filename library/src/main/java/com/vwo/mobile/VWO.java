@@ -59,14 +59,6 @@ public class VWO {
         this.mVWOStartState = VWOStartState.NOT_STARTED;
     }
 
-    private VWO() {
-        this.mContext = null;
-        this.mIsEditMode = false;
-        this.mVWODownloader = new VWODownloader(this);
-        this.mVWOUrlBuilder = new VWOUrlBuilder(this);
-        this.mVWOLocalData = new VWOLocalData(this);
-    }
-
     /*private Vwo() {
 
     }*/
@@ -132,15 +124,14 @@ public class VWO {
 
         if (sSharedInstance != null && sSharedInstance.mVWOStartState.getValue() >= VWOStartState.STARTED.getValue()) {
 
-            VWO vwo = new Builder().build();
-
-            if (vwo.isEditMode()) {
-                vwo.getVwoSocket().triggerGoal(goalIdentifier);
+            if (sSharedInstance.isEditMode()) {
+                sSharedInstance.getVwoSocket().triggerGoal(goalIdentifier);
             } else {
                 sSharedInstance.mVWOData.saveGoal(goalIdentifier);
             }
+        } else {
+            VWOLog.w(VWOLog.UPLOAD_LOGS, "SDK not initialized completely", true);
         }
-        VWOLog.w(VWOLog.UPLOAD_LOGS, "SDK not initialized completely", true);
     }
 
     /**
@@ -159,8 +150,9 @@ public class VWO {
                 // Check if already present in persisting data
                 sSharedInstance.mVWOData.saveGoal(goalIdentifier, value);
             }
+        } else {
+            VWOLog.w(VWOLog.UPLOAD_LOGS, "SDK not initialized completely", true);
         }
-        VWOLog.w(VWOLog.UPLOAD_LOGS, "SDK not initialized completely", true);
     }
 
     @SuppressWarnings("SpellCheckingInspection")
@@ -169,7 +161,6 @@ public class VWO {
         VWOLog.v(VWOLog.INITIALIZATION_LOGS, "**** Starting VWO ver " + VWOUtils.getVwoSdkVersion() + " ****");
 
         final AndroidSentryClientFactory factory = new AndroidSentryClientFactory(mContext);
-//        factory.createSentryClient(new Dsn(ApiConstant.SENTRY));
 
         if (!VWOUtils.checkForInternetPermissions(mContext)) {
             return false;
@@ -274,13 +265,13 @@ public class VWO {
     }
 
     private void initializeComponents() {
-        this.mVWOLocalData = new VWOLocalData(this);
-        this.mVWOUtils = new VWOUtils(this);
-        this.mVWODownloader = new VWODownloader(this);
-        this.mVWOUrlBuilder = new VWOUrlBuilder(this);
-        this.mVWOData = new VWOData(this);
-        this.mVWOSocket = new VWOSocket(this);
-        this.mVWOPreference = new VWOPreference(this);
+        this.mVWOLocalData = new VWOLocalData(sSharedInstance);
+        this.mVWOUtils = new VWOUtils(sSharedInstance);
+        this.mVWODownloader = new VWODownloader(sSharedInstance);
+        this.mVWOUrlBuilder = new VWOUrlBuilder(sSharedInstance);
+        this.mVWOData = new VWOData(sSharedInstance);
+        this.mVWOSocket = new VWOSocket(sSharedInstance);
+        this.mVWOPreference = new VWOPreference(sSharedInstance);
 
     }
 
