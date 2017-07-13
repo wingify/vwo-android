@@ -70,7 +70,8 @@ public class Campaign {
                 this.trackUserAutomatically = campaignData.getBoolean(TRACK_USER_AUTOMATICALLY);
             } catch (JSONException exception) {
                 this.trackUserAutomatically = false;
-                VWOLog.e(VWOLog.DOWNLOAD_DATA_LOGS, "Cannot find or parse key: " + TRACK_USER_AUTOMATICALLY, exception, true);
+                VWOLog.e(VWOLog.DOWNLOAD_DATA_LOGS, "Cannot find or parse key: " + TRACK_USER_AUTOMATICALLY,
+                        exception, true, true);
             }
 
             int clickMap = campaignData.getInt(CLICK_MAP);

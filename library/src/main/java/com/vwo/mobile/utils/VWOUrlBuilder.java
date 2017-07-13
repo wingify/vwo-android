@@ -58,7 +58,7 @@ public class VWOUrlBuilder {
         try {
             return URLEncoder.encode(data, "UTF-8");
         } catch (UnsupportedEncodingException exception) {
-            VWOLog.e(VWOLog.URL_LOGS, "Exception generation url", exception, true);
+            VWOLog.e(VWOLog.URL_LOGS, "Exception generation url", exception, true, true);
             return "";
         }
     }
@@ -129,7 +129,8 @@ public class VWOUrlBuilder {
 
             return jsonObject.toString();
         } catch (JSONException exception) {
-            VWOLog.e(VWOLog.URL_LOGS, "Exception parsing json object: \n" + jsonObject.toString(), exception, true);
+            VWOLog.e(VWOLog.URL_LOGS, "Exception parsing json object: \n" + jsonObject.toString(),
+                    exception, true, true);
         }
         return "";
     }

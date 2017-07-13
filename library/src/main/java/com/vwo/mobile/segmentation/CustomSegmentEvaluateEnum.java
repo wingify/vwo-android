@@ -30,7 +30,8 @@ public enum CustomSegmentEvaluateEnum {
                         return true;
                     }
                 } catch (NumberFormatException | JSONException exception) {
-                    VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse Android Version", exception, true);
+                    VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse Android Version",
+                            exception, true, true);
                 }
             }
             return false;
@@ -51,7 +52,8 @@ public enum CustomSegmentEvaluateEnum {
                         return false;
                     }
                 } catch (NumberFormatException | JSONException ex) {
-                    VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse Android Version", ex, true);
+                    VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse Android Version", ex,
+                            true, true);
                 }
             }
             return true;
@@ -75,7 +77,8 @@ public enum CustomSegmentEvaluateEnum {
                         return true;
                     }
                 } catch (NumberFormatException | JSONException ex) {
-                    VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse day of week", ex, true);
+                    VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse day of week", ex, true,
+                            true);
                 }
             }
             return false;
@@ -99,7 +102,8 @@ public enum CustomSegmentEvaluateEnum {
                         return false;
                     }
                 } catch (NumberFormatException | JSONException ex) {
-                    VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse day of week", ex, true);
+                    VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse day of week", ex,
+                            true, true);
                 }
             }
             return true;
@@ -122,7 +126,8 @@ public enum CustomSegmentEvaluateEnum {
                         return true;
                     }
                 } catch (NumberFormatException | JSONException ex) {
-                    VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse hour of the day", ex, true);
+                    VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse hour of the day", ex,
+                            true, true);
                 }
             }
             return false;
@@ -145,7 +150,8 @@ public enum CustomSegmentEvaluateEnum {
                         return false;
                     }
                 } catch (NumberFormatException | JSONException ex) {
-                    VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse hour of the day", ex, true);
+                    VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse hour of the day", ex,
+                            true, true);
                 }
             }
             return true;
@@ -172,7 +178,8 @@ public enum CustomSegmentEvaluateEnum {
                         return true;
                     }
                 } catch (JSONException exception) {
-                    VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse location", exception, true);
+                    VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse location", exception,
+                            true, true);
                 }
             }
             return false;
@@ -199,7 +206,8 @@ public enum CustomSegmentEvaluateEnum {
                         return false;
                     }
                 } catch (JSONException exception) {
-                    VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse location", exception, true);
+                    VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse location", exception,
+                            true, true);
                 }
             }
             return true;
@@ -222,7 +230,8 @@ public enum CustomSegmentEvaluateEnum {
                         return true;
                     }
                 } catch (JSONException exception) {
-                    VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse app version", exception, true);
+                    VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse app version", exception,
+                            true, true);
                 }
             }
             return false;
@@ -245,7 +254,8 @@ public enum CustomSegmentEvaluateEnum {
                         return false;
                     }
                 } catch (JSONException exception) {
-                    VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse app version", exception, true);
+                    VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse app version", exception,
+                            true, true);
                 }
             }
             return true;
@@ -269,7 +279,8 @@ public enum CustomSegmentEvaluateEnum {
                         return true;
                     }
                 } catch (JSONException exception) {
-                    VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse app version", exception, true);
+                    VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse app version", exception,
+                            true, true);
                 }
             }
             return false;
@@ -292,7 +303,8 @@ public enum CustomSegmentEvaluateEnum {
                         return true;
                     }
                 } catch (JSONException exception) {
-                    VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse app version", exception, true);
+                    VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse app version", exception,
+                            true, true);
                 }
             }
             return false;
@@ -315,7 +327,8 @@ public enum CustomSegmentEvaluateEnum {
                         return true;
                     }
                 } catch (JSONException exception) {
-                    VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse app version", exception, true);
+                    VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse app version", exception,
+                            true, true);
                 }
             }
             return false;
@@ -348,7 +361,8 @@ public enum CustomSegmentEvaluateEnum {
                         return true;
                     }
                 } catch (JSONException exception) {
-                    VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse custom segment", exception, true);
+                    VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse custom segment", exception,
+                            true, true);
                 }
             }
             return false;
@@ -376,7 +390,8 @@ public enum CustomSegmentEvaluateEnum {
                         return false;
                     }
                 } catch (JSONException exception) {
-                    VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse custom segment", exception, true);
+                    VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse custom segment", exception,
+                            true, true);
                 }
             }
             return true;
@@ -394,7 +409,8 @@ public enum CustomSegmentEvaluateEnum {
             String customVariable = vwo.getConfig().getValueForCustomSegment(key);
             // Check if custom keys are set by developer or not if not return false otherwise evaluate.
             if (TextUtils.isEmpty(customVariable)) {
-                VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Custom variable value is not set for key: " + key, false);
+                VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Custom variable value is not set for key: " + key,
+                        false, false);
                 return false;
             }
             for (int i = 0; i < data.length(); i++) {
@@ -405,7 +421,8 @@ public enum CustomSegmentEvaluateEnum {
                         return true;
                     }
                 } catch (JSONException exception) {
-                    VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse custom segment", exception, true);
+                    VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse custom segment", exception,
+                            true, false);
                 }
             }
             return false;
@@ -423,7 +440,8 @@ public enum CustomSegmentEvaluateEnum {
             String customVariable = vwo.getConfig().getValueForCustomSegment(key);
             // Check if custom keys are set by developer or not if not return false otherwise evaluate.
             if (TextUtils.isEmpty(customVariable)) {
-                VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Custom variable value is not set for key: " + key, false);
+                VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Custom variable value is not set for key: " + key,
+                        false, false);
                 return false;
             }
             for (int i = 0; i < data.length(); i++) {
@@ -433,7 +451,8 @@ public enum CustomSegmentEvaluateEnum {
                         return true;
                     }
                 } catch (JSONException exception) {
-                    VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse custom segment", exception, true);
+                    VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse custom segment", exception,
+                            true, false);
                 }
             }
             return false;
@@ -451,7 +470,8 @@ public enum CustomSegmentEvaluateEnum {
             String customVariable = vwo.getConfig().getValueForCustomSegment(key);
             // Check if custom keys are set by developer or not if not return false otherwise evaluate.
             if (TextUtils.isEmpty(customVariable)) {
-                VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Custom variable value is not set for key: " + key, false);
+                VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Custom variable value is not set for key: " + key,
+                        false, false);
                 return false;
             }
             for (int i = 0; i < data.length(); i++) {
@@ -461,7 +481,8 @@ public enum CustomSegmentEvaluateEnum {
                         return true;
                     }
                 } catch (JSONException exception) {
-                    VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse custom segment", exception, true);
+                    VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse custom segment", exception,
+                            true, false);
                 }
             }
             return false;

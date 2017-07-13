@@ -21,7 +21,8 @@ public class NetworkUtils {
     public static int getConnectivityStatus(VWO vwo) {
 
         if (!checkAccessNetworkStatePermission(vwo.getCurrentContext())) {
-            VWOLog.e(VWOLog.CONFIG_LOGS, "Network Access permission not granted. Returning connected to Wifi", true);
+            VWOLog.e(VWOLog.CONFIG_LOGS, "Network Access permission not granted. Returning connected to Wifi",
+                    true, false);
             return TYPE_WIFI;
         }
 

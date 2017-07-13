@@ -93,7 +93,7 @@ public class VWOSocket {
 
 
         } catch (URISyntaxException exception) {
-            VWOLog.e(VWOLog.SOCKET_LOGS, "Malformed url", exception, false);
+            VWOLog.e(VWOLog.SOCKET_LOGS, "Malformed url", exception, false, true);
         }
     }
 
@@ -104,7 +104,7 @@ public class VWOSocket {
             deviceData.put(JSON_KEY_DEVICE_TYPE, DEVICE_TYPE);
             deviceData.put(JSON_KEY_APP_KEY, mAppKey);
         } catch (JSONException exception) {
-            VWOLog.e(VWOLog.SOCKET_LOGS, "Unable to build json object", exception, true);
+            VWOLog.e(VWOLog.SOCKET_LOGS, "Unable to build json object", exception, true, true);
         }
 
         mSocket.emit(EMIT_DEVICE_CONNECTED, deviceData);
@@ -115,7 +115,7 @@ public class VWOSocket {
         try {
             goalTriggerData.put(JSON_KEY_GOAL_NAME, goalName);
         } catch (JSONException exception) {
-            VWOLog.e(VWOLog.SOCKET_LOGS, "Unable to build json object", exception, true);
+            VWOLog.e(VWOLog.SOCKET_LOGS, "Unable to build json object", exception, true, true);
         }
         mSocket.emit(EMIT_GOAL_TRIGGERED, goalTriggerData);
 
@@ -130,7 +130,7 @@ public class VWOSocket {
                 mVariation = data.getJSONObject("json");
                 generateVariationHash();
             } catch (JSONException exception) {
-                VWOLog.e(VWOLog.SOCKET_LOGS, "Unable to parse json object", exception, true);
+                VWOLog.e(VWOLog.SOCKET_LOGS, "Unable to parse json object", exception, true, true);
             }
 
 
@@ -140,7 +140,7 @@ public class VWOSocket {
                 VWOLog.v(VWOLog.SOCKET_LOGS, "Socket data :\n" + jsonObject.toString());
 
             } catch (JSONException exception) {
-                VWOLog.e(VWOLog.SOCKET_LOGS, "Variation id cannot be parsed", exception, true);
+                VWOLog.e(VWOLog.SOCKET_LOGS, "Variation id cannot be parsed", exception, true, true);
             }
 
             mSocket.emit(EMIT_RECEIVE_VARIATION_SUCCESS, jsonObject);
@@ -159,7 +159,7 @@ public class VWOSocket {
                 mVWO.setIsEditMode(true);
                 VWOLog.v(VWOLog.SOCKET_LOGS, "Started device preview with User: " + browserName);
             } catch (JSONException exception) {
-                VWOLog.e(VWOLog.SOCKET_LOGS, "Browser Name key not found or cannot be parsed", exception, false);
+                VWOLog.e(VWOLog.SOCKET_LOGS, "Browser Name key not found or cannot be parsed", exception, false, true);
             }
 
         }
@@ -178,7 +178,7 @@ public class VWOSocket {
             try {
                 mVariationKeys.put(key, mVariation.get(key));
             } catch (JSONException exception) {
-                VWOLog.e(VWOLog.SOCKET_LOGS, "Issue generating hash", exception, false);
+                VWOLog.e(VWOLog.SOCKET_LOGS, "Issue generating hash", exception, false, true);
 
             }
         }

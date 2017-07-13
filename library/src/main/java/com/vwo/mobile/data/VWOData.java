@@ -1,6 +1,7 @@
 package com.vwo.mobile.data;
 
 
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.vwo.mobile.VWO;
@@ -47,7 +48,7 @@ public class VWOData {
             try {
                 if (data.getJSONObject(i).getString(Campaign.STATUS).equals(CAMPAIGN_RUNNING)) {
 
-                    // Only saving campaign if it fas a variation object
+                    // Only saving campaign if it has a variation object
                     if (data.getJSONObject(i).has(Campaign.VARIATION)) {
 
                         Campaign tempCampaign = new Campaign(data.getJSONObject(i));
@@ -55,7 +56,9 @@ public class VWOData {
                         if (VWOPersistData.isExistingCampaign(mVWO, VWOPersistData.CAMPAIGN_KEY + tempCampaign.getId())) {
                             // Already part of campaign. Just add to campaigns list
                             mCampaigns.add(tempCampaign);
-                            VWOLog.w(VWOLog.CAMPAIGN_LOGS, "Campaign " + tempCampaign.getId() + " is already a part", true);
+                            VWOLog.w(VWOLog.CAMPAIGN_LOGS, "User already part of campaign with id: "
+                                    + tempCampaign.getId() + "\nAnd variation with id : " + tempCampaign.getVariation().getId(),
+                                    true);
                         } else {
                             if (tempCampaign.shouldTrackUserAutomatically()) {
                                 evaluateAndMakeUserPartOfCampaign(tempCampaign);
@@ -73,7 +76,7 @@ public class VWOData {
                 }
 
             } catch (JSONException exception) {
-                VWOLog.e(VWOLog.CAMPAIGN_LOGS, "Unable to parse campaign data: " + data.toString(), exception, true);
+                VWOLog.e(VWOLog.CAMPAIGN_LOGS, "Unable to parse campaign data: " + data.toString(), exception, true, true);
             }
         }
 
@@ -132,7 +135,9 @@ public class VWOData {
             mCampaigns.add(campaign);
 
             String campaignRecordUrl = mVWO.getVwoUrlBuilder().getCampaignUrl(campaign.getId(), campaign.getVariation().getId());
-            VWOLog.w(VWOLog.CAMPAIGN_LOGS, "Campaign " + campaign.getId() + " is a new and valid campaign", true);
+            VWOLog.v(VWOLog.CAMPAIGN_LOGS, "Campaign " + campaign.getId() + " is a new and valid campaign");
+            VWOLog.v(VWOLog.CAMPAIGN_LOGS, "Making user part of campaign with id: " + campaign.getId() + "\nand variation with id: "
+                            + campaign.getVariation().getId());
 
             VWOPersistData vwoPersistData = new VWOPersistData(campaign.getId(), campaign.getVariation().getId());
             vwoPersistData.saveCampaign(mVWO.getVwoPreference());
@@ -194,8 +199,13 @@ public class VWOData {
         }
     }
 
-    public void saveGoal(String goalIdentifier, double value) {
-
+    /**
+     * Mark goal as achieved with revenue
+     *
+     * @param goalIdentifier is the goal id set on dashboard
+     * @param value is the revenue value
+     */
+    public void saveGoal(@NonNull String goalIdentifier, double value) {
         for (Campaign campaign : mCampaigns) {
             for (Goal goal : campaign.getGoals()) {
                 if (goal.getIdentifier().equals(goalIdentifier)) {

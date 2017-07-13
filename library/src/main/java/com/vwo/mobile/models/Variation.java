@@ -83,10 +83,11 @@ public class Variation {
     @Nullable
     public Object getKey(String key) {
         if (mKeysObjects.containsKey(key)) {
-            return mKeysObjects.get(key);
-        } else {
-            return null;
+            if (mKeysObjects.get(key) != null) {
+                return mKeysObjects.get(key);
+            }
         }
+        return null;
     }
 
     public JSONObject getVariationAsJsonObject() throws JSONException {

@@ -7,6 +7,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.annotation.RestrictTo;
 
 import com.vwo.mobile.constants.ApiConstant;
@@ -89,6 +90,7 @@ public class VWO {
     }
 
     @SuppressWarnings("unused")
+    @Nullable
     public static Object getVariationForKey(@NonNull String key) {
 
         if (sSharedInstance != null && sSharedInstance.mVWOStartState.getValue() >= VWOStartState.STARTED.getValue()) {
@@ -103,16 +105,17 @@ public class VWO {
             return object;
 
         }
-        VWOLog.e(VWOLog.DATA_LOGS, new IllegalStateException("Cannot call this method before VWO SDK is completely initialized."), false);
+        VWOLog.e(VWOLog.DATA_LOGS, new IllegalStateException("Cannot call getVariationForKey(String key) " +
+                "method before VWO SDK is completely initialized."), false, false);
         return null;
     }
 
+    @NonNull
     @SuppressWarnings("unused")
-    public static Object getVariationForKey(String key, Object control) {
-
+    public static Object getVariationForKey(@NonNull String key, @NonNull Object control) {
         Object data = getVariationForKey(key);
         if (data == null) {
-            VWOLog.e(VWOLog.DATA_LOGS, "No data found for key: " + key, false);
+            VWOLog.e(VWOLog.DATA_LOGS, "No data found for key: " + key, false, false);
             return control;
         } else {
             return data;
@@ -125,7 +128,7 @@ public class VWO {
      *
      * @param goalIdentifier is name of the goal set in VWO dashboard
      */
-    public static void markConversionForGoal(String goalIdentifier) {
+    public static void markConversionForGoal(@NonNull String goalIdentifier) {
 
         if (sSharedInstance != null && sSharedInstance.mVWOStartState.getValue() >= VWOStartState.STARTED.getValue()) {
 
@@ -146,7 +149,7 @@ public class VWO {
      * @param goalIdentifier is name of the goal set in VWO dashboard
      * @param value          is the value in double
      */
-    public static void markConversionForGoal(String goalIdentifier, double value) {
+    public static void markConversionForGoal(@NonNull String goalIdentifier, double value) {
 
         if (sSharedInstance != null && sSharedInstance.mVWOStartState.getValue() >= VWOStartState.STARTED.getValue()) {
 
@@ -174,15 +177,15 @@ public class VWO {
             String errMsg = "VWO is dependent on Socket.IO library.\n" +
                     "In application level build.gradle file add\t" +
                     "compile 'io.socket:socket.io-client:0.8.3'";
-            VWOLog.e(VWOLog.INITIALIZATION_LOGS, errMsg, false);
+            VWOLog.e(VWOLog.INITIALIZATION_LOGS, errMsg, false, false);
             return false;
         } else if (!isAndroidSDKSupported()) {
             Sentry.init(ApiConstant.SENTRY, factory);
-            VWOLog.e(VWOLog.INITIALIZATION_LOGS, "Minimum SDK version should be 14", false);
+            VWOLog.e(VWOLog.INITIALIZATION_LOGS, "Minimum SDK version should be 14", false, true);
             return false;
         } else if (!validateVwoAppKey(vwoConfig.getApiKey())) {
             Sentry.init(ApiConstant.SENTRY, factory);
-            VWOLog.e(VWOLog.INITIALIZATION_LOGS, "Invalid App Key: " + vwoConfig.getAppKey(), false);
+            VWOLog.e(VWOLog.INITIALIZATION_LOGS, "Invalid App Key: " + vwoConfig.getAppKey(), false, false);
             return false;
         } else if (this.mVWOStartState != VWOStartState.NOT_STARTED) {
             VWOLog.w(VWOLog.INITIALIZATION_LOGS, "VWO already started", true);
@@ -207,7 +210,7 @@ public class VWO {
                         try {
                             VWOLog.i(VWOLog.INITIALIZATION_LOGS, data.toString(4), true);
                         } catch (JSONException exception) {
-                            VWOLog.e(VWOLog.DOWNLOAD_DATA_LOGS, "Data not Downloaded", exception, true);
+                            VWOLog.e(VWOLog.DOWNLOAD_DATA_LOGS, "Data not Downloaded", exception, true, true);
                         }
                     }
                     mVWOData.parseData(data);
@@ -351,7 +354,7 @@ public class VWO {
         this.mStatusListener = mStatusListener;
     }
 
-    public static void addCustomVariable(String name, String value) {
+    public static void setCustomVariable(@NonNull String name, @NonNull String value) {
         if(sSharedInstance == null) {
             throw new IllegalStateException("You need to initialize VWO SDK first and the try calling this function.");
         }
@@ -399,7 +402,7 @@ public class VWO {
         return mVWOPreference;
     }
 
-    public static String sdkVersion() {
+    public static String version() {
         return BuildConfig.VERSION_NAME;
     }
 

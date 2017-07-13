@@ -49,7 +49,7 @@ public class VWOPreference {
 
         } catch (Exception exception) {
             // TODO: handle exception
-            VWOLog.e(VWOLog.PREFERENCE_LOGS, "Unable to decode image: ", exception, true);
+            VWOLog.e(VWOLog.PREFERENCE_LOGS, "Unable to decode image: ", exception, true, false);
         }
 
         return bitmapFromPath;
@@ -112,7 +112,7 @@ public class VWOPreference {
 
         if (isExternalStorageReadable() && isExternalStorageWritable() && !mFolder.exists()) {
             if (!mFolder.mkdirs()) {
-                VWOLog.e(VWOLog.PREFERENCE_LOGS, "Failed to setup folder.", true);
+                VWOLog.e(VWOLog.PREFERENCE_LOGS, "Failed to setup folder.", true, false);
                 return "";
             }
         }
@@ -145,7 +145,7 @@ public class VWOPreference {
             fileCreated = imageFile.createNewFile();
 
         } catch (IOException exception) {
-            VWOLog.e(VWOLog.PREFERENCE_LOGS, "Unable to save bitmap.", exception, true);
+            VWOLog.e(VWOLog.PREFERENCE_LOGS, "Unable to save bitmap.", exception, true, true);
         }
 
         FileOutputStream out = null;
@@ -154,7 +154,7 @@ public class VWOPreference {
             bitmapCompressed = bitmap.compress(CompressFormat.PNG, 100, out);
 
         } catch (Exception exception) {
-            VWOLog.e(VWOLog.PREFERENCE_LOGS, "Unable to save bitmap.", exception, true);
+            VWOLog.e(VWOLog.PREFERENCE_LOGS, "Unable to save bitmap.", exception, true, true);
             bitmapCompressed = false;
 
         } finally {
@@ -165,7 +165,7 @@ public class VWOPreference {
                     streamClosed = true;
 
                 } catch (IOException exception) {
-                    VWOLog.e(VWOLog.PREFERENCE_LOGS, "Unable to save bitmap.", exception, true);
+                    VWOLog.e(VWOLog.PREFERENCE_LOGS, "Unable to save bitmap.", exception, true, true);
                     streamClosed = false;
                 }
             }

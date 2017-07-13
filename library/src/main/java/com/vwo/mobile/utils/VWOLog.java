@@ -62,6 +62,8 @@ public class VWOLog {
      */
     public static final String CAMPAIGN_LOGS = "campaign";
 
+    public static final String DATA = "data";
+
 
     /**
      * The interface Log level.
@@ -257,25 +259,29 @@ public class VWOLog {
      * @param ex            the ex
      * @param checkLoggable the check loggable
      */
-    public static void e(String tag, Exception ex, boolean checkLoggable) {
+    public static void e(String tag, Exception ex, boolean checkLoggable, boolean sendToServer) {
         if (LEVEL <= SEVERE) {
             if (checkLoggable) {
                 if (Log.isLoggable(tag, Log.ERROR)) {
-                    Sentry.capture(ex);
+                    if(sendToServer) {
+                        Sentry.capture(ex);
+                    }
                     try {
                         Log.e(tag, ex.getLocalizedMessage());
                         ex.printStackTrace();
                     } catch (Exception e) {
-                        e(tag, e.getLocalizedMessage(), checkLoggable);
+                        e(tag, e.getLocalizedMessage(), true, sendToServer);
                     }
                 }
             } else {
-                Sentry.capture(ex);
+                if(sendToServer) {
+                    Sentry.capture(ex);
+                }
                 try {
                     Log.e(tag, ex.getLocalizedMessage());
                     ex.printStackTrace();
                 } catch (Exception e) {
-                    e(tag, e.getLocalizedMessage(), checkLoggable);
+                    e(tag, e.getLocalizedMessage(), false, sendToServer);
                 }
             }
         }
@@ -288,15 +294,19 @@ public class VWOLog {
      * @param msg           the msg
      * @param checkLoggable the check loggable
      */
-    public static void e(String tag, String msg, boolean checkLoggable) {
+    public static void e(String tag, String msg, boolean checkLoggable, boolean sendToServer) {
         if (LEVEL <= SEVERE) {
             if (checkLoggable) {
                 if (Log.isLoggable(tag, Log.ERROR)) {
-                    Sentry.capture(new Exception(tag + ": " + msg));
+                    if(sendToServer) {
+                        Sentry.capture(new Exception(tag + ": " + msg));
+                    }
                     Log.e(tag, msg);
                 }
             } else {
-                Sentry.capture(new Exception(tag + ": " + msg));
+                if(sendToServer) {
+                    Sentry.capture(new Exception(tag + ": " + msg));
+                }
                 Log.e(tag, msg);
             }
         }
@@ -310,15 +320,19 @@ public class VWOLog {
      * @param exception     the exception
      * @param checkLoggable the check loggable
      */
-    public static void e(String tag, String msg, Throwable exception, boolean checkLoggable) {
+    public static void e(String tag, String msg, Throwable exception, boolean checkLoggable, boolean sendToServer) {
         if (LEVEL <= SEVERE) {
             if (checkLoggable) {
                 if (Log.isLoggable(tag, Log.ERROR)) {
-                    Sentry.capture(new Exception(tag + ": " + msg));
+                    if(sendToServer) {
+                        Sentry.capture(new Exception(tag + ": " + msg));
+                    }
                     Log.e(tag, msg, exception);
                 }
             } else {
-                Sentry.capture(new Exception(tag + ": " + msg));
+                if(sendToServer) {
+                    Sentry.capture(new Exception(tag + ": " + msg));
+                }
                 Log.e(tag, msg, exception);
             }
         }

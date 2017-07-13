@@ -34,7 +34,7 @@ public class DetailActivity extends AppCompatActivity {
         }
 
         VWO.markConversionForGoal("goal123");
-        VWO.markConversionForGoal("goal456", 89.7);
+        VWO.markConversionForGoal("goal456Revenue", 89.7);
     }
 
     @Override

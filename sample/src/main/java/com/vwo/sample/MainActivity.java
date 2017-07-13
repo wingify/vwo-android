@@ -41,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
         // Start VWO SDK in Async mode
         VWO.with(this, VWO_APP_KEY).config(vwoConfig).launch();
         // Config for adding custom parameters for after launch.
-        VWO.addCustomVariable("key", "value");
+        VWO.setCustomVariable("key", "value");
 
 
         // Start VWO SDK in Async mode with callback
@@ -69,15 +69,15 @@ public class MainActivity extends AppCompatActivity {
         switch (id) {
             case R.id.exp_image:
                 startActivity(new Intent(getApplicationContext(), ExperimentImages.class));
-                VWO.markConversionForGoal("imageClicked");
+                VWO.markConversionForGoal("experimentImages");
                 break;
             case R.id.exp_var:
                 startActivity(new Intent(getApplicationContext(), ExperimentVariable.class));
-                VWO.markConversionForGoal("twoInone", 9.0);
+                VWO.markConversionForGoal("variable", 9.0);
                 break;
             case R.id.exp_text:
                 startActivity(new Intent(getApplicationContext(), ExperimentText.class));
-                VWO.markConversionForGoal("CCcode");
+                VWO.markConversionForGoal("textAndButton");
                 break;
         }
     }
@@ -98,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            VWO.markConversionForGoal("CCcode", 19.0);
+            VWO.markConversionForGoal("settings", 19.0);
             startActivity(new Intent(getApplicationContext(), DetailActivity.class));
             return true;
         }

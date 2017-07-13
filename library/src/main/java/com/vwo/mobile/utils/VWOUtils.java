@@ -114,7 +114,7 @@ public class VWOUtils {
                     return packageInfo.versionName;
                 }
             } catch (PackageManager.NameNotFoundException exception) {
-                VWOLog.e(VWOLog.CONFIG_LOGS, "Failed to get packaging info", exception, true);
+                VWOLog.e(VWOLog.CONFIG_LOGS, "Failed to get packaging info", exception, true, true);
             }
         }
 
@@ -169,7 +169,7 @@ public class VWOUtils {
         if (hasPerm == PackageManager.PERMISSION_DENIED) {
             String errorMsg = "VWO requires Internet permission.\n" +
                     "Add <uses-permission android:name=\"android.permission.INTERNET\"/> in AndroidManifest.xml";
-            VWOLog.e(VWOLog.CONFIG_LOGS, errorMsg, false);
+            VWOLog.e(VWOLog.CONFIG_LOGS, errorMsg, false, false);
             return false;
         }
 
@@ -178,7 +178,7 @@ public class VWOUtils {
         if (hasPerm == PackageManager.PERMISSION_DENIED) {
             String errorMsg = "Granting ACCESS_NETWORK_STATE permission makes VWO work smarter.\n" +
                     "Add <uses-permission android:name=\"android.permission.ACCESS_NETWORK_STATE\"/> in AndroidManifest.xml";
-            VWOLog.e(VWOLog.CONFIG_LOGS, errorMsg, false);
+            VWOLog.e(VWOLog.CONFIG_LOGS, errorMsg, false, false);
         }
         return true;
     }

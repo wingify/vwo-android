@@ -52,16 +52,16 @@ public class VWODownloader {
             } catch (InterruptedException exception) {
                 downloadResult.onDownloadError(exception);
                 if (Log.isLoggable(VWOLog.DOWNLOAD_DATA_LOGS, Log.ERROR)) {
-                    VWOLog.e(VWOLog.DOWNLOAD_DATA_LOGS, "**** Data Download Interrupted ****", true);
+                    VWOLog.e(VWOLog.DOWNLOAD_DATA_LOGS, "**** Data Download Interrupted ****", true, false);
                 }
             } catch (ExecutionException exception) {
                 if (Log.isLoggable(VWOLog.DOWNLOAD_DATA_LOGS, Log.ERROR)) {
-                    VWOLog.e(VWOLog.DOWNLOAD_DATA_LOGS, "**** Data Download Execution Exception ****", true);
+                    VWOLog.e(VWOLog.DOWNLOAD_DATA_LOGS, "**** Data Download Execution Exception ****", true, false);
                 }
                 downloadResult.onDownloadError(exception);
             } catch (TimeoutException exception) {
                 if (Log.isLoggable(VWOLog.DOWNLOAD_DATA_LOGS, Log.ERROR)) {
-                    VWOLog.e(VWOLog.DOWNLOAD_DATA_LOGS, "**** Data Download Timeout ****", true);
+                    VWOLog.e(VWOLog.DOWNLOAD_DATA_LOGS, "**** Data Download Timeout ****", true, false);
                 }
                 downloadResult.onDownloadError(exception);
             }
@@ -127,7 +127,7 @@ public class VWODownloader {
                 }
 
                 if (!VWOActivityLifeCycle.isApplicationInForeground() || !NetworkUtils.shouldAttemptNetworkCall(mVWO)) {
-                    VWOLog.e(VWOLog.UPLOAD_LOGS, "Either no network, or application is not in foreground", true);
+                    VWOLog.e(VWOLog.UPLOAD_LOGS, "Either no network, or application is not in foreground", true, false);
                     return;
                 }
 
