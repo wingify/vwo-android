@@ -24,6 +24,11 @@ android {
     // Specifies a flavor dimension.
     flavorDimensions "vwo"
 
+    def DEBUG_LOCAL_VWO_API_KEY=project.properties['DEBUG_LOCAL_VWO_API_KEY'] ?: '""'
+    def DEBUG_REMOTE_VWO_API_KEY=project.properties['DEBUG_REMOTE_VWO_API_KEY'] ?: '""'
+    def RELEASE_VWO_API_KEY=project.properties['RELEASE_VWO_API_KEY'] ?: '""'
+    def TESTING_VWO_API_KEY=project.properties['TESTING_VWO_API_KEY'] ?: '""'
+
     productFlavors {
         local {
             it.buildConfigField 'String', 'VWO_API_KEY', DEBUG_LOCAL_VWO_API_KEY

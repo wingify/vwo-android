@@ -1,7 +1,11 @@
 package com.vwo.mobile.segmentation;
 
+import android.support.annotation.Nullable;
+import android.util.Log;
+
 import com.vwo.mobile.VWO;
 import com.vwo.mobile.constants.AppConstants;
+import com.vwo.mobile.utils.VWOLog;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -23,6 +27,7 @@ public class CustomSegment implements Segment {
     private boolean mLeftBracket;
     private boolean mRightBracket;
     private JSONArray mOperandValue;
+    @Nullable
     private String lOperandValue;
     private LogicalOperator mPreviousLogicalOperator;
     private int mSegmentOperator;
@@ -49,15 +54,17 @@ public class CustomSegment implements Segment {
                 mOperandValue = operandValue;
             }
 
-            lOperandValue = segment.getString(L_OPERAND_VALUE);
+            if(segment.has(L_OPERAND_VALUE)) {
+                lOperandValue = segment.getString(L_OPERAND_VALUE);
+            }
             mSegmentOperator = segment.getInt(OPERATOR);
             mType = segment.getString(TYPE);
 
 
             // TODO: Add segment operator
 
-        } catch (JSONException e) {
-            e.printStackTrace();
+        } catch (JSONException exception) {
+            VWOLog.e(VWOLog.DATA_LOGS, "Data: " + segment.toString(), exception, false, true);
         }
     }
 

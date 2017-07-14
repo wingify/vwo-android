@@ -19,6 +19,7 @@ import java.util.Map;
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "Main Activity";
+    //TODO: Add you VWO api key here
     private static final String VWO_APP_KEY = BuildConfig.VWO_API_KEY;
 
 

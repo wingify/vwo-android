@@ -5,7 +5,7 @@ def groupId = project.PUBLISH_GROUP_ID
 def artifactId = project.PUBLISH_ARTIFACT_ID
 def version = project.PUBLISH_VERSION
 
-def localReleaseDest = "/Users/abhishek/Cloned/vwo-mobile-android"
+def localReleaseDest = "/Users/aman/git/vwo-mobile-android"
 
 android.libraryVariants.all { variant ->
     def name = variant.buildType.name

@@ -19,6 +19,11 @@ android {
         }
     }
 
+    def DEBUG_DACDN_URL = '"http://dacdn.vwo.com/"'
+    def RELEASE_DACDN_URL = '"https://dacdn.vwo.com/"'
+    def SENTRY_URL = '"https://1211a276aa6c4fc5b3a1bca2c3f1f4ea:045cca541af146da8b1efc7735a4c4ac@app.getsentry.com/47376"'
+    def SOCKET_URL = '"https://mobilepreview.vwo.com:443/"'
+
     buildTypes {
         release {
             debuggable false
@@ -40,15 +45,14 @@ android {
     lintOptions {
         disable 'InvalidPackage'
     }
-
     buildTypes.each {
-        it.buildConfigField 'String', 'SENTRY', SENTRY
+        it.buildConfigField 'String', 'SENTRY', SENTRY_URL
         it.buildConfigField 'String', 'SOCKET_URL', SOCKET_URL
     }
 }
 
 dependencies {
-    compile ('io.socket:socket.io-client:0.8.3') {
+    compile('io.socket:socket.io-client:0.8.3') {
         exclude group: 'org.json', module: 'json'
     }
     compile 'io.sentry:sentry-android:1.1.0'

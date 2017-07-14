@@ -1,6 +1,5 @@
 package com.vwo.mobile;
 
-import com.vwo.mobile.constants.ApiConstant;
 import com.vwo.mobile.utils.TestUtils;
 import com.vwo.mobile.utils.VWOLog;
 
@@ -81,7 +80,7 @@ public class VWOSocket {
             IO.Options opts = new IO.Options();
             opts.reconnection = true;
 
-            mSocket = IO.socket(ApiConstant.SOCKET_URL, opts);
+            mSocket = IO.socket(BuildConfig.SOCKET_URL, opts);
             mSocket.connect();
 
             mSocket.on(ON_SERVER_DISCONNECTED, mServerDisconnected);

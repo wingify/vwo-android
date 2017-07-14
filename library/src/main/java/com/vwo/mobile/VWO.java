@@ -10,7 +10,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RestrictTo;
 
-import com.vwo.mobile.constants.ApiConstant;
 import com.vwo.mobile.constants.AppConstants;
 import com.vwo.mobile.data.VWOData;
 import com.vwo.mobile.data.VWOLocalData;
@@ -171,11 +170,11 @@ public class VWO {
             VWOLog.e(VWOLog.INITIALIZATION_LOGS, errMsg, false, false);
             return false;
         } else if (!isAndroidSDKSupported()) {
-            Sentry.init(ApiConstant.SENTRY, factory);
+            Sentry.init(BuildConfig.SENTRY, factory);
             VWOLog.e(VWOLog.INITIALIZATION_LOGS, "Minimum SDK version should be 14", false, true);
             return false;
         } else if (!validateVwoAppKey(vwoConfig.getApiKey())) {
-            Sentry.init(ApiConstant.SENTRY, factory);
+            Sentry.init(BuildConfig.SENTRY, factory);
             VWOLog.e(VWOLog.INITIALIZATION_LOGS, "Invalid App Key: " + vwoConfig.getAppKey(), false, false);
             return false;
         } else if (this.mVWOStartState != VWOStartState.NOT_STARTED) {
@@ -193,7 +192,7 @@ public class VWO {
             this.mVWODownloader.fetchFromServer(new VWODownloader.DownloadResult() {
                 @Override
                 public void onDownloadSuccess(JSONArray data) {
-                    Sentry.init(ApiConstant.SENTRY, factory);
+                    Sentry.init(BuildConfig.SENTRY, factory);
                     if (data.length() == 0) {
                         VWOLog.w(VWOLog.DOWNLOAD_DATA_LOGS, "Empty data downloaded", true);
                         // FIXME: Handle this. Can crash here.
@@ -225,7 +224,7 @@ public class VWO {
 
                 @Override
                 public void onDownloadError(Exception ex) {
-                    Sentry.init(ApiConstant.SENTRY, factory);
+                    Sentry.init(BuildConfig.SENTRY, factory);
                     mVWODownloader.startUpload();
                     mVWOSocket.connectToSocket();
                     if (mVWOLocalData.isLocalDataPresent()) {
