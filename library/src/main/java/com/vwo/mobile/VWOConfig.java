@@ -3,8 +3,10 @@ package com.vwo.mobile;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.vwo.mobile.analytics.VWOTracker;
+import com.vwo.mobile.utils.VWOLog;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -98,6 +100,13 @@ public class VWOConfig {
             customSegmentationMapping = new HashMap<>();
         }
         this.customSegmentationMapping.put(key, value);
+    }
+
+    void setTracker(Object tracker) {
+        if(tracker != null) {
+            VWOLog.w(VWOLog.CONFIG_LOGS, "Tracker already set", false);
+        }
+        this.mTracker = tracker;
     }
 
     /**

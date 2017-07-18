@@ -262,11 +262,19 @@ public class VWO {
         }
     }
 
-    void setTracker(Object tracker) {
+    public static void setTracker(Object tracker) {
+        if(sSharedInstance == null) {
+            throw new IllegalStateException("You need to initialize VWO SDK first and the try calling this function.");
+        }
+
+        sSharedInstance.getConfig().setTracker(tracker);
+    }
+
+    void setVWOTracker(Object tracker) {
         sSharedInstance.mTracker = new VWOTracker(tracker, sSharedInstance);
     }
 
-    public static boolean trackUserInCampaign(String campaignKey) {
+/*    public static boolean trackUserInCampaign(String campaignKey) {
         if (sSharedInstance == null || sSharedInstance.mVWOStartState.getValue() != VWOStartState.STARTED.getValue()) {
             return false;
         }
@@ -275,7 +283,7 @@ public class VWO {
 
         return campaign != null && sSharedInstance.getVwoData().evaluateAndMakeUserPartOfCampaign(campaign);
 
-    }
+    }*/
 
     private void initializeComponents() {
         this.mVWOLocalData = new VWOLocalData(sSharedInstance);
