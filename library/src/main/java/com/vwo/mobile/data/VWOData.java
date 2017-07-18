@@ -4,6 +4,7 @@ package com.vwo.mobile.data;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import com.google.android.gms.analytics.HitBuilders;
 import com.vwo.mobile.VWO;
 import com.vwo.mobile.models.Campaign;
 import com.vwo.mobile.models.Goal;
@@ -20,6 +21,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Stack;
 
@@ -72,7 +74,13 @@ public class VWOData {
                     VWOPersistData vwoPersistData = new VWOPersistData(campaignId, 0);
                     vwoPersistData.saveCampaign(mVWO.getVwoPreference());
                 } else {
-                    VWOLog.i(VWOLog.CAMPAIGN_LOGS, "Discarding Campaign \"" + data.getJSONObject(i).getString(Campaign.NAME) + "\", because it is not running", true);
+                    String campaignName;
+                    if(data.getJSONObject(i).has(Campaign.CAMPAIGN_NAME)) {
+                        campaignName = data.getJSONObject(i).getString(Campaign.CAMPAIGN_NAME);
+                    } else {
+                        campaignName = data.getJSONObject(i).getString(Campaign.ID);
+                    }
+                    VWOLog.i(VWOLog.CAMPAIGN_LOGS, "Discarding Campaign \"" + campaignName + "\", because it is not running", true);
                 }
 
             } catch (JSONException exception) {
@@ -129,7 +137,17 @@ public class VWOData {
         return variation;
     }
 
-    private void evaluateAndMakeUserPartOfCampaign(Campaign campaign) {
+    public Campaign getCampaignForKey(String key) {
+        if (mVariations == null) {
+            return null;
+        }
+        if (mVariations.containsKey(key)) {
+            return mVariations.get(key);
+        }
+        return null;
+    }
+
+    public boolean evaluateAndMakeUserPartOfCampaign(Campaign campaign) {
         if (evaluateSegmentation(mVWO, campaign)) {
             mCampaigns.add(campaign);
 
@@ -145,11 +163,20 @@ public class VWOData {
             if (!mVWO.getVwoPreference().isPartOfCampaign(String.valueOf(campaign.getId()))) {
                 mVWO.getVwoPreference().setPartOfCampaign(String.valueOf(campaign.getId()));
                 VWOPersistData.addToQueue(mVWO.getVwoPreference(), campaignRecordUrl);
+
+                if (campaign.containsUniversalAnalytics() && mVWO.getConfig().isTrackerPresent()) {
+                    recordGaEventForCampaign(campaign);
+                }
+
+                return true;
             }
         } else {
             VWOLog.i(VWOLog.CAMPAIGN_LOGS, "Segmentation Condition for Campaign \"" +
                     campaign.getId() + "\" not met", true);
+
         }
+
+        return false;
     }
 
     /*public Object getAllVariations() {
@@ -184,6 +211,20 @@ public class VWOData {
 
                                 String goalUrl = mVWO.getVwoUrlBuilder().getGoalUrl(campaign.getId(), campaign.getVariation().getId(), goal.getId());
                                 VWOPersistData.addToQueue(mVWO.getVwoPreference(), goalUrl);
+                                if (campaign.containsUniversalAnalytics() && mVWO.getConfig().isTrackerPresent()) {
+
+                                    // TODO: Send event
+                                    String category = String.format(Locale.ENGLISH, "VWO Goal - %s - %d", campaign.getName(), campaign.getId());
+                                    String label = String.format(Locale.ENGLISH, "%s - %d", campaign.getVariation().getName(), campaign.getVariation().getId());
+                                    String action = String.format(Locale.ENGLISH, "%s - %d", goal.getIdentifier(), goal.getId());
+
+
+                                    mVWO.getTracker().getTracker().send(new HitBuilders.EventBuilder()
+                                            .setCategory(category)
+                                            .setLabel(label)
+                                            .setAction(action)
+                                            .build());
+                                }
                             } else {
                                 VWOLog.w(VWOLog.CAMPAIGN_LOGS, "Duplicate goal identifier: " + goalIdentifier, true);
                             }
@@ -220,6 +261,20 @@ public class VWOData {
 
                                 String goalUrl = mVWO.getVwoUrlBuilder().getGoalUrl(campaign.getId(), campaign.getVariation().getId(), goal.getId(), (float) value);
                                 VWOPersistData.addToQueue(mVWO.getVwoPreference(), goalUrl);
+                                if (campaign.containsUniversalAnalytics() && mVWO.getConfig().isTrackerPresent()) {
+
+                                    // TODO: Send event
+                                    String category = String.format(Locale.ENGLISH, "VWO Goal - %s - %d", campaign.getName(), campaign.getId());
+                                    String label = String.format(Locale.ENGLISH, "%s - %d", campaign.getVariation().getName(), campaign.getVariation().getId());
+                                    String action = String.format(Locale.ENGLISH, "%s - %d", goal.getIdentifier(), goal.getId());
+
+
+                                    mVWO.getTracker().getTracker().send(new HitBuilders.EventBuilder()
+                                            .setCategory(category)
+                                            .setLabel(label)
+                                            .setAction(action)
+                                            .build());
+                                }
                             } else {
                                 VWOLog.w(VWOLog.CAMPAIGN_LOGS, "Duplicate goal identifier: " + goalIdentifier, true);
                             }
@@ -247,6 +302,20 @@ public class VWOData {
                 mVariations.put(key, campaign);
             }
         }
+    }
+
+
+    private void recordGaEventForCampaign(Campaign campaign) {
+        String category = String.format(Locale.ENGLISH, "VWO Campaign - %s - %d", campaign.getName(), campaign.getId());
+        String label = String.format(Locale.ENGLISH, "%s - %d", campaign.getVariation().getName(), campaign.getVariation().getId());
+        String dimension = String.format(Locale.ENGLISH, "CampId:%d, VarName:%s", campaign.getId(), campaign.getVariation().getName());
+
+        VWOLog.d(VWOLog.ANALYTICS, category, true );
+        mVWO.getTracker().getTracker().send(new HitBuilders.EventBuilder()
+                .setCategory(category)
+                .setLabel(label)
+                .setCustomDimension(campaign.getUaDimension(), dimension)
+                .build());
     }
 
     private static boolean evaluateSegmentation(VWO vwo, Campaign campaign) {

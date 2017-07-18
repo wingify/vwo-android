@@ -23,7 +23,7 @@ public class Campaign {
     public final static String STATUS = "status";
     public final static String TRAFFIC = "pc_traffic";
     public final static String TYPE = "type";
-    public final static String NAME = "name";
+    public static final String CAMPAIGN_NAME = "name";
     public final static String VARIATION = "variations";
     public final static String GOALS = "goals";
     public static final String COUNT_GOAL_ONCE = "count_goal_once";
@@ -38,6 +38,8 @@ public class Campaign {
 
     // Track user automatically for a given campaign
     public static final String TRACK_USER_AUTOMATICALLY = "track_user_on_launch";
+    private static final String UA = "UA";
+    private static final String UA_S = "s";
 
 
     private long mId;
@@ -52,15 +54,35 @@ public class Campaign {
     private String mSegmentType;
     private String name;
     private ArrayList<Segment> mSegments;
+    private boolean mContainsUniversalAnalytics;
+    private int mUaDimension;
 
     public Campaign(JSONObject campaignData) {
         try {
+            VWOLog.v(VWOLog.CAMPAIGN_LOGS, campaignData.toString());
+
             this.mId = campaignData.getInt(ID);
             this.mVersion = campaignData.getInt(VERSION);
             mGoals = new ArrayList<>();
             this.mTraffic = campaignData.getInt(TRAFFIC);
             this.mType = CampaignTypeEnum.getEnumFromCampaign(campaignData.getString(TYPE));
-            this.name = campaignData.getString(NAME);
+
+            if (campaignData.has(CAMPAIGN_NAME)) {
+                name = campaignData.getString(CAMPAIGN_NAME);
+            } else {
+                name = "campaign";
+            }
+
+            if (campaignData.has(UA)) {
+
+                mContainsUniversalAnalytics = true;
+                mUaDimension = campaignData.getJSONObject(UA).getInt(UA_S);
+
+                VWOLog.d(VWOLog.ANALYTICS, "Contains UA Data: " + mUaDimension, true);
+            } else {
+                VWOLog.d(VWOLog.ANALYTICS, "Does not contains UA Data", true);
+                mContainsUniversalAnalytics = false;
+            }
 
             JSONArray goals = campaignData.getJSONArray(GOALS);
             for (int i = 0; i < goals.length(); i++) {
@@ -131,6 +153,10 @@ public class Campaign {
         return mVersion;
     }
 
+    public int getUaDimension() {
+        return mUaDimension;
+    }
+
     public CampaignTypeEnum getType() {
         return mType;
     }
@@ -147,6 +173,10 @@ public class Campaign {
         return trackUserAutomatically;
     }
 
+    public boolean containsUniversalAnalytics() {
+        return mContainsUniversalAnalytics;
+    }
+
     public ArrayList<Segment> getSegments() {
         return mSegments;
     }
@@ -161,7 +191,7 @@ public class Campaign {
         jsonObject.put(VARIATION, mVariation.getVariationAsJsonObject());
         jsonObject.put(COUNT_GOAL_ONCE, mCountGoalOnce);
         jsonObject.put(CLICK_MAP, mIsClickMap);
-        jsonObject.put(NAME, this.name);
+        jsonObject.put(CAMPAIGN_NAME, this.name);
         jsonObject.put(TRACK_USER_AUTOMATICALLY, trackUserAutomatically);
 
         JSONArray goalArray = new JSONArray();

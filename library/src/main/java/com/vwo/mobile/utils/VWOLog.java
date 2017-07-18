@@ -64,6 +64,8 @@ public class VWOLog {
 
     public static final String DATA = "data";
 
+    public static final String ANALYTICS = "analytics";
+
 
     /**
      * The interface Log level.

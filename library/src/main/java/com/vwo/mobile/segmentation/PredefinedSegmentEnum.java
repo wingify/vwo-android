@@ -15,7 +15,7 @@ public enum PredefinedSegmentEnum {
         @Override
         public boolean evaluate(VWO vwo, Object value) {
             String deviceType = value.toString();
-            assert vwo.getCurrentContext() != null;
+
             if (VWOUtils.isTablet(vwo.getCurrentContext()) && deviceType.equalsIgnoreCase("Tablet")) {
                 return true;
             } else if (!VWOUtils.isTablet(vwo.getCurrentContext()) && deviceType.equalsIgnoreCase("phone")) {

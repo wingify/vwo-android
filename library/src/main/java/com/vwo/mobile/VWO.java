@@ -10,12 +10,14 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RestrictTo;
 
+import com.vwo.mobile.analytics.VWOTracker;
 import com.vwo.mobile.constants.AppConstants;
 import com.vwo.mobile.data.VWOData;
 import com.vwo.mobile.data.VWOLocalData;
 import com.vwo.mobile.enums.VWOStartState;
 import com.vwo.mobile.events.VWOStatusListener;
 import com.vwo.mobile.listeners.VWOActivityLifeCycle;
+import com.vwo.mobile.models.Campaign;
 import com.vwo.mobile.network.VWODownloader;
 import com.vwo.mobile.utils.VWOLog;
 import com.vwo.mobile.utils.VWOPreference;
@@ -50,6 +52,7 @@ public class VWO {
 
     private VWOStatusListener mStatusListener;
     private VWOStartState mVWOStartState;
+    private VWOTracker mTracker;
 
     private VWO(@NonNull Context context, @NonNull VWOConfig vwoConfig) {
         this.mContext = context;
@@ -57,10 +60,6 @@ public class VWO {
         this.vwoConfig = vwoConfig;
         this.mVWOStartState = VWOStartState.NOT_STARTED;
     }
-
-    /*private Vwo() {
-
-    }*/
 
     public static Initializer with(@NonNull Context context, @NonNull String apiKey) {
         if (context == null) {
@@ -263,6 +262,21 @@ public class VWO {
         }
     }
 
+    void setTracker(Object tracker) {
+        sSharedInstance.mTracker = new VWOTracker(tracker, sSharedInstance);
+    }
+
+    public static boolean trackUserInCampaign(String campaignKey) {
+        if (sSharedInstance == null || sSharedInstance.mVWOStartState.getValue() != VWOStartState.STARTED.getValue()) {
+            return false;
+        }
+
+        Campaign campaign = sSharedInstance.getVwoData().getCampaignForKey(campaignKey);
+
+        return campaign != null && sSharedInstance.getVwoData().evaluateAndMakeUserPartOfCampaign(campaign);
+
+    }
+
     private void initializeComponents() {
         this.mVWOLocalData = new VWOLocalData(sSharedInstance);
         this.mVWOUtils = new VWOUtils(sSharedInstance);
@@ -350,6 +364,10 @@ public class VWO {
         }
 
         sSharedInstance.getConfig().addCustomSegment(name, value);
+    }
+
+    public VWOTracker getTracker() {
+        return mTracker;
     }
 
     public Context getCurrentContext() {

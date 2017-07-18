@@ -26,8 +26,6 @@ public class NetworkUtils {
             return TYPE_WIFI;
         }
 
-        assert vwo.getCurrentContext() != null;
-
         ConnectivityManager cm = (ConnectivityManager) vwo.getCurrentContext().getSystemService(Context.CONNECTIVITY_SERVICE);
 
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
@@ -49,7 +47,6 @@ public class NetworkUtils {
     }
 
     public static boolean shouldAttemptNetworkCall(VWO vwo) {
-        assert vwo.getCurrentContext() != null;
         PackageManager pm = vwo.getCurrentContext().getPackageManager();
         int hasPerm = pm.checkPermission(android.Manifest.permission.ACCESS_NETWORK_STATE, vwo.getCurrentContext().getPackageName());
         if (hasPerm == PackageManager.PERMISSION_DENIED) {

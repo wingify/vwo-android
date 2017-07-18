@@ -1,7 +1,7 @@
 package com.vwo.mobile.segmentation;
 
 import android.support.annotation.Nullable;
-import android.util.Log;
+import android.text.TextUtils;
 
 import com.vwo.mobile.VWO;
 import com.vwo.mobile.constants.AppConstants;
@@ -31,6 +31,7 @@ public class CustomSegment implements Segment {
     private String lOperandValue;
     private LogicalOperator mPreviousLogicalOperator;
     private int mSegmentOperator;
+    @Nullable
     private String mType;
 
     public CustomSegment(JSONObject segment) {
@@ -80,13 +81,14 @@ public class CustomSegment implements Segment {
         return mPreviousLogicalOperator;
     }
 
+    @Nullable
     public String getType() {
         return mType;
     }
 
     @Override
     public boolean evaluate(VWO vwo) {
-        if (mType.equals(AppConstants.CUSTOM_SEGMENT)) {
+        if (!TextUtils.isEmpty(mType) && mType.equals(AppConstants.CUSTOM_SEGMENT)) {
             return CustomSegmentEvaluateEnum.getEvaluator(mType, mSegmentOperator).evaluate(vwo, mOperandValue, lOperandValue);
         }
         return CustomSegmentEvaluateEnum.getEvaluator(mType, mSegmentOperator).evaluate(vwo, mOperandValue);

@@ -1,0 +1,35 @@
+{
+  "project_info": {
+    "project_number": "323021324497",
+    "project_id": "easygcm-sample-app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:323021324497:android:e1df31b5e7b0164e",
+        "android_client_info": {
+          "package_name": "com.vwo.mobile"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC1Pyb6z5TLlT-nJb9x-VLE4bXyKcw5WUU"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

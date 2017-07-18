@@ -76,5 +76,8 @@ public class Initializer {
 
         vwoConfig.setSync(syncMode);
         vwo.setConfig(vwoConfig);
+        if(vwoConfig.isTrackerPresent()) {
+            vwo.setTracker(vwoConfig.getTracker());
+        }
     }
 }

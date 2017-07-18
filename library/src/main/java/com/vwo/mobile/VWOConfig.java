@@ -4,6 +4,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
+import com.vwo.mobile.analytics.VWOTracker;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,6 +18,8 @@ public class VWOConfig {
     private Map<String, String> customSegmentationMapping;
     private String mAppKey;
     private String mAccountId;
+    @Nullable
+    private Object mTracker;
 
     // Should fetch data synchronously or asynchronously from server
     private boolean sync;
@@ -23,8 +27,10 @@ public class VWOConfig {
     // Is the VWO api key
     private String apiKey;
 
-    private VWOConfig(Map<String, String> customSegmentationMapping, @Nullable String apiKey) {
+    private VWOConfig(Map<String, String> customSegmentationMapping, @Nullable String apiKey,
+                      @NonNull Object tracker) {
         this.customSegmentationMapping = customSegmentationMapping;
+        this.mTracker = tracker;
         if (apiKey != null) {
             setApiKey(apiKey);
         }
@@ -63,6 +69,15 @@ public class VWOConfig {
 
     public String getAccountId() {
         return mAccountId;
+    }
+
+    @Nullable
+    public Object getTracker() {
+        return this.mTracker;
+    }
+
+    public boolean isTrackerPresent() {
+        return mTracker != null;
     }
 
     /**
@@ -107,16 +122,22 @@ public class VWOConfig {
         // This variable
         private Map<String, String> customSegmentationMapping;
         private String apiKey = null;
+        private Object mTracker;
 
         public VWOConfig build() {
-            return new VWOConfig(customSegmentationMapping, apiKey);
+            return new VWOConfig(customSegmentationMapping, apiKey, mTracker);
         }
 
-        Builder apiKey(String apiKey) {
+        Builder apiKey(@NonNull String apiKey) {
             if (TextUtils.isEmpty(apiKey)) {
                 throw new NullPointerException("Api key cannot be null");
             }
             this.apiKey = apiKey;
+            return this;
+        }
+
+        public Builder setTracker(@NonNull Object tracker) {
+            this.mTracker = tracker;
             return this;
         }
 
