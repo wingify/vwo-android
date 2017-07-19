@@ -19,8 +19,8 @@ android {
         }
     }
 
-    def DEBUG_DACDN_URL = '"http://dacdn.vwo.com/"'
-    def RELEASE_DACDN_URL = '"https://dacdn.vwo.com/"'
+    def DEBUG_DACDN_URL = '"http://dacdn.visualwebsiteoptimizer.com/"'
+    def RELEASE_DACDN_URL = '"https://dacdn.visualwebsiteoptimizer.com/"'
     def SENTRY_URL = '"https://1211a276aa6c4fc5b3a1bca2c3f1f4ea:045cca541af146da8b1efc7735a4c4ac@app.getsentry.com/47376"'
     def SOCKET_URL = '"https://mobilepreview.vwo.com:443/"'
 
