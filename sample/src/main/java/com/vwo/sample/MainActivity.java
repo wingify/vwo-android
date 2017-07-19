@@ -34,9 +34,6 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
 
-//        VWOApplication application = (VWOApplication) getApplication();
-//        Tracker mTracker = application.getDefaultTracker();
-
         // Config for adding custom parameters before launch.
         Map<String, String> customKeys = new HashMap<>();
         customKeys.put("key", "value");
