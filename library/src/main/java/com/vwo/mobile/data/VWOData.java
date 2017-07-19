@@ -147,7 +147,7 @@ public class VWOData {
         return null;
     }
 
-    public boolean evaluateAndMakeUserPartOfCampaign(Campaign campaign) {
+    private boolean evaluateAndMakeUserPartOfCampaign(Campaign campaign) {
         if (evaluateSegmentation(mVWO, campaign)) {
             mCampaigns.add(campaign);
 
@@ -164,7 +164,7 @@ public class VWOData {
                 mVWO.getVwoPreference().setPartOfCampaign(String.valueOf(campaign.getId()));
                 VWOPersistData.addToQueue(mVWO.getVwoPreference(), campaignRecordUrl);
 
-                if (campaign.containsUniversalAnalytics() && mVWO.getConfig().isTrackerPresent()) {
+                if (campaign.containsUniversalAnalytics()) {
                     recordGaEventForCampaign(campaign);
                 }
 
@@ -211,7 +211,7 @@ public class VWOData {
 
                                 String goalUrl = mVWO.getVwoUrlBuilder().getGoalUrl(campaign.getId(), campaign.getVariation().getId(), goal.getId());
                                 VWOPersistData.addToQueue(mVWO.getVwoPreference(), goalUrl);
-                                if (campaign.containsUniversalAnalytics() && mVWO.getConfig().isTrackerPresent()) {
+                                if (campaign.containsUniversalAnalytics()) {
 
                                     // TODO: Send event
                                     String category = String.format(Locale.ENGLISH, "VWO Goal - %s - %d", campaign.getName(), campaign.getId());
@@ -219,7 +219,7 @@ public class VWOData {
                                     String action = String.format(Locale.ENGLISH, "%s - %d", goal.getIdentifier(), goal.getId());
 
 
-                                    mVWO.getTracker().getTracker().send(new HitBuilders.EventBuilder()
+                                    mVWO.getGATracker().send(new HitBuilders.EventBuilder()
                                             .setCategory(category)
                                             .setLabel(label)
                                             .setAction(action)
@@ -261,7 +261,7 @@ public class VWOData {
 
                                 String goalUrl = mVWO.getVwoUrlBuilder().getGoalUrl(campaign.getId(), campaign.getVariation().getId(), goal.getId(), (float) value);
                                 VWOPersistData.addToQueue(mVWO.getVwoPreference(), goalUrl);
-                                if (campaign.containsUniversalAnalytics() && mVWO.getConfig().isTrackerPresent()) {
+                                if (campaign.containsUniversalAnalytics()) {
 
                                     // TODO: Send event
                                     String category = String.format(Locale.ENGLISH, "VWO Goal - %s - %d", campaign.getName(), campaign.getId());
@@ -269,7 +269,7 @@ public class VWOData {
                                     String action = String.format(Locale.ENGLISH, "%s - %d", goal.getIdentifier(), goal.getId());
 
 
-                                    mVWO.getTracker().getTracker().send(new HitBuilders.EventBuilder()
+                                    mVWO.getGATracker().send(new HitBuilders.EventBuilder()
                                             .setCategory(category)
                                             .setLabel(label)
                                             .setAction(action)
@@ -311,7 +311,7 @@ public class VWOData {
         String dimension = String.format(Locale.ENGLISH, "CampId:%d, VarName:%s", campaign.getId(), campaign.getVariation().getName());
 
         VWOLog.d(VWOLog.ANALYTICS, category, true );
-        mVWO.getTracker().getTracker().send(new HitBuilders.EventBuilder()
+        mVWO.getGATracker().send(new HitBuilders.EventBuilder()
                 .setCategory(category)
                 .setLabel(label)
                 .setCustomDimension(campaign.getUaDimension(), dimension)

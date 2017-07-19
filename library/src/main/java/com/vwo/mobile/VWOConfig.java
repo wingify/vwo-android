@@ -20,8 +20,6 @@ public class VWOConfig {
     private Map<String, String> customSegmentationMapping;
     private String mAppKey;
     private String mAccountId;
-    @Nullable
-    private Object mTracker;
 
     // Should fetch data synchronously or asynchronously from server
     private boolean sync;
@@ -29,10 +27,8 @@ public class VWOConfig {
     // Is the VWO api key
     private String apiKey;
 
-    private VWOConfig(Map<String, String> customSegmentationMapping, @Nullable String apiKey,
-                      @NonNull Object tracker) {
+    private VWOConfig(Map<String, String> customSegmentationMapping, @Nullable String apiKey) {
         this.customSegmentationMapping = customSegmentationMapping;
-        this.mTracker = tracker;
         if (apiKey != null) {
             setApiKey(apiKey);
         }
@@ -73,15 +69,6 @@ public class VWOConfig {
         return mAccountId;
     }
 
-    @Nullable
-    public Object getTracker() {
-        return this.mTracker;
-    }
-
-    public boolean isTrackerPresent() {
-        return mTracker != null;
-    }
-
     /**
      * @param customSegmentKeys is the keymap for custom segmentation variables
      */
@@ -100,13 +87,6 @@ public class VWOConfig {
             customSegmentationMapping = new HashMap<>();
         }
         this.customSegmentationMapping.put(key, value);
-    }
-
-    void setTracker(Object tracker) {
-        if(tracker != null) {
-            VWOLog.w(VWOLog.CONFIG_LOGS, "Tracker already set", false);
-        }
-        this.mTracker = tracker;
     }
 
     /**
@@ -131,10 +111,9 @@ public class VWOConfig {
         // This variable
         private Map<String, String> customSegmentationMapping;
         private String apiKey = null;
-        private Object mTracker;
 
         public VWOConfig build() {
-            return new VWOConfig(customSegmentationMapping, apiKey, mTracker);
+            return new VWOConfig(customSegmentationMapping, apiKey);
         }
 
         Builder apiKey(@NonNull String apiKey) {
@@ -142,11 +121,6 @@ public class VWOConfig {
                 throw new NullPointerException("Api key cannot be null");
             }
             this.apiKey = apiKey;
-            return this;
-        }
-
-        public Builder setTracker(@NonNull Object tracker) {
-            this.mTracker = tracker;
             return this;
         }
 

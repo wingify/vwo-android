@@ -10,6 +10,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RestrictTo;
 
+import com.google.android.gms.analytics.Tracker;
 import com.vwo.mobile.analytics.VWOTracker;
 import com.vwo.mobile.constants.AppConstants;
 import com.vwo.mobile.data.VWOData;
@@ -26,6 +27,8 @@ import com.vwo.mobile.utils.VWOUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+
+import java.lang.reflect.Method;
 
 import io.sentry.Sentry;
 import io.sentry.android.AndroidSentryClientFactory;
@@ -52,7 +55,6 @@ public class VWO {
 
     private VWOStatusListener mStatusListener;
     private VWOStartState mVWOStartState;
-    private VWOTracker mTracker;
 
     private VWO(@NonNull Context context, @NonNull VWOConfig vwoConfig) {
         this.mContext = context;
@@ -262,18 +264,6 @@ public class VWO {
         }
     }
 
-    public static void setTracker(Object tracker) {
-        if(sSharedInstance == null) {
-            throw new IllegalStateException("You need to initialize VWO SDK first and the try calling this function.");
-        }
-
-        sSharedInstance.getConfig().setTracker(tracker);
-    }
-
-    void setVWOTracker(Object tracker) {
-        sSharedInstance.mTracker = new VWOTracker(tracker, sSharedInstance);
-    }
-
 /*    public static boolean trackUserInCampaign(String campaignKey) {
         if (sSharedInstance == null || sSharedInstance.mVWOStartState.getValue() != VWOStartState.STARTED.getValue()) {
             return false;
@@ -374,9 +364,26 @@ public class VWO {
         sSharedInstance.getConfig().addCustomSegment(name, value);
     }
 
-    public VWOTracker getTracker() {
-        return mTracker;
+    public Tracker getGATracker() {
+        Tracker tracker = null;
+        try {
+            Method m = mContext.getClass().getMethod("getDefaultTracker", (Class<?>[]) null);
+            Object result;
+            if (m != null) {
+                result = m.invoke(mContext, (Object[]) null);
+                if (result != null) {
+                    tracker = (Tracker) result;
+                }
+            }
+        } catch (Exception exception) {
+            VWOLog.e(VWOLog.ANALYTICS, "Google Analytics enabled on dashboard but not integrated in Application",
+                    exception, false, true);
+        }
+
+        return tracker;
     }
+
+
 
     public Context getCurrentContext() {
         return this.mContext;

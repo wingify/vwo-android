@@ -34,15 +34,14 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
 
-        VWOApplication application = (VWOApplication) getApplication();
-        Tracker mTracker = application.getDefaultTracker();
+//        VWOApplication application = (VWOApplication) getApplication();
+//        Tracker mTracker = application.getDefaultTracker();
 
         // Config for adding custom parameters before launch.
         Map<String, String> customKeys = new HashMap<>();
-        customKeys.put("name", "value");
+        customKeys.put("key", "value");
         VWOConfig vwoConfig = new VWOConfig
                 .Builder()
-                .setTracker(mTracker)
                 .setCustomSegmentationMapping(customKeys)
                 .build();
 
@@ -50,8 +49,6 @@ public class MainActivity extends AppCompatActivity {
         VWO.with(this, VWO_APP_KEY).config(vwoConfig).launch();
         // Config for adding custom parameters for after launch.
         VWO.setCustomVariable("key", "value");
-        VWO.setTracker(mTracker);
-
 
         // Start VWO SDK in Async mode with callback
         VWO.with(this, VWO_APP_KEY).config(vwoConfig).launch(new VWOStatusListener() {

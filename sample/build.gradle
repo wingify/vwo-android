@@ -60,5 +60,8 @@ dependencies {
     compile 'com.android.support:appcompat-v7:25.4.0'
     compile 'com.android.support:design:25.4.0'
     compile 'com.squareup.picasso:picasso:2.5.2'
+    compile 'com.google.android.gms:play-services-analytics:11.0.2'
     compile project(':library')
 }
+
+apply plugin: 'com.google.gms.google-services'

@@ -68,7 +68,5 @@ ext {
 }
 
 apply from: 'android-release-jar.gradle'
-apply plugin: 'com.google.gms.google-services'
-
 
 
