@@ -11,7 +11,6 @@ import org.json.JSONObject;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Locale;
-import java.util.logging.Logger;
 
 /**
  * Created by abhishek on 16/09/15 at 10:18 PM.

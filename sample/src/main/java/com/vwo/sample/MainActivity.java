@@ -8,10 +8,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.google.android.gms.analytics.Tracker;
 import com.vwo.mobile.VWO;
 import com.vwo.mobile.VWOConfig;
-import com.vwo.mobile.analytics.VWOTracker;
 import com.vwo.mobile.events.VWOStatusListener;
 
 import java.util.HashMap;

@@ -99,7 +99,7 @@ public class VWOData {
      * Returns the value corresponding to he key for a any variation.
      * @param key is the identifier corresponding to which a value needs to be fetched.
      *
-     * @return the variation value for the given {@param key}
+     * @return the variation value for the given key
      */
     public Object getVariationForKey(String key) {
 

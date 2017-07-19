@@ -8,10 +8,8 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.annotation.RestrictTo;
 
 import com.google.android.gms.analytics.Tracker;
-import com.vwo.mobile.analytics.VWOTracker;
 import com.vwo.mobile.constants.AppConstants;
 import com.vwo.mobile.data.VWOData;
 import com.vwo.mobile.data.VWOLocalData;
@@ -82,19 +80,19 @@ public class VWO {
     }
 
     /**
-     * <p>
-     *  Get variation for a given {@param key}. returns null if {@param key} does not exist in any
+     *
+     *  Get variation for a given key. returns null if key does not exist in any
      *  Campaigns.
      *
-     *  This function will return a variation for a given {@param key}. This function will search for {@param key} in
+     *  This function will return a variation for a given key. This function will search for key in
      *  all the currently active campaigns.
      *
-     *  If {@param key} exists in multiple campaigns it will return the value for the {@param key} in the latest
+     *  If key exists in multiple campaigns it will return the value for the key in the latest
      *  {@link Campaign}.
      *
-     *  If user is not already part of a the {@link Campaign} in which the {@param key} exists. User automatically
-     *  becomes part of all the campaign for which that {@param key} exists.
-     * </p>
+     *  If user is not already part of a the {@link Campaign} in which the key exists. User automatically
+     *  becomes part of all the campaign for which that key exists.
+     *
      *
      * @param key is the key for which variation is to be requested
      * @return an {@link Object} corresponding to given key.
@@ -121,19 +119,18 @@ public class VWO {
     }
 
     /**
-     * <p>
-     *  Get variation for a given {@param key}. returns {@param control} if key does not exist in any
+     *
+     *  Get variation for a given key. returns control if key does not exist in any
      *  Campaigns.
      *
-     *  This function will return a variation for a given {@param key}. This function will search for {@param key} in
+     *  This function will return a variation for a given key. This function will search for key in
      *  all the currently active campaigns.
      *
-     *  If {@param key} exists in multiple campaigns it will return the value for the {@param key} of the latest
+     *  If key exists in multiple campaigns it will return the value for the key of the latest
      *  {@link Campaign}.
      *
-     *  If user is not already part of a the {@link Campaign} in which the {@param key} exists. User automatically
-     *  becomes part of all the campaign for which that {@param key} exists.
-     * </p>
+     *  If user is not already part of a the {@link Campaign} in which the key exists. User automatically
+     *  becomes part of all the campaign for which that key exists.
      *
      * @param key is the key for which variation is to be requested
      * @param control is the default value to be returned if key is not found in any campaigns.
@@ -195,7 +192,6 @@ public class VWO {
     }
 
     @SuppressWarnings("SpellCheckingInspection")
-    @RestrictTo(RestrictTo.Scope.LIBRARY)
     boolean startVwoInstance() {
         VWOLog.v(VWOLog.INITIALIZATION_LOGS, "**** Starting VWO ver " + VWOUtils.getVwoSdkVersion() + " ****");
 

@@ -262,6 +262,7 @@ public class VWOLog {
      * @param tag           the tag
      * @param ex            the ex
      * @param checkLoggable the check loggable
+     * @param sendToServer  check to send data to server
      */
     public static void e(String tag, Exception ex, boolean checkLoggable, boolean sendToServer) {
         if (LEVEL <= SEVERE) {
@@ -297,6 +298,7 @@ public class VWOLog {
      * @param tag           the tag
      * @param msg           the msg
      * @param checkLoggable the check loggable
+     * @param sendToServer  check to send data to server
      */
     public static void e(String tag, String msg, boolean checkLoggable, boolean sendToServer) {
         if (LEVEL <= SEVERE) {
@@ -323,6 +325,7 @@ public class VWOLog {
      * @param msg           the msg
      * @param exception     the exception
      * @param checkLoggable the check loggable
+     * @param sendToServer  check to send data to server
      */
     public static void e(String tag, String msg, Throwable exception, boolean checkLoggable, boolean sendToServer) {
         if (LEVEL <= SEVERE) {
