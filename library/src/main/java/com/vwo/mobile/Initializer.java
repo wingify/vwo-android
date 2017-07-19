@@ -22,10 +22,11 @@ public class Initializer {
     }
 
     /**
-     * Start VWO sdk in Async mode.
+     * Launches VWO sdk in Async mode.
      * <p>
-     * This method will initialize the sdk either by fetching data from server or
+     * This method will initialize the SDK either by fetching data from server or
      * from data of previous launch or from defaults(in case of network failure)
+     * </p>
      */
     public void launch() {
         if (vwo == null) {
@@ -36,10 +37,14 @@ public class Initializer {
     }
 
     /**
-     * Start VWO sdk in Async mode.
+     * Launches VWO sdk in Async mode with callback
      * <p>
-     * This method will initialize the sdk either by fetching data from server or
+     * This method will initialize the SDK either by fetching data from server or
      * from data of previous launch or from defaults(in case of network failure)
+     * </p>
+     *
+     * @param statusListener is the listener for receiving callback launch status update. i.e. Failure
+     *                       or success.
      */
     public void launch(@NonNull VWOStatusListener statusListener) {
         setup(vwo.getConfig(), false);
@@ -52,12 +57,19 @@ public class Initializer {
      * <p>
      * This method will initialize the sdk either by fetching data from server or
      * from data of previous launch or from defaults(in case of network failure)
+     * </p>
      */
     public void launchSynchronously() {
         setup(vwo.getConfig(), true);
         vwo.startVwoInstance();
     }
 
+    /**
+     * Set initialization {@link VWOConfig} for the launch.
+     *
+     * @param vwoConfig is the SDK launch config
+     * @return the current {@link Initializer} object.
+     */
     public Initializer config(@NonNull VWOConfig vwoConfig) {
         if (vwo.getConfig() != null) {
             VWOLog.w(VWOLog.CONFIG_LOGS, "Configuration already set", true);

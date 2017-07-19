@@ -81,6 +81,24 @@ public class VWO {
         return new Initializer(sSharedInstance, apiKey);
     }
 
+    /**
+     * <p>
+     *  Get variation for a given {@param key}. returns null if {@param key} does not exist in any
+     *  Campaigns.
+     *
+     *  This function will return a variation for a given {@param key}. This function will search for {@param key} in
+     *  all the currently active campaigns.
+     *
+     *  If {@param key} exists in multiple campaigns it will return the value for the {@param key} in the latest
+     *  {@link Campaign}.
+     *
+     *  If user is not already part of a the {@link Campaign} in which the {@param key} exists. User automatically
+     *  becomes part of all the campaign for which that {@param key} exists.
+     * </p>
+     *
+     * @param key is the key for which variation is to be requested
+     * @return an {@link Object} corresponding to given key.
+     */
     @SuppressWarnings("unused")
     @Nullable
     public static Object getVariationForKey(@NonNull String key) {
@@ -102,8 +120,27 @@ public class VWO {
         return null;
     }
 
-    @NonNull
+    /**
+     * <p>
+     *  Get variation for a given {@param key}. returns {@param control} if key does not exist in any
+     *  Campaigns.
+     *
+     *  This function will return a variation for a given {@param key}. This function will search for {@param key} in
+     *  all the currently active campaigns.
+     *
+     *  If {@param key} exists in multiple campaigns it will return the value for the {@param key} of the latest
+     *  {@link Campaign}.
+     *
+     *  If user is not already part of a the {@link Campaign} in which the {@param key} exists. User automatically
+     *  becomes part of all the campaign for which that {@param key} exists.
+     * </p>
+     *
+     * @param key is the key for which variation is to be requested
+     * @param control is the default value to be returned if key is not found in any campaigns.
+     * @return an {@link Object} corresponding to given key.
+     */
     @SuppressWarnings("unused")
+    @NonNull
     public static Object getVariationForKey(@NonNull String key, @NonNull Object control) {
         Object data = getVariationForKey(key);
         if (data == null) {
@@ -116,7 +153,9 @@ public class VWO {
     }
 
     /**
-     * Function for mark a when a goal is achieved
+     * Function for marking a goal when it is achieved.
+     *
+     * NOTE: This function should be called only after initializing VWO SDK.
      *
      * @param goalIdentifier is name of the goal set in VWO dashboard
      */
@@ -135,10 +174,10 @@ public class VWO {
     }
 
     /**
-     * Function to mark revenue goal when it is achieved
+     * Function for marking revenue goal when it is achieved.
      *
-     * @param goalIdentifier is name of the goal set in VWO dashboard
-     * @param value          is the value in double
+     * @param goalIdentifier is name of the goal that is set in VWO dashboard
+     * @param value          is the revenue achieved by hitting this goal.
      */
     public static void markConversionForGoal(@NonNull String goalIdentifier, double value) {
 
@@ -264,17 +303,6 @@ public class VWO {
         }
     }
 
-/*    public static boolean trackUserInCampaign(String campaignKey) {
-        if (sSharedInstance == null || sSharedInstance.mVWOStartState.getValue() != VWOStartState.STARTED.getValue()) {
-            return false;
-        }
-
-        Campaign campaign = sSharedInstance.getVwoData().getCampaignForKey(campaignKey);
-
-        return campaign != null && sSharedInstance.getVwoData().evaluateAndMakeUserPartOfCampaign(campaign);
-
-    }*/
-
     private void initializeComponents() {
         this.mVWOLocalData = new VWOLocalData(sSharedInstance);
         this.mVWOUtils = new VWOUtils(sSharedInstance);
@@ -304,7 +332,12 @@ public class VWO {
         return appKey.contains("-");
     }
 
-    @SuppressWarnings("unused")
+    /**
+     * This function is to set up a listener for listening to the initialization event of VWO sdk.
+     * i.e. VWO sdk is connected to server and all setting are received.
+     *
+     * @param listener This listener to be passed to SDK
+     */
     public static void addVwoStatusListener(VWOStatusListener listener) {
         if (sSharedInstance != null) {
             sSharedInstance.mStatusListener = listener;
@@ -356,12 +389,21 @@ public class VWO {
         this.mStatusListener = mStatusListener;
     }
 
-    public static void setCustomVariable(@NonNull String name, @NonNull String value) {
+    /**
+     * Sets custom key value pair for user segmentation.
+     *
+     * This function can be used to segment users based on this key value pair.
+     * This will decide whether user will be a part of campaign or not.
+     *
+     * @param key is given key
+     * @param value is the value corresponding to the given key.
+     */
+    public static void setCustomVariable(@NonNull String key, @NonNull String value) {
         if(sSharedInstance == null) {
             throw new IllegalStateException("You need to initialize VWO SDK first and the try calling this function.");
         }
 
-        sSharedInstance.getConfig().addCustomSegment(name, value);
+        sSharedInstance.getConfig().addCustomSegment(key, value);
     }
 
     public Tracker getGATracker() {

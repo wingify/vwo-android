@@ -125,8 +125,11 @@ public class VWOConfig {
         }
 
         /**
-         * @param customSegmentationMapping is the key value pair mapping for custom segments
-         * @return
+         * @param customSegmentationMapping is the key value pair mapping for custom segments based on
+         *                                  which it is decided that given user will be a part of
+         *                                  campaign or not.
+         *
+         * @return the current {@link Builder} object.
          */
         public Builder setCustomSegmentationMapping(@NonNull Map<String, String> customSegmentationMapping) {
             if (customSegmentationMapping == null) {
