@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.util.DisplayMetrics;
@@ -76,14 +77,10 @@ public class VWOUtils {
     }
 
     public static boolean isTablet(@NonNull Context context) {
-        DisplayMetrics metrics = context.getResources().getDisplayMetrics();
 
-        assert metrics != null;
-
-        float yInches = (float) metrics.heightPixels / metrics.ydpi;
-        float xInches = (float) metrics.widthPixels / metrics.xdpi;
-        double diagonalInches = Math.sqrt((double) (xInches * xInches + yInches * yInches));
-        return diagonalInches >= 6.0D;
+        return (context.getResources().getConfiguration().screenLayout
+                & Configuration.SCREENLAYOUT_SIZE_MASK)
+                >= Configuration.SCREENLAYOUT_SIZE_LARGE;
     }
 
     public static Map<String, Integer> getScreenSizeMap(Context context) {
@@ -105,20 +102,20 @@ public class VWOUtils {
         return toReturn;
     }
 
-    public static String applicationVersion(VWO vwo) {
+    public static int applicationVersion(VWO vwo) {
         Context context = vwo.getCurrentContext().getApplicationContext();
         if (context != null) {
             try {
                 PackageInfo packageInfo = context.getPackageManager().getPackageInfo(applicationName(context), 0);
-                if (packageInfo != null && packageInfo.versionName != null) {
-                    return packageInfo.versionName;
+                if (packageInfo != null) {
+                    return packageInfo.versionCode;
                 }
             } catch (PackageManager.NameNotFoundException exception) {
                 VWOLog.e(VWOLog.CONFIG_LOGS, "Failed to get packaging info", exception, true, true);
             }
         }
 
-        return "0.0.0";
+        return -1;
     }
 
     public static double getRandomNumber() {

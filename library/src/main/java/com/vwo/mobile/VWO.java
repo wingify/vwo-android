@@ -265,6 +265,9 @@ public class VWO {
                 @Override
                 public void onDownloadError(Exception ex) {
                     Sentry.init(BuildConfig.SENTRY, factory);
+                    if(ex instanceof JSONException) {
+                        VWOLog.e(VWOLog.DOWNLOAD_DATA_LOGS, ex, false, true);
+                    }
                     mVWODownloader.startUpload();
                     mVWOSocket.connectToSocket();
                     if (mVWOLocalData.isLocalDataPresent()) {

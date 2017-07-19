@@ -222,16 +222,16 @@ public enum CustomSegmentEvaluateEnum {
     APP_VERSION_EQUAL_TO(AppConstants.APP_VERSION, AppConstants.EQUAL_TO, new EvaluateSegment() {
         @Override
         public boolean evaluate(VWO vwo, JSONArray data) {
-            String appVersion = VWOUtils.applicationVersion(vwo);
+            int appVersion = VWOUtils.applicationVersion(vwo);
             for (int i = 0; i < data.length(); i++) {
                 try {
-                    String version = data.getString(i);
-                    if (version.equals(appVersion)) {
+                    int version = Integer.parseInt(data.getString(i));
+                    if (version == appVersion) {
                         return true;
                     }
-                } catch (JSONException exception) {
+                } catch (JSONException | NumberFormatException exception) {
                     VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse app version", exception,
-                            true, true);
+                            true, false);
                 }
             }
             return false;
@@ -246,16 +246,16 @@ public enum CustomSegmentEvaluateEnum {
     APP_VERSION_NOT_EQUAL_TO(AppConstants.APP_VERSION, AppConstants.NOT_EQUAL_TO, new EvaluateSegment() {
         @Override
         public boolean evaluate(VWO vwo, JSONArray data) {
-            String appVersion = VWOUtils.applicationVersion(vwo);
+            int appVersion = VWOUtils.applicationVersion(vwo);
             for (int i = 0; i < data.length(); i++) {
                 try {
-                    String version = data.getString(i);
-                    if (version.equals(appVersion)) {
-                        return false;
+                    int version = Integer.parseInt(data.getString(i));
+                    if (version == appVersion) {
+                        return true;
                     }
-                } catch (JSONException exception) {
+                } catch (JSONException | NumberFormatException exception) {
                     VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse app version", exception,
-                            true, true);
+                            true, false);
                 }
             }
             return true;
@@ -270,7 +270,7 @@ public enum CustomSegmentEvaluateEnum {
     APP_VERSION_MATCHES_REGEX(AppConstants.APP_VERSION, AppConstants.MATCHES_REGEX, new EvaluateSegment() {
         @Override
         public boolean evaluate(VWO vwo, JSONArray data) {
-            String appVersion = VWOUtils.applicationVersion(vwo);
+            String appVersion = String.valueOf(VWOUtils.applicationVersion(vwo));
             for (int i = 0; i < data.length(); i++) {
                 try {
                     Pattern pattern = Pattern.compile(data.getString(i));
@@ -280,7 +280,7 @@ public enum CustomSegmentEvaluateEnum {
                     }
                 } catch (JSONException exception) {
                     VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse app version", exception,
-                            true, true);
+                            true, false);
                 }
             }
             return false;
@@ -295,7 +295,7 @@ public enum CustomSegmentEvaluateEnum {
     APP_VERSION_CONTAINS(AppConstants.APP_VERSION, AppConstants.CONTAINS, new EvaluateSegment() {
         @Override
         public boolean evaluate(VWO vwo, JSONArray data) {
-            String appVersion = VWOUtils.applicationVersion(vwo);
+            String appVersion = String.valueOf(VWOUtils.applicationVersion(vwo));
             for (int i = 0; i < data.length(); i++) {
                 try {
                     String version = data.getString(i);
@@ -304,7 +304,7 @@ public enum CustomSegmentEvaluateEnum {
                     }
                 } catch (JSONException exception) {
                     VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse app version", exception,
-                            true, true);
+                            true, false);
                 }
             }
             return false;
@@ -319,7 +319,7 @@ public enum CustomSegmentEvaluateEnum {
     APP_VERSION_STARTS_WITH(AppConstants.APP_VERSION, AppConstants.STARTS_WITH, new EvaluateSegment() {
         @Override
         public boolean evaluate(VWO vwo, JSONArray data) {
-            String appVersion = VWOUtils.applicationVersion(vwo);
+            String appVersion = String.valueOf(VWOUtils.applicationVersion(vwo));
             for (int i = 0; i < data.length(); i++) {
                 try {
                     String version = data.getString(i);
@@ -328,7 +328,7 @@ public enum CustomSegmentEvaluateEnum {
                     }
                 } catch (JSONException exception) {
                     VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse app version", exception,
-                            true, true);
+                            true, false);
                 }
             }
             return false;
@@ -362,7 +362,7 @@ public enum CustomSegmentEvaluateEnum {
                     }
                 } catch (JSONException exception) {
                     VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse custom segment", exception,
-                            true, true);
+                            true, false);
                 }
             }
             return false;
@@ -391,7 +391,7 @@ public enum CustomSegmentEvaluateEnum {
                     }
                 } catch (JSONException exception) {
                     VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse custom segment", exception,
-                            true, true);
+                            true, false);
                 }
             }
             return true;
