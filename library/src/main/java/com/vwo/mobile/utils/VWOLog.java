@@ -3,6 +3,8 @@ package com.vwo.mobile.utils;
 import android.support.annotation.IntDef;
 import android.util.Log;
 
+import com.vwo.mobile.BuildConfig;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -125,7 +127,7 @@ public class VWOLog {
 
 
     @LogLevel
-    private static int LEVEL = ALL;
+    private static int LEVEL = BuildConfig.DEBUG ? ALL : OFF;
 
     /**
      * Sets log level.

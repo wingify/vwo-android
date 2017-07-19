@@ -14,9 +14,9 @@ import java.util.logging.Logger;
  * Created by abhishek on 19/10/15 at 12:46 AM.
  */
 public class NetworkUtils {
-    public static int TYPE_WIFI = 1;
-    public static int TYPE_MOBILE = 2;
-    public static int TYPE_NOT_CONNECTED = 0;
+    private static final int TYPE_WIFI = 1;
+    private static final int TYPE_MOBILE = 2;
+    private static final int TYPE_NOT_CONNECTED = 0;
 
     public static int getConnectivityStatus(VWO vwo) {
 
