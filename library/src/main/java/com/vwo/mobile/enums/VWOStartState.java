@@ -3,7 +3,7 @@ package com.vwo.mobile.enums;
 /**
  * Created by abhishek on 07/10/15 at 5:37 PM.
  */
-public enum VwoStartState {
+public enum VWOStartState {
 
     NOT_STARTED(0),
     STARTING(1),
@@ -13,9 +13,11 @@ public enum VwoStartState {
     private final int mValue;
 
 
-    VwoStartState(final int newValue) {
+    VWOStartState(final int newValue) {
         mValue = newValue;
     }
 
-    public int getValue() { return mValue; }
+    public int getValue() {
+        return mValue;
+    }
 }

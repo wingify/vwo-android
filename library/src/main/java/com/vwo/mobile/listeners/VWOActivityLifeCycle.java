@@ -7,7 +7,7 @@ import android.os.Bundle;
 /**
  * Created by abhishek on 19/10/15 at 12:12 AM.
  */
-public class VwoActivityLifeCycle implements Application.ActivityLifecycleCallbacks {
+public class VWOActivityLifeCycle implements Application.ActivityLifecycleCallbacks {
 
     private static int sResumed;
     private static int sPaused;

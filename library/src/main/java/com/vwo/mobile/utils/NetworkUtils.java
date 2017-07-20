@@ -6,21 +6,23 @@ import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
-import com.vwo.mobile.Vwo;
+import com.vwo.mobile.VWO;
+
+import java.util.logging.Logger;
 
 /**
  * Created by abhishek on 19/10/15 at 12:46 AM.
  */
 public class NetworkUtils {
+    private static final int TYPE_WIFI = 1;
+    private static final int TYPE_MOBILE = 2;
+    private static final int TYPE_NOT_CONNECTED = 0;
 
-    public static int TYPE_WIFI = 1;
-    public static int TYPE_MOBILE = 2;
-    public static int TYPE_NOT_CONNECTED = 0;
-
-    public static int getConnectivityStatus(Vwo vwo) {
+    public static int getConnectivityStatus(VWO vwo) {
 
         if (!checkAccessNetworkStatePermission(vwo.getCurrentContext())) {
-            VwoLog.d("Network Access permission not granted. Returning connected to Wifi");
+            VWOLog.e(VWOLog.CONFIG_LOGS, "Network Access permission not granted. Returning connected to Wifi",
+                    true, false);
             return TYPE_WIFI;
         }
 
@@ -44,7 +46,7 @@ public class NetworkUtils {
         return (res == PackageManager.PERMISSION_GRANTED);
     }
 
-    public static boolean shouldAttemptNetworkCall(Vwo vwo) {
+    public static boolean shouldAttemptNetworkCall(VWO vwo) {
         PackageManager pm = vwo.getCurrentContext().getPackageManager();
         int hasPerm = pm.checkPermission(android.Manifest.permission.ACCESS_NETWORK_STATE, vwo.getCurrentContext().getPackageName());
         if (hasPerm == PackageManager.PERMISSION_DENIED) {

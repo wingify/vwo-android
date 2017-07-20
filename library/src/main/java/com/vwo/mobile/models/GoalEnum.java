@@ -16,9 +16,9 @@ public enum GoalEnum {
     public static GoalEnum getEnumFromGoal(String goalType) {
 
         GoalEnum[] goalEnums = GoalEnum.values();
-        for (int i = 0; i < goalEnums.length; i++) {
-            if (goalEnums[i].getGoalType().equals(goalType)) {
-                return goalEnums[i];
+        for (GoalEnum goalEnum : goalEnums) {
+            if (goalEnum.getGoalType().equals(goalType)) {
+                return goalEnum;
             }
         }
 

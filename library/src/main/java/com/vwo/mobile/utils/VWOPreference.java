@@ -1,38 +1,44 @@
 package com.vwo.mobile.utils;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Map;
-
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
 import android.os.Environment;
-import android.preference.PreferenceManager;
 import android.text.TextUtils;
-import android.util.Log;
 
-import com.vwo.mobile.Vwo;
+import com.vwo.mobile.VWO;
+import com.vwo.mobile.segmentation.CustomSegmentEvaluateEnum;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.logging.Logger;
 
 
-public class VwoPreference {
-
+public class VWOPreference {
     private SharedPreferences preferences;
     private String DEFAULT_APP_IMAGEDATA_DIRECTORY;
     private String lastImagePath = "";
+    private static final String PART_OF_CAMPAIGNS = "partOfCampaigns";
+    private static final String TRACKED_GOALS = "trackedGoals";
 
-    public VwoPreference(Vwo vwo) {
+    private HashMap<String, Boolean> partOfCampaigns;
+    private HashMap<String, Boolean> trackedGoals;
+
+    public VWOPreference(VWO vwo) {
         preferences = vwo.getCurrentContext().getSharedPreferences("VWO123", Context.MODE_PRIVATE);
     }
 
 
     /**
      * Decodes the Bitmap from 'path' and returns it
+     *
      * @param path image path
      * @return the Bitmap from 'path'
      */
@@ -41,9 +47,9 @@ public class VwoPreference {
         try {
             bitmapFromPath = BitmapFactory.decodeFile(path);
 
-        } catch (Exception e) {
+        } catch (Exception exception) {
             // TODO: handle exception
-            e.printStackTrace();
+            VWOLog.e(VWOLog.PREFERENCE_LOGS, "Unable to decode image: ", exception, true, false);
         }
 
         return bitmapFromPath;
@@ -52,6 +58,7 @@ public class VwoPreference {
 
     /**
      * Returns the String path of the last saved image
+     *
      * @return string path of the last saved image
      */
     public String getSavedImagePath() {
@@ -61,9 +68,10 @@ public class VwoPreference {
 
     /**
      * Saves 'theBitmap' into folder 'theFolder' with the name 'theImageName'
-     * @param theFolder the folder path dir you want to save it to e.g "DropBox/WorkImages"
+     *
+     * @param theFolder    the folder path dir you want to save it to e.g "DropBox/WorkImages"
      * @param theImageName the name you want to assign to the image file e.g "MeAtLunch.png"
-     * @param theBitmap the image you want to save as a Bitmap
+     * @param theBitmap    the image you want to save as a Bitmap
      * @return true if image was saved, false otherwise
      */
     public boolean putImage(String theFolder, String theImageName, Bitmap theBitmap) {
@@ -84,7 +92,8 @@ public class VwoPreference {
 
     /**
      * Saves 'theBitmap' into 'fullPath'
-     * @param fullPath full path of the image file e.g. "Images/MeAtLunch.png"
+     *
+     * @param fullPath  full path of the image file e.g. "Images/MeAtLunch.png"
      * @param theBitmap the image you want to save as a Bitmap
      * @return true if image was saved, false otherwise
      */
@@ -94,6 +103,7 @@ public class VwoPreference {
 
     /**
      * Creates the path for the image with name 'imageName' in DEFAULT_APP.. directory
+     *
      * @param imageName name of the image
      * @return the full path of the image. If it failed to create directory, return empty string
      */
@@ -102,7 +112,7 @@ public class VwoPreference {
 
         if (isExternalStorageReadable() && isExternalStorageWritable() && !mFolder.exists()) {
             if (!mFolder.mkdirs()) {
-                Log.e("ERROR", "Failed to setup folder");
+                VWOLog.e(VWOLog.PREFERENCE_LOGS, "Failed to setup folder.", true, false);
                 return "";
             }
         }
@@ -112,8 +122,9 @@ public class VwoPreference {
 
     /**
      * Saves the Bitmap as a PNG file at path 'fullPath'
+     *
      * @param fullPath path of the image file
-     * @param bitmap the image as a Bitmap
+     * @param bitmap   the image as a Bitmap
      * @return true if it successfully saved, false otherwise
      */
     private boolean saveBitmap(String fullPath, Bitmap bitmap) {
@@ -121,7 +132,7 @@ public class VwoPreference {
             return false;
 
         boolean fileCreated = false;
-        boolean bitmapCompressed = false;
+        boolean bitmapCompressed;
         boolean streamClosed = false;
 
         File imageFile = new File(fullPath);
@@ -133,8 +144,8 @@ public class VwoPreference {
         try {
             fileCreated = imageFile.createNewFile();
 
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException exception) {
+            VWOLog.e(VWOLog.PREFERENCE_LOGS, "Unable to save bitmap.", exception, true, true);
         }
 
         FileOutputStream out = null;
@@ -142,8 +153,8 @@ public class VwoPreference {
             out = new FileOutputStream(imageFile);
             bitmapCompressed = bitmap.compress(CompressFormat.PNG, 100, out);
 
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception exception) {
+            VWOLog.e(VWOLog.PREFERENCE_LOGS, "Unable to save bitmap.", exception, true, true);
             bitmapCompressed = false;
 
         } finally {
@@ -153,8 +164,8 @@ public class VwoPreference {
                     out.close();
                     streamClosed = true;
 
-                } catch (IOException e) {
-                    e.printStackTrace();
+                } catch (IOException exception) {
+                    VWOLog.e(VWOLog.PREFERENCE_LOGS, "Unable to save bitmap.", exception, true, true);
                     streamClosed = false;
                 }
             }
@@ -167,7 +178,8 @@ public class VwoPreference {
 
     /**
      * Get int value from SharedPreferences at 'key'. If key not found, return 'defaultValue'
-     * @param key SharedPreferences key
+     *
+     * @param key          SharedPreferences key
      * @param defaultValue int value returned if key was not found
      * @return int value at 'key' or 'defaultValue' if key not found
      */
@@ -177,13 +189,14 @@ public class VwoPreference {
 
     /**
      * Get parsed ArrayList of Integers from SharedPreferences at 'key'
+     *
      * @param key SharedPreferences key
      * @return ArrayList of Integers
      */
     public ArrayList<Integer> getListInt(String key) {
         String[] myList = TextUtils.split(preferences.getString(key, ""), "‚‗‚");
-        ArrayList<String> arrayToList = new ArrayList<String>(Arrays.asList(myList));
-        ArrayList<Integer> newList = new ArrayList<Integer>();
+        ArrayList<String> arrayToList = new ArrayList<>(Arrays.asList(myList));
+        ArrayList<Integer> newList = new ArrayList<>();
 
         for (String item : arrayToList)
             newList.add(Integer.parseInt(item));
@@ -193,7 +206,8 @@ public class VwoPreference {
 
     /**
      * Get long value from SharedPreferences at 'key'. If key not found, return 'defaultValue'
-     * @param key SharedPreferences key
+     *
+     * @param key          SharedPreferences key
      * @param defaultValue long value returned if key was not found
      * @return long value at 'key' or 'defaultValue' if key not found
      */
@@ -203,7 +217,8 @@ public class VwoPreference {
 
     /**
      * Get float value from SharedPreferences at 'key'. If key not found, return 'defaultValue'
-     * @param key SharedPreferences key
+     *
+     * @param key          SharedPreferences key
      * @param defaultValue float value returned if key was not found
      * @return float value at 'key' or 'defaultValue' if key not found
      */
@@ -213,7 +228,8 @@ public class VwoPreference {
 
     /**
      * Get double value from SharedPreferences at 'key'. If exception thrown, return 'defaultValue'
-     * @param key SharedPreferences key
+     *
+     * @param key          SharedPreferences key
      * @param defaultValue double value returned if exception is thrown
      * @return double value at 'key' or 'defaultValue' if exception is thrown
      */
@@ -230,13 +246,14 @@ public class VwoPreference {
 
     /**
      * Get parsed ArrayList of Double from SharedPreferences at 'key'
+     *
      * @param key SharedPreferences key
      * @return ArrayList of Double
      */
     public ArrayList<Double> getListDouble(String key) {
         String[] myList = TextUtils.split(preferences.getString(key, ""), "â€šâ€—â€š");
-        ArrayList<String> arrayToList = new ArrayList<String>(Arrays.asList(myList));
-        ArrayList<Double> newList = new ArrayList<Double>();
+        ArrayList<String> arrayToList = new ArrayList<>(Arrays.asList(myList));
+        ArrayList<Double> newList = new ArrayList<>();
 
         for (String item : arrayToList)
             newList.add(Double.parseDouble(item));
@@ -246,6 +263,7 @@ public class VwoPreference {
 
     /**
      * Get String value from SharedPreferences at 'key'. If key not found, return ""
+     *
      * @param key SharedPreferences key
      * @return String value at 'key' or "" (empty String) if key not found
      */
@@ -255,16 +273,18 @@ public class VwoPreference {
 
     /**
      * Get parsed ArrayList of String from SharedPreferences at 'key'
+     *
      * @param key SharedPreferences key
      * @return ArrayList of String
      */
     public ArrayList<String> getListString(String key) {
-        return new ArrayList<String>(Arrays.asList(TextUtils.split(preferences.getString(key, ""), "‚‗‚")));
+        return new ArrayList<>(Arrays.asList(TextUtils.split(preferences.getString(key, ""), "‚‗‚")));
     }
 
     /**
      * Get boolean value from SharedPreferences at 'key'. If key not found, return 'defaultValue'
-     * @param key SharedPreferences key
+     *
+     * @param key          SharedPreferences key
      * @param defaultValue boolean value returned if key was not found
      * @return boolean value at 'key' or 'defaultValue' if key not found
      */
@@ -274,6 +294,7 @@ public class VwoPreference {
 
     /**
      * Get parsed ArrayList of Boolean from SharedPreferences at 'key'
+     *
      * @param key SharedPreferences key
      * @return ArrayList of Boolean
      */
@@ -296,7 +317,8 @@ public class VwoPreference {
 
     /**
      * Put int value into SharedPreferences with 'key' and save
-     * @param key SharedPreferences key
+     *
+     * @param key   SharedPreferences key
      * @param value int value to be added
      */
     public void putInt(String key, int value) {
@@ -305,7 +327,8 @@ public class VwoPreference {
 
     /**
      * Put ArrayList of Integer into SharedPreferences with 'key' and save
-     * @param key SharedPreferences key
+     *
+     * @param key     SharedPreferences key
      * @param intList ArrayList of Integer to be added
      */
     public void putListInt(String key, ArrayList<Integer> intList) {
@@ -315,7 +338,8 @@ public class VwoPreference {
 
     /**
      * Put long value into SharedPreferences with 'key' and save
-     * @param key SharedPreferences key
+     *
+     * @param key   SharedPreferences key
      * @param value long value to be added
      */
     public void putLong(String key, long value) {
@@ -324,7 +348,8 @@ public class VwoPreference {
 
     /**
      * Put float value into SharedPreferences with 'key' and save
-     * @param key SharedPreferences key
+     *
+     * @param key   SharedPreferences key
      * @param value float value to be added
      */
     public void putFloat(String key, float value) {
@@ -333,7 +358,8 @@ public class VwoPreference {
 
     /**
      * Put double value into SharedPreferences with 'key' and save
-     * @param key SharedPreferences key
+     *
+     * @param key   SharedPreferences key
      * @param value double value to be added
      */
     public void putDouble(String key, double value) {
@@ -342,7 +368,8 @@ public class VwoPreference {
 
     /**
      * Put ArrayList of Double into SharedPreferences with 'key' and save
-     * @param key SharedPreferences key
+     *
+     * @param key        SharedPreferences key
      * @param doubleList ArrayList of Double to be added
      */
     public void putListDouble(String key, ArrayList<Double> doubleList) {
@@ -352,7 +379,8 @@ public class VwoPreference {
 
     /**
      * Put String value into SharedPreferences with 'key' and save
-     * @param key SharedPreferences key
+     *
+     * @param key   SharedPreferences key
      * @param value String value to be added
      */
     public void putString(String key, String value) {
@@ -361,7 +389,8 @@ public class VwoPreference {
 
     /**
      * Put ArrayList of String into SharedPreferences with 'key' and save
-     * @param key SharedPreferences key
+     *
+     * @param key        SharedPreferences key
      * @param stringList ArrayList of String to be added
      */
     public void putListString(String key, ArrayList<String> stringList) {
@@ -371,7 +400,8 @@ public class VwoPreference {
 
     /**
      * Put boolean value into SharedPreferences with 'key' and save
-     * @param key SharedPreferences key
+     *
+     * @param key   SharedPreferences key
      * @param value boolean value to be added
      */
     public void putBoolean(String key, boolean value) {
@@ -380,11 +410,12 @@ public class VwoPreference {
 
     /**
      * Put ArrayList of Boolean into SharedPreferences with 'key' and save
-     * @param key SharedPreferences key
+     *
+     * @param key      SharedPreferences key
      * @param boolList ArrayList of Boolean to be added
      */
     public void putListBoolean(String key, ArrayList<Boolean> boolList) {
-        ArrayList<String> newList = new ArrayList<String>();
+        ArrayList<String> newList = new ArrayList<>();
 
         for (Boolean item : boolList) {
             if (item) {
@@ -400,6 +431,7 @@ public class VwoPreference {
 
     /**
      * Remove SharedPreferences item with 'key'
+     *
      * @param key SharedPreferences key
      */
     public void remove(String key) {
@@ -408,6 +440,7 @@ public class VwoPreference {
 
     /**
      * Delete image file at 'path'
+     *
      * @param path path of image file
      * @return true if it successfully deleted, false otherwise
      */
@@ -425,6 +458,7 @@ public class VwoPreference {
 
     /**
      * Retrieve all values from SharedPreferences. Do not modify collection return by method
+     *
      * @return a Map representing a list of key/value pairs from SharedPreferences
      */
     public Map<String, ?> getAll() {
@@ -434,20 +468,20 @@ public class VwoPreference {
 
     /**
      * Register SharedPreferences change listener
+     *
      * @param listener listener object of OnSharedPreferenceChangeListener
      */
-    public void registerOnSharedPreferenceChangeListener(
-            SharedPreferences.OnSharedPreferenceChangeListener listener) {
+    public void registerOnSharedPreferenceChangeListener(SharedPreferences.OnSharedPreferenceChangeListener listener) {
 
         preferences.registerOnSharedPreferenceChangeListener(listener);
     }
 
     /**
      * Unregister SharedPreferences change listener
+     *
      * @param listener listener object of OnSharedPreferenceChangeListener to be unregistered
      */
-    public void unregisterOnSharedPreferenceChangeListener(
-            SharedPreferences.OnSharedPreferenceChangeListener listener) {
+    public void unregisterOnSharedPreferenceChangeListener(SharedPreferences.OnSharedPreferenceChangeListener listener) {
 
         preferences.unregisterOnSharedPreferenceChangeListener(listener);
     }
@@ -455,6 +489,7 @@ public class VwoPreference {
 
     /**
      * Check if external storage is writable or not
+     *
      * @return true if writable, false otherwise
      */
     public static boolean isExternalStorageWritable() {
@@ -463,6 +498,7 @@ public class VwoPreference {
 
     /**
      * Check if external storage is readable or not
+     *
      * @return true if readable, false otherwise
      */
     public static boolean isExternalStorageReadable() {
@@ -470,5 +506,49 @@ public class VwoPreference {
 
         return Environment.MEDIA_MOUNTED.equals(state) ||
                 Environment.MEDIA_MOUNTED_READ_ONLY.equals(state);
+    }
+
+    public boolean setPartOfCampaign(String campaignId) {
+        ArrayList<String> campaigns = getListString(PART_OF_CAMPAIGNS);
+        if(campaigns != null && !campaigns.contains(campaignId)) {
+            campaigns.add(campaignId);
+            putListString(PART_OF_CAMPAIGNS, campaigns);
+            return true;
+        }
+
+        return false;
+    }
+
+    public boolean setGoalTracked(String goal) {
+        ArrayList<String> goals = getListString(TRACKED_GOALS);
+        if(goals != null && !goals.contains(goal)) {
+            goals.add(goal);
+            putListString(TRACKED_GOALS, goals);
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Check if user is already a part of campaign or not.
+     *
+     * @param campaignId is the campaign identifier
+     * @return true if user is already a part of campaign
+     */
+    public boolean isPartOfCampaign(String campaignId) {
+        ArrayList<String> campaigns = getListString(PART_OF_CAMPAIGNS);
+        return campaigns != null && campaigns.size() > 0 && campaigns.contains(campaignId);
+    }
+
+    /**
+     * check if goal is already sent to server or not
+     *
+     * @param goal is the goal identifier
+     * @return {@link Boolean}
+     */
+    public boolean isGoalTracked(String goal) {
+        ArrayList<String> goals = getListString(TRACKED_GOALS);
+        return goals != null && goals.size() > 0 && goals.contains(goal);
     }
 }

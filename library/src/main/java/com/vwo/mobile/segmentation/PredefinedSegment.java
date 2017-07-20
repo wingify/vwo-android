@@ -1,6 +1,6 @@
 package com.vwo.mobile.segmentation;
 
-import com.vwo.mobile.Vwo;
+import com.vwo.mobile.VWO;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -37,7 +37,7 @@ public class PredefinedSegment implements Segment {
     }
 
     @Override
-    public boolean evaluate(Vwo vwo) {
+    public boolean evaluate(VWO vwo) {
         return PredefinedSegmentEnum.getEvaluator(mSegmentKey).evaluate(vwo, mSegmentValue);
     }
 

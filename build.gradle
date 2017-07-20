@@ -5,15 +5,51 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:1.3.0'
+        classpath 'com.google.gms:google-services:3.1.0'
+        classpath 'com.android.tools.build:gradle:3.0.0-alpha7'
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
+    }
+
+    ext {
+        supportLibraryVersion = '25.2.0'
+        retrofitVersion = '2.1.0'
+        okHttpVersion = '3.6.0'
+        buildToolsVersion = '25.0.2'
+        compileSDKVersion = 25
+        minSDKVersion = 14
+        targetSDKVersion = 25
+
+        supportLibraryDependencies = [
+                gridLayout  : "com.android.support:gridlayout-v7:${supportLibraryVersion}",
+                constraint  : "com.android.support.constraint:constraint-layout:1.0.2",
+                recycler    : "com.android.support:recyclerview-v7:${supportLibraryVersion}",
+                cardview    : "com.android.support:cardview-v7:${supportLibraryVersion}",
+                vector      : "com.android.support:support-vector-drawable:${supportLibraryVersion}",
+                annotations : "com.android.support:support-annotations:${supportLibraryVersion}",
+                design      : "com.android.support:design:${supportLibraryVersion}",
+                appcompat_v4: "com.android.support:support-v4:${supportLibraryVersion}"
+        ]
+
+        retrofitDependencies = [
+                retorfit     : "com.squareup.retrofit2:retrofit:${retrofitVersion}",
+                gsonConverter: "com.squareup.retrofit2:converter-gson:${retrofitVersion}"
+        ]
+
+        okHttpDependencies = [
+                okHttp3           : "com.squareup.okhttp3:okhttp:${okHttpVersion}",
+                loggingInterceptor: "com.squareup.okhttp3:logging-interceptor:${okHttpVersion}"
+        ]
+
     }
 }
 
 allprojects {
     repositories {
         jcenter()
+        maven {
+            url "https://maven.google.com"
+        }
     }
 }

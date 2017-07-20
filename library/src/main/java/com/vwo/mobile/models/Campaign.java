@@ -2,19 +2,16 @@ package com.vwo.mobile.models;
 
 
 import com.vwo.mobile.segmentation.CustomSegment;
-import com.vwo.mobile.segmentation.CustomSegmentEvaluateEnum;
 import com.vwo.mobile.segmentation.DefaultSegment;
-import com.vwo.mobile.segmentation.LogicalOperator;
 import com.vwo.mobile.segmentation.PredefinedSegment;
 import com.vwo.mobile.segmentation.Segment;
-import com.vwo.mobile.utils.VwoLog;
+import com.vwo.mobile.utils.VWOLog;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Stack;
 
 /**
  * Created by abhishek on 17/09/15 at 12:08 PM.
@@ -26,6 +23,7 @@ public class Campaign {
     public final static String STATUS = "status";
     public final static String TRAFFIC = "pc_traffic";
     public final static String TYPE = "type";
+    public static final String CAMPAIGN_NAME = "name";
     public final static String VARIATION = "variations";
     public final static String GOALS = "goals";
     public static final String COUNT_GOAL_ONCE = "count_goal_once";
@@ -38,32 +36,67 @@ public class Campaign {
     public static final String SEGMENT_PREDEFINED = "predefined";
     public static final String SEGMENT_DEFAULT = "default";
 
+    // Track user automatically for a given campaign
+    public static final String TRACK_USER_AUTOMATICALLY = "track_user_on_launch";
+    private static final String UA = "UA";
+    private static final String UA_S = "s";
+
 
     private long mId;
     private int mVersion;
     private int mTraffic;
+    private boolean trackUserAutomatically;
     private CampaignTypeEnum mType;
     private boolean mCountGoalOnce;
     private boolean mIsClickMap;
     private ArrayList<Goal> mGoals;
     private Variation mVariation;
-    private boolean isExperimentServed;
     private String mSegmentType;
+    private String name;
     private ArrayList<Segment> mSegments;
+    private boolean mContainsUniversalAnalytics;
+    private int mUaDimension;
 
     public Campaign(JSONObject campaignData) {
         try {
+            VWOLog.v(VWOLog.CAMPAIGN_LOGS, campaignData.toString());
+
             this.mId = campaignData.getInt(ID);
             this.mVersion = campaignData.getInt(VERSION);
             mGoals = new ArrayList<>();
             this.mTraffic = campaignData.getInt(TRAFFIC);
             this.mType = CampaignTypeEnum.getEnumFromCampaign(campaignData.getString(TYPE));
 
+            if (campaignData.has(CAMPAIGN_NAME)) {
+                name = campaignData.getString(CAMPAIGN_NAME);
+            } else {
+                name = "campaign";
+            }
+
+            if (campaignData.has(UA)) {
+
+                mContainsUniversalAnalytics = true;
+                mUaDimension = campaignData.getJSONObject(UA).getInt(UA_S);
+
+                VWOLog.d(VWOLog.ANALYTICS, "Contains UA Data: " + mUaDimension, true);
+            } else {
+                VWOLog.d(VWOLog.ANALYTICS, "Does not contains UA Data", true);
+                mContainsUniversalAnalytics = false;
+            }
+
             JSONArray goals = campaignData.getJSONArray(GOALS);
             for (int i = 0; i < goals.length(); i++) {
                 JSONObject goal = goals.getJSONObject(i);
                 mGoals.add(new Goal(goal));
                 mVariation = new Variation(campaignData.getJSONObject(VARIATION));
+            }
+
+            try {
+                this.trackUserAutomatically = campaignData.getBoolean(TRACK_USER_AUTOMATICALLY);
+            } catch (JSONException exception) {
+                this.trackUserAutomatically = false;
+                VWOLog.e(VWOLog.DOWNLOAD_DATA_LOGS, "Cannot find or parse key: " + TRACK_USER_AUTOMATICALLY,
+                        exception, true, true);
             }
 
             int clickMap = campaignData.getInt(CLICK_MAP);
@@ -112,24 +145,20 @@ public class Campaign {
         return mId;
     }
 
+    public String getName() {
+        return this.name;
+    }
+
     public int getVersion() {
         return mVersion;
     }
 
-    public int getTraffic() {
-        return mTraffic;
+    public int getUaDimension() {
+        return mUaDimension;
     }
 
     public CampaignTypeEnum getType() {
         return mType;
-    }
-
-    public boolean isCountGoalOnce() {
-        return mCountGoalOnce;
-    }
-
-    public boolean isClickMap() {
-        return mIsClickMap;
     }
 
     public ArrayList<Goal> getGoals() {
@@ -140,12 +169,12 @@ public class Campaign {
         return mVariation;
     }
 
-    public boolean isExperimentServed() {
-        return isExperimentServed;
+    public boolean shouldTrackUserAutomatically() {
+        return trackUserAutomatically;
     }
 
-    public void setIsExperimentServed(boolean isExperimentServed) {
-        this.isExperimentServed = isExperimentServed;
+    public boolean containsUniversalAnalytics() {
+        return mContainsUniversalAnalytics;
     }
 
     public ArrayList<Segment> getSegments() {
@@ -162,6 +191,8 @@ public class Campaign {
         jsonObject.put(VARIATION, mVariation.getVariationAsJsonObject());
         jsonObject.put(COUNT_GOAL_ONCE, mCountGoalOnce);
         jsonObject.put(CLICK_MAP, mIsClickMap);
+        jsonObject.put(CAMPAIGN_NAME, this.name);
+        jsonObject.put(TRACK_USER_AUTOMATICALLY, trackUserAutomatically);
 
         JSONArray goalArray = new JSONArray();
 
@@ -174,5 +205,10 @@ public class Campaign {
 
     public String getSegmentType() {
         return mSegmentType;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof Campaign && ((Campaign) obj).getId() == this.mId || super.equals(obj);
     }
 }

@@ -29,6 +29,7 @@ public class AppConstants {
     public static final String HOUR_OF_DAY = "4";
     public static final String LOCATION = "5";
     public static final String APP_VERSION = "6";
+    public static final String CUSTOM_SEGMENT = "7";
 
     public static final int EQUAL_TO = 11;
     public static final int NOT_EQUAL_TO = 12;

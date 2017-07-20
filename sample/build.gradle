@@ -1,28 +1,67 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion "23.0.1"
-
+    compileSdkVersion parent.ext.compileSDKVersion
+    buildToolsVersion parent.ext.buildToolsVersion
     defaultConfig {
         applicationId "com.vwo.sample"
-        minSdkVersion 14
-        targetSdkVersion 23
+        minSdkVersion parent.ext.minSDKVersion
+        targetSdkVersion parent.ext.targetSDKVersion
         versionCode 1
         versionName "1.0.0"
     }
     buildTypes {
+        debug {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
 
+    // Specifies a flavor dimension.
+    flavorDimensions "vwo"
+
+    def DEBUG_LOCAL_VWO_API_KEY=project.properties['DEBUG_LOCAL_VWO_API_KEY'] ?: '""'
+    def DEBUG_REMOTE_VWO_API_KEY=project.properties['DEBUG_REMOTE_VWO_API_KEY'] ?: '""'
+    def RELEASE_VWO_API_KEY=project.properties['RELEASE_VWO_API_KEY'] ?: '""'
+    def TESTING_VWO_API_KEY=project.properties['TESTING_VWO_API_KEY'] ?: '""'
+
+    productFlavors {
+        local {
+            it.buildConfigField 'String', 'VWO_API_KEY', DEBUG_LOCAL_VWO_API_KEY
+            dimension "vwo"
+        }
+        remote {
+            it.buildConfigField 'String', 'VWO_API_KEY', DEBUG_REMOTE_VWO_API_KEY
+            dimension "vwo"
+        }
+        production {
+            it.buildConfigField 'String', 'VWO_API_KEY', RELEASE_VWO_API_KEY
+            dimension "vwo"
+        }
+        manualTesting {
+            it.buildConfigField 'String', 'VWO_API_KEY', TESTING_VWO_API_KEY
+            dimension "vwo"
+        }
+    }
+
+    variantFilter { variant ->
+        if (variant.name == "localRelease" || variant.name == "remoteRelease" || variant.name == "productionDebug" || variant.name == "manualTestingRelease") {
+            // Gradle ignores any variants that satisfy the conditions above.
+            variant.setIgnore(true)
+        }
+    }
 }
 
 dependencies {
-    compile 'com.android.support:appcompat-v7:23.0.1'
-    compile 'com.android.support:design:23.0.1'
+    compile 'com.android.support:appcompat-v7:25.4.0'
+    compile 'com.android.support:design:25.4.0'
     compile 'com.squareup.picasso:picasso:2.5.2'
+    compile 'com.google.android.gms:play-services-analytics:11.0.2'
     compile project(':library')
 }
+
+apply plugin: 'com.google.gms.google-services'

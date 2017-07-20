@@ -10,9 +10,11 @@ import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
-import com.vwo.mobile.Vwo;
+import com.vwo.mobile.VWO;
+import com.vwo.mobile.utils.VWOLog;
 
 public class ExperimentText extends AppCompatActivity {
+    private static final String LOG_TAG = ExperimentText.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,26 +33,29 @@ public class ExperimentText extends AppCompatActivity {
         });
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        Object data = Vwo.getObjectForKey("bannerText", "Buy Now");
+        Object data = VWO.getVariationForKey("bannerText", "Buy Now");
 
-        if (data != null) {
-            ((TextView) findViewById(R.id.buttonText)).setText(data.toString());
+        ((TextView) findViewById(R.id.buttonText)).setText(data.toString());
 
-            Log.d("QOL", data.toString());
-        }
+        Log.d("QOL", data.toString());
 
-        ((TextView) findViewById(R.id.buttonText)).setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.buttonText).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Vwo.markConversionForGoal("buttonClick");
+                VWO.markConversionForGoal("buttonClick");
             }
         });
 
-        data = Vwo.getObjectForKey("bannerColor");
+        data = VWO.getVariationForKey("bannerColor");
 
         if (data != null) {
-            findViewById(R.id.banner).setBackgroundColor(Color.parseColor(data.toString()));
-            Log.d("QOL", data.toString());
+            try {
+                findViewById(R.id.banner).setBackgroundColor(Color.parseColor(data.toString()));
+                Log.d("QOL", data.toString());
+            } catch (Exception exception) {
+                Log.d(LOG_TAG, "Unable to parse color " + data, exception);
+                findViewById(R.id.banner).setBackgroundColor(Color.parseColor("#ffffff"));
+            }
         } else {
             findViewById(R.id.banner).setBackgroundColor(Color.parseColor("#ffffff"));
         }
