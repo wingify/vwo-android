@@ -9,11 +9,11 @@ def localReleaseDest = "/Users/aman/git/vwo-mobile-android"
 
 android.libraryVariants.all { variant ->
     def name = variant.buildType.name
-    if (!name.equals("debug")) {
+    if (name != "debug") {
         def task = project.tasks.create "jar${name.capitalize()}", Jar
         task.dependsOn variant.javaCompile
         task.from variant.javaCompile.destinationDir
-        artifacts.add('archives', task);
+        artifacts.add('archives', task)
     }
 }
 
@@ -21,6 +21,7 @@ task androidJavadocs(type: Javadoc) {
     source = android.sourceSets.main.java.srcDirs
     ext.androidJar = "${android.sdkDirectory}/platforms/${android.compileSdkVersion}/android.jar"
     classpath += files(ext.androidJar)
+    failOnError false // add this line
 }
 
 task androidJavadocsJar(type: Jar, dependsOn: androidJavadocs) {
@@ -55,10 +56,14 @@ task generateRelease << {
     println "Release ${version} can be found at ${localReleaseDest}/"
 }
 
+subprojects {
+    tasks.withType(Javadoc).all { enabled = false }
+}
+
 generateRelease.dependsOn(uploadArchives)
 
 
 artifacts {
     archives androidSourcesJar
-    archives androidJavadocsJar
+//    archives androidJavadocsJar
 }

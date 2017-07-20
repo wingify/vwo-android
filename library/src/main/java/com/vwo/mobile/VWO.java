@@ -337,7 +337,7 @@ public class VWO {
      *
      * @param listener This listener to be passed to SDK
      */
-    public static void addVwoStatusListener(VWOStatusListener listener) {
+    public static void setVwoStatusListener(VWOStatusListener listener) {
         if (sSharedInstance != null) {
             sSharedInstance.mStatusListener = listener;
         }
