@@ -11,7 +11,7 @@ com.vwo.mobile.Vwo -> com.vwo.mobile.Vwo:
     boolean mIsEditMode -> b
     boolean mIsSyncMode -> c
     android.content.Context mContext -> d
-    com.vwo.mobile.network.VwoDownloader mVwoDownloader -> e
+    com.vwo.mobile.network.VWODownloader mVwoDownloader -> e
     com.vwo.mobile.data.VwoData mVwoData -> f
     com.vwo.mobile.utils.VwoUrlBuilder mVwoUrlBuilder -> g
     com.vwo.mobile.utils.VwoUtils mVwoUtils -> h
@@ -52,7 +52,7 @@ com.vwo.mobile.Vwo -> com.vwo.mobile.Vwo:
     360:360:com.vwo.mobile.utils.VwoPreference getVwoPreference() -> getVwoPreference
     364:364:boolean isSyncMode() -> isSyncMode
     30:30:com.vwo.mobile.data.VwoData access$000(com.vwo.mobile.Vwo) -> a
-    30:30:com.vwo.mobile.network.VwoDownloader access$100(com.vwo.mobile.Vwo) -> b
+    30:30:com.vwo.mobile.network.VWODownloader access$100(com.vwo.mobile.Vwo) -> b
     30:30:com.vwo.mobile.VwoSocket access$200(com.vwo.mobile.Vwo) -> c
     30:30:com.vwo.mobile.data.VwoLocalData access$300(com.vwo.mobile.Vwo) -> d
     30:30:com.vwo.mobile.enums.VwoStartState access$402(com.vwo.mobile.Vwo,com.vwo.mobile.enums.VwoStartState) -> a
@@ -318,32 +318,32 @@ com.vwo.mobile.models.Variation -> com.vwo.mobile.models.Variation:
     94:102:org.json.JSONObject getVariationAsJsonObject() -> getVariationAsJsonObject
 com.vwo.mobile.models.VwoDumper -> com.vwo.mobile.models.VwoDumper:
     java.lang.String dump() -> dump
-com.vwo.mobile.network.VwoDownloader -> com.vwo.mobile.network.VwoDownloader:
+com.vwo.mobile.network.VWODownloader -> com.vwo.mobile.network.VWODownloader:
     com.vwo.mobile.Vwo mVwo -> a
     34:36:void <init>(com.vwo.mobile.Vwo) -> <init>
-    40:63:void fetchFromServer(com.vwo.mobile.network.VwoDownloader$DownloadResult) -> fetchFromServer
+    40:63:void fetchFromServer(com.vwo.mobile.network.VWODownloader$DownloadResult) -> fetchFromServer
     106:148:void startUpload() -> startUpload
-    29:29:com.vwo.mobile.Vwo access$000(com.vwo.mobile.network.VwoDownloader) -> a
-com.vwo.mobile.network.VwoDownloader$1 -> com.vwo.mobile.network.VwoDownloader$1:
+    29:29:com.vwo.mobile.Vwo access$000(com.vwo.mobile.network.VWODownloader) -> a
+com.vwo.mobile.network.VWODownloader$1 -> com.vwo.mobile.network.VWODownloader$1:
     com.squareup.okhttp.OkHttpClient val$client -> a
-    com.vwo.mobile.network.VwoDownloader this$0 -> b
-    108:108:void <init>(com.vwo.mobile.network.VwoDownloader,com.squareup.okhttp.OkHttpClient) -> <init>
+    com.vwo.mobile.network.VWODownloader this$0 -> b
+    108:108:void <init>(com.vwo.mobile.network.VWODownloader,com.squareup.okhttp.OkHttpClient) -> <init>
     113:146:void run() -> run
-com.vwo.mobile.network.VwoDownloader$1$1 -> com.vwo.mobile.network.VwoDownloader$1$1:
+com.vwo.mobile.network.VWODownloader$1$1 -> com.vwo.mobile.network.VWODownloader$1$1:
     java.util.ArrayList val$urls -> a
     java.lang.String val$url -> b
-    com.vwo.mobile.network.VwoDownloader$1 this$1 -> c
-    130:130:void <init>(com.vwo.mobile.network.VwoDownloader$1,java.util.ArrayList,java.lang.String) -> <init>
+    com.vwo.mobile.network.VWODownloader$1 this$1 -> c
+    130:130:void <init>(com.vwo.mobile.network.VWODownloader$1,java.util.ArrayList,java.lang.String) -> <init>
     133:134:void onFailure(com.squareup.okhttp.Request,java.io.IOException) -> onFailure
     138:141:void onResponse(com.squareup.okhttp.Response) -> onResponse
-com.vwo.mobile.network.VwoDownloader$DownloadData -> com.vwo.mobile.network.VwoDownloader$DownloadData:
+com.vwo.mobile.network.VWODownloader$DownloadData -> com.vwo.mobile.network.VWODownloader$DownloadData:
     java.lang.String mUrl -> b
-    com.vwo.mobile.network.VwoDownloader$DownloadResult mDownloadResult -> c
-    com.vwo.mobile.network.VwoDownloader this$0 -> a
-    70:73:void <init>(com.vwo.mobile.network.VwoDownloader,java.lang.String,com.vwo.mobile.network.VwoDownloader$DownloadResult) -> <init>
+    com.vwo.mobile.network.VWODownloader$DownloadResult mDownloadResult -> c
+    com.vwo.mobile.network.VWODownloader this$0 -> a
+    70:73:void <init>(com.vwo.mobile.network.VWODownloader,java.lang.String,com.vwo.mobile.network.VWODownloader$DownloadResult) -> <init>
     78:101:java.lang.Void doInBackground(java.lang.Void[]) -> doInBackground
     65:65:java.lang.Object doInBackground(java.lang.Object[]) -> doInBackground
-com.vwo.mobile.network.VwoDownloader$DownloadResult -> com.vwo.mobile.network.VwoDownloader$DownloadResult:
+com.vwo.mobile.network.VWODownloader$DownloadResult -> com.vwo.mobile.network.VWODownloader$DownloadResult:
     void onDownloadSuccess(org.json.JSONArray) -> onDownloadSuccess
     void onDownloadError(java.lang.Exception) -> onDownloadError
 com.vwo.mobile.segmentation.CustomSegment -> com.vwo.mobile.segmentation.CustomSegment:

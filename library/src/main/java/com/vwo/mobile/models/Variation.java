@@ -1,5 +1,7 @@
 package com.vwo.mobile.models;
 
+import android.support.annotation.Nullable;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -17,8 +19,6 @@ public class Variation {
     public static final String ID = "id";
     public static final String WEIGHT = "weight";
     public static final String NAME = "name";
-    private static final String TAG = "VARIATION";
-
 
     private int mId;
     private String mName;
@@ -80,13 +80,14 @@ public class Variation {
         }
     }
 
+    @Nullable
     public Object getKey(String key) {
         if (mKeysObjects.containsKey(key)) {
-            return mKeysObjects.get(key);
-        } else {
-            // TODO: Handle this null.
-            return null;
+            if (mKeysObjects.get(key) != null) {
+                return mKeysObjects.get(key);
+            }
         }
+        return null;
     }
 
     public JSONObject getVariationAsJsonObject() throws JSONException {

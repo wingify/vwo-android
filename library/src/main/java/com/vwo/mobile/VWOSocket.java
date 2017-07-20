@@ -1,8 +1,7 @@
 package com.vwo.mobile;
 
-import com.vwo.mobile.constants.ApiConstant;
 import com.vwo.mobile.utils.TestUtils;
-import com.vwo.mobile.utils.VwoLog;
+import com.vwo.mobile.utils.VWOLog;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -20,10 +19,7 @@ import io.socket.emitter.Emitter;
 /**
  * Created by abhishek on 24/06/15 at 1:41 PM.
  */
-public class VwoSocket {
-
-    private static final String TAG = "VWO Socket";
-
+public class VWOSocket {
     private static final String EMIT_DEVICE_CONNECTED = "register_mobile";
     private static final String EMIT_GOAL_TRIGGERED = "goal_triggered";
     private static final String EMIT_RECEIVE_VARIATION_SUCCESS = "receive_variation_success";
@@ -45,7 +41,7 @@ public class VwoSocket {
 
     private Socket mSocket;
     private String mAppKey;
-    private Vwo mVwo;
+    private VWO mVWO;
 
     private Map<String, Object> mVariationKeys;
     private JSONObject mVariation;
@@ -53,28 +49,28 @@ public class VwoSocket {
     private Emitter.Listener mServerConnected = new Emitter.Listener() {
         @Override
         public void call(Object... args) {
-            VwoLog.d(TAG, "Socked Connected");
+            VWOLog.v(VWOLog.INIT_SOCKET_LOGS, "Socked Connected");
             registerDevice();
         }
     };
     private Emitter.Listener mServerDisconnected = new Emitter.Listener() {
         @Override
         public void call(Object... args) {
-            mVwo.setIsEditMode(false);
-            VwoLog.log("Finished device preview", VwoLog.INFO);
+            mVWO.setIsEditMode(false);
+            VWOLog.v(VWOLog.INIT_SOCKET_LOGS, "Finished device preview");
         }
     };
 
-    public VwoSocket(Vwo vwo) {
-        this.mVwo = vwo;
-        this.mAppKey = mVwo.getAppKey();
+    public VWOSocket(VWO vwo) {
+        this.mVWO = vwo;
+        this.mAppKey = mVWO.getConfig().getAppKey();
     }
 
     /**
      * Connects to socket if the device is in debug mode ie., not a release build
      */
     public void connectToSocket() {
-        if (!mVwo.getVwoUtils().isDebudMode()) {
+        if (!mVWO.getVwoUtils().isDebugMode()) {
             // Return do not connect socket
             return;
         }
@@ -84,7 +80,7 @@ public class VwoSocket {
             IO.Options opts = new IO.Options();
             opts.reconnection = true;
 
-            mSocket = IO.socket(ApiConstant.SOCKET_URL, opts);
+            mSocket = IO.socket(BuildConfig.SOCKET_URL, opts);
             mSocket.connect();
 
             mSocket.on(ON_SERVER_DISCONNECTED, mServerDisconnected);
@@ -95,8 +91,8 @@ public class VwoSocket {
             mSocket.on(ON_BROWSER_DISCONNECT, mBrowserDisconnectedListener);
 
 
-        } catch (URISyntaxException e) {
-            VwoLog.e(TAG, e);
+        } catch (URISyntaxException exception) {
+            VWOLog.e(VWOLog.SOCKET_LOGS, "Malformed url", exception, false, true);
         }
     }
 
@@ -106,8 +102,8 @@ public class VwoSocket {
             deviceData.put(JSON_KEY_DEVICE_NAME, TestUtils.getDeviceName());
             deviceData.put(JSON_KEY_DEVICE_TYPE, DEVICE_TYPE);
             deviceData.put(JSON_KEY_APP_KEY, mAppKey);
-        } catch (JSONException e) {
-            VwoLog.e(TAG, e);
+        } catch (JSONException exception) {
+            VWOLog.e(VWOLog.SOCKET_LOGS, "Unable to build json object", exception, true, true);
         }
 
         mSocket.emit(EMIT_DEVICE_CONNECTED, deviceData);
@@ -117,8 +113,8 @@ public class VwoSocket {
         JSONObject goalTriggerData = new JSONObject();
         try {
             goalTriggerData.put(JSON_KEY_GOAL_NAME, goalName);
-        } catch (JSONException e) {
-            VwoLog.e(TAG, e);
+        } catch (JSONException exception) {
+            VWOLog.e(VWOLog.SOCKET_LOGS, "Unable to build json object", exception, true, true);
         }
         mSocket.emit(EMIT_GOAL_TRIGGERED, goalTriggerData);
 
@@ -132,18 +128,18 @@ public class VwoSocket {
             try {
                 mVariation = data.getJSONObject("json");
                 generateVariationHash();
-            } catch (JSONException e) {
-                VwoLog.e(TAG, e);
+            } catch (JSONException exception) {
+                VWOLog.e(VWOLog.SOCKET_LOGS, "Unable to parse json object", exception, true, true);
             }
 
 
             JSONObject jsonObject = new JSONObject();
             try {
                 jsonObject.put(JSON_KEY_VARIATION_ID, data.getInt(JSON_KEY_VARIATION_ID));
-                VwoLog.d(TAG, jsonObject.toString());
+                VWOLog.v(VWOLog.SOCKET_LOGS, "Socket data :\n" + jsonObject.toString());
 
-            } catch (JSONException e) {
-                VwoLog.e(TAG, e);
+            } catch (JSONException exception) {
+                VWOLog.e(VWOLog.SOCKET_LOGS, "Variation id cannot be parsed", exception, true, true);
             }
 
             mSocket.emit(EMIT_RECEIVE_VARIATION_SUCCESS, jsonObject);
@@ -156,12 +152,13 @@ public class VwoSocket {
             JSONObject data = (JSONObject) args[0];
             try {
                 String browserName = data.getString(JSON_KEY_BROWSER_NAME);
-                VwoLog.d(TAG, "Browser connected: " + browserName);
+                VWOLog.v(VWOLog.SOCKET_LOGS, "Browser connected: " + browserName);
 
-                mVwo.setIsEditMode(true);
-                VwoLog.log("Started device preview with User: " + browserName, VwoLog.INFO);
-            } catch (JSONException e) {
-                VwoLog.e(TAG, e);
+
+                mVWO.setIsEditMode(true);
+                VWOLog.v(VWOLog.SOCKET_LOGS, "Started device preview with User: " + browserName);
+            } catch (JSONException exception) {
+                VWOLog.e(VWOLog.SOCKET_LOGS, "Browser Name key not found or cannot be parsed", exception, false, true);
             }
 
         }
@@ -179,8 +176,9 @@ public class VwoSocket {
             String key = (String) keys.next();
             try {
                 mVariationKeys.put(key, mVariation.get(key));
-            } catch (JSONException e) {
-                VwoLog.e(TAG, e);
+            } catch (JSONException exception) {
+                VWOLog.e(VWOLog.SOCKET_LOGS, "Issue generating hash", exception, false, true);
+
             }
         }
     }
@@ -188,8 +186,8 @@ public class VwoSocket {
     private Emitter.Listener mBrowserDisconnectedListener = new Emitter.Listener() {
         @Override
         public void call(Object... args) {
-            mVwo.setIsEditMode(false);
-            VwoLog.log("Finished device preview", VwoLog.INFO);
+            mVWO.setIsEditMode(false);
+            VWOLog.i(VWOLog.SOCKET_LOGS, "Finished device preview", true);
 
         }
     };
@@ -198,7 +196,7 @@ public class VwoSocket {
         return mVariation;
     }
 
-    public Object getObjectForKey(String key) {
+    public Object getVariationForKey(String key) {
 
         if (mVariationKeys != null && mVariationKeys.containsKey(key)) {
             return mVariationKeys.get(key);

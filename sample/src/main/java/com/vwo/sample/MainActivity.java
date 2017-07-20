@@ -8,14 +8,19 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.vwo.mobile.Vwo;
-import com.vwo.mobile.events.VwoStatusListener;
+import com.vwo.mobile.VWO;
+import com.vwo.mobile.VWOConfig;
+import com.vwo.mobile.events.VWOStatusListener;
+
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "Main Activity";
-    private static final String VWO_APP_KEY = "Your Vwo App Key";
+    //TODO: Add you VWO api key here
+    private static final String VWO_APP_KEY = BuildConfig.VWO_API_KEY;
 
 
     @Override
@@ -26,11 +31,22 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        // Start VWO SDK in Sync mode
-        Vwo.start(VWO_APP_KEY, getApplication());
+
+        // Config for adding custom parameters before launch.
+        Map<String, String> customKeys = new HashMap<>();
+        customKeys.put("key", "value");
+        VWOConfig vwoConfig = new VWOConfig
+                .Builder()
+                .setCustomSegmentationMapping(customKeys)
+                .build();
+
+        // Start VWO SDK in Async mode
+        VWO.with(this, VWO_APP_KEY).config(vwoConfig).launch();
+        // Config for adding custom parameters for after launch.
+        VWO.setCustomVariable("key", "value");
 
         // Start VWO SDK in Async mode with callback
-        Vwo.startAsync(VWO_APP_KEY, getApplication(), new VwoStatusListener() {
+        VWO.with(this, VWO_APP_KEY).config(vwoConfig).launch(new VWOStatusListener() {
             @Override
             public void onVwoLoaded() {
                 // VWO loaded successfully
@@ -42,8 +58,10 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // Start VWO SDK in Async mode
-        Vwo.startAsync(VWO_APP_KEY, getApplication());
+
+        // Start VWO SDK in Sync mode
+        VWO.with(this, VWO_APP_KEY).config(vwoConfig).launchSynchronously();
+
     }
 
     public void gotoNext(View v) {
@@ -53,15 +71,15 @@ public class MainActivity extends AppCompatActivity {
         switch (id) {
             case R.id.exp_image:
                 startActivity(new Intent(getApplicationContext(), ExperimentImages.class));
-                Vwo.markConversionForGoal("imageClicked");
+                VWO.markConversionForGoal("experimentImages");
                 break;
             case R.id.exp_var:
                 startActivity(new Intent(getApplicationContext(), ExperimentVariable.class));
-                Vwo.markConversionForGoal("twoInone", 9.0);
+                VWO.markConversionForGoal("variable", 9.0);
                 break;
             case R.id.exp_text:
                 startActivity(new Intent(getApplicationContext(), ExperimentText.class));
-                Vwo.markConversionForGoal("CCcode");
+                VWO.markConversionForGoal("textAndButton");
                 break;
         }
     }
@@ -82,7 +100,7 @@ public class MainActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            Vwo.markConversionForGoal("CCcode", 19.0);
+            VWO.markConversionForGoal("settings", 19.0);
             startActivity(new Intent(getApplicationContext(), DetailActivity.class));
             return true;
         }

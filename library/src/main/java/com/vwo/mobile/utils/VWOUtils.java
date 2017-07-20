@@ -5,16 +5,15 @@ import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.os.Build;
+import android.support.annotation.NonNull;
 import android.util.DisplayMetrics;
 
-import com.vwo.mobile.Vwo;
+import com.vwo.mobile.BuildConfig;
+import com.vwo.mobile.VWO;
 import com.vwo.mobile.constants.AppConstants;
-import com.vwo.mobile.constants.GlobalConstants;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -24,14 +23,14 @@ import java.util.UUID;
 /**
  * Created by abhishek on 18/09/15 at 1:34 AM.
  */
-public class VwoUtils {
-    private static final String TAG = "VWO Utils";
-    public static Boolean mIsAppStoreApp;
-    private static boolean FORCE_APP_STORE = false;
-    private Vwo mVwo;
+public class VWOUtils {
 
-    public VwoUtils(Vwo vwo) {
-        mVwo = vwo;
+    public static Boolean mIsAppStoreApp;
+    private static final boolean FORCE_APP_STORE = false;
+    private VWO mVWO;
+
+    public VWOUtils(VWO vwo) {
+        mVWO = vwo;
     }
 
     public static String deviceId() {
@@ -39,14 +38,14 @@ public class VwoUtils {
     }
 
     public static String deviceName() {
-        return String.format("%s %s", new Object[]{Build.MANUFACTURER.toUpperCase(Locale.ENGLISH), Build.MODEL});
+        return String.format("%s %s", Build.MANUFACTURER.toUpperCase(Locale.ENGLISH), Build.MODEL);
     }
 
     public static String getVwoSdkVersion() {
-        return GlobalConstants.SDK_VERSION;
+        return BuildConfig.VERSION_NAME;
     }
 
-    public static String getDeviceUUID(Vwo vwo) {
+    public static String getDeviceUUID(VWO vwo) {
         String deviceUuid = vwo.getVwoPreference().getString(AppConstants.DEVICE_UUID);
 
         if (deviceUuid == null || deviceUuid.equals("")) {
@@ -77,15 +76,11 @@ public class VwoUtils {
         return Build.VERSION.CODENAME.equals("REL") ? Integer.toString(Build.VERSION.SDK_INT) : Build.VERSION.CODENAME;
     }
 
-    public static boolean isTablet(Context context) {
-        DisplayMetrics metrics = context.getResources().getDisplayMetrics();
+    public static boolean isTablet(@NonNull Context context) {
 
-        assert metrics != null;
-
-        float yInches = (float) metrics.heightPixels / metrics.ydpi;
-        float xInches = (float) metrics.widthPixels / metrics.xdpi;
-        double diagonalInches = Math.sqrt((double) (xInches * xInches + yInches * yInches));
-        return diagonalInches >= 6.0D;
+        return (context.getResources().getConfiguration().screenLayout
+                & Configuration.SCREENLAYOUT_SIZE_MASK)
+                >= Configuration.SCREENLAYOUT_SIZE_LARGE;
     }
 
     public static Map<String, Integer> getScreenSizeMap(Context context) {
@@ -93,34 +88,34 @@ public class VwoUtils {
 
         assert metrics != null;
 
-        HashMap screenMap = new HashMap();
-        screenMap.put("height", Integer.valueOf(metrics.heightPixels));
-        screenMap.put("width", Integer.valueOf(metrics.widthPixels));
+        HashMap<String, Integer> screenMap = new HashMap<>();
+        screenMap.put("height", metrics.heightPixels);
+        screenMap.put("width", metrics.widthPixels);
         return screenMap;
     }
 
     public static Map<String, Integer> getScaledScreenSizeMap(Context context) {
-        Map toReturn = getScreenSizeMap(context);
+        Map<String, Integer> toReturn = getScreenSizeMap(context);
         double scaling = (double) getScreenshotScaling(context);
-        toReturn.put("height", Integer.valueOf((int) ((double) ((Integer) toReturn.get("height")).intValue() * scaling)));
-        toReturn.put("width", Integer.valueOf((int) ((double) ((Integer) toReturn.get("width")).intValue() * scaling)));
+        toReturn.put("height", (int) ((double) (Integer) toReturn.get("height") * scaling));
+        toReturn.put("width", (int) ((double) (Integer) toReturn.get("width") * scaling));
         return toReturn;
     }
 
-    public static String applicationVersion(Vwo vwo) {
+    public static int applicationVersion(VWO vwo) {
         Context context = vwo.getCurrentContext().getApplicationContext();
         if (context != null) {
             try {
                 PackageInfo packageInfo = context.getPackageManager().getPackageInfo(applicationName(context), 0);
-                if (packageInfo != null && packageInfo.versionName != null) {
-                    return packageInfo.versionName;
+                if (packageInfo != null) {
+                    return packageInfo.versionCode;
                 }
-            } catch (PackageManager.NameNotFoundException e) {
-                VwoLog.e(TAG, "Failed to get packaging info");
+            } catch (PackageManager.NameNotFoundException exception) {
+                VWOLog.e(VWOLog.CONFIG_LOGS, "Failed to get packaging info", exception, true, true);
             }
         }
 
-        return "0.0.0";
+        return -1;
     }
 
     public static double getRandomNumber() {
@@ -146,10 +141,10 @@ public class VwoUtils {
         if (mIsAppStoreApp == null) {
             PackageManager packageManager = context.getPackageManager();
             String installer = packageManager.getInstallerPackageName(context.getPackageName());
-            mIsAppStoreApp = Boolean.valueOf(FORCE_APP_STORE || installer != null && !installer.isEmpty());
+            mIsAppStoreApp = FORCE_APP_STORE || installer != null && !installer.isEmpty();
         }
 
-        return mIsAppStoreApp.booleanValue();
+        return mIsAppStoreApp;
     }
 
     public static float getScreenshotScaling(Context context) {
@@ -160,9 +155,9 @@ public class VwoUtils {
         return metrics.densityDpi >= 240 ? 0.5F : 1.0F;
     }
 
-    public boolean isDebudMode() {
-        boolean isDebuggable = (0 != (mVwo.getApplication().getApplicationInfo().flags &= ApplicationInfo.FLAG_DEBUGGABLE));
-        return isDebuggable;
+    public boolean isDebugMode() {
+        assert mVWO.getCurrentContext() != null;
+        return (0 != (mVWO.getCurrentContext().getApplicationInfo().flags &= ApplicationInfo.FLAG_DEBUGGABLE));
     }
 
     public static boolean checkForInternetPermissions(Context context) {
@@ -171,7 +166,7 @@ public class VwoUtils {
         if (hasPerm == PackageManager.PERMISSION_DENIED) {
             String errorMsg = "VWO requires Internet permission.\n" +
                     "Add <uses-permission android:name=\"android.permission.INTERNET\"/> in AndroidManifest.xml";
-            VwoLog.log(errorMsg, VwoLog.ERROR);
+            VWOLog.e(VWOLog.CONFIG_LOGS, errorMsg, false, false);
             return false;
         }
 
@@ -180,7 +175,7 @@ public class VwoUtils {
         if (hasPerm == PackageManager.PERMISSION_DENIED) {
             String errorMsg = "Granting ACCESS_NETWORK_STATE permission makes VWO work smarter.\n" +
                     "Add <uses-permission android:name=\"android.permission.ACCESS_NETWORK_STATE\"/> in AndroidManifest.xml";
-            VwoLog.log(errorMsg, VwoLog.WARNING);
+            VWOLog.e(VWOLog.CONFIG_LOGS, errorMsg, false, false);
         }
         return true;
     }

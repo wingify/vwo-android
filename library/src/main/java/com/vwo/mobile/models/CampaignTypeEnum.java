@@ -4,8 +4,7 @@ package com.vwo.mobile.models;
  * Created by abhishek on 17/09/15 at 12:09 PM.
  */
 public enum CampaignTypeEnum {
-    VISUAL_AB("VISUAL_AB")
-    ;
+    VISUAL_AB("VISUAL_AB");
 
     private String mType;
 
@@ -17,9 +16,9 @@ public enum CampaignTypeEnum {
 
         CampaignTypeEnum[] enums = CampaignTypeEnum.values();
 
-        for (int i = 0; i < enums.length; i++) {
-            if (enums[i].getType().equals(campaignStatus)) {
-                return enums[i];
+        for (CampaignTypeEnum anEnum : enums) {
+            if (anEnum.getType().equals(campaignStatus)) {
+                return anEnum;
             }
         }
 

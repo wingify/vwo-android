@@ -3,7 +3,6 @@ package com.vwo.mobile.utils;
 import android.content.Context;
 import android.os.Build;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.vwo.mobile.constants.AppConstants;
 
@@ -16,13 +15,13 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.Iterator;
+import java.util.Locale;
+import java.util.logging.Logger;
 
 /**
  * Created by abhishek on 10/06/15 at 5:44 PM.
  */
 public class TestUtils {
-
-
     public static JSONObject loadTestData(Context context, boolean isEditMode) throws JSONException, IOException {
 
 
@@ -42,8 +41,7 @@ public class TestUtils {
         while ((inputStr = streamReader.readLine()) != null) {
             responseStrBuilder.append(inputStr);
         }
-        JSONObject jsonObject = new JSONObject(responseStrBuilder.toString());
-        return jsonObject;
+        return new JSONObject(responseStrBuilder.toString());
     }
 
     public static void saveExperiments(Context context, JSONObject experiment, boolean isEditMode) throws IOException {
@@ -62,8 +60,8 @@ public class TestUtils {
     }
 
     public static JSONObject mergeJsonObjects(JSONObject topLevelJson, JSONObject fromJson) throws JSONException {
-        Log.d("Vwo", "JSON 1: " + topLevelJson.toString());
-        Log.d("Vwo", "JSON 2: " + fromJson.toString());
+        VWOLog.v(VWOLog.TEST_LOGS, String.format(Locale.ENGLISH, "JSON 1: %s, JSON 2: %s", topLevelJson.toString(), fromJson.toString()));
+
         JSONObject merged = new JSONObject();
         JSONObject[] objs = new JSONObject[]{fromJson, topLevelJson};
         for (JSONObject obj : objs) {
@@ -73,8 +71,9 @@ public class TestUtils {
                 merged.put(key, obj.get(key));
             }
         }
+        VWOLog.v(VWOLog.TEST_LOGS, String.format(Locale.ENGLISH, String.format(Locale.ENGLISH,
+                "Merged JSON : %s", merged.toString()), fromJson.toString()));
 
-        Log.d("Vwo", "Merged: " + merged.toString());
         return merged;
     }
 
@@ -97,18 +96,18 @@ public class TestUtils {
         }
         char[] arr = str.toCharArray();
         boolean capitalizeNext = true;
-        String phrase = "";
+        StringBuilder phrase = new StringBuilder();
         for (char c : arr) {
             if (capitalizeNext && Character.isLetter(c)) {
-                phrase += Character.toUpperCase(c);
+                phrase.append(Character.toUpperCase(c));
                 capitalizeNext = false;
                 continue;
             } else if (Character.isWhitespace(c)) {
                 capitalizeNext = true;
             }
-            phrase += c;
+            phrase.append(c);
         }
-        return phrase;
+        return phrase.toString();
     }
 
 
