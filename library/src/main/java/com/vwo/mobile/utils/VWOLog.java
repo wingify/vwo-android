@@ -127,7 +127,7 @@ public class VWOLog {
 
 
     @LogLevel
-    private static int LEVEL = BuildConfig.DEBUG ? ALL : OFF;
+    private static int LEVEL = BuildConfig.DEBUG ? SEVERE : OFF;
 
     /**
      * Sets log level.
@@ -173,8 +173,8 @@ public class VWOLog {
     }
 
 
-    /**
-     * Check loggable based on flag
+    /*
+      Check loggable based on flag
      */
 
 

@@ -8,6 +8,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 
 import com.google.android.gms.analytics.Tracker;
 import com.vwo.mobile.constants.AppConstants;
@@ -209,7 +210,7 @@ public class VWO {
             Sentry.init(BuildConfig.SENTRY, factory);
             VWOLog.e(VWOLog.INITIALIZATION_LOGS, "Minimum SDK version should be 14", false, true);
             return false;
-        } else if (!validateVwoAppKey(vwoConfig.getApiKey())) {
+        } else if (!VWOUtils.isValidVwoAppKey(vwoConfig.getApiKey())) {
             Sentry.init(BuildConfig.SENTRY, factory);
             VWOLog.e(VWOLog.INITIALIZATION_LOGS, "Invalid App Key: " + vwoConfig.getAppKey(), false, false);
             return false;
@@ -249,7 +250,7 @@ public class VWO {
                         new Handler().post(new Runnable() {
                             @Override
                             public void run() {
-                                mStatusListener.onVwoLoaded();
+                                mStatusListener.onVWOLoaded();
                             }
                         });
 
@@ -274,7 +275,7 @@ public class VWO {
                             new Handler().post(new Runnable() {
                                 @Override
                                 public void run() {
-                                    mStatusListener.onVwoLoaded();
+                                    mStatusListener.onVWOLoaded();
                                 }
                             });
 
@@ -287,7 +288,7 @@ public class VWO {
                             new Handler().post(new Runnable() {
                                 @Override
                                 public void run() {
-                                    mStatusListener.onVwoLoadFailure();
+                                    mStatusListener.onVWOLoadFailure();
                                 }
                             });
 
@@ -300,6 +301,10 @@ public class VWO {
 
             return true;
         }
+    }
+
+    private void initializeSentry() {
+
     }
 
     private void initializeComponents() {
@@ -324,11 +329,6 @@ public class VWO {
         }
 
         return false;
-    }
-
-    private boolean validateVwoAppKey(String appKey) {
-
-        return appKey.contains("-");
     }
 
     /**

@@ -3,7 +3,14 @@ package com.vwo.mobile;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
+import android.util.Log;
 
+import com.vwo.mobile.utils.VWOLog;
+import com.vwo.mobile.utils.VWOUtils;
+
+import org.w3c.dom.Text;
+
+import java.security.InvalidKeyException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -39,6 +46,10 @@ public class VWOConfig {
     }
 
     void setApiKey(String apiKey) {
+        if(!VWOUtils.isValidVwoAppKey(apiKey)) {
+            VWOLog.e(VWOLog.CONFIG_LOGS, new InvalidKeyException("Invalid api key"), false, false);
+            return;
+        }
         this.apiKey = apiKey;
         this.mAccountId = apiKey.substring(apiKey.indexOf("-") + 1);
         this.mAppKey = apiKey.substring(0, apiKey.indexOf("-"));
