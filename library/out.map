@@ -204,8 +204,8 @@ com.vwo.mobile.enums.VwoStartState -> com.vwo.mobile.enums.VwoStartState:
     20:20:int getValue() -> getValue
     6:11:void <clinit>() -> <clinit>
 com.vwo.mobile.events.VwoStatusListener -> com.vwo.mobile.events.VwoStatusListener:
-    void onVwoLoaded() -> onVwoLoaded
-    void onVwoLoadFailure() -> onVwoLoadFailure
+    void onVWOLoaded() -> onVWOLoaded
+    void onVWOLoadFailure() -> onVWOLoadFailure
 com.vwo.mobile.listeners.VwoActivityLifeCycle -> com.vwo.mobile.listeners.VwoActivityLifeCycle:
     int sResumed -> a
     int sPaused -> b

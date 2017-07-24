@@ -8,6 +8,7 @@ import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
 import android.util.DisplayMetrics;
 
 import com.vwo.mobile.BuildConfig;
@@ -39,6 +40,10 @@ public class VWOUtils {
 
     public static String deviceName() {
         return String.format("%s %s", Build.MANUFACTURER.toUpperCase(Locale.ENGLISH), Build.MODEL);
+    }
+
+    public static boolean isValidVwoAppKey(String appKey) {
+        return !TextUtils.isEmpty(appKey) && appKey.contains("-");
     }
 
     public static String getVwoSdkVersion() {

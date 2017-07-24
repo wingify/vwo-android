@@ -57,6 +57,7 @@ Add vwo and socket.io dependency to app/build.gradle file
             // excluding org.json which is provided by Android
             exclude group: 'org.json', module: 'json'
         }
+        compile 'io.sentry:sentry-android:1.1.0'
 	    ...
 	}
 	
@@ -104,11 +105,11 @@ public class MainActivity extends ActionBarActivity {
       // Start VWO SDK in Async mode with callback
       VWO.with(this, VWO_API_KEY).launch(new VWOStatusListener() {
           @Override
-          public void onVwoLoaded() {
+          public void onVWOLoaded() {
               // VWO loaded successfully
           }
           @Override
-          public void onVwoLoadFailure() {
+          public void onVWOLoadFailure() {
               // VWO not loaded
           }
       });
