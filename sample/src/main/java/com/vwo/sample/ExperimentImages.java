@@ -35,6 +35,12 @@ public class ExperimentImages extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         ImageView varImage = (ImageView) findViewById(R.id.var_image);
+        varImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                VWO.markConversionForGoal("bannerTapped");
+            }
+        });
 
 
         Object urlObject = VWO.getVariationForKey("bannerURL");
