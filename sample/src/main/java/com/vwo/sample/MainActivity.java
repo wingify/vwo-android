@@ -11,6 +11,7 @@ import android.view.View;
 import com.vwo.mobile.VWO;
 import com.vwo.mobile.VWOConfig;
 import com.vwo.mobile.events.VWOStatusListener;
+import com.vwo.mobile.utils.VWOLog;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -34,7 +35,9 @@ public class MainActivity extends AppCompatActivity {
 
         // Config for adding custom parameters before launch.
         Map<String, String> customKeys = new HashMap<>();
-        customKeys.put("key", "value");
+        customKeys.put("user_type", "paid");
+        VWOLog.setLogLevel(VWOLog.ALL);
+
         VWOConfig vwoConfig = new VWOConfig
                 .Builder()
                 .setCustomSegmentationMapping(customKeys)
@@ -43,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
         // Start VWO SDK in Async mode
         VWO.with(this, VWO_APP_KEY).config(vwoConfig).launch();
         // Config for adding custom parameters for after launch.
-        VWO.setCustomVariable("key", "value");
+        customKeys.put("user_type", "paid");
 
         // Start VWO SDK in Async mode with callback
         VWO.with(this, VWO_APP_KEY).config(vwoConfig).launch(new VWOStatusListener() {
