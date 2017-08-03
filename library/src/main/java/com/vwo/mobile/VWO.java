@@ -15,6 +15,7 @@ import com.vwo.mobile.data.VWOData;
 import com.vwo.mobile.data.VWOLocalData;
 import com.vwo.mobile.enums.VWOStartState;
 import com.vwo.mobile.events.VWOStatusListener;
+import com.vwo.mobile.listeners.ActivityLifecycleListener;
 import com.vwo.mobile.listeners.VWOActivityLifeCycle;
 import com.vwo.mobile.models.Campaign;
 import com.vwo.mobile.network.VWODownloader;
@@ -226,7 +227,9 @@ public class VWO {
         } else {
             // Everything is good so far
             this.mVWOStartState = VWOStartState.STARTING;
-            ((Application) (mContext)).registerActivityLifecycleCallbacks(new VWOActivityLifeCycle());
+            if(sSharedInstance.getConfig().getActivityLifecycleListener() == null) {
+                ((Application) (mContext)).registerActivityLifecycleCallbacks(new VWOActivityLifeCycle());
+            }
             this.initializeComponents();
 
             int vwoSession = this.mVWOPreference.getInt(AppConstants.DEVICE_SESSION, 0) + 1;
@@ -397,6 +400,14 @@ public class VWO {
         }
 
         sSharedInstance.getConfig().addCustomSegment(key, value);
+    }
+
+    public static void setActivityLifecycleListener(ActivityLifecycleListener listener) {
+        if(sSharedInstance == null) {
+            throw new IllegalStateException("You need to initialize VWO SDK first and the try calling this function.");
+        }
+
+        sSharedInstance.getConfig().setActivityLifecycleListener(listener);
     }
 
     public Tracker getGATracker() {

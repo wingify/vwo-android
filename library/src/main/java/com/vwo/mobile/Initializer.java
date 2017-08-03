@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 import android.support.annotation.RestrictTo;
 
 import com.vwo.mobile.events.VWOStatusListener;
+import com.vwo.mobile.listeners.VWOActivityLifeCycle;
 import com.vwo.mobile.utils.VWOLog;
 
 /**

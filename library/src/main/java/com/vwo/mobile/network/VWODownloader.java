@@ -126,7 +126,15 @@ public class VWODownloader {
                     }
                 }
 
-                if (!VWOActivityLifeCycle.isApplicationInForeground() || !NetworkUtils.shouldAttemptNetworkCall(mVWO)) {
+                if(!NetworkUtils.shouldAttemptNetworkCall(mVWO)) {
+                    VWOLog.e(VWOLog.UPLOAD_LOGS, "Either no network, or application is not in foreground", true, false);
+                }
+
+                if(mVWO.getConfig().getActivityLifecycleListener() != null && !mVWO.getConfig().getActivityLifecycleListener().isApplicationInForeground()) {
+
+                }
+
+                if (((mVWO.getConfig().getActivityLifecycleListener() == null && !VWOActivityLifeCycle.isApplicationInForeground())) || !NetworkUtils.shouldAttemptNetworkCall(mVWO)) {
                     VWOLog.e(VWOLog.UPLOAD_LOGS, "Either no network, or application is not in foreground", true, false);
                     return;
                 }

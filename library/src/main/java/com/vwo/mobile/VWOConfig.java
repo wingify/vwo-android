@@ -3,12 +3,10 @@ package com.vwo.mobile;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
-import android.util.Log;
 
+import com.vwo.mobile.listeners.ActivityLifecycleListener;
 import com.vwo.mobile.utils.VWOLog;
 import com.vwo.mobile.utils.VWOUtils;
-
-import org.w3c.dom.Text;
 
 import java.security.InvalidKeyException;
 import java.util.HashMap;
@@ -23,6 +21,8 @@ public class VWOConfig {
     private Map<String, String> customSegmentationMapping;
     private String mAppKey;
     private String mAccountId;
+    @Nullable
+    private ActivityLifecycleListener activityLifecycleListener;
 
     // Should fetch data synchronously or asynchronously from server
     private boolean sync;
@@ -35,6 +35,15 @@ public class VWOConfig {
         if (apiKey != null) {
             setApiKey(apiKey);
         }
+    }
+
+    private VWOConfig(Map<String, String> customSegmentationMapping, @Nullable String apiKey,
+                      @NonNull ActivityLifecycleListener listener) {
+        this.customSegmentationMapping = customSegmentationMapping;
+        if (apiKey != null) {
+            setApiKey(apiKey);
+        }
+        this.activityLifecycleListener = listener;
     }
 
     public Map<String, String> getCustomSegmentationMapping() {
@@ -64,6 +73,10 @@ public class VWOConfig {
         return mAppKey;
     }
 
+    public ActivityLifecycleListener getActivityLifecycleListener() {
+        return this.activityLifecycleListener;
+    }
+
     public boolean isSync() {
         return sync;
     }
@@ -74,6 +87,10 @@ public class VWOConfig {
 
     public String getAccountId() {
         return mAccountId;
+    }
+
+    public void setActivityLifecycleListener(@NonNull ActivityLifecycleListener listener) {
+        this.activityLifecycleListener = listener;
     }
 
     /**
@@ -118,8 +135,12 @@ public class VWOConfig {
         // This variable
         private Map<String, String> customSegmentationMapping;
         private String apiKey = null;
+        private ActivityLifecycleListener lifecycleListener;
 
         public VWOConfig build() {
+            if(lifecycleListener != null) {
+                return new VWOConfig(customSegmentationMapping, apiKey, lifecycleListener);
+            }
             return new VWOConfig(customSegmentationMapping, apiKey);
         }
 
@@ -143,6 +164,14 @@ public class VWOConfig {
                 throw new IllegalArgumentException("Mapping cannot be null");
             }
             this.customSegmentationMapping = customSegmentationMapping;
+            return this;
+        }
+
+        public Builder setLifecycleListener(@NonNull ActivityLifecycleListener listener) {
+            if (listener == null) {
+                throw new IllegalArgumentException("Listener cannot be null");
+            }
+            this.lifecycleListener = listener;
             return this;
         }
     }
