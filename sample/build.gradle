@@ -61,7 +61,14 @@ dependencies {
     compile 'com.android.support:design:25.4.0'
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'com.google.android.gms:play-services-analytics:11.0.2'
-    compile project(':library')
+//    compile project(':library')
+    compile 'io.sentry:sentry-android:1.1.0'
+    compile 'com.vwo:mobile:2.0.0-beta1@aar'
+    compile ('io.socket:socket.io-client:1.0.0') {
+        // excluding org.json which is provided by Android
+        exclude group: 'org.json', module: 'json'
+    }
+
 }
 
 apply plugin: 'com.google.gms.google-services'
