@@ -52,7 +52,7 @@ Add vwo and socket.io dependency to app/build.gradle file
 
 	dependencies {
 	    ...
-	    compile 'com.vwo:mobile:2.0.0-beta1@aar'
+	    compile 'com.vwo:mobile:2.0.0-beta2@aar'
         compile ('io.socket:socket.io-client:1.0.0') {
             // excluding org.json which is provided by Android
             exclude group: 'org.json', module: 'json'
