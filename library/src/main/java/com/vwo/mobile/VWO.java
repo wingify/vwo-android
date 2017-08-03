@@ -8,7 +8,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.text.TextUtils;
 
 import com.google.android.gms.analytics.Tracker;
 import com.vwo.mobile.constants.AppConstants;
@@ -30,7 +29,6 @@ import org.json.JSONException;
 import java.lang.reflect.Method;
 
 import io.sentry.Sentry;
-import io.sentry.android.AndroidSentryClientFactory;
 
 /**
  * Created by abhishek on 17/09/15 at 10:02 PM.
@@ -167,7 +165,7 @@ public class VWO {
                 sSharedInstance.mVWOData.saveGoal(goalIdentifier);
             }
         } else {
-            VWOLog.w(VWOLog.UPLOAD_LOGS, "SDK not initialized completely", true);
+            VWOLog.e(VWOLog.UPLOAD_LOGS, "SDK not initialized completely", false, false);
         }
     }
 
@@ -188,7 +186,7 @@ public class VWO {
                 sSharedInstance.mVWOData.saveGoal(goalIdentifier, value);
             }
         } else {
-            VWOLog.w(VWOLog.UPLOAD_LOGS, "SDK not initialized completely", true);
+            VWOLog.e(VWOLog.UPLOAD_LOGS, "SDK not initialized completely", false, false);
         }
     }
 
@@ -196,23 +194,31 @@ public class VWO {
     boolean startVwoInstance() {
         VWOLog.v(VWOLog.INITIALIZATION_LOGS, "**** Starting VWO ver " + VWOUtils.getVwoSdkVersion() + " ****");
 
-        final AndroidSentryClientFactory factory = new AndroidSentryClientFactory(mContext);
-
         if (!VWOUtils.checkForInternetPermissions(mContext)) {
+            VWOLog.e(VWOLog.INITIALIZATION_LOGS, "Internet permission is not add to SDK. Please add" +
+                    "\n\n<uses-permission android:name=\"android.permission.INTERNET\"/> \n\npermission to your SDK",
+                    false, false);
+            onLoadFailure();
             return false;
-        } else if (!VWOUtils.checkIfClassExists("io.socket.client.Socket") && !VWOUtils.checkIfClassExists("com.squareup.okhttp.OkHttpClient")) {
-            String errMsg = "VWO is dependent on Socket.IO library.\n" +
-                    "In application level build.gradle file add\t" +
-                    "compile 'io.socket:socket.io-client:0.8.3'";
+        } else if (!VWOUtils.checkIfClassExists("io.socket.client.Socket")
+                && !VWOUtils.checkIfClassExists("okhttp3.OkHttpClient")
+                && !VWOUtils.checkIfClassExists("io.sentry.Sentry")) {
+            String errMsg = "VWO sdk is dependent on following libraries:\n" +
+                    "In application level build.gradle file add\n" +
+                    "compile 'io.socket:socket.io-client:0.8.3'\n" +
+                    "compile 'io.sentry:sentry-android:1.1.0'";
             VWOLog.e(VWOLog.INITIALIZATION_LOGS, errMsg, false, false);
+            onLoadFailure();
             return false;
         } else if (!isAndroidSDKSupported()) {
-            Sentry.init(BuildConfig.SENTRY, factory);
+            initializeSentry();
             VWOLog.e(VWOLog.INITIALIZATION_LOGS, "Minimum SDK version should be 14", false, true);
+            onLoadFailure();
             return false;
         } else if (!VWOUtils.isValidVwoAppKey(vwoConfig.getApiKey())) {
-            Sentry.init(BuildConfig.SENTRY, factory);
+            initializeSentry();
             VWOLog.e(VWOLog.INITIALIZATION_LOGS, "Invalid App Key: " + vwoConfig.getAppKey(), false, false);
+            onLoadFailure();
             return false;
         } else if (this.mVWOStartState != VWOStartState.NOT_STARTED) {
             VWOLog.w(VWOLog.INITIALIZATION_LOGS, "VWO already started", true);
@@ -229,7 +235,7 @@ public class VWO {
             this.mVWODownloader.fetchFromServer(new VWODownloader.DownloadResult() {
                 @Override
                 public void onDownloadSuccess(JSONArray data) {
-                    Sentry.init(BuildConfig.SENTRY, factory);
+                    initializeSentry();
                     if (data.length() == 0) {
                         VWOLog.w(VWOLog.DOWNLOAD_DATA_LOGS, "Empty data downloaded", true);
                         // FIXME: Handle this. Can crash here.
@@ -245,23 +251,12 @@ public class VWO {
                     mVWOSocket.connectToSocket();
                     mVWOLocalData.saveData(data);
                     mVWOStartState = VWOStartState.STARTED;
-                    if (mStatusListener != null) {
-                        Looper.prepare();
-                        new Handler().post(new Runnable() {
-                            @Override
-                            public void run() {
-                                mStatusListener.onVWOLoaded();
-                            }
-                        });
-
-                        Looper.loop();
-
-                    }
+                    onLoadSuccess();
                 }
 
                 @Override
                 public void onDownloadError(Exception ex) {
-                    Sentry.init(BuildConfig.SENTRY, factory);
+                    initializeSentry();
                     if(ex instanceof JSONException) {
                         VWOLog.e(VWOLog.DOWNLOAD_DATA_LOGS, ex, false, true);
                     }
@@ -270,30 +265,10 @@ public class VWO {
                     if (mVWOLocalData.isLocalDataPresent()) {
                         mVWOData.parseData(mVWOLocalData.getData());
                         mVWOStartState = VWOStartState.STARTED;
-                        if (mStatusListener != null) {
-                            Looper.prepare();
-                            new Handler().post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    mStatusListener.onVWOLoaded();
-                                }
-                            });
-
-                            Looper.loop();
-                        }
+                        onLoadSuccess();
                     } else {
                         mVWOStartState = VWOStartState.NO_INTERNET;
-                        if (mStatusListener != null) {
-                            Looper.prepare();
-                            new Handler().post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    mStatusListener.onVWOLoadFailure();
-                                }
-                            });
-
-                            Looper.loop();
-                        }
+                        onLoadFailure();
                     }
 
                 }
@@ -304,7 +279,7 @@ public class VWO {
     }
 
     private void initializeSentry() {
-
+        Sentry.init(BuildConfig.SENTRY);
     }
 
     private void initializeComponents() {
@@ -318,14 +293,42 @@ public class VWO {
 
     }
 
+    private void onLoadFailure() {
+        if (mStatusListener != null) {
+            Looper.prepare();
+            new Handler().post(new Runnable() {
+                @Override
+                public void run() {
+                    mStatusListener.onVWOLoaded();
+                }
+            });
+            Looper.loop();
+        }
+    }
+
+    private void onLoadSuccess() {
+        if (mStatusListener != null) {
+            Looper.prepare();
+            new Handler().post(new Runnable() {
+                @Override
+                public void run() {
+                    mStatusListener.onVWOLoaded();
+                }
+            });
+            Looper.loop();
+        }
+    }
+
+
     private boolean isAndroidSDKSupported() {
         try {
             int sdkVersion = Build.VERSION.SDK_INT;
             if (sdkVersion >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
                 return true;
             }
-        } catch (Exception var2) {
+        } catch (Exception exception) {
             // Not able to fetch Android Version. Ignoring and returning false.
+            VWOLog.e(VWOLog.INITIALIZATION_LOGS, exception, false, false);
         }
 
         return false;
@@ -337,9 +340,12 @@ public class VWO {
      *
      * @param listener This listener to be passed to SDK
      */
-    public static void setVwoStatusListener(VWOStatusListener listener) {
+    public static void setVWOStatusListener(VWOStatusListener listener) {
         if (sSharedInstance != null) {
             sSharedInstance.mStatusListener = listener;
+        } else {
+            VWOLog.e(VWOLog.CONFIG_LOGS, "SDK not initialized, unable to setup VWOStatusListener",
+                    false, false);
         }
     }
 
@@ -352,10 +358,6 @@ public class VWO {
                 throw new IllegalArgumentException("Context must not be null.");
             }
             this.context = context.getApplicationContext();
-        }
-
-        Builder() {
-            context = null;
         }
 
         public VWO build() {
@@ -378,14 +380,6 @@ public class VWO {
             return this.context;
         }
 
-    }
-
-    public VWOStatusListener getStatusListener() {
-        return mStatusListener;
-    }
-
-    void setStatusListener(VWOStatusListener mStatusListener) {
-        this.mStatusListener = mStatusListener;
     }
 
     /**

@@ -48,7 +48,7 @@ public class Initializer {
     public void launch(@NonNull VWOStatusListener statusListener) {
         setup(vwo.getConfig(), false);
         vwo.startVwoInstance();
-        vwo.setStatusListener(statusListener);
+        VWO.setVWOStatusListener(statusListener);
     }
 
     /**
