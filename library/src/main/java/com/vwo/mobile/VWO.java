@@ -237,7 +237,7 @@ public class VWO {
                 public void onDownloadSuccess(JSONArray data) {
                     initializeSentry();
                     if (data.length() == 0) {
-                        VWOLog.w(VWOLog.DOWNLOAD_DATA_LOGS, "Empty data downloaded", true);
+                        VWOLog.e(VWOLog.DOWNLOAD_DATA_LOGS, "Empty data downloaded : " + data, true, true);
                         // FIXME: Handle this. Can crash here.
                     } else {
                         try {
@@ -265,6 +265,7 @@ public class VWO {
                     if (mVWOLocalData.isLocalDataPresent()) {
                         mVWOData.parseData(mVWOLocalData.getData());
                         mVWOStartState = VWOStartState.STARTED;
+                        VWOLog.w(VWOLog.INITIALIZATION_LOGS, "Failed to fetch data serving cached data.", false);
                         onLoadSuccess();
                     } else {
                         mVWOStartState = VWOStartState.NO_INTERNET;
