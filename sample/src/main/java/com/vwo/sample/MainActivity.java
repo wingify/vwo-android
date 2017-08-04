@@ -51,12 +51,12 @@ public class MainActivity extends AppCompatActivity {
         // Start VWO SDK in Async mode with callback
         VWO.with(this, VWO_APP_KEY).config(vwoConfig).launch(new VWOStatusListener() {
             @Override
-            public void onVwoLoaded() {
+            public void onVWOLoaded() {
                 // VWO loaded successfully
             }
 
             @Override
-            public void onVwoLoadFailure() {
+            public void onVWOLoadFailure() {
                 // VWO not loaded
             }
         });
