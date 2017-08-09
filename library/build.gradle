@@ -21,7 +21,7 @@ android {
 
     def DEBUG_DACDN_URL = '"http://dacdn.visualwebsiteoptimizer.com/"'
     def RELEASE_DACDN_URL = '"https://dacdn.visualwebsiteoptimizer.com/"'
-    def SENTRY_URL = '"https://1211a276aa6c4fc5b3a1bca2c3f1f4ea:045cca541af146da8b1efc7735a4c4ac@app.getsentry.com/47376"'
+    def SENTRY_URL = '"https://1211a276aa6c4fc5b3a1bca2c3f1f4ea:045cca541af146da8b1efc7735a4c4ac@app.getsentry.com/47376?uncaught.handler.enabled=false"'
     def SOCKET_URL = '"https://mobilepreview.vwo.com:443/"'
 
     buildTypes {
@@ -55,7 +55,7 @@ dependencies {
     compile('io.socket:socket.io-client:1.0.0') {
         exclude group: 'org.json', module: 'json'
     }
-    compile 'io.sentry:sentry-android:1.1.0'
+    compile 'io.sentry:sentry-android:1.4.0'
     compile 'com.android.support:support-annotations:25.4.0'
     compile 'com.google.android.gms:play-services-analytics:11.0.2'
 }
