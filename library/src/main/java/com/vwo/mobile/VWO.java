@@ -75,6 +75,7 @@ public class VWO {
                 }
             }
         }
+
         return new Initializer(sSharedInstance, apiKey);
     }
 
@@ -193,12 +194,12 @@ public class VWO {
     @SuppressWarnings("SpellCheckingInspection")
     boolean startVwoInstance() {
         VWOLog.v(VWOLog.INITIALIZATION_LOGS, "**** Starting VWO ver " + VWOUtils.getVwoSdkVersion() + " ****");
-
         if (!VWOUtils.checkForInternetPermissions(mContext)) {
-            VWOLog.e(VWOLog.INITIALIZATION_LOGS, "Internet permission is not add to SDK. Please add" +
-                    "\n\n<uses-permission android:name=\"android.permission.INTERNET\"/> \n\npermission to your SDK",
+            String errMsg = "Internet permission not added to Manifest. Please add" +
+                    "\n\n<uses-permission android:name=\"android.permission.INTERNET\"/> \n\npermission to your app Manifest file.";
+            VWOLog.e(VWOLog.INITIALIZATION_LOGS, errMsg,
                     false, false);
-            onLoadFailure();
+            onLoadFailure("Missing internet permission");
             return false;
         } else if (!VWOUtils.checkIfClassExists("io.socket.client.Socket")
                 && !VWOUtils.checkIfClassExists("okhttp3.OkHttpClient")
@@ -208,20 +209,21 @@ public class VWO {
                     "compile 'io.socket:socket.io-client:0.8.3'\n" +
                     "compile 'io.sentry:sentry-android:1.1.0'";
             VWOLog.e(VWOLog.INITIALIZATION_LOGS, errMsg, false, false);
-            onLoadFailure();
+            onLoadFailure(errMsg);
             return false;
         } else if (!isAndroidSDKSupported()) {
+            String errMsg = "Minimum SDK version required is 14";
             initializeSentry();
-            VWOLog.e(VWOLog.INITIALIZATION_LOGS, "Minimum SDK version should be 14", false, true);
-            onLoadFailure();
+            VWOLog.e(VWOLog.INITIALIZATION_LOGS, errMsg, false, true);
+            onLoadFailure(errMsg);
             return false;
         } else if (!VWOUtils.isValidVwoAppKey(vwoConfig.getApiKey())) {
             initializeSentry();
-            VWOLog.e(VWOLog.INITIALIZATION_LOGS, "Invalid App Key: " + vwoConfig.getAppKey(), false, false);
-            onLoadFailure();
+            VWOLog.e(VWOLog.INITIALIZATION_LOGS, "Invalid API Key: " + vwoConfig.getAppKey(), false, false);
+            onLoadFailure("Invalid API Key.");
             return false;
-        } else if (this.mVWOStartState != VWOStartState.NOT_STARTED) {
-            VWOLog.w(VWOLog.INITIALIZATION_LOGS, "VWO already started", true);
+        } else if (this.mVWOStartState == VWOStartState.STARTING) {
+            VWOLog.w(VWOLog.INITIALIZATION_LOGS, "VWO is already in intialization state.", true);
             return true;
         } else {
             // Everything is good so far
@@ -237,7 +239,7 @@ public class VWO {
                 public void onDownloadSuccess(JSONArray data) {
                     initializeSentry();
                     if (data.length() == 0) {
-                        VWOLog.w(VWOLog.DOWNLOAD_DATA_LOGS, "Empty data downloaded", true);
+                        VWOLog.e(VWOLog.DOWNLOAD_DATA_LOGS, "Empty data downloaded : " + data, true, true);
                         // FIXME: Handle this. Can crash here.
                     } else {
                         try {
@@ -265,12 +267,13 @@ public class VWO {
                     if (mVWOLocalData.isLocalDataPresent()) {
                         mVWOData.parseData(mVWOLocalData.getData());
                         mVWOStartState = VWOStartState.STARTED;
+                        VWOLog.w(VWOLog.INITIALIZATION_LOGS, "Failed to fetch data serving cached data.", false);
                         onLoadSuccess();
                     } else {
+                        String errMsg = "Either slow or not internet";
                         mVWOStartState = VWOStartState.NO_INTERNET;
-                        onLoadFailure();
+                        onLoadFailure(errMsg);
                     }
-
                 }
             });
 
@@ -293,29 +296,25 @@ public class VWO {
 
     }
 
-    private void onLoadFailure() {
+    private void onLoadFailure(final String reason) {
         if (mStatusListener != null) {
-            Looper.prepare();
-            new Handler().post(new Runnable() {
+            new Handler(mContext.getMainLooper()).post(new Runnable() {
                 @Override
                 public void run() {
-                    mStatusListener.onVWOLoaded();
+                    mStatusListener.onVWOLoadFailure(reason);
                 }
             });
-            Looper.loop();
         }
     }
 
     private void onLoadSuccess() {
         if (mStatusListener != null) {
-            Looper.prepare();
-            new Handler().post(new Runnable() {
+            new Handler(mContext.getMainLooper()).post(new Runnable() {
                 @Override
                 public void run() {
                     mStatusListener.onVWOLoaded();
                 }
             });
-            Looper.loop();
         }
     }
 
@@ -450,6 +449,11 @@ public class VWO {
 
     void setConfig(VWOConfig config) {
         this.vwoConfig = config;
+    }
+
+    @Nullable
+    public VWOStatusListener getStatusListener() {
+        return mStatusListener;
     }
 
     VWOUtils getVwoUtils() {

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#607D8B</color>
+    <color name="colorPrimaryDark">#455A64</color>
+    <color name="colorPrimaryLight">#CFD8DC</color>
+    <color name="colorAccent">#9E9E9E</color>
+    <color name="primary_text">#5F5959</color>
+    <color name="secondary_text">#757575</color>
+    <color name="icons">#FFFFFF</color>
+    <color name="divider">#9B9595</color>
+
+    <color name="red">#dc3001</color>
+    <color name="green">#27AE60</color>
+    <color name="white">#ffffff</color>
+    <color name="black">@android:color/black</color>
+    <color name="facebook_blue">#3B5998</color>
+
+    <color name="grey_rectangle_color">#ECE7E7</color>
+    <color name="green_rectangle_color">@color/green</color>
+    <color name="main_divider">#070C23</color>
+    <color name="vwo_brown">#B37575</color>
+    <color name="transparent">#00AAAAAA</color>
+    <color name="button_border">#636E66</color>
+    <color name="button_color_buy_now">#AE7827</color>
+    <color name="button_color_add_to_cart">#AFB52C</color>
+
+</resources>
