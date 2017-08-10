@@ -101,12 +101,12 @@ public class FragmentSortingMain extends Fragment implements ChangeFragment {
     }
 
     private void loadFragments() {
-        String value = (String) VWO.getVariationForKey(Constants.VWO.KEY_LAYOUT, Constants.VWO.VALUE_LIST);
+        String value = (String) VWO.getVariationForKey(Constants.VWOKeys.KEY_LAYOUT, Constants.VWOKeys.VALUE_LIST);
         switch (value) {
-            case Constants.VWO.VALUE_LIST:
+            case Constants.VWOKeys.VALUE_LIST:
                 loadFragment(null, ID_LIST_VARIATION, null);
                 break;
-            case Constants.VWO.VALUE_GRID:
+            case Constants.VWOKeys.VALUE_GRID:
                 loadFragment(null, ID_GRID_VARIATION, null);
                 break;
         }

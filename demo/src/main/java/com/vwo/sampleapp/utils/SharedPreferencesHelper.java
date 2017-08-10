@@ -31,6 +31,21 @@ public class SharedPreferencesHelper {
     }
 
     /**
+     * Gets shared prefs.
+     *
+     * @param mContext the m context
+     * @return the shared prefs
+     */
+    public static SharedPreferences getVWOSharedPrefs(Context mContext) {
+
+        if (mSharedPreference == null) {
+            mSharedPreference = mContext.getSharedPreferences("VWO_shared_prefs", Activity.MODE_PRIVATE);
+        }
+
+        return mSharedPreference;
+    }
+
+    /**
      * Sets Api key.
      *
      * @param apiKey the application apiKey
@@ -52,6 +67,18 @@ public class SharedPreferencesHelper {
             getSharedPrefs(context);
         }
         return mSharedPreference.getString(API_KEY, null);
+    }
+
+    public static void removeApiKey(Context context) {
+        if(mSharedPreference == null) {
+            getSharedPrefs(context);
+        }
+        mSharedPreference.edit().remove(API_KEY).apply();
+    }
+
+    public static void clearData(Context context) {
+        removeApiKey(context);
+        getVWOSharedPrefs(context).edit().clear().apply();
     }
 
 }

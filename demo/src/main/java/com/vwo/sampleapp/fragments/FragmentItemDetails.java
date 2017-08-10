@@ -13,10 +13,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.vwo.mobile.VWO;
 import com.vwo.sampleapp.R;
 import com.vwo.sampleapp.databinding.FragmentItemDetailsBinding;
 import com.vwo.sampleapp.interfaces.ChangeFragment;
 import com.vwo.sampleapp.models.Mobile;
+import com.vwo.sampleapp.utils.Constants;
 
 /**
  * Created by aman on 08/08/17.
@@ -59,6 +61,7 @@ public class FragmentItemDetails extends Fragment {
         }
 
         binding.setMobile(mobile);
+        VWO.markConversionForGoal(Constants.VWOKeys.GOAL_PRODUCT_VIEWED);
 
         return view;
     }

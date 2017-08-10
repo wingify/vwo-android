@@ -74,7 +74,24 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_onboarding_campaign) {
             getSupportFragmentManager().beginTransaction().replace(R.id.container_main, new FragmentOnBoardingMain()).commit();
         } else if (id == R.id.action_clear_data) {
-
+            AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.popup_theme);
+            builder.setTitle(getString(R.string.confirm));
+            builder.setMessage(getString(R.string.clear_data_message));
+            builder.setNegativeButton(R.string.clear_data_negative, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    dialogInterface.dismiss();
+                }
+            });
+            builder.setPositiveButton(R.string.clear_data_positive, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    SharedPreferencesHelper.clearData(MainActivity.this);
+                    dialogInterface.dismiss();
+                    Toast.makeText(MainActivity.this, getString(R.string.data_cleared), Toast.LENGTH_SHORT).show();
+                }
+            });
+            builder.show();
         } else if (id == R.id.action_enter_api_key) {
             showApiKeyDialog();
         }
@@ -157,17 +174,7 @@ public class MainActivity extends AppCompatActivity
         if(key == null) {
             return;
         }
-        VWO.with(this, key).launch(new VWOStatusListener() {
-            @Override
-            public void onVWOLoaded() {
-                Log.d("test", "loaded");
-            }
-
-            @Override
-            public void onVWOLoadFailure(String reason) {
-                Log.d("LOG", reason);
-            }
-        });
+        VWO.with(this, key).launch();
     }
 
     @Override

@@ -13,9 +13,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.vwo.mobile.VWO;
 import com.vwo.sampleapp.R;
 import com.vwo.sampleapp.databinding.FragmentSuccessBinding;
 import com.vwo.sampleapp.models.Success;
+import com.vwo.sampleapp.utils.Constants;
 
 /**
  * Created by aman on 09/08/17.
@@ -40,6 +42,7 @@ public class FragmentSuccess extends Fragment {
         }
 
         binding.setSuccess(success);
+        VWO.markConversionForGoal(Constants.VWOKeys.GOAL_LANDING_PAGE);
 
         return view;
     }
