@@ -13,10 +13,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.vwo.mobile.VWO;
 import com.vwo.sampleapp.R;
 import com.vwo.sampleapp.interfaces.ChangeFragment;
 import com.vwo.sampleapp.interfaces.NavigationToggleListener;
 import com.vwo.sampleapp.models.Mobile;
+import com.vwo.sampleapp.utils.Constants;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -34,6 +36,9 @@ public class FragmentSortingMain extends Fragment implements ChangeFragment {
     private AppCompatTextView titleVariation;
     private AppCompatTextView toolbarTitle;
     private NavigationToggleListener listener;
+
+    public static final String TAG_CONTROL = "Control";
+    public static final String TAG_VARIATION = "Variation";
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({ID_LIST_CONTROL,
@@ -96,8 +101,16 @@ public class FragmentSortingMain extends Fragment implements ChangeFragment {
     }
 
     private void loadFragments() {
+        String value = (String) VWO.getVariationForKey(Constants.VWO.KEY_LAYOUT, Constants.VWO.VALUE_LIST);
+        switch (value) {
+            case Constants.VWO.VALUE_LIST:
+                loadFragment(null, ID_LIST_VARIATION, null);
+                break;
+            case Constants.VWO.VALUE_GRID:
+                loadFragment(null, ID_GRID_VARIATION, null);
+                break;
+        }
         loadFragment(null, ID_LIST_CONTROL, null);
-        loadFragment(null, ID_GRID_VARIATION, null);
     }
 
     /**
@@ -112,11 +125,11 @@ public class FragmentSortingMain extends Fragment implements ChangeFragment {
     public void loadFragment(@Nullable Bundle bundle, int fragmentId, @Nullable String tag) {
         switch (fragmentId) {
             case ID_LIST_CONTROL:
-                Fragment fragment = getChildFragmentManager().findFragmentByTag("Control");
+                Fragment fragment = getChildFragmentManager().findFragmentByTag(tag);
                 if(fragment == null) {
                     titleControl.setText(getString(R.string.str_list_view));
                     getChildFragmentManager().beginTransaction().replace(R.id.sorting_control_container,
-                            FragmentSorting.getInstance(fragmentId), "Control").commit();
+                            FragmentSorting.getInstance(fragmentId), TAG_CONTROL).commit();
                 } else {
                     getChildFragmentManager().beginTransaction().replace(R.id.sorting_control_container,
                             fragment, tag).commit();
@@ -131,22 +144,22 @@ public class FragmentSortingMain extends Fragment implements ChangeFragment {
                 }
                 break;
             case ID_LIST_VARIATION:
-                fragment = getChildFragmentManager().findFragmentByTag("Variation");
+                fragment = getChildFragmentManager().findFragmentByTag(tag);
                 if(fragment == null) {
                     titleVariation.setText(getString(R.string.str_list_view));
                     getChildFragmentManager().beginTransaction().replace(R.id.sorting_variation_container,
-                            FragmentSorting.getInstance(fragmentId), "Variation").commit();
+                            FragmentSorting.getInstance(fragmentId), TAG_VARIATION).commit();
                 } else {
                     getChildFragmentManager().beginTransaction().replace(R.id.sorting_variation_container,
                             fragment, tag).commit();
                 }
                 break;
             case ID_GRID_VARIATION:
-                fragment = getChildFragmentManager().findFragmentByTag("Variation");
+                fragment = getChildFragmentManager().findFragmentByTag(tag);
                 if(fragment == null) {
                     titleVariation.setText(getString(R.string.str_grid_view));
                     getChildFragmentManager().beginTransaction().replace(R.id.sorting_variation_container,
-                            FragmentSorting.getInstance(fragmentId), "Variation").commit();
+                            FragmentSorting.getInstance(fragmentId), TAG_VARIATION).commit();
                 } else {
                     getChildFragmentManager().beginTransaction().replace(R.id.sorting_variation_container,
                             fragment, tag).commit();

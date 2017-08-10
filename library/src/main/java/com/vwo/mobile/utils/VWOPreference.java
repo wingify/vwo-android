@@ -32,7 +32,7 @@ public class VWOPreference {
     private HashMap<String, Boolean> trackedGoals;
 
     public VWOPreference(VWO vwo) {
-        preferences = vwo.getCurrentContext().getSharedPreferences("VWO123", Context.MODE_PRIVATE);
+        preferences = vwo.getCurrentContext().getSharedPreferences("VWO_shared_prefs", Context.MODE_PRIVATE);
     }
 
 

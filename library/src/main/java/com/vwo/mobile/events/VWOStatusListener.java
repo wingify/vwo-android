@@ -7,6 +7,6 @@ public interface VWOStatusListener {
 
     void onVWOLoaded();
 
-    void onVWOLoadFailure();
+    void onVWOLoadFailure(String reason);
 
 }

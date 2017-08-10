@@ -63,7 +63,7 @@ public class FragmentSorting extends Fragment implements ItemClickListener {
             type = savedInstanceState.getInt(ARG_FRAGMENT_TYPE, FragmentSortingMain.ID_LIST_CONTROL);
         }
 
-        if (type == FragmentSortingMain.ID_LIST_CONTROL) {
+        if (type == FragmentSortingMain.ID_LIST_CONTROL || type == FragmentSortingMain.ID_LIST_VARIATION) {
             layoutManager = new LinearLayoutManager(getContext());
         } else {
             layoutManager = new GridLayoutManager(getContext(), 2);
@@ -101,9 +101,9 @@ public class FragmentSorting extends Fragment implements ItemClickListener {
             Bundle bundle = new Bundle();
             bundle.putParcelable(ARG_ITEM, adapterSortingList.getItemAt(position));
             if (type == FragmentSortingMain.ID_LIST_CONTROL) {
-                listener.loadFragment(bundle, FragmentSortingMain.ID_DETAILS_CONTROL, null);
+                listener.loadFragment(bundle, FragmentSortingMain.ID_DETAILS_CONTROL, FragmentSortingMain.TAG_CONTROL);
             } else {
-                listener.loadFragment(bundle, FragmentSortingMain.ID_DETAILS_VARIATION, null);
+                listener.loadFragment(bundle, FragmentSortingMain.ID_DETAILS_VARIATION, FragmentSortingMain.TAG_VARIATION);
             }
         }
     }

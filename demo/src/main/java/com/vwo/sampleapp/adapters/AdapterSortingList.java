@@ -37,7 +37,7 @@ public class AdapterSortingList extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        if(type == FragmentSortingMain.ID_LIST_CONTROL) {
+        if(type == FragmentSortingMain.ID_LIST_CONTROL || type == FragmentSortingMain.ID_LIST_VARIATION) {
             View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.single_item_sorting_list, parent, false);
             return new ViewHolderList(view);
         } else {

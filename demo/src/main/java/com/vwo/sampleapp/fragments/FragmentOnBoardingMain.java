@@ -13,10 +13,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.vwo.mobile.VWO;
 import com.vwo.sampleapp.R;
 import com.vwo.sampleapp.interfaces.ChangeFragment;
 import com.vwo.sampleapp.interfaces.NavigationToggleListener;
 import com.vwo.sampleapp.models.Success;
+import com.vwo.sampleapp.utils.Constants;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -96,7 +98,19 @@ public class FragmentOnBoardingMain extends Fragment implements ChangeFragment {
 
     private void loadDefaultFragments() {
         loadFragment(null, CONTROL_LOGIN_TYPE_NORMAL, null);
-        loadFragment(null, VARIATION_LOGIN_TYPE_SKIP, null);
+
+        String value = (String) VWO.getVariationForKey(Constants.VWO.KEY_ONBOARDING, Constants.VWO.VALUE_NORMAL);
+        switch (value) {
+            case Constants.VWO.VALUE_NORMAL:
+                loadFragment(null, VARIATION_LOGIN_TYPE_NORMAL, null);
+                break;
+            case Constants.VWO.VALUE_SKIP:
+                loadFragment(null, VARIATION_LOGIN_TYPE_SKIP, null);
+                break;
+            case Constants.VWO.VALUE_SOCIAL_MEDIA:
+                loadFragment(null, VARIATION_LOGIN_TYPE_SOCIAL, null);
+                break;
+        }
     }
 
     /**

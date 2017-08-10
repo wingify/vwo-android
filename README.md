@@ -52,12 +52,12 @@ Add vwo and socket.io dependency to app/build.gradle file
 
 	dependencies {
 	    ...
-	    compile 'com.vwo:mobile:2.0.0-beta2@aar'
+	    compile 'com.vwo:mobile:2.0.0-beta3@aar'
         compile ('io.socket:socket.io-client:1.0.0') {
             // excluding org.json which is provided by Android
             exclude group: 'org.json', module: 'json'
         }
-        compile 'io.sentry:sentry-android:1.1.0'
+        compile 'io.sentry:sentry-android:1.4.0'
 	    ...
 	}
 	
@@ -109,7 +109,7 @@ public class MainActivity extends ActionBarActivity {
               // VWO loaded successfully
           }
           @Override
-          public void onVWOLoadFailure() {
+          public void onVWOLoadFailure(String reason) {
               // VWO not loaded
           }
       });
