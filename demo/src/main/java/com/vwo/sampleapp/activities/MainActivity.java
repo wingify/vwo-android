@@ -26,6 +26,7 @@ import android.widget.Toast;
 
 import com.vwo.mobile.VWO;
 import com.vwo.mobile.events.VWOStatusListener;
+import com.vwo.mobile.utils.VWOLog;
 import com.vwo.sampleapp.R;
 import com.vwo.sampleapp.fragments.FragmentOnBoardingMain;
 import com.vwo.sampleapp.fragments.FragmentSortingMain;
@@ -194,6 +195,7 @@ public class MainActivity extends BaseActivity
             if (showProgress) {
                 progressBar.setVisibility(View.VISIBLE);
             }
+            VWOLog.setLogLevel(VWOLog.ALL);
             VWO.with(this, key).launch(new VWOStatusListener() {
                 @Override
                 public void onVWOLoaded() {
