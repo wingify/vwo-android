@@ -28,12 +28,13 @@ dependencies {
     implementation 'com.android.support:appcompat-v7:26.0.0'
     implementation 'com.android.support:design:26.0.0'
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
-    implementation 'io.sentry:sentry-android:1.4.0'
-    implementation 'com.vwo:mobile:2.0.0-beta3@aar'
-    implementation ('io.socket:socket.io-client:1.0.0') {
-        // excluding org.json which is provided by Android
-        exclude group: 'org.json', module: 'json'
-    }
+    implementation project(':library')
+//    implementation 'io.sentry:sentry-android:1.4.0'
+//    implementation 'com.vwo:mobile:2.0.0-beta3@aar'
+//    implementation ('io.socket:socket.io-client:1.0.0') {
+//        // excluding org.json which is provided by Android
+//        exclude group: 'org.json', module: 'json'
+//    }
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.0'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.0'

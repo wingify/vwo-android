@@ -179,23 +179,6 @@ public class VWOData {
         return false;
     }
 
-    /*public Object getAllVariations() {
-        if (mVariations == null) {
-            return new JSONObject();
-        } else {
-
-            JSONObject data = new JSONObject();
-            for (Map.Entry<String, Campaign> variation : mVariations.entrySet()) {
-                try {
-                    data.put(variation.getKey(), variation.getValue().getVariation().getKey(variation.getKey()));
-                } catch (JSONException exception) {
-                    VWOLog.e(VWOLog.CAMPAIGN_LOGS, "Unable to generate variation object for campaign data", exception, true);
-                }
-            }
-            return data;
-        }
-    }*/
-
     public void saveGoal(String goalIdentifier) {
         for (Campaign campaign : mCampaigns) {
             for (Goal goal : campaign.getGoals()) {

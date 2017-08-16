@@ -45,9 +45,9 @@ public class FragmentItemDetails extends Fragment {
                     ChangeFragment listener = (ChangeFragment) getParentFragment();
                     Bundle bundle = new Bundle();
                     if (fragmentType == FragmentSortingMain.ID_DETAILS_CONTROL) {
-                        listener.loadFragment(bundle, FragmentSortingMain.ID_LIST_CONTROL, null);
+                        listener.loadFragment(bundle, FragmentSortingMain.ID_LIST_CONTROL, FragmentSortingMain.TAG_CONTROL);
                     } else {
-                        listener.loadFragment(bundle, FragmentSortingMain.ID_LIST_VARIATION, null);
+                        listener.loadFragment(bundle, FragmentSortingMain.ID_LIST_VARIATION, FragmentSortingMain.TAG_VARIATION);
                     }
                 }
             }
