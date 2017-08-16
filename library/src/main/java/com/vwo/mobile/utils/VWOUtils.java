@@ -20,6 +20,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 /**
  * Created by abhishek on 18/09/15 at 1:34 AM.
@@ -43,7 +44,9 @@ public class VWOUtils {
     }
 
     public static boolean isValidVwoAppKey(String appKey) {
-        return !TextUtils.isEmpty(appKey) && appKey.contains("-");
+        String regex = "[\\w]{32}-[0-9]*";
+        Pattern pattern = Pattern.compile(regex);
+        return !TextUtils.isEmpty(appKey) && pattern.matcher(appKey).matches();
     }
 
     public static String getVwoSdkVersion() {

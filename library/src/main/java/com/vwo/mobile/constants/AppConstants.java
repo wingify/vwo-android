@@ -10,7 +10,7 @@ public class AppConstants {
 
     public static final String persistFile = "PERSIST_CONFIG";
 
-    public static final String VWO_PREFERENCE_FILE = "vwo_shared_preference";
+    public static final String VWO_PREFERENCE_FILE = "VWO_shared_prefs";
 
     //Shared Preference Keys
     public static final String PREF_EDITOR_MODE = "pref_editor_mode";

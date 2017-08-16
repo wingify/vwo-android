@@ -282,6 +282,9 @@ public class VWO {
     }
 
     private void initializeSentry() {
+        Sentry.getContext().addTag("VWO-SDK-Version", version());
+        Sentry.getContext().addTag("VWO-Account-ID", vwoConfig.getAccountId());
+        Sentry.getContext().addTag("Package-name", mContext.getPackageName());
         Sentry.init(BuildConfig.SENTRY);
     }
 
@@ -445,6 +448,10 @@ public class VWO {
 
     public VWOConfig getConfig() {
         return this.vwoConfig;
+    }
+
+    public VWOStartState getState() {
+        return this.mVWOStartState;
     }
 
     void setConfig(VWOConfig config) {
