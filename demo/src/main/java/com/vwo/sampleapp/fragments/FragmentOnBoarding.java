@@ -1,9 +1,6 @@
 package com.vwo.sampleapp.fragments;
 
-import android.app.Activity;
 import android.os.Bundle;
-import android.os.PatternMatcher;
-import android.support.annotation.IntDef;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.AppCompatButton;
@@ -19,9 +16,6 @@ import android.widget.Toast;
 import com.vwo.sampleapp.R;
 import com.vwo.sampleapp.interfaces.ChangeFragment;
 import com.vwo.sampleapp.models.Success;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 
 /**
  * Created by aman on 08/08/17.

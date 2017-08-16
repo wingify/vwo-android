@@ -26,4 +26,8 @@
 
     </style>
 
+    <style name="Theme.AppCompat.Light.Red" parent="Theme.AppCompat.Light">
+        <item name="colorAccent">@color/red</item>
+    </style>
+
 </resources>

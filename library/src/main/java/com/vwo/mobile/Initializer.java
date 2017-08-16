@@ -1,8 +1,6 @@
 package com.vwo.mobile;
 
-import android.support.annotation.CheckResult;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.annotation.RestrictTo;
 
 import com.vwo.mobile.events.VWOStatusListener;
@@ -32,11 +30,8 @@ public class Initializer {
         if (vwo == null) {
             throw new IllegalArgumentException("You need to initialize vwo instance first");
         }
-        if (setup(vwo.getConfig(), false)) {
-            vwo.startVwoInstance();
-        } else {
-            VWOLog.w(VWOLog.INITIALIZATION_LOGS, "VWO already initialized with given api key", false);
-        }
+        setup(false);
+        vwo.startVwoInstance();
     }
 
     /**
@@ -49,13 +44,9 @@ public class Initializer {
      *                       or success.
      */
     public void launch(@NonNull VWOStatusListener statusListener) {
-
-        if (setup(vwo.getConfig(), false)) {
-            vwo.startVwoInstance();
-            VWO.setVWOStatusListener(statusListener);
-        } else {
-            VWOLog.w(VWOLog.INITIALIZATION_LOGS, "VWO already initialized with given api key", false);
-        }
+        setup(false);
+        VWO.setVWOStatusListener(statusListener);
+        vwo.startVwoInstance();
     }
 
     /**
@@ -65,11 +56,8 @@ public class Initializer {
      * from data of previous launch or from defaults(in case of network failure)
      */
     public void launchSynchronously() {
-        if (setup(vwo.getConfig(), true)) {
-            vwo.startVwoInstance();
-        } else {
-            VWOLog.w(VWOLog.INITIALIZATION_LOGS, "VWO already initialized with given api key", false);
-        }
+        setup(true);
+        vwo.startVwoInstance();
     }
 
     /**
@@ -87,20 +75,14 @@ public class Initializer {
     }
 
     @RestrictTo(RestrictTo.Scope.LIBRARY)
-    @CheckResult
-    private boolean setup(@Nullable VWOConfig vwoConfig, boolean syncMode) {
-        if (vwoConfig == null) {
-            vwoConfig = new VWOConfig.Builder().apiKey(apiKey).build();
+    private void setup(boolean syncMode) {
+        if (this.vwo.getConfig() == null) {
+            VWOConfig vwoConfig = new VWOConfig.Builder().apiKey(apiKey).build();
+            this.vwo.setConfig(vwoConfig);
         } else {
-            if (vwoConfig.getApiKey() != null && !vwoConfig.getApiKey().equals(apiKey)) {
-                vwoConfig.setApiKey(apiKey);
-            } else {
-                return false;
-            }
+            this.vwo.getConfig().setApiKey(apiKey);
         }
 
-        vwoConfig.setSync(syncMode);
-        vwo.setConfig(vwoConfig);
-        return true;
+        this.vwo.getConfig().setSync(syncMode);
     }
 }

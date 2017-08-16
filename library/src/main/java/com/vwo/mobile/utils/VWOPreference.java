@@ -9,6 +9,7 @@ import android.os.Environment;
 import android.text.TextUtils;
 
 import com.vwo.mobile.VWO;
+import com.vwo.mobile.constants.AppConstants;
 import com.vwo.mobile.segmentation.CustomSegmentEvaluateEnum;
 
 import java.io.File;
@@ -32,7 +33,7 @@ public class VWOPreference {
     private HashMap<String, Boolean> trackedGoals;
 
     public VWOPreference(VWO vwo) {
-        preferences = vwo.getCurrentContext().getSharedPreferences("VWO_shared_prefs", Context.MODE_PRIVATE);
+        preferences = vwo.getCurrentContext().getSharedPreferences(AppConstants.VWO_PREFERENCE_FILE, Context.MODE_PRIVATE);
     }
 
 

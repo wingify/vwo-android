@@ -99,15 +99,15 @@ public class FragmentOnBoardingMain extends Fragment implements ChangeFragment {
     private void loadDefaultFragments() {
         loadFragment(null, CONTROL_LOGIN_TYPE_NORMAL, null);
 
-        String value = (String) VWO.getVariationForKey(Constants.VWO.KEY_ONBOARDING, Constants.VWO.VALUE_NORMAL);
+        String value = (String) VWO.getVariationForKey(Constants.VWOKeys.KEY_LOGIN, Constants.VWOKeys.VALUE_EMAIL);
         switch (value) {
-            case Constants.VWO.VALUE_NORMAL:
+            case Constants.VWOKeys.VALUE_EMAIL:
                 loadFragment(null, VARIATION_LOGIN_TYPE_NORMAL, null);
                 break;
-            case Constants.VWO.VALUE_SKIP:
+            case Constants.VWOKeys.VALUE_SKIP:
                 loadFragment(null, VARIATION_LOGIN_TYPE_SKIP, null);
                 break;
-            case Constants.VWO.VALUE_SOCIAL_MEDIA:
+            case Constants.VWOKeys.VALUE_SOCIAL_MEDIA:
                 loadFragment(null, VARIATION_LOGIN_TYPE_SOCIAL, null);
                 break;
         }

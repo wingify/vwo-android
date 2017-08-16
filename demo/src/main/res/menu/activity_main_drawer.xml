@@ -8,7 +8,6 @@
             <group android:checkableBehavior="single">
                 <item
                     android:id="@+id/nav_layout_campaign"
-                    android:checked="true"
                     android:title="@string/title_layout_campaign" />
                 <item
                     android:id="@+id/nav_onboarding_campaign"
@@ -21,7 +20,8 @@
         <menu>
             <item
                 android:id="@+id/action_clear_data"
-                android:title="@string/clear_data" />
+                android:title="@string/clear_data"
+                android:visible="false"/>
             <item
                 android:id="@+id/action_enter_api_key"
                 android:title="@string/str_enter_api_key" />
