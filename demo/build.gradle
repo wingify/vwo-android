@@ -15,23 +15,61 @@ android {
     dataBinding {
         enabled = true
     }
-    buildTypes {
+    android {
+        lintOptions {
+            abortOnError false
+        }
+    }
+
+    def ALIAS=project.properties['ALIAS'] ?: 'androiddebugkey'
+    def KEY_PASSWORD=project.properties['KEY_PASSWORD'] ?: 'android'
+    def KEYSTORE_PASSWORD=project.properties['KEYSTORE_PASSWORD'] ?: 'android'
+    def RELATIVE_PATH=project.properties['RELATIVE_PATH'] ?: '/debug.keystore'
+
+    signingConfigs {
+        debug {
+            keyAlias 'androiddebugkey'
+            keyPassword 'android'
+            storeFile file(project.rootDir.path + '/debug.keystore')
+            storePassword 'android'
+        }
         release {
+            keyAlias ALIAS
+            keyPassword KEY_PASSWORD
+            storeFile file(project.rootDir.path + RELATIVE_PATH)
+            storePassword KEYSTORE_PASSWORD
+        }
+    }
+
+
+    buildTypes {
+        debug {
+            zipAlignEnabled false
+            debuggable true
             minifyEnabled false
+            shrinkResources false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+        release {
+            signingConfig signingConfigs.release
+            zipAlignEnabled true
+            debuggable false
+            minifyEnabled false
+            shrinkResources false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'com.android.support:appcompat-v7:26.0.1'
     implementation 'com.android.support:design:26.0.1'
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
-//    implementation project(':library')
+    //    implementation project(':library')
     implementation 'io.sentry:sentry-android:1.4.0'
     implementation 'com.vwo:mobile:2.0.0-beta4@aar'
-    implementation ('io.socket:socket.io-client:1.0.0') {
+    implementation('io.socket:socket.io-client:1.0.0') {
         // excluding org.json which is provided by Android
         exclude group: 'org.json', module: 'json'
     }
