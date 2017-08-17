@@ -8,6 +8,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import com.google.android.gms.analytics.Tracker;
 import com.vwo.mobile.constants.AppConstants;

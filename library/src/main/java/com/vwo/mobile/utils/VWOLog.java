@@ -10,9 +10,6 @@ import java.lang.annotation.RetentionPolicy;
 
 import io.sentry.Sentry;
 
-/**
- * Created by abhishek on 29/07/15 at 1:41 PM.
- */
 public class VWOLog {
 
     /**

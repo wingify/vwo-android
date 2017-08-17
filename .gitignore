@@ -25,3 +25,4 @@ unused.txt
 
 gradle.properties
 .DS_Store
+demo/demoAppKeystore.jks
