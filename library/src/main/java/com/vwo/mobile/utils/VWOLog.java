@@ -64,21 +64,11 @@ public class VWOLog {
     public static final String DATA = "data";
 
     public static final String ANALYTICS = "analytics";
-
-
-    /**
-     * The interface Log level.
-     */
-    @Retention(RetentionPolicy.SOURCE)
-    @IntDef({OFF, SEVERE, WARNING, CONFIG, INFO, ALL})
-    public @interface LogLevel{}
-
     /**
      * OFF is a special level that can be used to turn off logging.
      * This level is initialized to <CODE>Integer.MAX_VALUE</CODE>.
      */
     public static final int OFF = Integer.MAX_VALUE;
-
     /**
      * SEVERE is a message level indicating a serious failure.
      * <p>
@@ -89,7 +79,6 @@ public class VWOLog {
      * This level is initialized to <CODE>1000</CODE>.
      */
     public static final int SEVERE = 1000;
-
     /**
      * WARNING is a message level indicating a potential problem.
      * <p>
@@ -99,12 +88,10 @@ public class VWOLog {
      * This level is initialized to <CODE>900</CODE>.
      */
     public static final int WARNING = 900;
-
     /**
      * The constant CONFIG.
      */
     public static final int CONFIG = 700;
-
     /**
      * INFO is a message level for informational messages.
      * <p>
@@ -115,14 +102,11 @@ public class VWOLog {
      * This level is initialized to <CODE>800</CODE>.
      */
     public static final int INFO = 800;
-
     /**
      * ALL indicates that all messages should be logged.
      * This level is initialized to <CODE>Integer.MIN_VALUE</CODE>.
      */
     public static final int ALL = Integer.MIN_VALUE;
-
-
     @LogLevel
     private static int LEVEL = BuildConfig.DEBUG ? SEVERE : OFF;
 
@@ -134,11 +118,6 @@ public class VWOLog {
     public static void setLogLevel(@LogLevel int logLevel) {
         VWOLog.LEVEL = logLevel;
     }
-
-    /**
-     * Always check if loggable
-     */
-
 
     /**
      * V.
@@ -155,6 +134,10 @@ public class VWOLog {
     }
 
     /**
+     * Always check if loggable
+     */
+
+    /**
      * V.
      *
      * @param tag       is the log tag to identify log in logcat
@@ -168,12 +151,6 @@ public class VWOLog {
             }
         }
     }
-
-
-    /*
-      Check loggable based on flag
-     */
-
 
     /**
      * D.
@@ -193,6 +170,11 @@ public class VWOLog {
             }
         }
     }
+
+
+    /*
+      Check loggable based on flag
+     */
 
     /**
      * D.
@@ -265,9 +247,6 @@ public class VWOLog {
         if (LEVEL <= SEVERE) {
             if (checkLoggable) {
                 if (Log.isLoggable(tag, Log.ERROR)) {
-                    if(sendToServer) {
-                        Sentry.capture(ex);
-                    }
                     try {
                         Log.e(tag, ex.getLocalizedMessage());
                         ex.printStackTrace();
@@ -276,15 +255,16 @@ public class VWOLog {
                     }
                 }
             } else {
-                if(sendToServer) {
-                    Sentry.capture(ex);
-                }
                 try {
                     Log.e(tag, ex.getLocalizedMessage());
                     ex.printStackTrace();
                 } catch (Exception e) {
                     e(tag, e.getLocalizedMessage(), false, sendToServer);
                 }
+            }
+
+            if (sendToServer) {
+                Sentry.capture(ex);
             }
         }
     }
@@ -301,16 +281,14 @@ public class VWOLog {
         if (LEVEL <= SEVERE) {
             if (checkLoggable) {
                 if (Log.isLoggable(tag, Log.ERROR)) {
-                    if(sendToServer) {
-                        Sentry.capture(new Exception(tag + ": " + msg));
-                    }
                     Log.e(tag, msg);
                 }
             } else {
-                if(sendToServer) {
-                    Sentry.capture(new Exception(tag + ": " + msg));
-                }
                 Log.e(tag, msg);
+            }
+
+            if (sendToServer) {
+                Sentry.capture(new Exception(tag + ": " + msg));
             }
         }
     }
@@ -328,16 +306,14 @@ public class VWOLog {
         if (LEVEL <= SEVERE) {
             if (checkLoggable) {
                 if (Log.isLoggable(tag, Log.ERROR)) {
-                    if(sendToServer) {
-                        Sentry.capture(new Exception(tag + ": " + msg));
-                    }
                     Log.e(tag, msg, exception);
                 }
             } else {
-                if(sendToServer) {
-                    Sentry.capture(new Exception(tag + ": " + msg));
-                }
                 Log.e(tag, msg, exception);
+            }
+
+            if (sendToServer) {
+                Sentry.capture(new Exception(tag + ": " + msg));
             }
         }
     }
@@ -381,7 +357,6 @@ public class VWOLog {
         }
     }
 
-
     /**
      * Wtf.
      *
@@ -411,13 +386,12 @@ public class VWOLog {
         if (LEVEL <= SEVERE) {
             if (checkLoggable) {
                 if (Log.isLoggable(tag, Log.ERROR)) {
-                    Sentry.capture(exception);
                     Log.wtf(tag, exception);
                 }
             } else {
-                Sentry.capture(exception);
                 Log.wtf(tag, exception);
             }
+            Sentry.capture(exception);
         }
     }
 
@@ -432,15 +406,21 @@ public class VWOLog {
         if (LEVEL <= SEVERE) {
             if (checkLoggable) {
                 if (Log.isLoggable(tag, Log.ERROR)) {
-                    Sentry.capture(msg);
-                    Sentry.capture(exception);
                     Log.wtf(tag, msg, exception);
                 }
             } else {
-                Sentry.capture(msg);
-                Sentry.capture(exception);
                 Log.wtf(tag, msg, exception);
             }
+            Sentry.capture(msg);
+            Sentry.capture(exception);
         }
+    }
+
+    /**
+     * The interface Log level.
+     */
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({OFF, SEVERE, WARNING, CONFIG, INFO, ALL})
+    public @interface LogLevel {
     }
 }

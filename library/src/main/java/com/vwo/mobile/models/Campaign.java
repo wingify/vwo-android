@@ -28,20 +28,14 @@ public class Campaign {
     public final static String GOALS = "goals";
     public static final String COUNT_GOAL_ONCE = "count_goal_once";
     public static final String CLICK_MAP = "clickmap";
-    private static final String SEGMENT_CODE = "segment_object";
-    private static final String SEGMENT_TYPE = "type";
-    private static final String PARTIAL_SEGMENTS = "partialSegments";
-
     public static final String SEGMENT_CUSTOM = "custom";
     public static final String SEGMENT_PREDEFINED = "predefined";
     public static final String SEGMENT_DEFAULT = "default";
-
     // Track user automatically for a given campaign
     public static final String TRACK_USER_AUTOMATICALLY = "track_user_on_launch";
-    private static final String UA = "UA";
-    private static final String UA_S = "s";
-
-
+    private static final String SEGMENT_CODE = "segment_object";
+    private static final String SEGMENT_TYPE = "type";
+    private static final String PARTIAL_SEGMENTS = "partialSegments";
     private long mId;
     private int mVersion;
     private int mTraffic;
@@ -54,8 +48,6 @@ public class Campaign {
     private String mSegmentType;
     private String name;
     private ArrayList<Segment> mSegments;
-    private boolean mContainsUniversalAnalytics;
-    private int mUaDimension;
 
     public Campaign(JSONObject campaignData) {
         try {
@@ -71,17 +63,6 @@ public class Campaign {
                 name = campaignData.getString(CAMPAIGN_NAME);
             } else {
                 name = "campaign";
-            }
-
-            if (campaignData.has(UA)) {
-
-                mContainsUniversalAnalytics = true;
-                mUaDimension = campaignData.getJSONObject(UA).getInt(UA_S);
-
-                VWOLog.d(VWOLog.ANALYTICS, "Contains UA Data: " + mUaDimension, true);
-            } else {
-                VWOLog.d(VWOLog.ANALYTICS, "Does not contains UA Data", true);
-                mContainsUniversalAnalytics = false;
             }
 
             JSONArray goals = campaignData.getJSONArray(GOALS);
@@ -153,10 +134,6 @@ public class Campaign {
         return mVersion;
     }
 
-    public int getUaDimension() {
-        return mUaDimension;
-    }
-
     public CampaignTypeEnum getType() {
         return mType;
     }
@@ -171,10 +148,6 @@ public class Campaign {
 
     public boolean shouldTrackUserAutomatically() {
         return trackUserAutomatically;
-    }
-
-    public boolean containsUniversalAnalytics() {
-        return mContainsUniversalAnalytics;
     }
 
     public ArrayList<Segment> getSegments() {

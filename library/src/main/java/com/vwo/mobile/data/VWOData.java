@@ -1,10 +1,11 @@
 package com.vwo.mobile.data;
 
 
+import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
-import com.google.android.gms.analytics.HitBuilders;
 import com.vwo.mobile.VWO;
 import com.vwo.mobile.models.Campaign;
 import com.vwo.mobile.models.Goal;
@@ -21,7 +22,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Stack;
 
@@ -42,6 +42,47 @@ public class VWOData {
         this.mVWO = vwo;
         mCampaigns = new ArrayList<>();
         mUntrackedCampaigns = new ArrayList<>();
+    }
+
+    private static boolean evaluateSegmentation(VWO vwo, Campaign campaign) {
+
+        if (campaign.getSegmentType().equals(Campaign.SEGMENT_CUSTOM)) {
+
+            Stack<Object> stack = new Stack<>();
+            for (Segment segment : campaign.getSegments()) {
+
+                CustomSegment customSegment = (CustomSegment) segment;
+
+                boolean currentValue = segment.evaluate(vwo);
+
+                if (customSegment.getPreviousLogicalOperator() != null && customSegment.isLeftBracket()) {
+                    stack.push(customSegment.getPreviousLogicalOperator());
+                } else if (customSegment.getPreviousLogicalOperator() != null) {
+                    boolean leftVariable = (boolean) stack.pop();
+                    currentValue = customSegment.getPreviousLogicalOperator().evaluate(leftVariable, currentValue);
+                }
+
+                if (customSegment.isLeftBracket()) {
+                    stack.push("(");
+                }
+
+                if (customSegment.isRightBracket()) {
+                    stack.pop();
+                    while ((stack.size() > 0) && !(stack.peek()).equals("(")) {
+                        String random = stack.peek().toString();
+                        LogicalOperator logicalOperator = LogicalOperator.fromString(random);
+                        stack.pop();
+                        boolean leftVariable = (Boolean) stack.pop();
+                        currentValue = (logicalOperator != null) && logicalOperator.evaluate(leftVariable, currentValue);
+                    }
+                }
+
+                stack.push(currentValue);
+            }
+            return (boolean) stack.pop();
+        } else {
+            return campaign.getSegments().get(0).evaluate(vwo);
+        }
     }
 
     public void parseData(JSONArray data) {
@@ -163,11 +204,13 @@ public class VWOData {
             if (!mVWO.getVwoPreference().isPartOfCampaign(String.valueOf(campaign.getId()))) {
                 mVWO.getVwoPreference().setPartOfCampaign(String.valueOf(campaign.getId()));
                 VWOPersistData.addToQueue(mVWO.getVwoPreference(), campaignRecordUrl);
-
-                if (campaign.containsUniversalAnalytics()) {
-                    recordGaEventForCampaign(campaign);
-                }
-
+                Intent intent = new Intent();
+                intent.putExtra(VWO.ARG_CAMPAIGN_ID, String.valueOf(campaign.getId()));
+                intent.putExtra(VWO.ARG_CAMPAIGN_NAME, String.valueOf(campaign.getName()));
+                intent.putExtra(VWO.ARG_VARIATION_ID, String.valueOf(campaign.getVariation().getId()));
+                intent.putExtra(VWO.ARG_VARIATION_NAME, String.valueOf(campaign.getVariation().getName()));
+                intent.setAction(VWO.NOTIFY_USER_TRACKING_STARTED);
+                LocalBroadcastManager.getInstance(mVWO.getCurrentContext()).sendBroadcast(intent);
                 return true;
             }
         } else {
@@ -194,20 +237,6 @@ public class VWOData {
 
                                 String goalUrl = mVWO.getVwoUrlBuilder().getGoalUrl(campaign.getId(), campaign.getVariation().getId(), goal.getId());
                                 VWOPersistData.addToQueue(mVWO.getVwoPreference(), goalUrl);
-                                if (campaign.containsUniversalAnalytics()) {
-
-                                    // TODO: Send event
-                                    String category = String.format(Locale.ENGLISH, "VWO Goal - %s - %d", campaign.getName(), campaign.getId());
-                                    String label = String.format(Locale.ENGLISH, "%s - %d", campaign.getVariation().getName(), campaign.getVariation().getId());
-                                    String action = String.format(Locale.ENGLISH, "%s - %d", goal.getIdentifier(), goal.getId());
-
-
-                                    mVWO.getGATracker().send(new HitBuilders.EventBuilder()
-                                            .setCategory(category)
-                                            .setLabel(label)
-                                            .setAction(action)
-                                            .build());
-                                }
                             } else {
                                 VWOLog.w(VWOLog.CAMPAIGN_LOGS, "Duplicate goal identifier: " + goalIdentifier, true);
                             }
@@ -242,22 +271,9 @@ public class VWOData {
                                 vwoPersistData.addGoal(goal.getId());
                                 vwoPersistData.saveCampaign(mVWO.getVwoPreference());
 
-                                String goalUrl = mVWO.getVwoUrlBuilder().getGoalUrl(campaign.getId(), campaign.getVariation().getId(), goal.getId(), (float) value);
+                                String goalUrl = mVWO.getVwoUrlBuilder().getGoalUrl(campaign.getId(),
+                                        campaign.getVariation().getId(), goal.getId(), (float) value);
                                 VWOPersistData.addToQueue(mVWO.getVwoPreference(), goalUrl);
-                                if (campaign.containsUniversalAnalytics()) {
-
-                                    // TODO: Send event
-                                    String category = String.format(Locale.ENGLISH, "VWO Goal - %s - %d", campaign.getName(), campaign.getId());
-                                    String label = String.format(Locale.ENGLISH, "%s - %d", campaign.getVariation().getName(), campaign.getVariation().getId());
-                                    String action = String.format(Locale.ENGLISH, "%s - %d", goal.getIdentifier(), goal.getId());
-
-
-                                    mVWO.getGATracker().send(new HitBuilders.EventBuilder()
-                                            .setCategory(category)
-                                            .setLabel(label)
-                                            .setAction(action)
-                                            .build());
-                                }
                             } else {
                                 VWOLog.w(VWOLog.CAMPAIGN_LOGS, "Duplicate goal identifier: " + goalIdentifier, true);
                             }
@@ -284,61 +300,6 @@ public class VWOData {
                 String key = (String) keys.next();
                 mVariations.put(key, campaign);
             }
-        }
-    }
-
-
-    private void recordGaEventForCampaign(Campaign campaign) {
-        String category = String.format(Locale.ENGLISH, "VWO Campaign - %s - %d", campaign.getName(), campaign.getId());
-        String label = String.format(Locale.ENGLISH, "%s - %d", campaign.getVariation().getName(), campaign.getVariation().getId());
-        String dimension = String.format(Locale.ENGLISH, "CampId:%d, VarName:%s", campaign.getId(), campaign.getVariation().getName());
-
-        VWOLog.d(VWOLog.ANALYTICS, category, true );
-        mVWO.getGATracker().send(new HitBuilders.EventBuilder()
-                .setCategory(category)
-                .setLabel(label)
-                .setCustomDimension(campaign.getUaDimension(), dimension)
-                .build());
-    }
-
-    private static boolean evaluateSegmentation(VWO vwo, Campaign campaign) {
-
-        if (campaign.getSegmentType().equals(Campaign.SEGMENT_CUSTOM)) {
-
-            Stack<Object> stack = new Stack<>();
-            for (Segment segment : campaign.getSegments()) {
-
-                CustomSegment customSegment = (CustomSegment) segment;
-
-                boolean currentValue = segment.evaluate(vwo);
-
-                if (customSegment.getPreviousLogicalOperator() != null && customSegment.isLeftBracket()) {
-                    stack.push(customSegment.getPreviousLogicalOperator());
-                } else if (customSegment.getPreviousLogicalOperator() != null) {
-                    boolean leftVariable = (boolean) stack.pop();
-                    currentValue = customSegment.getPreviousLogicalOperator().evaluate(leftVariable, currentValue);
-                }
-
-                if (customSegment.isLeftBracket()) {
-                    stack.push("(");
-                }
-
-                if (customSegment.isRightBracket()) {
-                    stack.pop();
-                    while ((stack.size() > 0) && !(stack.peek()).equals("(")) {
-                        String random = stack.peek().toString();
-                        LogicalOperator logicalOperator = LogicalOperator.fromString(random);
-                        stack.pop();
-                        boolean leftVariable = (Boolean) stack.pop();
-                        currentValue = (logicalOperator != null) && logicalOperator.evaluate(leftVariable, currentValue);
-                    }
-                }
-
-                stack.push(currentValue);
-            }
-            return (boolean) stack.pop();
-        } else {
-            return campaign.getSegments().get(0).evaluate(vwo);
         }
     }
 }
