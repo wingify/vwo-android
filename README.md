@@ -52,12 +52,15 @@ Add vwo and socket.io dependency to app/build.gradle file
 
 	dependencies {
 	    ...
-	    compile 'com.vwo:mobile:2.0.0-beta4@aar'
+	    compile 'com.vwo:mobile:2.0.0-beta5@aar'
         compile ('io.socket:socket.io-client:1.0.0') {
             // excluding org.json which is provided by Android
             exclude group: 'org.json', module: 'json'
         }
         compile 'io.sentry:sentry-android:1.4.0'
+        
+        // Skip this if you are already including support library in your app.
+        compile 'com.android.support:support-core-utils:26.0.1'
 	    ...
 	}
 	
@@ -193,6 +196,53 @@ VWO.markConversionForGoal("conversionGoal", 133.25);
 
 second method is for marking a revenue goals you can pass the revenue value in double as second 
 parameter to the function.
+
+## Listening to User becoming part of campaign
+
+You can register a Broadcast Receiver with intent filter ```VWO.NOTIFY_USER_TRACKING_STARTED``` for listening to the event of user becoming part of a 
+campaign.
+
+Below is the code snippet.
+
+```java
+import android.support.v7.app.ActionBarActivity;
+import android.os.Bundle;
+import android.content.BroadcastReceiver;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.support.v4.content.LocalBroadcastManager;
+
+public class MainActivity extends ActionBarActivity {
+    
+    private BroadcastReceiver receiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                // Get the campaign data for which there user has become the part.
+                String campaignId = intent.getStringExtra(VWO.ARG_CAMPAIGN_ID);
+                String campaignName = intent.getStringExtra(VWO.ARG_CAMPAIGN_NAME);
+                String variationId = intent.getStringExtra(VWO.ARG_VARIATION_ID);
+                String variationName = intent.getStringExtra(VWO.ARG_VARIATION_NAME);
+            }
+        };
+    
+    @Override
+    protected void onStart() {
+        super.onStart();
+        // Create an intent filter for broadcast receiver.
+        IntentFilter intentFilter = new IntentFilter(VWO.NOTIFY_USER_TRACKING_STARTED);
+        
+        // Register your broadcast receiver
+        LocalBroadcastManager.getInstance(this).registerReceiver(receiver, intentFilter);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        // Unregister your broadcast receiver.
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver);
+    }
+}
+```
 
 
 ## License
