@@ -62,7 +62,7 @@ dependencies {
     implementation 'com.squareup.picasso:picasso:2.5.2'
 //    implementation project(':library')
     implementation 'io.sentry:sentry-android:1.4.0'
-    implementation 'com.vwo:mobile:2.0.0-beta5@aar'
+    implementation 'com.vwo:mobile:2.0.0-beta4@aar'
     implementation ('io.socket:socket.io-client:1.0.0') {
         // excluding org.json which is provided by Android
         exclude group: 'org.json', module: 'json'

@@ -49,16 +49,16 @@ allprojects {
     repositories {
         google()
         jcenter()
-        mavenLocal()
+//        mavenLocal()
         maven {
             url "https://maven.google.com"
         }
-//        maven {
-//            url 'https://raw.githubusercontent.com/wingify/vwo-mobile-android/master/'
-//        }
         maven {
-            url uri('/Users/aman/git/vwo-mobile-android')
+            url 'https://raw.githubusercontent.com/wingify/vwo-mobile-android/master/'
         }
+//        maven {
+//            url uri('/Users/aman/git/vwo-mobile-android')
+//        }
     }
 }
 
