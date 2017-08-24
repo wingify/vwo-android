@@ -221,10 +221,10 @@ public class MainActivity extends AppCompatActivity {
             public void onReceive(Context context, Intent intent) {
                 // Get the campaign data for which there user has become the part.
                 Bundle extras = intent.getExtras();
-            	String campaignId = extras.getString(VWO.ARG_CAMPAIGN_ID);
-            	String campaignName = extras.getString(VWO.ARG_CAMPAIGN_NAME);
-            	String variationId = extras.getString(VWO.ARG_VARIATION_ID);
-            	String variationName = extras.getString(VWO.ARG_VARIATION_NAME);
+            	String campaignId = extras.getString(VWO.Constants.ARG_CAMPAIGN_ID);
+            	String campaignName = extras.getString(VWO.Constants.ARG_CAMPAIGN_NAME);
+            	String variationId = extras.getString(VWO.Constants.ARG_VARIATION_ID);
+            	String variationName = extras.getString(VWO.Constants.ARG_VARIATION_NAME);
             	
             	//TODO: Write your analytics code here
             }
@@ -234,7 +234,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         // Create an intent filter for broadcast receiver.
-        IntentFilter intentFilter = new IntentFilter(VWO.NOTIFY_USER_TRACKING_STARTED);
+        IntentFilter intentFilter = new IntentFilter(VWO.Constants.NOTIFY_USER_TRACKING_STARTED);
         
         // Register your broadcast receiver
         LocalBroadcastManager.getInstance(this).registerReceiver(receiver, intentFilter);
