@@ -68,13 +68,13 @@ Add vwo and socket.io dependency to app/build.gradle file
 
 ##### Launching VWO SDK in Asynchronous mode.
 ```java
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import com.vwo.mobile.VWO;
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends AppCompatActivity {
     private static final String VWO_API_KEY = "YOUR_VWO_API_KEY";
 
     @Override
@@ -91,13 +91,13 @@ public class MainActivity extends ActionBarActivity {
 ##### Launching VWO SDK in Asynchronous mode with callback
 
 ```java
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import com.vwo.mobile.VWO;
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends AppCompatActivity {
     private static final String VWO_API_KEY = "YOUR_VWO_API_KEY";
     
     @Override
@@ -124,13 +124,13 @@ public class MainActivity extends ActionBarActivity {
 **(NOT RECOMMENDED)**
 
 ```java
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import com.vwo.mobile.VWO;
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends AppCompatActivity {
     private static final String VWO_API_KEY = "YOUR_VWO_API_KEY";
     
     @Override
@@ -205,23 +205,28 @@ campaign.
 Below is the code snippet.
 
 ```java
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.content.BroadcastReceiver;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.support.v4.content.LocalBroadcastManager;
 
-public class MainActivity extends ActionBarActivity {
+import com.vwo.mobile.VWO;
+
+public class MainActivity extends AppCompatActivity {
     
     private BroadcastReceiver receiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
                 // Get the campaign data for which there user has become the part.
-                String campaignId = intent.getStringExtra(VWO.ARG_CAMPAIGN_ID);
-                String campaignName = intent.getStringExtra(VWO.ARG_CAMPAIGN_NAME);
-                String variationId = intent.getStringExtra(VWO.ARG_VARIATION_ID);
-                String variationName = intent.getStringExtra(VWO.ARG_VARIATION_NAME);
+                Bundle extras = intent.getExtras();
+            	String campaignId = extras.getString(VWO.ARG_CAMPAIGN_ID);
+            	String campaignName = extras.getString(VWO.ARG_CAMPAIGN_NAME);
+            	String variationId = extras.getString(VWO.ARG_VARIATION_ID);
+            	String variationName = extras.getString(VWO.ARG_VARIATION_NAME);
+            	
+            	//TODO: Write your analytics code here
             }
         };
     

@@ -54,13 +54,16 @@ public class MainActivity extends BaseActivity
     private BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            String campaignId = intent.getStringExtra(VWO.ARG_CAMPAIGN_ID);
-            String campaignName = intent.getStringExtra(VWO.ARG_CAMPAIGN_NAME);
-            String variationId = intent.getStringExtra(VWO.ARG_VARIATION_ID);
-            String variationName = intent.getStringExtra(VWO.ARG_VARIATION_NAME);
+            Bundle extras = intent.getExtras();
+            String campaignId = extras.getString(VWO.ARG_CAMPAIGN_ID);
+            String campaignName = extras.getString(VWO.ARG_CAMPAIGN_NAME);
+            String variationId = extras.getString(VWO.ARG_VARIATION_ID);
+            String variationName = extras.getString(VWO.ARG_VARIATION_NAME);
             // Write your Analytics code here
             Log.d("BroadcastReceiver", String.format("User became part of Campaign %s with id %s " +
                     "\nVariation %s with id %s", campaignName, campaignId, variationName, variationId));
+
+
         }
     };
 

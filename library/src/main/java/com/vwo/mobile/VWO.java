@@ -38,11 +38,11 @@ public class VWO {
     /**
      * Local broadcast receiver
      */
-    public static final String NOTIFY_USER_TRACKING_STARTED = "com.vwo.mobile.startedusertracking";
-    public static final String ARG_CAMPAIGN_ID = "com.vwo.mobile.campaign.id";
-    public static final String ARG_CAMPAIGN_NAME = "com.vwo.mobile.campaign.name";
-    public static final String ARG_VARIATION_ID = "com.vwo.mobile.variation.id";
-    public static final String ARG_VARIATION_NAME = "com.vwo.mobile.variation.name";
+    public static final String NOTIFY_USER_TRACKING_STARTED = "VWOUserStartedTrackingInCampaignNotification";
+    public static final String ARG_CAMPAIGN_ID = "campaign_id";
+    public static final String ARG_CAMPAIGN_NAME = "campaign_name";
+    public static final String ARG_VARIATION_ID = "variation_id";
+    public static final String ARG_VARIATION_NAME = "variation_name";
     @SuppressLint("StaticFieldLeak")
     private static VWO sSharedInstance;
     @NonNull
