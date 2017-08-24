@@ -1,12 +1,18 @@
 package com.vwo.sampleapp.activities;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.CheckResult;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TextInputLayout;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -24,25 +30,42 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.airbnb.deeplinkdispatch.DeepLink;
 import com.vwo.mobile.VWO;
 import com.vwo.mobile.events.VWOStatusListener;
 import com.vwo.mobile.utils.VWOLog;
 import com.vwo.sampleapp.R;
 import com.vwo.sampleapp.fragments.FragmentOnBoardingMain;
 import com.vwo.sampleapp.fragments.FragmentSortingMain;
+import com.vwo.sampleapp.interfaces.AppDeepLink;
 import com.vwo.sampleapp.interfaces.NavigationToggleListener;
 import com.vwo.sampleapp.utils.SharedPreferencesHelper;
 
 import java.util.regex.Pattern;
 
+@AppDeepLink("/launch/{id}")
 public class MainActivity extends BaseActivity
         implements NavigationView.OnNavigationItemSelectedListener, NavigationToggleListener {
 
-    private ProgressBar progressBar;
     private static final int ID_FRAGMENT_SORTING = 0;
     private static final int ID_FRAGMENT_ONBOARDING = 1;
-
+    private ProgressBar progressBar;
     private NavigationView navigationView;
+    private BroadcastReceiver receiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Bundle extras = intent.getExtras();
+            String campaignId = extras.getString(VWO.Constants.ARG_CAMPAIGN_ID);
+            String campaignName = extras.getString(VWO.Constants.ARG_CAMPAIGN_NAME);
+            String variationId = extras.getString(VWO.Constants.ARG_VARIATION_ID);
+            String variationName = extras.getString(VWO.Constants.ARG_VARIATION_NAME);
+            // Write your Analytics code here
+            Log.d("BroadcastReceiver", String.format("User became part of Campaign %s with id %s " +
+                    "\nVariation %s with id %s", campaignName, campaignId, variationName, variationId));
+
+
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,14 +79,42 @@ public class MainActivity extends BaseActivity
         toggle.syncState();
 
         progressBar = findViewById(R.id.loading_progress);
+        Intent intent = getIntent();
+        if (intent.getBooleanExtra(DeepLink.IS_DEEP_LINK, false)) {
+            Bundle parameters = intent.getExtras();
+            String apiKey = parameters.getString("id");
+            Log.d(MainActivity.class.getSimpleName(), "API_KEY: " + apiKey);
+            // Do something with idString
+            if (validateAndSetApiKey(apiKey)) {
+                initVWO(apiKey, true);
+            }
+        } else {
+            initVWO(SharedPreferencesHelper.getApiKey(this), true);
+        }
 
         navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         navigationView.setCheckedItem(R.id.nav_layout_campaign);
 
-        if (savedInstanceState == null) {
-            initVWO(SharedPreferencesHelper.getApiKey(this), true);
-        }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        IntentFilter intentFilter = new IntentFilter(VWO.Constants.NOTIFY_USER_TRACKING_STARTED);
+
+        LocalBroadcastManager.getInstance(this).registerReceiver(receiver, intentFilter);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
     }
 
     @Override
@@ -169,12 +220,8 @@ public class MainActivity extends BaseActivity
                     @Override
                     public void onClick(View view) {
                         String apiKey = input.getText().toString().trim();
-                        String regex = "[\\w]{32}-[0-9]*";
-                        Pattern pattern = Pattern.compile(regex);
 
-                        if (!TextUtils.isEmpty(apiKey) && pattern.matcher(apiKey).matches()) {
-                            Toast.makeText(MainActivity.this, getString(R.string.api_key_set), Toast.LENGTH_SHORT).show();
-                            SharedPreferencesHelper.setApiKey(apiKey, MainActivity.this);
+                        if (validateAndSetApiKey(apiKey)) {
                             initVWO(apiKey, false);
                             alertDialog.dismiss();
                         } else {
@@ -188,6 +235,21 @@ public class MainActivity extends BaseActivity
 
         alertDialog.show();
     }
+
+    @CheckResult
+    private boolean validateAndSetApiKey(String apiKey) {
+        String regex = "[\\w]{32}-[0-9]*";
+        Pattern pattern = Pattern.compile(regex);
+
+        if (!TextUtils.isEmpty(apiKey) && pattern.matcher(apiKey).matches()) {
+            Toast.makeText(MainActivity.this, getString(R.string.api_key_set), Toast.LENGTH_SHORT).show();
+            SharedPreferencesHelper.setApiKey(apiKey, MainActivity.this);
+            return true;
+        }
+
+        return false;
+    }
+
 
     private void initVWO(String key, final boolean showProgress) {
         Log.d("INIT", "Calling initVWO");

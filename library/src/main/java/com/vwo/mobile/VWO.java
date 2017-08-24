@@ -5,11 +5,9 @@ import android.app.Application;
 import android.content.Context;
 import android.os.Build;
 import android.os.Handler;
-import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.google.android.gms.analytics.Tracker;
 import com.vwo.mobile.constants.AppConstants;
 import com.vwo.mobile.data.VWOData;
 import com.vwo.mobile.data.VWOLocalData;
@@ -27,20 +25,36 @@ import com.vwo.mobile.utils.VWOUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 
-import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
 
 import io.sentry.Sentry;
+import io.sentry.SentryClient;
+import io.sentry.android.AndroidSentryClientFactory;
 
 /**
  * Created by abhishek on 17/09/15 at 10:02 PM.
  */
 public class VWO {
+    /**
+     * Constants exposed to developers
+     */
+    public static class Constants {
+        /**
+         *  Key for local broadcast Receiver
+         */
+        public static final String NOTIFY_USER_TRACKING_STARTED = "VWOUserStartedTrackingInCampaignNotification";
+        public static final String ARG_CAMPAIGN_ID = "vwo_campaign_id";
+        public static final String ARG_CAMPAIGN_NAME = "vwo_campaign_name";
+        public static final String ARG_VARIATION_ID = "vwo_variation_id";
+        public static final String ARG_VARIATION_NAME = "vwo_variation_name";
+    }
+
     @SuppressLint("StaticFieldLeak")
     private static VWO sSharedInstance;
-
-    private boolean mIsEditMode;
     @NonNull
     private final Context mContext;
+    private boolean mIsEditMode;
     private VWODownloader mVWODownloader;
     private VWOUrlBuilder mVWOUrlBuilder;
     private VWOUtils mVWOUtils;
@@ -81,19 +95,17 @@ public class VWO {
     }
 
     /**
-     *
-     *  Get variation for a given key. returns null if key does not exist in any
-     *  Campaigns.
-     *
-     *  This function will return a variation for a given key. This function will search for key in
-     *  all the currently active campaigns.
-     *
-     *  If key exists in multiple campaigns it will return the value for the key in the latest
-     *  {@link Campaign}.
-     *
-     *  If user is not already part of a the {@link Campaign} in which the key exists. User automatically
-     *  becomes part of all the campaign for which that key exists.
-     *
+     * Get variation for a given key. returns null if key does not exist in any
+     * Campaigns.
+     * <p>
+     * This function will return a variation for a given key. This function will search for key in
+     * all the currently active campaigns.
+     * <p>
+     * If key exists in multiple campaigns it will return the value for the key in the latest
+     * {@link Campaign}.
+     * <p>
+     * If user is not already part of a the {@link Campaign} in which the key exists. User automatically
+     * becomes part of all the campaign for which that key exists.
      *
      * @param key is the key for which variation is to be requested
      * @return an {@link Object} corresponding to given key.
@@ -120,20 +132,19 @@ public class VWO {
     }
 
     /**
+     * Get variation for a given key. returns control if key does not exist in any
+     * Campaigns.
+     * <p>
+     * This function will return a variation for a given key. This function will search for key in
+     * all the currently active campaigns.
+     * <p>
+     * If key exists in multiple campaigns it will return the value for the key of the latest
+     * {@link Campaign}.
+     * <p>
+     * If user is not already part of a the {@link Campaign} in which the key exists. User automatically
+     * becomes part of all the campaign for which that key exists.
      *
-     *  Get variation for a given key. returns control if key does not exist in any
-     *  Campaigns.
-     *
-     *  This function will return a variation for a given key. This function will search for key in
-     *  all the currently active campaigns.
-     *
-     *  If key exists in multiple campaigns it will return the value for the key of the latest
-     *  {@link Campaign}.
-     *
-     *  If user is not already part of a the {@link Campaign} in which the key exists. User automatically
-     *  becomes part of all the campaign for which that key exists.
-     *
-     * @param key is the key for which variation is to be requested
+     * @param key     is the key for which variation is to be requested
      * @param control is the default value to be returned if key is not found in any campaigns.
      * @return an {@link Object} corresponding to given key.
      */
@@ -152,7 +163,7 @@ public class VWO {
 
     /**
      * Function for marking a goal when it is achieved.
-     *
+     * <p>
      * NOTE: This function should be called only after initializing VWO SDK.
      *
      * @param goalIdentifier is name of the goal set in VWO dashboard
@@ -192,6 +203,42 @@ public class VWO {
         }
     }
 
+    /**
+     * This function is to set up a listener for listening to the initialization event of VWO sdk.
+     * i.e. VWO sdk is connected to server and all setting are received.
+     *
+     * @param listener This listener to be passed to SDK
+     */
+    public static void setVWOStatusListener(VWOStatusListener listener) {
+        if (sSharedInstance != null) {
+            sSharedInstance.mStatusListener = listener;
+        } else {
+            VWOLog.e(VWOLog.CONFIG_LOGS, "SDK not initialized, unable to setup VWOStatusListener",
+                    false, false);
+        }
+    }
+
+    /**
+     * Sets custom key value pair for user segmentation.
+     * <p>
+     * This function can be used to segment users based on this key value pair.
+     * This will decide whether user will be a part of campaign or not.
+     *
+     * @param key   is given key
+     * @param value is the value corresponding to the given key.
+     */
+    public static void setCustomVariable(@NonNull String key, @NonNull String value) {
+        if (sSharedInstance == null) {
+            throw new IllegalStateException("You need to initialize VWO SDK first and the try calling this function.");
+        }
+
+        sSharedInstance.getConfig().addCustomSegment(key, value);
+    }
+
+    public static String version() {
+        return BuildConfig.VERSION_NAME;
+    }
+
     @SuppressWarnings("SpellCheckingInspection")
     boolean startVwoInstance() {
         VWOLog.v(VWOLog.INITIALIZATION_LOGS, "**** Starting VWO ver " + VWOUtils.getVwoSdkVersion() + " ****");
@@ -207,8 +254,8 @@ public class VWO {
                 && !VWOUtils.checkIfClassExists("io.sentry.Sentry")) {
             String errMsg = "VWO sdk is dependent on following libraries:\n" +
                     "In application level build.gradle file add\n" +
-                    "compile 'io.socket:socket.io-client:0.8.3'\n" +
-                    "compile 'io.sentry:sentry-android:1.1.0'";
+                    "compile 'io.socket:socket.io-client:1.0.0'\n" +
+                    "compile 'io.sentry:sentry-android:1.4.0'";
             VWOLog.e(VWOLog.INITIALIZATION_LOGS, errMsg, false, false);
             onLoadFailure(errMsg);
             return false;
@@ -262,7 +309,7 @@ public class VWO {
                 @Override
                 public void onDownloadError(Exception ex) {
                     initializeSentry();
-                    if(ex instanceof JSONException) {
+                    if (ex instanceof JSONException) {
                         VWOLog.e(VWOLog.DOWNLOAD_DATA_LOGS, ex, false, true);
                     }
                     mVWODownloader.startUpload();
@@ -285,10 +332,13 @@ public class VWO {
     }
 
     private void initializeSentry() {
-        Sentry.getContext().addTag("VWO-SDK-Version", version());
-        Sentry.getContext().addTag("VWO-Account-ID", vwoConfig.getAccountId());
-        Sentry.getContext().addTag("Package-name", mContext.getPackageName());
-        Sentry.init(BuildConfig.SENTRY);
+        Map<String, String> extras = new HashMap<>();
+        extras.put("VWO-SDK-Version", version());
+        extras.put("VWO-Account-ID", vwoConfig.getAccountId());
+        extras.put("Package-name", mContext.getPackageName());
+        SentryClient sentryClient = Sentry.init(BuildConfig.SENTRY,
+                new AndroidSentryClientFactory(mContext));
+        sentryClient.setTags(extras);
     }
 
     private void initializeComponents() {
@@ -324,7 +374,6 @@ public class VWO {
         }
     }
 
-
     private boolean isAndroidSDKSupported() {
         try {
             int sdkVersion = Build.VERSION.SDK_INT;
@@ -339,19 +388,61 @@ public class VWO {
         return false;
     }
 
-    /**
-     * This function is to set up a listener for listening to the initialization event of VWO sdk.
-     * i.e. VWO sdk is connected to server and all setting are received.
-     *
-     * @param listener This listener to be passed to SDK
-     */
-    public static void setVWOStatusListener(VWOStatusListener listener) {
-        if (sSharedInstance != null) {
-            sSharedInstance.mStatusListener = listener;
-        } else {
-            VWOLog.e(VWOLog.CONFIG_LOGS, "SDK not initialized, unable to setup VWOStatusListener",
-                    false, false);
+    public static void setActivityLifecycleListener(ActivityLifecycleListener listener) {
+        if(sSharedInstance == null) {
+            throw new IllegalStateException("You need to initialize VWO SDK first and the try calling this function.");
         }
+
+        sSharedInstance.getConfig().setActivityLifecycleListener(listener);
+    }
+
+    public Context getCurrentContext() {
+        return this.mContext;
+    }
+
+    private boolean isEditMode() {
+        return mIsEditMode;
+    }
+
+    void setIsEditMode(boolean isEditMode) {
+        mIsEditMode = isEditMode;
+    }
+
+    private VWOSocket getVwoSocket() {
+        return mVWOSocket;
+    }
+
+    private VWOData getVwoData() {
+        return mVWOData;
+    }
+
+    public VWOUrlBuilder getVwoUrlBuilder() {
+        return mVWOUrlBuilder;
+    }
+
+    public VWOConfig getConfig() {
+        return this.vwoConfig;
+    }
+
+    void setConfig(VWOConfig config) {
+        this.vwoConfig = config;
+    }
+
+    public VWOStartState getState() {
+        return this.mVWOStartState;
+    }
+
+    @Nullable
+    public VWOStatusListener getStatusListener() {
+        return mStatusListener;
+    }
+
+    VWOUtils getVwoUtils() {
+        return mVWOUtils;
+    }
+
+    public VWOPreference getVwoPreference() {
+        return mVWOPreference;
     }
 
     public static class Builder {
@@ -385,105 +476,6 @@ public class VWO {
             return this.context;
         }
 
-    }
-
-    /**
-     * Sets custom key value pair for user segmentation.
-     *
-     * This function can be used to segment users based on this key value pair.
-     * This will decide whether user will be a part of campaign or not.
-     *
-     * @param key is given key
-     * @param value is the value corresponding to the given key.
-     */
-    public static void setCustomVariable(@NonNull String key, @NonNull String value) {
-        if(sSharedInstance == null) {
-            throw new IllegalStateException("You need to initialize VWO SDK first and the try calling this function.");
-        }
-
-        sSharedInstance.getConfig().addCustomSegment(key, value);
-    }
-
-    public static void setActivityLifecycleListener(ActivityLifecycleListener listener) {
-        if(sSharedInstance == null) {
-            throw new IllegalStateException("You need to initialize VWO SDK first and the try calling this function.");
-        }
-
-        sSharedInstance.getConfig().setActivityLifecycleListener(listener);
-    }
-
-    public Tracker getGATracker() {
-        Tracker tracker = null;
-        try {
-            Method m = mContext.getClass().getMethod("getDefaultTracker", (Class<?>[]) null);
-            Object result;
-            if (m != null) {
-                result = m.invoke(mContext, (Object[]) null);
-                if (result != null) {
-                    tracker = (Tracker) result;
-                }
-            }
-        } catch (Exception exception) {
-            VWOLog.e(VWOLog.ANALYTICS, "Google Analytics enabled on dashboard but not integrated in Application",
-                    exception, false, true);
-        }
-
-        return tracker;
-    }
-
-
-
-    public Context getCurrentContext() {
-        return this.mContext;
-    }
-
-    private boolean isEditMode() {
-        return mIsEditMode;
-    }
-
-    void setIsEditMode(boolean isEditMode) {
-        mIsEditMode = isEditMode;
-    }
-
-    private VWOSocket getVwoSocket() {
-        return mVWOSocket;
-    }
-
-    private VWOData getVwoData() {
-        return mVWOData;
-    }
-
-    public VWOUrlBuilder getVwoUrlBuilder() {
-        return mVWOUrlBuilder;
-    }
-
-    public VWOConfig getConfig() {
-        return this.vwoConfig;
-    }
-
-    public VWOStartState getState() {
-        return this.mVWOStartState;
-    }
-
-    void setConfig(VWOConfig config) {
-        this.vwoConfig = config;
-    }
-
-    @Nullable
-    public VWOStatusListener getStatusListener() {
-        return mStatusListener;
-    }
-
-    VWOUtils getVwoUtils() {
-        return mVWOUtils;
-    }
-
-    public VWOPreference getVwoPreference() {
-        return mVWOPreference;
-    }
-
-    public static String version() {
-        return BuildConfig.VERSION_NAME;
     }
 
 }

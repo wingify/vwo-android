@@ -1,34 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginTop="16dp"
-    android:layout_marginBottom="16dp"
+    android:background="@color/white"
+    android:orientation="vertical"
+    android:paddingStart="16dp"
+    android:paddingEnd="16dp"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
     >
 
     <FrameLayout
         android:id="@+id/container_item"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:background="@drawable/empty_rectangle"
-        android:layout_marginLeft="16dp"
-        android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginBottom="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/item_name">
+        android:background="@drawable/empty_rectangle">
 
         <android.support.v7.widget.AppCompatImageView
             android:id="@+id/item_image"
             android:layout_width="50dp"
             android:layout_height="70dp"
             android:layout_gravity="center"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/iphone" />
 
     </FrameLayout>
@@ -36,51 +31,39 @@
 
     <android.support.v7.widget.AppCompatTextView
         android:id="@+id/item_name"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textColor="@color/primary_text"
-        android:textSize="12sp"
-        tools:text="iPhone 6"
-        app:layout_constraintTop_toBottomOf="@+id/container_item"
-        app:layout_constraintLeft_toLeftOf="parent"
-        android:layout_marginTop="8dp"
-        app:layout_constraintStart_toStartOf="@+id/container_item"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0"
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
-        />
+        android:layout_marginTop="8dp"
+        android:textColor="@color/primary_text"
+        android:textSize="12sp"
+        tools:layout_editor_absoluteY="142dp"
+        tools:text="iPhone 6" />
 
     <android.support.v7.widget.AppCompatTextView
         android:id="@+id/item_vendor"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textColor="@color/secondary_text"
-        android:textSize="8sp"
-        tools:text="by Apple"
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
-        app:layout_constraintStart_toStartOf="@+id/item_name"
         android:layout_marginTop="2dp"
-        app:layout_constraintHorizontal_bias="0"
-        app:layout_constraintTop_toBottomOf="@+id/item_name"
-        app:layout_constraintEnd_toEndOf="parent" />
+        android:textColor="@color/secondary_text"
+        android:textSize="8sp"
+        tools:text="by Apple" />
 
 
     <android.support.v7.widget.AppCompatTextView
         android:id="@+id/item_price"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="8dp"
         android:textColor="@color/red"
         android:textSize="15sp"
         tools:text="$250"
-        android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintTop_toBottomOf="@+id/item_vendor"
-        app:layout_constraintStart_toStartOf="@+id/item_name"
-        android:layout_marginTop="8dp"
-        app:layout_constraintEnd_toEndOf="parent" />
+        android:layout_marginBottom="8dp" />
 
 
-</android.support.constraint.ConstraintLayout>
+</LinearLayout>
