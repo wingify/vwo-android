@@ -109,6 +109,9 @@ public class FragmentSortingMain extends Fragment implements ChangeFragment {
             case Constants.VWOKeys.VALUE_GRID:
                 loadFragment(null, ID_GRID_VARIATION, null);
                 break;
+            default:
+                loadFragment(null, ID_LIST_VARIATION, null);
+                break;
         }
         loadFragment(null, ID_LIST_CONTROL, null);
     }
@@ -173,6 +176,8 @@ public class FragmentSortingMain extends Fragment implements ChangeFragment {
                             detailsFragment, null).addToBackStack(null).commit();
                 }
                 break;
+            default:
+                throw new IllegalArgumentException("Unknown fragment id : " + fragmentId);
         }
     }
 }

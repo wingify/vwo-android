@@ -110,6 +110,8 @@ public class FragmentOnBoardingMain extends Fragment implements ChangeFragment {
             case Constants.VWOKeys.VALUE_SOCIAL_MEDIA:
                 loadFragment(null, VARIATION_LOGIN_TYPE_SOCIAL, null);
                 break;
+            default:
+                loadFragment(null, VARIATION_LOGIN_TYPE_NORMAL, null);
         }
     }
 
