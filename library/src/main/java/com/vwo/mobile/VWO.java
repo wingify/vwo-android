@@ -36,13 +36,19 @@ import io.sentry.android.AndroidSentryClientFactory;
  */
 public class VWO {
     /**
-     * Local broadcast receiver
+     * Constants exposed to developers
      */
-    public static final String NOTIFY_USER_TRACKING_STARTED = "VWOUserStartedTrackingInCampaignNotification";
-    public static final String ARG_CAMPAIGN_ID = "campaign_id";
-    public static final String ARG_CAMPAIGN_NAME = "campaign_name";
-    public static final String ARG_VARIATION_ID = "variation_id";
-    public static final String ARG_VARIATION_NAME = "variation_name";
+    public static class Constants {
+        /**
+         *  Key for local broadcast Receiver
+         */
+        public static final String NOTIFY_USER_TRACKING_STARTED = "VWOUserStartedTrackingInCampaignNotification";
+        public static final String ARG_CAMPAIGN_ID = "vwo_campaign_id";
+        public static final String ARG_CAMPAIGN_NAME = "vwo_campaign_name";
+        public static final String ARG_VARIATION_ID = "vwo_variation_id";
+        public static final String ARG_VARIATION_NAME = "vwo_variation_name";
+    }
+
     @SuppressLint("StaticFieldLeak")
     private static VWO sSharedInstance;
     @NonNull

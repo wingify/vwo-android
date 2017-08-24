@@ -55,10 +55,10 @@ public class MainActivity extends BaseActivity
         @Override
         public void onReceive(Context context, Intent intent) {
             Bundle extras = intent.getExtras();
-            String campaignId = extras.getString(VWO.ARG_CAMPAIGN_ID);
-            String campaignName = extras.getString(VWO.ARG_CAMPAIGN_NAME);
-            String variationId = extras.getString(VWO.ARG_VARIATION_ID);
-            String variationName = extras.getString(VWO.ARG_VARIATION_NAME);
+            String campaignId = extras.getString(VWO.Constants.ARG_CAMPAIGN_ID);
+            String campaignName = extras.getString(VWO.Constants.ARG_CAMPAIGN_NAME);
+            String variationId = extras.getString(VWO.Constants.ARG_VARIATION_ID);
+            String variationName = extras.getString(VWO.Constants.ARG_VARIATION_NAME);
             // Write your Analytics code here
             Log.d("BroadcastReceiver", String.format("User became part of Campaign %s with id %s " +
                     "\nVariation %s with id %s", campaignName, campaignId, variationName, variationId));
@@ -101,7 +101,7 @@ public class MainActivity extends BaseActivity
     @Override
     protected void onStart() {
         super.onStart();
-        IntentFilter intentFilter = new IntentFilter(VWO.NOTIFY_USER_TRACKING_STARTED);
+        IntentFilter intentFilter = new IntentFilter(VWO.Constants.NOTIFY_USER_TRACKING_STARTED);
 
         LocalBroadcastManager.getInstance(this).registerReceiver(receiver, intentFilter);
     }

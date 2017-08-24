@@ -205,11 +205,11 @@ public class VWOData {
                 mVWO.getVwoPreference().setPartOfCampaign(String.valueOf(campaign.getId()));
                 VWOPersistData.addToQueue(mVWO.getVwoPreference(), campaignRecordUrl);
                 Intent intent = new Intent();
-                intent.putExtra(VWO.ARG_CAMPAIGN_ID, String.valueOf(campaign.getId()));
-                intent.putExtra(VWO.ARG_CAMPAIGN_NAME, campaign.getName());
-                intent.putExtra(VWO.ARG_VARIATION_ID, String.valueOf(campaign.getVariation().getId()));
-                intent.putExtra(VWO.ARG_VARIATION_NAME, campaign.getVariation().getName());
-                intent.setAction(VWO.NOTIFY_USER_TRACKING_STARTED);
+                intent.putExtra(VWO.Constants.ARG_CAMPAIGN_ID, String.valueOf(campaign.getId()));
+                intent.putExtra(VWO.Constants.ARG_CAMPAIGN_NAME, campaign.getName());
+                intent.putExtra(VWO.Constants.ARG_VARIATION_ID, String.valueOf(campaign.getVariation().getId()));
+                intent.putExtra(VWO.Constants.ARG_VARIATION_NAME, campaign.getVariation().getName());
+                intent.setAction(VWO.Constants.NOTIFY_USER_TRACKING_STARTED);
                 LocalBroadcastManager.getInstance(mVWO.getCurrentContext()).sendBroadcast(intent);
                 return true;
             }
