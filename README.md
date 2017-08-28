@@ -64,6 +64,13 @@ Add vwo and socket.io dependency to app/build.gradle file
 	    ...
 	}
 	
+Update your project AndroidManifest.xml with following permissions:
+
+```
+<uses-permission android:name="android.permission.INTERNET"/>
+<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+```
+	
 ## Initializing SDK
 
 ##### Launching VWO SDK in Asynchronous mode.

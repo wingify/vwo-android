@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onVWOLoadFailure() {
+            public void onVWOLoadFailure(String reason) {
                 // VWO not loaded
             }
         });
