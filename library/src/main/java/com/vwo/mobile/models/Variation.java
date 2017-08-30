@@ -73,7 +73,11 @@ public class Variation {
         while (keys.hasNext()) {
             String key = (String) keys.next();
             try {
-                mKeysObjects.put(key, mServeObject.get(key));
+                if(!mServeObject.isNull(key)) {
+                    mKeysObjects.put(key, mServeObject.get(key));
+                } else {
+                    mKeysObjects.put(key, null);
+                }
             } catch (JSONException e) {
                 e.printStackTrace();
             }
