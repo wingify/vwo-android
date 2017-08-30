@@ -165,11 +165,9 @@ public class VWOData {
         boolean foundAnyCampaign = false;
         List<Campaign> campaignsToBeRemoved = new ArrayList<>();
         for(Campaign campaign : mUntrackedCampaigns) {
-            if(campaign.getVariation().getKey(key) != null) {
-                evaluateAndMakeUserPartOfCampaign(campaign);
-                campaignsToBeRemoved.add(campaign);
-                foundAnyCampaign = true;
-            }
+            evaluateAndMakeUserPartOfCampaign(campaign);
+            campaignsToBeRemoved.add(campaign);
+            foundAnyCampaign = true;
         }
 
         if(foundAnyCampaign) {

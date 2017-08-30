@@ -52,18 +52,12 @@ public class VWODownloader {
                 }
             } catch (InterruptedException exception) {
                 downloadResult.onDownloadError(exception);
-                if (Log.isLoggable(VWOLog.DOWNLOAD_DATA_LOGS, Log.ERROR)) {
-                    VWOLog.e(VWOLog.DOWNLOAD_DATA_LOGS, "**** Data Download Interrupted ****", true, false);
-                }
+                VWOLog.e(VWOLog.DOWNLOAD_DATA_LOGS, "**** Data Download Interrupted ****", true, false);
             } catch (ExecutionException exception) {
-                if (Log.isLoggable(VWOLog.DOWNLOAD_DATA_LOGS, Log.ERROR)) {
-                    VWOLog.e(VWOLog.DOWNLOAD_DATA_LOGS, "**** Data Download Execution Exception ****", true, false);
-                }
+                VWOLog.e(VWOLog.DOWNLOAD_DATA_LOGS, "**** Data Download Execution Exception ****", true, false);
                 downloadResult.onDownloadError(exception);
             } catch (TimeoutException exception) {
-                if (Log.isLoggable(VWOLog.DOWNLOAD_DATA_LOGS, Log.ERROR)) {
-                    VWOLog.e(VWOLog.DOWNLOAD_DATA_LOGS, "**** Data Download Timeout ****", true, false);
-                }
+                VWOLog.e(VWOLog.DOWNLOAD_DATA_LOGS, "**** Data Download Timeout ****", true, false);
                 downloadResult.onDownloadError(exception);
             }
 
@@ -122,9 +116,7 @@ public class VWODownloader {
                 final ArrayList<String> urls = mVWO.getVwoPreference().getListString(VWOData.VWO_QUEUE);
 
                 if (urls.size() != 0) {
-                    if (Log.isLoggable(VWOLog.UPLOAD_LOGS, Log.VERBOSE)) {
-                        VWOLog.v(VWOLog.UPLOAD_LOGS, String.format(Locale.ENGLISH, "%d pending URLS", urls.size()));
-                    }
+                    VWOLog.v(VWOLog.UPLOAD_LOGS, String.format(Locale.ENGLISH, "%d pending URLS", urls.size()));
                 }
 
                 if (!VWOActivityLifeCycle.isApplicationInForeground() || !NetworkUtils.shouldAttemptNetworkCall(mVWO)) {
@@ -140,15 +132,13 @@ public class VWODownloader {
 
                     client.newCall(request).enqueue(new Callback() {
                         @Override
-                        public void onFailure(Call call, IOException e) {
-
+                        public void onFailure(Call call, IOException exception) {
+                            VWOLog.e(VWOLog.UPLOAD_LOGS, exception, true, true);
                         }
 
                         @Override
                         public void onResponse(Call call, Response response) throws IOException {
-                            if (Log.isLoggable(VWOLog.UPLOAD_LOGS, Log.VERBOSE)) {
-                                VWOLog.v(VWOLog.UPLOAD_LOGS, "Completed: " + response.request().url().toString());
-                            }
+                            VWOLog.v(VWOLog.UPLOAD_LOGS, "Completed: " + response.request().url().toString());
                             urls.remove(url);
                             mVWO.getVwoPreference().putListString(VWOData.VWO_QUEUE, urls);
                         }
