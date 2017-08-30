@@ -32,7 +32,7 @@
 #}
 #
 
--printmapping out.map
+-dontobfuscate
 
 -keepparameternames
 -renamesourcefileattribute SourceFile
