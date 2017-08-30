@@ -40,6 +40,7 @@ public class VWODownloader {
     public void fetchFromServer(final DownloadResult downloadResult) {
 
         String url = mVWO.getVwoUrlBuilder().getDownloadUrl();
+        VWOLog.e(VWOLog.URL_LOGS, "Fetching data from: " + url, true, false);
         DownloadData downloadData = new DownloadData(url, downloadResult, mVWO);
         downloadData.execute();
 

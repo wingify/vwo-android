@@ -3,6 +3,7 @@ package com.vwo.mobile.data;
 
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
@@ -13,6 +14,7 @@ import com.vwo.mobile.segmentation.CustomSegment;
 import com.vwo.mobile.segmentation.LogicalOperator;
 import com.vwo.mobile.segmentation.Segment;
 import com.vwo.mobile.utils.VWOLog;
+import com.vwo.mobile.utils.VWOUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -142,6 +144,7 @@ public class VWOData {
      *
      * @return the variation value for the given key
      */
+    @Nullable
     public Object getVariationForKey(String key) {
 
         if (mVariations == null) {
@@ -210,7 +213,13 @@ public class VWOData {
                 intent.putExtra(VWO.Constants.ARG_VARIATION_ID, String.valueOf(campaign.getVariation().getId()));
                 intent.putExtra(VWO.Constants.ARG_VARIATION_NAME, campaign.getVariation().getName());
                 intent.setAction(VWO.Constants.NOTIFY_USER_TRACKING_STARTED);
-                LocalBroadcastManager.getInstance(mVWO.getCurrentContext()).sendBroadcast(intent);
+                if(VWOUtils.checkIfClassExists("android.support.v4.content.LocalBroadcastManager")) {
+                    LocalBroadcastManager.getInstance(mVWO.getCurrentContext()).sendBroadcast(intent);
+                } else {
+                    VWOLog.e(VWOLog.CAMPAIGN_LOGS, "Add following dependency to your build.gradle" +
+                            "\ncompile 'com.android.support:support-core-utils:26.0.1'\n to receive broadcasts.",
+                            false, false);
+                }
                 return true;
             }
         } else {
