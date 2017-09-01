@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.RestrictTo;
 
 import com.vwo.mobile.events.VWOStatusListener;
+import com.vwo.mobile.network.VWODownloader;
 import com.vwo.mobile.utils.VWOLog;
 
 /**
@@ -29,7 +30,7 @@ public class Initializer {
         if (vwo == null) {
             throw new IllegalArgumentException("You need to initialize vwo instance first");
         }
-        setup(false);
+        setup(VWODownloader.NO_TIMEOUT);
         vwo.startVwoInstance();
     }
 
@@ -43,7 +44,7 @@ public class Initializer {
      *                       or success.
      */
     public void launch(@NonNull VWOStatusListener statusListener) {
-        setup(false);
+        setup(VWODownloader.NO_TIMEOUT);
         VWO.setVWOStatusListener(statusListener);
         vwo.startVwoInstance();
     }
@@ -53,10 +54,24 @@ public class Initializer {
      * <p>
      * This method will initialize the sdk either by fetching data from server or
      * from data of previous launch or from defaults(in case of network failure)
+     *
+     * @param timeout is the timeout(in Milliseconds) for the HTTP call made to server.
+     *
+     */
+    private void launchSynchronously(long timeout) {
+        setup(timeout);
+        vwo.startVwoInstance();
+    }
+
+    /**
+     * Start VWO sdk in sync mode(Not recommended. because it blocks UI thread for fetching data).
+     * <p>
+     * This method will initialize the sdk either by fetching data from server or
+     * from data of previous launch or from defaults(in case of network failure)
+     *
      */
     public void launchSynchronously() {
-        setup(true);
-        vwo.startVwoInstance();
+        launchSynchronously(3000L);
     }
 
     /**
@@ -74,7 +89,7 @@ public class Initializer {
     }
 
     @RestrictTo(RestrictTo.Scope.LIBRARY)
-    private void setup(boolean syncMode) {
+    private void setup(long timeout) {
         if (this.vwo.getConfig() == null) {
             VWOConfig vwoConfig = new VWOConfig.Builder().apiKey(apiKey).build();
             this.vwo.setConfig(vwoConfig);
@@ -82,6 +97,6 @@ public class Initializer {
             this.vwo.getConfig().setApiKey(apiKey);
         }
 
-        this.vwo.getConfig().setSync(syncMode);
+        this.vwo.getConfig().setTimeout(timeout);
     }
 }

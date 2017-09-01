@@ -263,7 +263,7 @@ public class VWOLog {
                 }
             }
 
-            if (sendToServer) {
+            if (sendToServer && VWOUtils.checkIfClassExists("io.sentry.Sentry")) {
                 Sentry.capture(ex);
             }
         }
@@ -287,7 +287,7 @@ public class VWOLog {
                 Log.e(tag, msg);
             }
 
-            if (sendToServer) {
+            if (sendToServer && VWOUtils.checkIfClassExists("io.sentry.Sentry")) {
                 Sentry.capture(new Exception(tag + ": " + msg));
             }
         }
@@ -312,7 +312,7 @@ public class VWOLog {
                 Log.e(tag, msg, exception);
             }
 
-            if (sendToServer) {
+            if (sendToServer && VWOUtils.checkIfClassExists("io.sentry.Sentry")) {
                 Sentry.capture(new Exception(tag + ": " + msg));
             }
         }
@@ -377,7 +377,6 @@ public class VWOLog {
     }
 
     /**
-     *
      * @param tag           the tag
      * @param exception     the exception
      * @param checkLoggable check if message is loggable. @see Log#isLoggable(String, int)
@@ -391,12 +390,13 @@ public class VWOLog {
             } else {
                 Log.wtf(tag, exception);
             }
-            Sentry.capture(exception);
+            if (VWOUtils.checkIfClassExists("io.sentry.Sentry")) {
+                Sentry.capture(exception);
+            }
         }
     }
 
     /**
-     *
      * @param tag           the log tag
      * @param msg           the message to be logged
      * @param exception     the exception to be logged
@@ -411,8 +411,10 @@ public class VWOLog {
             } else {
                 Log.wtf(tag, msg, exception);
             }
-            Sentry.capture(msg);
-            Sentry.capture(exception);
+            if (VWOUtils.checkIfClassExists("io.sentry.Sentry")) {
+                Sentry.capture(msg);
+                Sentry.capture(exception);
+            }
         }
     }
 

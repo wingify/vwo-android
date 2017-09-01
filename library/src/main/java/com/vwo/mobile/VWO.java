@@ -249,13 +249,10 @@ public class VWO {
                     false, false);
             onLoadFailure("Missing internet permission");
             return false;
-        } else if (!VWOUtils.checkIfClassExists("io.socket.client.Socket")
-                && !VWOUtils.checkIfClassExists("okhttp3.OkHttpClient")
-                && !VWOUtils.checkIfClassExists("io.sentry.Sentry")) {
+        } else if (!VWOUtils.checkIfClassExists("okhttp3.OkHttpClient")) {
             String errMsg = "VWO sdk is dependent on following libraries:\n" +
                     "In application level build.gradle file add\n" +
-                    "compile 'io.socket:socket.io-client:1.0.0'\n" +
-                    "compile 'io.sentry:sentry-android:1.4.0'";
+                    "compile 'com.squareup.okhttp3:okhttp:3.8.1'\n";
             VWOLog.e(VWOLog.INITIALIZATION_LOGS, errMsg, false, false);
             onLoadFailure(errMsg);
             return false;
@@ -298,7 +295,7 @@ public class VWO {
                     }
                     mVWOData.parseData(data);
                     mVWODownloader.startUpload();
-                    mVWOSocket.connectToSocket();
+                    initializeSocket();
                     mVWOLocalData.saveData(data);
                     mVWOStartState = VWOStartState.STARTED;
                     onLoadSuccess();
@@ -311,7 +308,7 @@ public class VWO {
                         VWOLog.e(VWOLog.DOWNLOAD_DATA_LOGS, ex, false, true);
                     }
                     mVWODownloader.startUpload();
-                    mVWOSocket.connectToSocket();
+                    initializeSocket();
                     if (mVWOLocalData.isLocalDataPresent()) {
                         mVWOData.parseData(mVWOLocalData.getData());
                         mVWOStartState = VWOStartState.STARTED;
@@ -329,14 +326,37 @@ public class VWO {
         }
     }
 
+    private void initializeSocket() {
+        if(getVwoUtils().isDebugMode()) {
+            if (VWOUtils.checkIfClassExists("io.socket.client.Socket")) {
+                this.mVWOSocket = new VWOSocket(sSharedInstance);
+                mVWOSocket.connectToSocket();
+            } else {
+                VWOLog.e(VWOLog.INITIALIZATION_LOGS, "You need to add following dependency " +
+                        "\n\t\tcompile 'io.socket:socket.io-client:1.0.0\n" +
+                        " to your build.gradle file in order to use VWO's preview mode.",
+                        false, false);
+            }
+        } else {
+            VWOLog.i(VWOLog.INITIALIZATION_LOGS, "Skipping socket connection." +
+                    " Application is not in debug mode", true);
+        }
+    }
+
     private void initializeSentry() {
-        Map<String, String> extras = new HashMap<>();
-        extras.put("VWO-SDK-Version", version());
-        extras.put("VWO-Account-ID", vwoConfig.getAccountId());
-        extras.put("Package-name", mContext.getPackageName());
-        SentryClient sentryClient = Sentry.init(BuildConfig.SENTRY,
-                new AndroidSentryClientFactory(mContext));
-        sentryClient.setTags(extras);
+        if(VWOUtils.checkIfClassExists("io.sentry.Sentry")) {
+            Map<String, String> extras = new HashMap<>();
+            extras.put("VWO-SDK-Version", version());
+            extras.put("VWO-Account-ID", vwoConfig.getAccountId());
+            extras.put("Package-name", mContext.getPackageName());
+            SentryClient sentryClient = Sentry.init(BuildConfig.SENTRY,
+                    new AndroidSentryClientFactory(mContext));
+            sentryClient.setTags(extras);
+        } else {
+            VWOLog.e(VWOLog.INITIALIZATION_LOGS, "you need to add following dependency " +
+                    "\"compile 'io.sentry:sentry-android:1.4.0'\"" +
+                    " to your build.gradle file", false, false);
+        }
     }
 
     private void initializeComponents() {
@@ -345,7 +365,6 @@ public class VWO {
         this.mVWODownloader = new VWODownloader(sSharedInstance);
         this.mVWOUrlBuilder = new VWOUrlBuilder(sSharedInstance);
         this.mVWOData = new VWOData(sSharedInstance);
-        this.mVWOSocket = new VWOSocket(sSharedInstance);
         this.mVWOPreference = new VWOPreference(sSharedInstance);
 
     }

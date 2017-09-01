@@ -1,7 +1,6 @@
 package com.vwo.mobile.network;
 
 import android.os.AsyncTask;
-import android.util.Log;
 
 import com.vwo.mobile.VWO;
 import com.vwo.mobile.data.VWOData;
@@ -32,6 +31,7 @@ import okhttp3.Response;
  */
 public class VWODownloader {
     private final VWO mVWO;
+    public static final long NO_TIMEOUT = -1;
 
     public VWODownloader(VWO vwo) {
         mVWO = vwo;
@@ -40,15 +40,15 @@ public class VWODownloader {
     public void fetchFromServer(final DownloadResult downloadResult) {
 
         String url = mVWO.getVwoUrlBuilder().getDownloadUrl();
-        VWOLog.e(VWOLog.URL_LOGS, "Fetching data from: " + url, true, false);
+        VWOLog.i(VWOLog.URL_LOGS, "Fetching data from: " + url, true);
         DownloadData downloadData = new DownloadData(url, downloadResult, mVWO);
         downloadData.execute();
 
-        if (mVWO.getConfig().isSync()) {
+        if (mVWO.getConfig().getTimeout() != NO_TIMEOUT) {
 
             try {
                 if (downloadData.getStatus() != AsyncTask.Status.FINISHED) {
-                    downloadData.get(2, TimeUnit.SECONDS);
+                    downloadData.get(mVWO.getConfig().getTimeout(), TimeUnit.MILLISECONDS);
                 }
             } catch (InterruptedException exception) {
                 downloadResult.onDownloadError(exception);
@@ -62,7 +62,6 @@ public class VWODownloader {
             }
 
         }
-
     }
 
     public static class DownloadData extends AsyncTask<Void, Void, Void> {
