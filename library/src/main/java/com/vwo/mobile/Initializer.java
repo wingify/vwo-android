@@ -22,9 +22,12 @@ public class Initializer {
 
     /**
      * Launches VWO sdk in Async mode.
+     *
      * <p>
      * This method will initialize the SDK either by fetching data from server or
      * from data of previous launch or from defaults(in case of network failure)
+     * </p>
+     *
      */
     public void launch() {
         if (vwo == null) {
@@ -36,9 +39,11 @@ public class Initializer {
 
     /**
      * Launches VWO sdk in Async mode with callback
+     *
      * <p>
      * This method will initialize the SDK either by fetching data from server or
      * from data of previous launch or from defaults(in case of network failure)
+     * </p>
      *
      * @param statusListener is the listener for receiving callback launch status update. i.e. Failure
      *                       or success.
@@ -51,9 +56,11 @@ public class Initializer {
 
     /**
      * Start VWO sdk in sync mode(Not recommended. because it blocks UI thread for fetching data).
+     *
      * <p>
      * This method will initialize the sdk either by fetching data from server or
      * from data of previous launch or from defaults(in case of network failure)
+     * </p>
      *
      * @param timeout is the timeout(in Milliseconds) for the HTTP call made to server.
      *
@@ -65,9 +72,11 @@ public class Initializer {
 
     /**
      * Start VWO sdk in sync mode(Not recommended. because it blocks UI thread for fetching data).
+     *
      * <p>
      * This method will initialize the sdk either by fetching data from server or
      * from data of previous launch or from defaults(in case of network failure)
+     * </p>
      *
      */
     public void launchSynchronously() {
