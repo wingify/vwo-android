@@ -151,7 +151,7 @@ public class MainActivity extends AppCompatActivity {
   }
 ```
 
-**Note:** There is timeout of 2000 milliseconds for launching 
+**Note:** There is timeout of 3000 milliseconds for launching 
 VWO SDK in synchronous mode in order to avoid ANRs.
 
 ## Advanced SDK configuration
