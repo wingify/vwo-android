@@ -46,6 +46,7 @@ import java.util.regex.Pattern;
 @AppDeepLink("/launch/{id}")
 public class MainActivity extends BaseActivity
         implements NavigationView.OnNavigationItemSelectedListener, NavigationToggleListener {
+    private static final String LOG_TAG = MainActivity.class.getSimpleName();
 
     private static final int ID_FRAGMENT_SORTING = 0;
     private static final int ID_FRAGMENT_ONBOARDING = 1;
@@ -62,8 +63,6 @@ public class MainActivity extends BaseActivity
             // Write your Analytics code here
             Log.d("BroadcastReceiver", String.format("User became part of Campaign %s with id %s " +
                     "\nVariation %s with id %s", campaignName, campaignId, variationName, variationId));
-
-
         }
     };
 
@@ -83,7 +82,7 @@ public class MainActivity extends BaseActivity
         if (intent.getBooleanExtra(DeepLink.IS_DEEP_LINK, false)) {
             Bundle parameters = intent.getExtras();
             String apiKey = parameters.getString("id");
-            Log.d(MainActivity.class.getSimpleName(), "API_KEY: " + apiKey);
+            Log.d(LOG_TAG, "API_KEY: " + apiKey);
             // Do something with idString
             if (validateAndSetApiKey(apiKey)) {
                 initVWO(apiKey, true);
@@ -134,7 +133,6 @@ public class MainActivity extends BaseActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_layout_campaign) {
-            // Handle the camera action
             loadFragment(null, ID_FRAGMENT_SORTING, null);
             navigationView.setCheckedItem(id);
         } else if (id == R.id.nav_onboarding_campaign) {

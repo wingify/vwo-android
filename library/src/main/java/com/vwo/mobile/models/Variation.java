@@ -94,6 +94,10 @@ public class Variation {
         return null;
     }
 
+    public boolean hasKey(String key) {
+        return mKeysObjects != null && mKeysObjects.containsKey(key);
+    }
+
     public JSONObject getVariationAsJsonObject() throws JSONException {
 
         if (mId == EMPTY_VARIATION) {

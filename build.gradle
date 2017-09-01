@@ -15,8 +15,6 @@ buildscript {
 
     ext {
         supportLibraryVersion = '26.0.1'
-        retrofitVersion = '2.1.0'
-        okHttpVersion = '3.6.0'
         buildToolsVersion = '26.0.1'
         compileSDKVersion = 26
         minSDKVersion = 14
@@ -32,17 +30,6 @@ buildscript {
                 design      : "com.android.support:design:${supportLibraryVersion}",
                 appcompat_v4: "com.android.support:support-v4:${supportLibraryVersion}"
         ]
-
-        retrofitDependencies = [
-                retorfit     : "com.squareup.retrofit2:retrofit:${retrofitVersion}",
-                gsonConverter: "com.squareup.retrofit2:converter-gson:${retrofitVersion}"
-        ]
-
-        okHttpDependencies = [
-                okHttp3           : "com.squareup.okhttp3:okhttp:${okHttpVersion}",
-                loggingInterceptor: "com.squareup.okhttp3:logging-interceptor:${okHttpVersion}"
-        ]
-
     }
 }
 

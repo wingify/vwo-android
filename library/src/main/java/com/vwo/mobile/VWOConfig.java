@@ -24,8 +24,8 @@ public class VWOConfig {
     @Nullable
     private ActivityLifecycleListener activityLifecycleListener;
 
-    // Should fetch data synchronously or asynchronously from server
-    private boolean sync;
+    // Timeout in case data is fetched synchronously
+    private long timeout;
 
     // Is the VWO api key
     private String apiKey;
@@ -77,12 +77,12 @@ public class VWOConfig {
         return this.activityLifecycleListener;
     }
 
-    public boolean isSync() {
-        return sync;
+    public long getTimeout() {
+        return this.timeout;
     }
 
-    void setSync(boolean sync) {
-        this.sync = sync;
+    void setTimeout(long timeout) {
+        this.timeout = timeout;
     }
 
     public String getAccountId() {

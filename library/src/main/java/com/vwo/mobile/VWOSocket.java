@@ -49,7 +49,7 @@ public class VWOSocket {
     private Emitter.Listener mServerConnected = new Emitter.Listener() {
         @Override
         public void call(Object... args) {
-            VWOLog.v(VWOLog.INIT_SOCKET_LOGS, "Socked Connected");
+            VWOLog.v(VWOLog.INIT_SOCKET_LOGS, "Device connected to socket");
             registerDevice();
         }
     };
@@ -89,8 +89,6 @@ public class VWOSocket {
             mSocket.on(ON_VARIATION_RECEIVED, mVariationListener);
             mSocket.on(ON_BROWSER_CONNECT, mBrowserConnectedListener);
             mSocket.on(ON_BROWSER_DISCONNECT, mBrowserDisconnectedListener);
-
-
         } catch (URISyntaxException exception) {
             VWOLog.e(VWOLog.SOCKET_LOGS, "Malformed url", exception, false, true);
         }
@@ -102,6 +100,7 @@ public class VWOSocket {
             deviceData.put(JSON_KEY_DEVICE_NAME, TestUtils.getDeviceName());
             deviceData.put(JSON_KEY_DEVICE_TYPE, DEVICE_TYPE);
             deviceData.put(JSON_KEY_APP_KEY, mAppKey);
+            VWOLog.v(VWOLog.SOCKET_LOGS, "Device registered to socket");
         } catch (JSONException exception) {
             VWOLog.e(VWOLog.SOCKET_LOGS, "Unable to build json object", exception, true, true);
         }
