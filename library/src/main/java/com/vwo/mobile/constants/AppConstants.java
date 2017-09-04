@@ -36,6 +36,8 @@ public class AppConstants {
     public static final int MATCHES_REGEX = 5;
     public static final int CONTAINS = 7;
     public static final int STARTS_WITH = 13;
+    public static final int GREATER_THAN = 15;
+    public static final int LESS_THAN = 16;
 
     public static final String DEVICE = "device";
     public static final String RETURNING_USER = "returning_visitor";
