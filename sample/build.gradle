@@ -61,8 +61,8 @@ android {
 }
 
 dependencies {
-    implementation 'com.android.support:appcompat-v7:26.0.1'
-    implementation 'com.android.support:design:26.0.1'
+    implementation 'com.android.support:appcompat-v7:26.0.2'
+    implementation 'com.android.support:design:26.0.2'
     implementation 'com.squareup.picasso:picasso:2.5.2'
 //    implementation project(':library')
     implementation 'io.sentry:sentry-android:1.4.0'
