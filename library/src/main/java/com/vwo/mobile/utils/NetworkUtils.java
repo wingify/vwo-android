@@ -1,14 +1,13 @@
 package com.vwo.mobile.utils;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
 import com.vwo.mobile.VWO;
-
-import java.util.logging.Logger;
 
 /**
  * Created by abhishek on 19/10/15 at 12:46 AM.
@@ -28,7 +27,7 @@ public class NetworkUtils {
 
         ConnectivityManager cm = (ConnectivityManager) vwo.getCurrentContext().getSystemService(Context.CONNECTIVITY_SERVICE);
 
-        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        @SuppressLint("MissingPermission") NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
         if (null != activeNetwork) {
             if (activeNetwork.getType() == ConnectivityManager.TYPE_WIFI)
                 return TYPE_WIFI;
@@ -54,7 +53,7 @@ public class NetworkUtils {
         }
 
         ConnectivityManager connectivityManager = (ConnectivityManager) vwo.getCurrentContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        @SuppressLint("MissingPermission") NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 

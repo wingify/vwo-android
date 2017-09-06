@@ -65,22 +65,9 @@ public class Initializer {
      * @param timeout is the timeout(in Milliseconds) for the HTTP call made to server.
      *
      */
-    private void launchSynchronously(long timeout) {
+    public void launchSynchronously(long timeout) {
         setup(timeout);
         vwo.startVwoInstance();
-    }
-
-    /**
-     * Start VWO sdk in sync mode(Not recommended. because it blocks UI thread for fetching data).
-     *
-     * <p>
-     * This method will initialize the sdk either by fetching data from server or
-     * from data of previous launch or from defaults(in case of network failure)
-     * </p>
-     *
-     */
-    public void launchSynchronously() {
-        launchSynchronously(3000L);
     }
 
     /**
