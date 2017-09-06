@@ -130,8 +130,8 @@ public class MainActivity extends AppCompatActivity {
 
 ##### Launching VWO SDK in synchronous mode
 
-Launching VWO in Synchronous requires you to pass a timeout in milliseconds as parameter.
-This request is to be used carefully as it runs on UI thread and may lead to Application not 
+Launching VWO in Synchronous mode requires you to pass a timeout in milliseconds as parameter.
+This request should be used carefully as it executes on UI thread and may lead to Application Not 
 Responding(ANR) dialog.
 
 ```java
