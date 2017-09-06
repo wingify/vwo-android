@@ -9,7 +9,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.vwo.sampleapp.R;
-import com.vwo.sampleapp.fragments.FragmentSorting;
 import com.vwo.sampleapp.fragments.FragmentSortingMain;
 import com.vwo.sampleapp.interfaces.ItemClickListener;
 import com.vwo.sampleapp.models.Mobile;

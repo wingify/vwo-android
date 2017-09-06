@@ -3,12 +3,9 @@ package com.vwo.mobile;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.vwo.mobile.utils.VWOLog;
 import com.vwo.mobile.utils.VWOUtils;
-
-import org.w3c.dom.Text;
 
 import java.security.InvalidKeyException;
 import java.util.HashMap;
