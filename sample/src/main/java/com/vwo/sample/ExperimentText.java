@@ -11,7 +11,6 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.vwo.mobile.VWO;
-import com.vwo.mobile.utils.VWOLog;
 
 public class ExperimentText extends AppCompatActivity {
     private static final String LOG_TAG = ExperimentText.class.getSimpleName();

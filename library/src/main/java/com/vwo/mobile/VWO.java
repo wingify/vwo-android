@@ -23,7 +23,6 @@ import com.vwo.mobile.utils.VWOUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;

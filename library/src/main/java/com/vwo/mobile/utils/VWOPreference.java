@@ -10,7 +10,6 @@ import android.text.TextUtils;
 
 import com.vwo.mobile.VWO;
 import com.vwo.mobile.constants.AppConstants;
-import com.vwo.mobile.segmentation.CustomSegmentEvaluateEnum;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -19,7 +18,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Logger;
 
 
 public class VWOPreference {
