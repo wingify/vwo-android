@@ -19,7 +19,8 @@ Getting Started
 
 ## Credentials
 
-This SDK requires an app key. You can sign up for an account at [VWO](https://vwo.com). Once there, you can add a new Android App, and use the generated app key in the app.
+This SDK requires an app key. You can sign up for an account at [VWO](https://vwo.com). 
+Once there, you can add a new Android App, and use the generated app key in the app.
 
 
 ## Setting up VWO account
@@ -52,7 +53,7 @@ Add vwo and socket.io dependency to app/build.gradle file
 
 	dependencies {
 	    ...
-	    compile 'com.vwo:mobile:2.0.0-beta7@aar'
+	    compile 'com.vwo:mobile:2.0.0-beta8@aar'
         compile ('io.socket:socket.io-client:1.0.0') {
             // excluding org.json which is provided by Android
             exclude group: 'org.json', module: 'json'
@@ -60,7 +61,7 @@ Add vwo and socket.io dependency to app/build.gradle file
         compile 'io.sentry:sentry-android:1.4.0'
         
         // Skip this if you are already including support library in your app.
-        compile 'com.android.support:support-core-utils:26.0.1'
+        compile 'com.android.support:support-core-utils:26.0.2'
 	    ...
 	}
 	
@@ -128,7 +129,10 @@ public class MainActivity extends AppCompatActivity {
 ```
 
 ##### Launching VWO SDK in synchronous mode
-**(NOT RECOMMENDED)**
+
+Launching VWO in Synchronous requires you to pass a timeout in milliseconds as parameter.
+This request is to be used carefully as it runs on UI thread and may lead to Application not 
+Responding(ANR) dialog.
 
 ```java
 import android.support.v7.app.AppCompatActivity;
@@ -145,14 +149,11 @@ public class MainActivity extends AppCompatActivity {
       super.onCreate(savedInstanceState);
       setContentView(R.layout.activity_main);
       
-      // Start VWO SDK in Sync mode
-      VWO.with(this, VWO_API_KEY).launchSynchronously();
+      // Start VWO SDK in sync mode
+      VWO.with(this, VWO_API_KEY).launchSynchronously(3000);
     }
   }
 ```
-
-**Note:** There is timeout of 3000 milliseconds for launching 
-VWO SDK in synchronous mode in order to avoid ANRs.
 
 ## Advanced SDK configuration
 
@@ -206,10 +207,11 @@ parameter to the function.
 
 ## Listening to User becoming part of campaign
 
-You can register a Broadcast Receiver with intent filter ```VWO.NOTIFY_USER_TRACKING_STARTED``` for listening to the event of user becoming part of a 
+You can register a Broadcast Receiver with intent filter ```VWO.NOTIFY_USER_TRACKING_STARTED``` 
+for listening to the event of user becoming part of a 
 campaign.
 
-Below is the code snippet.
+Below is the code snippet:
 
 ```java
 import android.support.v7.app.AppCompatActivity;
