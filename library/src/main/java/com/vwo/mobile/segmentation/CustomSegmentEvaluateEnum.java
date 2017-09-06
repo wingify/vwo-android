@@ -65,6 +65,50 @@ public enum CustomSegmentEvaluateEnum {
         }
     }),
 
+    ANDROID_VERSION_LESS_THAN(AppConstants.ANDROID_VERSION, AppConstants.LESS_THAN, new EvaluateSegment() {
+        @Override
+        public boolean evaluate(VWO vwo, JSONArray data) {
+            for (int i = 0; i < data.length(); i++) {
+                try {
+                    if (Integer.parseInt(VWOUtils.androidVersion()) < Integer.parseInt(data.getString(i))) {
+                        return true;
+                    }
+                } catch (NumberFormatException | JSONException ex) {
+                    VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse Android Version", ex,
+                            true, true);
+                }
+            }
+            return false;
+        }
+
+        @Override
+        public boolean evaluate(VWO vwo, JSONArray data, String key) {
+            return false;
+        }
+    }),
+
+    ANDROID_VERSION_GREATER_THAN(AppConstants.ANDROID_VERSION, AppConstants.GREATER_THAN, new EvaluateSegment() {
+        @Override
+        public boolean evaluate(VWO vwo, JSONArray data) {
+            for (int i = 0; i < data.length(); i++) {
+                try {
+                    if (Integer.parseInt(VWOUtils.androidVersion()) > Integer.parseInt(data.getString(i))) {
+                        return true;
+                    }
+                } catch (NumberFormatException | JSONException ex) {
+                    VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse Android Version", ex,
+                            true, true);
+                }
+            }
+            return false;
+        }
+
+        @Override
+        public boolean evaluate(VWO vwo, JSONArray data, String key) {
+            return false;
+        }
+    }),
+
     DAY_OF_WEEK_EQUAL_TO(AppConstants.DAY_OF_WEEK, AppConstants.EQUAL_TO, new EvaluateSegment() {
         @Override
         public boolean evaluate(VWO vwo, JSONArray data) {

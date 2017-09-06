@@ -1,6 +1,7 @@
 package com.vwo.mobile.network;
 
 import android.os.AsyncTask;
+import android.support.annotation.NonNull;
 
 import com.vwo.mobile.VWO;
 import com.vwo.mobile.data.VWOData;
@@ -139,12 +140,12 @@ public class VWODownloader {
 
                     client.newCall(request).enqueue(new Callback() {
                         @Override
-                        public void onFailure(Call call, IOException exception) {
+                        public void onFailure(@NonNull Call call, @NonNull IOException exception) {
                             VWOLog.e(VWOLog.UPLOAD_LOGS, exception, true, true);
                         }
 
                         @Override
-                        public void onResponse(Call call, Response response) throws IOException {
+                        public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                             VWOLog.v(VWOLog.UPLOAD_LOGS, "Completed: " + response.request().url().toString());
                             urls.remove(url);
                             mVWO.getVwoPreference().putListString(VWOData.VWO_QUEUE, urls);

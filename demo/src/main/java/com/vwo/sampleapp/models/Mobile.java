@@ -2,7 +2,6 @@ package com.vwo.sampleapp.models;
 
 import android.os.Parcel;
 import android.support.annotation.DrawableRes;
-import android.support.annotation.IdRes;
 import android.support.annotation.IntRange;
 
 /**
