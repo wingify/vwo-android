@@ -13,6 +13,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Timer;
@@ -84,7 +85,41 @@ public class VWODownloader {
                 mDownloadResult.onDownloadError(new Exception("No internet"));
                 return null;
             }
-            final OkHttpClient client = new OkHttpClient.Builder().build();
+
+            try {
+                NetworkRequest request = new NetworkRequest.Builder(mUrl, NetworkRequest.GET)
+                        .setResponseListener(new ResponseListener() {
+                    @Override
+                    public void onResponse(@NonNull NetworkResponse response) {
+                        try {
+                            if(response.isSuccessful()) {
+                                mDownloadResult.onDownloadSuccess(new JSONArray(response.getStringBody()));
+                            } else {
+                                String errorString = response.getStringBody();
+                                mDownloadResult.onDownloadError(new Exception(errorString));
+                            }
+                        } catch (JSONException exception) {
+                            VWOLog.e(VWOLog.DOWNLOAD_DATA_LOGS, exception, false, true);
+                            mDownloadResult.onDownloadError(exception);
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Exception exception) {
+                        mDownloadResult.onDownloadError(exception);
+                    }
+                }).build();
+                request.execute();
+            } catch (MalformedURLException exception) {
+                VWOLog.e(VWOLog.DOWNLOAD_DATA_LOGS, exception, false, true);
+                mDownloadResult.onDownloadError(exception);
+            } catch (IOException exception) {
+                VWOLog.e(VWOLog.DOWNLOAD_DATA_LOGS, exception, true, false);
+                mDownloadResult.onDownloadError(exception);
+            }
+
+
+            /*final OkHttpClient client = new OkHttpClient.Builder().build();
 
             Request httpRequest = new Request.Builder().url(mUrl).build();
             try {
@@ -102,7 +137,7 @@ public class VWODownloader {
             } catch (IOException e) {
                 e.printStackTrace();
                 mDownloadResult.onDownloadError(e);
-            }
+            }*/
             return null;
         }
     }

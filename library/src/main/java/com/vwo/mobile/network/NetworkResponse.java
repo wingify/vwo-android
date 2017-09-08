@@ -2,6 +2,10 @@ package com.vwo.mobile.network;
 
 import android.support.annotation.Nullable;
 
+import com.vwo.mobile.utils.NetworkUtils;
+import com.vwo.mobile.utils.VWOLog;
+
+import java.io.UnsupportedEncodingException;
 import java.util.Map;
 
 /**
@@ -9,6 +13,7 @@ import java.util.Map;
  */
 
 public class NetworkResponse {
+    @Nullable
     private byte[] body;
     private int responseCode;
     private Map<String, String> headers;
@@ -23,8 +28,23 @@ public class NetworkResponse {
         this.exception = builder.exception;
     }
 
+    @Nullable
     public byte[] getBody() {
         return this.body;
+    }
+
+    @Nullable
+    public String getStringBody() {
+        if(body != null) {
+            try {
+                String data = new String(body, NetworkUtils.Headers.parseCharset(headers));
+                return data;
+            } catch (UnsupportedEncodingException exception) {
+                VWOLog.e(VWOLog.DOWNLOAD_DATA_LOGS, exception, false, true);
+            }
+        }
+
+        return null;
     }
 
     public int getResponseCode() {

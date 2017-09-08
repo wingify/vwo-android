@@ -96,14 +96,12 @@ public class NetworkRequest implements Runnable {
     }
 
     private byte[] readFromStream(InputStream inputStream) throws IOException {
-        ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
+        ByteArrayOutputStream byteStream = new ByteArrayOutputStream(inputStream.available());
 
-        if (inputStream != null) {
-            byte[] data = new byte[2048];
-            int read;
-            while ((read = inputStream.read(data, 0, data.length)) != -1) {
-                byteStream.write(read);
-            }
+        byte[] data = new byte[2048];
+        int read;
+        while ((read = inputStream.read(data, 0, data.length)) != -1) {
+            byteStream.write(data, 0, read);
         }
 
         return byteStream.toByteArray();
