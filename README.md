@@ -228,7 +228,7 @@ public class MainActivity extends AppCompatActivity {
     private BroadcastReceiver receiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                // Get the campaign data for which there user has become the part.
+                // Get the campaign data for which the user became part of.
                 Bundle extras = intent.getExtras();
             	String campaignId = extras.getString(VWO.Constants.ARG_CAMPAIGN_ID);
             	String campaignName = extras.getString(VWO.Constants.ARG_CAMPAIGN_NAME);
