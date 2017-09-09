@@ -33,20 +33,6 @@ public class NetworkResponse {
         return this.body;
     }
 
-    @Nullable
-    public String getStringBody() {
-        if(body != null) {
-            try {
-                String data = new String(body, NetworkUtils.Headers.parseCharset(headers));
-                return data;
-            } catch (UnsupportedEncodingException exception) {
-                VWOLog.e(VWOLog.DOWNLOAD_DATA_LOGS, exception, false, true);
-            }
-        }
-
-        return null;
-    }
-
     public int getResponseCode() {
         return responseCode;
     }

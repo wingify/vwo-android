@@ -4,9 +4,11 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringDef;
 
+import com.vwo.mobile.utils.NetworkUtils;
 import com.vwo.mobile.utils.VWOLog;
 
 import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,15 +17,17 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.zip.GZIPInputStream;
 
 /**
  * Created by aman on 05/09/17.
  */
 
-public class NetworkRequest implements Runnable {
-    private static final int DEFAULT_READ_TIMEOUT = 10000;
+public abstract class NetworkRequest<T> {
+    private static final int DEFAULT_READ_TIMEOUT = 15000;
     private static final int DEFAULT_CONNECT_TIMEOUT = 15000;
     @NonNull
     private URL url;
@@ -31,68 +35,75 @@ public class NetworkRequest implements Runnable {
     @NonNull
     private String method;
     @Nullable
-    private Map<String, String> params;
+    private String requestBody;
     @Nullable
-    private String body;
-    private Map<String, String> headers;
-    private int readTimeout;
-    private int connectTimeout;
-    private ResponseListener mResponseListener;
+    private Response.Listener<T> mResponseListener;
+    @Nullable
+    private Response.ErrorListener mErrorListener;
 
     public static final String GET = "GET";
     public static final String PUT = "PUT";
     public static final String POST = "POST";
     public static final String DELETE = "DELETE";
 
-    private NetworkRequest(Builder builder) {
-        this.url = builder.url;
-        this.method = builder.method;
-        this.params = builder.params;
-        this.body = builder.body;
-        this.headers = builder.headers;
-        this.readTimeout = builder.readTimeout;
-        this.connectTimeout = builder.connectTimeout;
-        this.mResponseListener = builder.listener;
+    public NetworkRequest(@NonNull String url,
+                          @NonNull @HttpMethod String method) throws MalformedURLException {
+        this.url = new URL(url);
+        this.method = method;
+    }
+
+    public void setResponseListener(Response.Listener<T> responseListener) {
+        this.mResponseListener = responseListener;
+    }
+
+    public void body(String body) {
+        this.requestBody = body;
     }
 
     public String getUrl() {
         return this.url.toString();
     }
 
-    public String getMethod() {
-        return this.method;
-    }
-
     public Map<String, String> getParams() {
-        return this.params;
+        return Collections.emptyMap();
     }
 
-    public String getBody() {
-        return this.body;
+    public String getRequestBody() {
+        return this.requestBody;
     }
 
-    public Map<String, String> getHeaders() {
-        return this.headers;
+    protected Map<String, String> getHeaders() {
+        return Collections.emptyMap();
+    }
+
+    protected int getReadTimeout() {
+        return DEFAULT_READ_TIMEOUT;
+    }
+
+    protected int getConnectTimeout() {
+        return DEFAULT_CONNECT_TIMEOUT;
+    }
+
+    @Nullable
+    public Response.Listener<T> getResponseListener() {
+        return mResponseListener;
+    }
+
+    @Nullable
+    public Response.ErrorListener getErrorListener() {
+        return mErrorListener;
+    }
+
+    public void setErrorListener(@Nullable Response.ErrorListener mErrorListener) {
+        this.mErrorListener = mErrorListener;
     }
 
     @StringDef({GET, PUT, POST, DELETE})
     @interface HttpMethod {
     }
 
-    public void setParams(@Nullable Map<String, String> params) {
-        this.params = params;
-    }
-
-    public void setBody(@Nullable String body) {
-        this.body = body;
-    }
-
-    public void setHeaders(@Nullable Map<String, String> headers) {
-        this.headers = headers;
-    }
-
-    public void execute() throws IOException {
-        run();
+    public void setRequestBody(@Nullable String requestBody) {
+        this.requestBody = requestBody;
     }
 
     private byte[] readFromStream(InputStream inputStream) throws IOException {
@@ -107,83 +118,7 @@ public class NetworkRequest implements Runnable {
         return byteStream.toByteArray();
     }
 
-    public static class Builder {
-        private URL url;
-        private String method;
-        private Map<String, String> params;
-        private String body;
-        private Map<String, String> headers;
-        private int readTimeout;
-        private int connectTimeout;
-        private ResponseListener listener;
-
-        public Builder(@NonNull String url,
-                       @NonNull @HttpMethod String method) throws MalformedURLException {
-            this.url = new URL(url);
-            this.method = method;
-        }
-
-        public Builder params(Map<String, String> params) {
-            this.params = params;
-            return this;
-        }
-
-        public Builder body(String body) {
-            this.body = body;
-            return this;
-        }
-
-        public Builder headers(Map<String, String> headers) {
-            this.headers = headers;
-            return this;
-        }
-
-        public Builder addHeader(String key, String value) {
-            if (this.headers == null) {
-                this.headers = new HashMap<>();
-            }
-
-            this.headers.put(key, value);
-            return this;
-        }
-
-        public Builder addParam(String key, String value) {
-            if (this.params == null) {
-                this.params = new HashMap<>();
-            }
-
-            this.params.put(key, value);
-            return this;
-        }
-
-        public Builder setReadTimeout(int readTimeout) {
-            this.readTimeout = readTimeout;
-            return this;
-        }
-
-        public Builder setConnectTimeout(int connectTimeout) {
-            this.connectTimeout = connectTimeout;
-            return this;
-        }
-
-        public Builder setResponseListener(ResponseListener listener) {
-            this.listener = listener;
-            return this;
-        }
-
-        public NetworkRequest build() {
-            if (readTimeout == 0) {
-                this.readTimeout = DEFAULT_READ_TIMEOUT;
-            }
-            if (connectTimeout == 0) {
-                this.connectTimeout = DEFAULT_CONNECT_TIMEOUT;
-            }
-            return new NetworkRequest(this);
-        }
-    }
-
-    @Override
-    public void run() {
+    public void execute() {
         HttpURLConnection urlConnection;
         try {
             urlConnection = (HttpURLConnection) url.openConnection();
@@ -195,25 +130,23 @@ public class NetworkRequest implements Runnable {
 
             //Set request properties
             urlConnection.setRequestMethod(method);
-            urlConnection.setReadTimeout(readTimeout);
-            urlConnection.setConnectTimeout(connectTimeout);
+            urlConnection.setReadTimeout(getReadTimeout());
+            urlConnection.setConnectTimeout(getConnectTimeout());
             urlConnection.setDoInput(true);
 
             // Set request headers
-            if (headers != null) {
-                for (String headerKey : headers.keySet()) {
-                    urlConnection.setRequestProperty(headerKey, headers.get(headerKey));
-                }
+            for (String headerKey : getHeaders().keySet()) {
+                urlConnection.setRequestProperty(headerKey, getHeaders().get(headerKey));
             }
 
             // Write body to output stream
             if (method.equals(NetworkRequest.POST) || method.equals(NetworkRequest.PUT)) {
                 urlConnection.setDoOutput(true);
 
-                if (body != null) {
+                if (requestBody != null) {
                     // Send the post body
                     OutputStreamWriter writer = new OutputStreamWriter(urlConnection.getOutputStream());
-                    writer.write(body);
+                    writer.write(requestBody);
                     writer.flush();
                 }
             }
@@ -225,46 +158,68 @@ public class NetworkRequest implements Runnable {
             if (urlConnection.getResponseCode() >= 200 && urlConnection.getResponseCode() < 299) {
                 NetworkResponse.Builder responseBuilder = new NetworkResponse
                         .Builder(urlConnection.getResponseCode(), true);
-                if (urlConnection.getInputStream() != null && hasResponseBody(urlConnection.getResponseCode())) {
-                    InputStream inputStream = new BufferedInputStream(urlConnection.getInputStream());
-                    byte[] data = readFromStream(inputStream);
-                    responseBuilder.body(data);
-                }
 
                 Map<String, String> headers = new HashMap<>();
                 for (String key : urlConnection.getHeaderFields().keySet()) {
                     headers.put(key, urlConnection.getHeaderField(key));
                 }
 
-                NetworkResponse response = responseBuilder.headers(headers).build();
+                responseBuilder.headers(headers);
 
-                mResponseListener.onResponse(response);
+                if (urlConnection.getInputStream() != null && hasResponseBody(urlConnection.getResponseCode())) {
+                    InputStream inputStream = new BufferedInputStream(urlConnection.getInputStream());
+                    byte[] data = readFromStream(inputStream);
+                    if (isGzipped(headers)) {
+                        byte[] decompressedResponse = decompressResponse(data);
+                        responseBuilder.body(decompressedResponse);
+                    } else {
+                        responseBuilder.body(data);
+                    }
+                }
+
+                NetworkResponse response = responseBuilder.build();
+
+                if (mResponseListener != null) {
+                    mResponseListener.onResponse(getResponse(response));
+                }
             } else {
                 NetworkResponse.Builder responseBuilder = new NetworkResponse
                         .Builder(urlConnection.getResponseCode(), true);
+
+                Map<String, String> headers = new HashMap<>();
+                for (String key : urlConnection.getHeaderFields().keySet()) {
+                    headers.put(key, urlConnection.getHeaderField(key));
+                }
+
+                responseBuilder.headers(headers);
 
                 if (urlConnection.getErrorStream() != null) {
 
                     InputStream inputStream = new BufferedInputStream(urlConnection.getErrorStream());
                     byte[] data = readFromStream(inputStream);
-
-                    responseBuilder.body(data);
+                    if (isGzipped(headers)) {
+                        byte[] decompressedResponse = decompressResponse(data);
+                        responseBuilder.body(decompressedResponse);
+                    } else {
+                        responseBuilder.body(data);
+                    }
                 }
 
-                Map<String, String> headers = new HashMap<>();
-                for (String key : urlConnection.getHeaderFields().keySet()) {
-                    headers.put(key, urlConnection.getHeaderField(key));
+                NetworkResponse response = responseBuilder.build();
+
+                if (mResponseListener != null) {
+                    mResponseListener.onResponse(getResponse(response));
                 }
-
-                NetworkResponse response = responseBuilder.headers(headers).build();
-
-                mResponseListener.onResponse(response);
             }
         } catch (ProtocolException exception) {
-            mResponseListener.onFailure(exception);
+            if (mErrorListener != null) {
+                mErrorListener.onFailure(exception);
+            }
             VWOLog.e(VWOLog.DATA_LOGS, exception, false, true);
         } catch (IOException exception) {
-            mResponseListener.onFailure(exception);
+            if (mErrorListener != null) {
+                mErrorListener.onFailure(exception);
+            }
             VWOLog.e(VWOLog.DATA_LOGS, exception, true, false);
         } finally {
             if (urlConnection != null) {
@@ -277,5 +232,38 @@ public class NetworkRequest implements Runnable {
         return !(responseCode < HttpURLConnection.HTTP_OK && responseCode > 299)
                 && responseCode != HttpURLConnection.HTTP_NO_CONTENT
                 && responseCode != HttpURLConnection.HTTP_NOT_MODIFIED;
+    }
+
+    @Nullable
+    public abstract T getResponse(NetworkResponse response);
+
+    private boolean isGzipped(Map<String, String> headers) {
+        return headers != null && !headers.isEmpty() && headers.containsKey(NetworkUtils.Headers.HEADER_CONTENT_ENCODING) &&
+                headers.get(NetworkUtils.Headers.HEADER_CONTENT_ENCODING).equalsIgnoreCase(NetworkUtils.Headers.ENCODING_GZIP);
+    }
+
+    /**
+     * @param compressed is compressed body to be decompressed
+     * @return the decompressed body back to calling function.
+     * @throws IOException is the exception that can be thrown during decompression
+     */
+    private byte[] decompressResponse(byte[] compressed) throws IOException {
+        ByteArrayOutputStream baos = null;
+        try {
+            int size;
+            ByteArrayInputStream memstream = new ByteArrayInputStream(compressed);
+            GZIPInputStream gzip = new GZIPInputStream(memstream);
+            final int buffSize = 8192;
+            byte[] tempBuffer = new byte[buffSize];
+            baos = new ByteArrayOutputStream();
+            while ((size = gzip.read(tempBuffer, 0, buffSize)) != -1) {
+                baos.write(tempBuffer, 0, size);
+            }
+            return baos.toByteArray();
+        } finally {
+            if (baos != null) {
+                baos.close();
+            }
+        }
     }
 }

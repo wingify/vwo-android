@@ -26,7 +26,7 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.Response;
+
 
 /**
  * Created by abhishek on 17/09/15 at 11:39 PM.
@@ -87,34 +87,28 @@ public class VWODownloader {
             }
 
             try {
-                NetworkRequest request = new NetworkRequest.Builder(mUrl, NetworkRequest.GET)
-                        .setResponseListener(new ResponseListener() {
+                NetworkRequest<String> request = new NetworkStringRequest(mUrl, NetworkRequest.GET);
+                request.setResponseListener(new Response.Listener<String>() {
                     @Override
-                    public void onResponse(@NonNull NetworkResponse response) {
+                    public void onResponse(@NonNull String response) {
                         try {
-                            if(response.isSuccessful()) {
-                                mDownloadResult.onDownloadSuccess(new JSONArray(response.getStringBody()));
-                            } else {
-                                String errorString = response.getStringBody();
-                                mDownloadResult.onDownloadError(new Exception(errorString));
-                            }
+                            mDownloadResult.onDownloadSuccess(new JSONArray(response));
                         } catch (JSONException exception) {
                             VWOLog.e(VWOLog.DOWNLOAD_DATA_LOGS, exception, false, true);
                             mDownloadResult.onDownloadError(exception);
                         }
                     }
-
+                });
+                request.setErrorListener(new Response.ErrorListener() {
                     @Override
                     public void onFailure(Exception exception) {
+                        VWOLog.e(VWOLog.DOWNLOAD_DATA_LOGS, exception, false, true);
                         mDownloadResult.onDownloadError(exception);
                     }
-                }).build();
+                });
                 request.execute();
             } catch (MalformedURLException exception) {
                 VWOLog.e(VWOLog.DOWNLOAD_DATA_LOGS, exception, false, true);
-                mDownloadResult.onDownloadError(exception);
-            } catch (IOException exception) {
-                VWOLog.e(VWOLog.DOWNLOAD_DATA_LOGS, exception, true, false);
                 mDownloadResult.onDownloadError(exception);
             }
 
@@ -172,7 +166,7 @@ public class VWODownloader {
                         }
 
                         @Override
-                        public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                        public void onResponse(@NonNull Call call, @NonNull okhttp3.Response response) throws IOException {
                             VWOLog.v(VWOLog.UPLOAD_LOGS, "Completed: " + response.request().url().toString());
                             urls.remove(url);
                             mVWO.getVwoPreference().putListString(VWOData.VWO_QUEUE, urls);
