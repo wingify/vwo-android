@@ -49,10 +49,6 @@ public class VWOUtils {
         return !TextUtils.isEmpty(appKey) && pattern.matcher(appKey).matches();
     }
 
-    public static String getVwoSdkVersion() {
-        return BuildConfig.VERSION_NAME;
-    }
-
     public static String getDeviceUUID(VWO vwo) {
         String deviceUuid = vwo.getVwoPreference().getString(AppConstants.DEVICE_UUID);
 
@@ -110,8 +106,7 @@ public class VWOUtils {
         return toReturn;
     }
 
-    public static int applicationVersion(VWO vwo) {
-        Context context = vwo.getCurrentContext().getApplicationContext();
+    public static int applicationVersion(Context context) {
         if (context != null) {
             try {
                 PackageInfo packageInfo = context.getPackageManager().getPackageInfo(applicationName(context), 0);

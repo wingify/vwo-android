@@ -238,9 +238,13 @@ public class VWO {
         return BuildConfig.VERSION_NAME;
     }
 
+    public static int versionCode() {
+        return BuildConfig.VERSION_CODE;
+    }
+
     @SuppressWarnings("SpellCheckingInspection")
     boolean startVwoInstance() {
-        VWOLog.v(VWOLog.INITIALIZATION_LOGS, "**** Starting VWO ver " + VWOUtils.getVwoSdkVersion() + " ****");
+        VWOLog.v(VWOLog.INITIALIZATION_LOGS, "**** Starting VWO ver " + VWO.version() + " ****");
         if (!VWOUtils.checkForInternetPermissions(mContext)) {
             String errMsg = "Internet permission not added to Manifest. Please add" +
                     "\n\n<uses-permission android:name=\"android.permission.INTERNET\"/> \n\npermission to your app Manifest file.";
@@ -339,6 +343,7 @@ public class VWO {
         if(VWOUtils.checkIfClassExists("io.sentry.Sentry")) {
             Map<String, String> extras = new HashMap<>();
             extras.put("VWO-SDK-Version", version());
+            extras.put("VWO-SDK-Version-Code", String.valueOf(versionCode()));
             extras.put("VWO-Account-ID", vwoConfig.getAccountId());
             extras.put("Package-name", mContext.getPackageName());
             SentryClient sentryClient = Sentry.init(BuildConfig.SENTRY,

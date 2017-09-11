@@ -30,7 +30,7 @@ public class VWOUrlBuilder {
     }
 
     public String getDownloadUrl() {
-        String sdkVersion = add(BuildConfig.VERSION_NAME);
+        String sdkVersion = add(String.valueOf(VWO.versionCode()));
         String accountId = vwo.getConfig().getAccountId();
         String appKey = vwo.getConfig().getAppKey();
         String deviceType = "android";
@@ -120,9 +120,9 @@ public class VWOUrlBuilder {
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("lt", System.currentTimeMillis() / 1000);
-            jsonObject.put("v", VWOUtils.getVwoSdkVersion());
+            jsonObject.put("v", VWO.versionCode());
             jsonObject.put("ai", vwo.getConfig().getAppKey());
-            jsonObject.put("av", VWOUtils.applicationVersion(vwo));
+            jsonObject.put("av", VWOUtils.applicationVersion(vwo.getCurrentContext()));
             jsonObject.put("dt", "android");
             jsonObject.put("os", VWOUtils.androidVersion());
 
