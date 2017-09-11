@@ -248,13 +248,6 @@ public class VWO {
                     false, false);
             onLoadFailure("Missing internet permission");
             return false;
-        } else if (!VWOUtils.checkIfClassExists("okhttp3.OkHttpClient")) {
-            String errMsg = "VWO sdk is dependent on following libraries:\n" +
-                    "In application level build.gradle file add\n" +
-                    "compile 'com.squareup.okhttp3:okhttp:3.8.1'\n";
-            VWOLog.e(VWOLog.INITIALIZATION_LOGS, errMsg, false, false);
-            onLoadFailure(errMsg);
-            return false;
         } else if (!isAndroidSDKSupported()) {
             String errMsg = "Minimum SDK version required is 14";
             initializeSentry();

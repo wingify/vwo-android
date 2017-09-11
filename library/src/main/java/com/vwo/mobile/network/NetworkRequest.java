@@ -64,7 +64,8 @@ public abstract class NetworkRequest<T> {
         return this.url.toString();
     }
 
-    public Map<String, String> getParams() {
+    @NonNull
+    protected Map<String, String> getParams() {
         return Collections.emptyMap();
     }
 
@@ -72,6 +73,7 @@ public abstract class NetworkRequest<T> {
         return this.requestBody;
     }
 
+    @NonNull
     protected Map<String, String> getHeaders() {
         return Collections.emptyMap();
     }

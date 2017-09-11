@@ -2,12 +2,14 @@ package com.vwo.mobile.network;
 
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.vwo.mobile.VWO;
 import com.vwo.mobile.data.VWOData;
 import com.vwo.mobile.listeners.VWOActivityLifeCycle;
 import com.vwo.mobile.utils.NetworkUtils;
 import com.vwo.mobile.utils.VWOLog;
+import com.vwo.mobile.utils.VWOUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -86,59 +88,59 @@ public class VWODownloader {
                 return null;
             }
 
-            try {
-                NetworkRequest<String> request = new NetworkStringRequest(mUrl, NetworkRequest.GET);
-                request.setResponseListener(new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(@NonNull String response) {
-                        try {
-                            mDownloadResult.onDownloadSuccess(new JSONArray(response));
-                        } catch (JSONException exception) {
+            if(!VWOUtils.checkIfClassExists("okhttp3.OkHttpClient")) {
+                try {
+                    NetworkRequest<String> request = new NetworkStringRequest(mUrl, NetworkRequest.GET);
+                    request.setResponseListener(new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(@Nullable String response) {
+                            try {
+                                mDownloadResult.onDownloadSuccess(new JSONArray(response));
+                            } catch (JSONException exception) {
+                                VWOLog.e(VWOLog.DOWNLOAD_DATA_LOGS, exception, false, true);
+                                mDownloadResult.onDownloadError(exception);
+                            }
+                        }
+                    });
+                    request.setErrorListener(new Response.ErrorListener() {
+                        @Override
+                        public void onFailure(Exception exception) {
                             VWOLog.e(VWOLog.DOWNLOAD_DATA_LOGS, exception, false, true);
                             mDownloadResult.onDownloadError(exception);
                         }
-                    }
-                });
-                request.setErrorListener(new Response.ErrorListener() {
-                    @Override
-                    public void onFailure(Exception exception) {
-                        VWOLog.e(VWOLog.DOWNLOAD_DATA_LOGS, exception, false, true);
-                        mDownloadResult.onDownloadError(exception);
-                    }
-                });
-                request.execute();
-            } catch (MalformedURLException exception) {
-                VWOLog.e(VWOLog.DOWNLOAD_DATA_LOGS, exception, false, true);
-                mDownloadResult.onDownloadError(exception);
-            }
-
-
-            /*final OkHttpClient client = new OkHttpClient.Builder().build();
-
-            Request httpRequest = new Request.Builder().url(mUrl).build();
-            try {
-                Response response = client.newCall(httpRequest).execute();
-                if (response.isSuccessful()) {
-                    String data = response.body().string();
-                    try {
-                        mDownloadResult.onDownloadSuccess(new JSONArray(data));
-                    } catch (JSONException e) {
-                        mDownloadResult.onDownloadError(e);
-                    }
-                } else {
-                    mDownloadResult.onDownloadError(new IOException("Unexpected code " + response));
+                    });
+                    request.execute();
+                } catch (MalformedURLException exception) {
+                    VWOLog.e(VWOLog.DOWNLOAD_DATA_LOGS, exception, false, true);
+                    mDownloadResult.onDownloadError(exception);
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
-                mDownloadResult.onDownloadError(e);
-            }*/
+            } else {
+                final OkHttpClient client = new OkHttpClient.Builder().build();
+
+                Request httpRequest = new Request.Builder().url(mUrl).build();
+                try {
+                    okhttp3.Response response = client.newCall(httpRequest).execute();
+                    if (response.isSuccessful()) {
+                        String data = response.body().string();
+                        try {
+                            mDownloadResult.onDownloadSuccess(new JSONArray(data));
+                        } catch (JSONException e) {
+                            mDownloadResult.onDownloadError(e);
+                        }
+                    } else {
+                        mDownloadResult.onDownloadError(new IOException("Unexpected code " + response));
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    mDownloadResult.onDownloadError(e);
+                }
+            }
             return null;
         }
     }
 
     public void startUpload() {
         Timer timer = new Timer();
-        final OkHttpClient client = new OkHttpClient();
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
@@ -154,25 +156,48 @@ public class VWODownloader {
                 }
 
                 for (final String url : urls) {
-
-                    Request request = new Request.Builder()
-                            .url(url)
-                            .build();
-
-                    client.newCall(request).enqueue(new Callback() {
-                        @Override
-                        public void onFailure(@NonNull Call call, @NonNull IOException exception) {
-                            VWOLog.e(VWOLog.UPLOAD_LOGS, exception, true, true);
+                    if(!VWOUtils.checkIfClassExists("okhttp3.OkHttpClient")) {
+                        try {
+                            NetworkRequest<String> request = new NetworkStringRequest(url, NetworkRequest.GET);
+                            request.setResponseListener(new Response.Listener<String>() {
+                                @Override
+                                public void onResponse(@Nullable String response) {
+                                    VWOLog.v(VWOLog.UPLOAD_LOGS, "Completed: " + url);
+                                    urls.remove(url);
+                                    mVWO.getVwoPreference().putListString(VWOData.VWO_QUEUE, urls);
+                                }
+                            });
+                            request.setErrorListener(new Response.ErrorListener() {
+                                @Override
+                                public void onFailure(Exception exception) {
+                                    VWOLog.e(VWOLog.UPLOAD_LOGS, exception, false, true);
+                                }
+                            });
+                            request.execute();
+                        } catch (MalformedURLException exception) {
+                            VWOLog.e(VWOLog.UPLOAD_LOGS, exception, false, true);
                         }
+                    } else {
+                        OkHttpClient client = new OkHttpClient();
 
-                        @Override
-                        public void onResponse(@NonNull Call call, @NonNull okhttp3.Response response) throws IOException {
-                            VWOLog.v(VWOLog.UPLOAD_LOGS, "Completed: " + response.request().url().toString());
-                            urls.remove(url);
-                            mVWO.getVwoPreference().putListString(VWOData.VWO_QUEUE, urls);
-                        }
-                    });
+                        Request request = new Request.Builder()
+                                .url(url)
+                                .build();
 
+                        client.newCall(request).enqueue(new Callback() {
+                            @Override
+                            public void onFailure(@NonNull Call call, @NonNull IOException exception) {
+                                VWOLog.e(VWOLog.UPLOAD_LOGS, exception, true, true);
+                            }
+
+                            @Override
+                            public void onResponse(@NonNull Call call, @NonNull okhttp3.Response response) throws IOException {
+                                VWOLog.v(VWOLog.UPLOAD_LOGS, "Completed: " + response.request().url().toString());
+                                urls.remove(url);
+                                mVWO.getVwoPreference().putListString(VWOData.VWO_QUEUE, urls);
+                            }
+                        });
+                    }
                 }
 
             }

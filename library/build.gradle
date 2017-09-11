@@ -7,7 +7,7 @@ android {
         versionCode 2
         minSdkVersion 14
         targetSdkVersion 26
-        versionName "2.0.0-beta8"
+        versionName "2.0.0-beta9"
     }
 
     signingConfigs {
@@ -44,6 +44,7 @@ android {
 
     lintOptions {
         disable 'InvalidPackage'
+        abortOnError false
     }
     buildTypes.each {
         it.buildConfigField 'String', 'SENTRY', SENTRY_URL
