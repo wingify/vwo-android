@@ -5,7 +5,6 @@ import android.support.annotation.Nullable;
 
 import com.vwo.mobile.utils.NetworkUtils;
 import com.vwo.mobile.utils.VWOLog;
-import com.vwo.mobile.utils.VWOUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -33,12 +32,23 @@ public class NetworkStringRequest extends NetworkRequest<String> {
         super(url, method);
     }
 
+    public NetworkStringRequest(@NonNull String url, @NonNull String method, @Nullable Map<String, String> headers) throws MalformedURLException {
+        this(url, method);
+        this.headers = headers;
+    }
+
     public NetworkStringRequest(@NonNull String url, @NonNull String method,
                                 @Nullable Map<String, String> headers,
                                 @Nullable Map<String, String> params) throws MalformedURLException {
-        super(url, method);
-        this.headers = headers;
+        this(url, method, headers);
         this.params = params;
+    }
+
+    public NetworkStringRequest(@NonNull String url, @NonNull String method,
+                                @Nullable Map<String, String> headers,
+                                @Nullable String body) throws MalformedURLException {
+        this(url, method, headers);
+        this.body = body;
     }
 
     @Override

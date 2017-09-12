@@ -91,7 +91,7 @@ public class VWODownloader {
             if(!VWOUtils.checkIfClassExists("okhttp3.OkHttpClient")) {
                 try {
                     NetworkStringRequest request = new NetworkStringRequest(mUrl, NetworkRequest.GET,
-                            NetworkUtils.Headers.getBasicHeaders(), null);
+                            NetworkUtils.Headers.getBasicHeaders());
                     request.setResponseListener(new Response.Listener<String>() {
                         @Override
                         public void onResponse(@Nullable String response) {
@@ -161,7 +161,7 @@ public class VWODownloader {
                     if(!VWOUtils.checkIfClassExists("okhttp3.OkHttpClient")) {
                         try {
                             NetworkStringRequest request = new NetworkStringRequest(url,
-                                    NetworkRequest.GET, NetworkUtils.Headers.getBasicHeaders(), null);
+                                    NetworkRequest.GET, NetworkUtils.Headers.getBasicHeaders());
                             request.setResponseListener(new Response.Listener<String>() {
                                 @Override
                                 public void onResponse(@Nullable String response) {
