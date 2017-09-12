@@ -90,7 +90,8 @@ public class VWODownloader {
 
             if(!VWOUtils.checkIfClassExists("okhttp3.OkHttpClient")) {
                 try {
-                    NetworkRequest<String> request = new NetworkStringRequest(mUrl, NetworkRequest.GET);
+                    NetworkStringRequest request = new NetworkStringRequest(mUrl, NetworkRequest.GET,
+                            NetworkUtils.Headers.getBasicHeaders(), null);
                     request.setResponseListener(new Response.Listener<String>() {
                         @Override
                         public void onResponse(@Nullable String response) {
@@ -104,11 +105,12 @@ public class VWODownloader {
                     });
                     request.setErrorListener(new Response.ErrorListener() {
                         @Override
-                        public void onFailure(Exception exception) {
+                        public void onFailure(ErrorResponse exception) {
                             VWOLog.e(VWOLog.DOWNLOAD_DATA_LOGS, exception, false, true);
                             mDownloadResult.onDownloadError(exception);
                         }
                     });
+                    request.setGzipEnabled(true);
                     request.execute();
                 } catch (MalformedURLException exception) {
                     VWOLog.e(VWOLog.DOWNLOAD_DATA_LOGS, exception, false, true);
@@ -158,7 +160,8 @@ public class VWODownloader {
                 for (final String url : urls) {
                     if(!VWOUtils.checkIfClassExists("okhttp3.OkHttpClient")) {
                         try {
-                            NetworkRequest<String> request = new NetworkStringRequest(url, NetworkRequest.GET);
+                            NetworkStringRequest request = new NetworkStringRequest(url,
+                                    NetworkRequest.GET, NetworkUtils.Headers.getBasicHeaders(), null);
                             request.setResponseListener(new Response.Listener<String>() {
                                 @Override
                                 public void onResponse(@Nullable String response) {
@@ -169,10 +172,11 @@ public class VWODownloader {
                             });
                             request.setErrorListener(new Response.ErrorListener() {
                                 @Override
-                                public void onFailure(Exception exception) {
+                                public void onFailure(ErrorResponse exception) {
                                     VWOLog.e(VWOLog.UPLOAD_LOGS, exception, false, true);
                                 }
                             });
+                            request.setGzipEnabled(true);
                             request.execute();
                         } catch (MalformedURLException exception) {
                             VWOLog.e(VWOLog.UPLOAD_LOGS, exception, false, true);

@@ -9,6 +9,7 @@ import android.net.NetworkInfo;
 
 import com.vwo.mobile.VWO;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -61,6 +62,7 @@ public class NetworkUtils {
 
     public static class Headers {
         public static final String HEADER_CONTENT_TYPE = "Content-type";
+        public static final String ACCEPT_CONTENT_TYPE = "Accept";
         public static final String CONTENT_TYPE_JSON = "application/json";
         public static final String CONTENT_TYPE_PLAIN = "text/plain";
         public static final String CONTENT_TYPE_FORM_URL_ENCODED = "application/x-www-form-urlencoded";
@@ -69,6 +71,7 @@ public class NetworkUtils {
         public static final String CHARSET_DEFAULT = "utf-8";
 
         public static final String HEADER_CONTENT_ENCODING = "Content-Encoding";
+        public static final String HEADER_ACCEPT_ENCODING = "Accept-Encoding";
         public static final String ENCODING_GZIP = "gzip";
 
         public static final String HEADER_CACHE_CONTROL = "Cache-Control";
@@ -93,6 +96,13 @@ public class NetworkUtils {
 
         public static String parseCharset(Map<String, String> headers) {
             return parseCharset(headers, CHARSET_DEFAULT);
+        }
+
+        public static  Map<String, String> getBasicHeaders() {
+            Map<String, String> headers = new HashMap<>();
+            headers.put(HEADER_CONTENT_TYPE, CONTENT_TYPE_JSON);
+            headers.put(ACCEPT_CONTENT_TYPE, CONTENT_TYPE_JSON);
+            return headers;
         }
     }
 

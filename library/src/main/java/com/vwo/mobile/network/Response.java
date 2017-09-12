@@ -18,7 +18,7 @@ public class Response<T> {
     }
 
     public interface ErrorListener {
-        void onFailure(Exception exception);
+        void onFailure(ErrorResponse exception);
     }
 
     /** Returns a successful response containing the parsed result. */

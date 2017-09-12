@@ -6,21 +6,26 @@ import android.support.annotation.StringDef;
 
 import com.vwo.mobile.utils.NetworkUtils;
 import com.vwo.mobile.utils.VWOLog;
+import com.vwo.mobile.utils.VWOUtils;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.DataOutput;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.zip.GZIPInputStream;
 
 /**
  * Created by aman on 05/09/17.
@@ -35,16 +40,17 @@ public abstract class NetworkRequest<T> {
     @NonNull
     private String method;
     @Nullable
-    private String requestBody;
-    @Nullable
     private Response.Listener<T> mResponseListener;
     @Nullable
     private Response.ErrorListener mErrorListener;
+    private String body;
 
     public static final String GET = "GET";
     public static final String PUT = "PUT";
     public static final String POST = "POST";
     public static final String DELETE = "DELETE";
+
+    public static final String DEFAULT_CONTENT_ENCODING = "UTF-8";
 
     public NetworkRequest(@NonNull String url,
                           @NonNull @HttpMethod String method) throws MalformedURLException {
@@ -52,25 +58,13 @@ public abstract class NetworkRequest<T> {
         this.method = method;
     }
 
-    public void setResponseListener(Response.Listener<T> responseListener) {
-        this.mResponseListener = responseListener;
-    }
-
-    public void body(String body) {
-        this.requestBody = body;
-    }
-
     public String getUrl() {
         return this.url.toString();
     }
 
-    @NonNull
+    @Nullable
     protected Map<String, String> getParams() {
-        return Collections.emptyMap();
-    }
-
-    public String getRequestBody() {
-        return this.requestBody;
+        return null;
     }
 
     @NonNull
@@ -96,16 +90,16 @@ public abstract class NetworkRequest<T> {
         return mErrorListener;
     }
 
+    public void setResponseListener(Response.Listener<T> responseListener) {
+        this.mResponseListener = responseListener;
+    }
+
     public void setErrorListener(@Nullable Response.ErrorListener mErrorListener) {
         this.mErrorListener = mErrorListener;
     }
 
     @StringDef({GET, PUT, POST, DELETE})
     @interface HttpMethod {
-    }
-
-    public void setRequestBody(@Nullable String requestBody) {
-        this.requestBody = requestBody;
     }
 
     private byte[] readFromStream(InputStream inputStream) throws IOException {
@@ -144,12 +138,13 @@ public abstract class NetworkRequest<T> {
             // Write body to output stream
             if (method.equals(NetworkRequest.POST) || method.equals(NetworkRequest.PUT)) {
                 urlConnection.setDoOutput(true);
+                getHeaders().put(NetworkUtils.Headers.HEADER_CONTENT_TYPE, getBodyContentType());
 
+                byte[] requestBody = getBody();
                 if (requestBody != null) {
                     // Send the post body
-                    OutputStreamWriter writer = new OutputStreamWriter(urlConnection.getOutputStream());
-                    writer.write(requestBody);
-                    writer.flush();
+                    urlConnection.getOutputStream().write(requestBody);
+                    urlConnection.getOutputStream().flush();
                 }
             }
 
@@ -170,19 +165,13 @@ public abstract class NetworkRequest<T> {
 
                 if (urlConnection.getInputStream() != null && hasResponseBody(urlConnection.getResponseCode())) {
                     InputStream inputStream = new BufferedInputStream(urlConnection.getInputStream());
-                    byte[] data = readFromStream(inputStream);
-                    if (isGzipped(headers)) {
-                        byte[] decompressedResponse = decompressResponse(data);
-                        responseBuilder.body(decompressedResponse);
-                    } else {
-                        responseBuilder.body(data);
-                    }
+                    responseBuilder.body(readFromStream(inputStream));
                 }
 
                 NetworkResponse response = responseBuilder.build();
 
                 if (mResponseListener != null) {
-                    mResponseListener.onResponse(getResponse(response));
+                    mResponseListener.onResponse(parseResponse(response));
                 }
             } else {
                 NetworkResponse.Builder responseBuilder = new NetworkResponse
@@ -199,34 +188,66 @@ public abstract class NetworkRequest<T> {
 
                     InputStream inputStream = new BufferedInputStream(urlConnection.getErrorStream());
                     byte[] data = readFromStream(inputStream);
-                    if (isGzipped(headers)) {
-                        byte[] decompressedResponse = decompressResponse(data);
-                        responseBuilder.body(decompressedResponse);
-                    } else {
-                        responseBuilder.body(data);
-                    }
+                    responseBuilder.body(data);
                 }
 
                 NetworkResponse response = responseBuilder.build();
 
-                if (mResponseListener != null) {
-                    mResponseListener.onResponse(getResponse(response));
+                if (mErrorListener != null) {
+                    mErrorListener.onFailure(getErrorResponse(new ErrorResponse(response)));
                 }
             }
         } catch (ProtocolException exception) {
             if (mErrorListener != null) {
-                mErrorListener.onFailure(exception);
+                mErrorListener.onFailure(new ErrorResponse(exception));
             }
             VWOLog.e(VWOLog.DATA_LOGS, exception, false, true);
         } catch (IOException exception) {
             if (mErrorListener != null) {
-                mErrorListener.onFailure(exception);
+                mErrorListener.onFailure(new ErrorResponse(exception));
             }
             VWOLog.e(VWOLog.DATA_LOGS, exception, true, false);
         } finally {
             if (urlConnection != null) {
                 urlConnection.disconnect();
             }
+        }
+    }
+
+    protected String getParamsEncoding() {
+        return DEFAULT_CONTENT_ENCODING;
+    }
+
+    /**
+     * Do override this in case of overriding {@link NetworkRequest#getBody()}
+     */
+    public String getBodyContentType() {
+        return "application/x-www-form-urlencoded; charset=" + getParamsEncoding();
+    }
+
+    public byte[] getBody() {
+        Map<String, String> params = getParams();
+        if (params != null && params.size() > 0) {
+            return encodeParameters(params, getParamsEncoding());
+        }
+        return null;
+    }
+
+    /**
+     * Converts <code>params</code> into an application/x-www-form-urlencoded encoded string.
+     */
+    private byte[] encodeParameters(Map<String, String> params, String paramsEncoding) {
+        StringBuilder encodedParams = new StringBuilder();
+        try {
+            for (Map.Entry<String, String> entry : params.entrySet()) {
+                encodedParams.append(URLEncoder.encode(entry.getKey(), paramsEncoding));
+                encodedParams.append('=');
+                encodedParams.append(URLEncoder.encode(entry.getValue(), paramsEncoding));
+                encodedParams.append('&');
+            }
+            return encodedParams.toString().getBytes(paramsEncoding);
+        } catch (UnsupportedEncodingException uee) {
+            throw new RuntimeException("Encoding not supported: " + paramsEncoding, uee);
         }
     }
 
@@ -237,35 +258,9 @@ public abstract class NetworkRequest<T> {
     }
 
     @Nullable
-    public abstract T getResponse(NetworkResponse response);
+    public abstract T parseResponse(NetworkResponse response);
 
-    private boolean isGzipped(Map<String, String> headers) {
-        return headers != null && !headers.isEmpty() && headers.containsKey(NetworkUtils.Headers.HEADER_CONTENT_ENCODING) &&
-                headers.get(NetworkUtils.Headers.HEADER_CONTENT_ENCODING).equalsIgnoreCase(NetworkUtils.Headers.ENCODING_GZIP);
-    }
-
-    /**
-     * @param compressed is compressed body to be decompressed
-     * @return the decompressed body back to calling function.
-     * @throws IOException is the exception that can be thrown during decompression
-     */
-    private byte[] decompressResponse(byte[] compressed) throws IOException {
-        ByteArrayOutputStream baos = null;
-        try {
-            int size;
-            ByteArrayInputStream memstream = new ByteArrayInputStream(compressed);
-            GZIPInputStream gzip = new GZIPInputStream(memstream);
-            final int buffSize = 8192;
-            byte[] tempBuffer = new byte[buffSize];
-            baos = new ByteArrayOutputStream();
-            while ((size = gzip.read(tempBuffer, 0, buffSize)) != -1) {
-                baos.write(tempBuffer, 0, size);
-            }
-            return baos.toByteArray();
-        } finally {
-            if (baos != null) {
-                baos.close();
-            }
-        }
+    protected ErrorResponse getErrorResponse(ErrorResponse response) {
+        return response;
     }
 }
