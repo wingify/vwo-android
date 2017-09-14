@@ -290,7 +290,7 @@ public class VWO {
                         }
                     }
                     mVWOData.parseData(data);
-                    mVWODownloader.startUpload();
+                    mVWODownloader.initializeVWOUploadScheduler();
                     initializeSocket();
                     mVWOLocalData.saveData(data);
                     mVWOStartState = VWOStartState.STARTED;
@@ -303,7 +303,7 @@ public class VWO {
                     if (ex instanceof JSONException) {
                         VWOLog.e(VWOLog.DOWNLOAD_DATA_LOGS, ex, false, true);
                     }
-                    mVWODownloader.startUpload();
+                    mVWODownloader.initializeVWOUploadScheduler();
                     initializeSocket();
                     if (mVWOLocalData.isLocalDataPresent()) {
                         mVWOData.parseData(mVWOLocalData.getData());

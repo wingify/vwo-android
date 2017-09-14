@@ -27,27 +27,36 @@ public class NetworkStringRequest extends NetworkRequest<String> {
     private Map<String, String> params;
     private boolean gzipEnabled;
     private String body;
+    private Response.ErrorListener errorListener;
+    private Response.Listener<String> listener;
 
-    public NetworkStringRequest(@NonNull String url, @NonNull String method) throws MalformedURLException {
-        super(url, method);
+    public NetworkStringRequest(@NonNull String url, @NonNull String method, Response.Listener<String> listener,
+                                Response.ErrorListener errorListener) throws MalformedURLException {
+        super(url, method, listener, errorListener);
+        this.listener = listener;
+        this.errorListener = errorListener;
     }
 
-    public NetworkStringRequest(@NonNull String url, @NonNull String method, @Nullable Map<String, String> headers) throws MalformedURLException {
-        this(url, method);
+    public NetworkStringRequest(@NonNull String url, @NonNull String method,
+                                @Nullable Map<String, String> headers, Response.Listener<String> listener,
+                                Response.ErrorListener errorListener) throws MalformedURLException {
+        this(url, method, listener, errorListener);
         this.headers = headers;
     }
 
     public NetworkStringRequest(@NonNull String url, @NonNull String method,
                                 @Nullable Map<String, String> headers,
-                                @Nullable Map<String, String> params) throws MalformedURLException {
-        this(url, method, headers);
+                                @Nullable Map<String, String> params, Response.Listener<String> listener,
+                                Response.ErrorListener errorListener) throws MalformedURLException {
+        this(url, method, headers, listener, errorListener);
         this.params = params;
     }
 
     public NetworkStringRequest(@NonNull String url, @NonNull String method,
                                 @Nullable Map<String, String> headers,
-                                @Nullable String body) throws MalformedURLException {
-        this(url, method, headers);
+                                @Nullable String body, Response.Listener<String> listener,
+                                Response.ErrorListener errorListener) throws MalformedURLException {
+        this(url, method, headers, listener, errorListener);
         this.body = body;
     }
 

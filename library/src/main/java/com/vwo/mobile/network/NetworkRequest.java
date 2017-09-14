@@ -1,5 +1,9 @@
 package com.vwo.mobile.network;
 
+import android.os.Handler;
+import android.os.Looper;
+import android.support.annotation.IntDef;
+import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringDef;
@@ -31,7 +35,11 @@ import java.util.Map;
  * Created by aman on 05/09/17.
  */
 
-public abstract class NetworkRequest<T> {
+public abstract class NetworkRequest<T> implements Comparable<NetworkRequest<T>> {
+    private static final String LOG_TAG = NetworkRequest.class.getSimpleName();
+
+    private static final int HTTP_CONTINUE = 100;
+
     private static final int DEFAULT_READ_TIMEOUT = 15000;
     private static final int DEFAULT_CONNECT_TIMEOUT = 15000;
     @NonNull
@@ -43,7 +51,9 @@ public abstract class NetworkRequest<T> {
     private Response.Listener<T> mResponseListener;
     @Nullable
     private Response.ErrorListener mErrorListener;
-    private String body;
+    private Handler handler;
+    private String requestTag;
+    private boolean canceled;
 
     public static final String GET = "GET";
     public static final String PUT = "PUT";
@@ -52,10 +62,35 @@ public abstract class NetworkRequest<T> {
 
     public static final String DEFAULT_CONTENT_ENCODING = "UTF-8";
 
+    @RequestPriority
+    private int priority;
+
+    private static final int PRIORITY_VERY_LOW = 0;
+    private static final int PRIORITY_LOW = 1;
+    private static final int PRIORITY_NORMAL = 2;
+    private static final int PRIORITY_HIGH = 3;
+    private static final int PRIORITY_VERY_HIGH = 4;
+
+    @IntDef({PRIORITY_VERY_LOW, PRIORITY_LOW, PRIORITY_NORMAL, PRIORITY_HIGH, PRIORITY_VERY_HIGH})
+    @interface RequestPriority {
+    }
+
     public NetworkRequest(@NonNull String url,
-                          @NonNull @HttpMethod String method) throws MalformedURLException {
+                          @NonNull @HttpMethod String method, @Nullable Response.Listener<T> listener,
+                          @Nullable Response.ErrorListener errorListener, String requestTag) throws MalformedURLException {
         this.url = new URL(url);
         this.method = method;
+        this.requestTag = requestTag;
+        this.mResponseListener = listener;
+        this.mErrorListener = errorListener;
+        this.handler = new Handler(Looper.getMainLooper());
+        this.priority = PRIORITY_NORMAL;
+    }
+
+    public NetworkRequest(@NonNull String url,
+                          @NonNull @HttpMethod String method, Response.Listener<T> listener,
+                          Response.ErrorListener errorListener) throws MalformedURLException {
+        this(url, method, listener, errorListener, LOG_TAG);
     }
 
     public String getUrl() {
@@ -114,7 +149,8 @@ public abstract class NetworkRequest<T> {
         return byteStream.toByteArray();
     }
 
-    public void execute() {
+    void execute() {
+
         HttpURLConnection urlConnection;
         try {
             urlConnection = (HttpURLConnection) url.openConnection();
@@ -124,15 +160,25 @@ public abstract class NetworkRequest<T> {
         }
         try {
 
+            if (Thread.interrupted() || isCanceled()) {
+                throw new InterruptedException();
+            }
+
             //Set request properties
             urlConnection.setRequestMethod(method);
             urlConnection.setReadTimeout(getReadTimeout());
             urlConnection.setConnectTimeout(getConnectTimeout());
+            urlConnection.setUseCaches(false);
+            urlConnection.setInstanceFollowRedirects(HttpURLConnection.getFollowRedirects());
             urlConnection.setDoInput(true);
 
             // Set request headers
             for (String headerKey : getHeaders().keySet()) {
                 urlConnection.setRequestProperty(headerKey, getHeaders().get(headerKey));
+            }
+
+            if (Thread.interrupted() || isCanceled()) {
+                throw new InterruptedException();
             }
 
             // Write body to output stream
@@ -148,11 +194,20 @@ public abstract class NetworkRequest<T> {
                 }
             }
 
+            if (Thread.interrupted() || isCanceled()) {
+                throw new InterruptedException();
+            }
+
             // Connect
             urlConnection.connect();
 
+            if (Thread.interrupted() || isCanceled()) {
+                throw new InterruptedException();
+            }
+
             // Check if we get any response.
-            if (urlConnection.getResponseCode() >= 200 && urlConnection.getResponseCode() < 299) {
+            if ((urlConnection.getResponseCode() >= 200 && urlConnection.getResponseCode() < 299) ||
+                    urlConnection.getResponseCode() == HttpURLConnection.HTTP_NOT_MODIFIED) {
                 NetworkResponse.Builder responseBuilder = new NetworkResponse
                         .Builder(urlConnection.getResponseCode(), true);
 
@@ -165,17 +220,29 @@ public abstract class NetworkRequest<T> {
 
                 if (urlConnection.getInputStream() != null && hasResponseBody(urlConnection.getResponseCode())) {
                     InputStream inputStream = new BufferedInputStream(urlConnection.getInputStream());
+                    if (Thread.interrupted() || isCanceled()) {
+                        throw new InterruptedException();
+                    }
                     responseBuilder.body(readFromStream(inputStream));
                 }
 
-                NetworkResponse response = responseBuilder.build();
+                final NetworkResponse response = responseBuilder.build();
+
+                if (Thread.interrupted() || isCanceled()) {
+                    throw new InterruptedException();
+                }
 
                 if (mResponseListener != null) {
-                    mResponseListener.onResponse(parseResponse(response));
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            mResponseListener.onResponse(parseResponse(response));
+                        }
+                    });
                 }
             } else {
                 NetworkResponse.Builder responseBuilder = new NetworkResponse
-                        .Builder(urlConnection.getResponseCode(), true);
+                        .Builder(urlConnection.getResponseCode(), false);
 
                 Map<String, String> headers = new HashMap<>();
                 for (String key : urlConnection.getHeaderFields().keySet()) {
@@ -187,31 +254,92 @@ public abstract class NetworkRequest<T> {
                 if (urlConnection.getErrorStream() != null) {
 
                     InputStream inputStream = new BufferedInputStream(urlConnection.getErrorStream());
+                    if (Thread.interrupted() || isCanceled()) {
+                        throw new InterruptedException();
+                    }
                     byte[] data = readFromStream(inputStream);
                     responseBuilder.body(data);
                 }
 
-                NetworkResponse response = responseBuilder.build();
+                final NetworkResponse response = responseBuilder.build();
+
+                if (Thread.interrupted() || isCanceled()) {
+                    throw new InterruptedException();
+                }
 
                 if (mErrorListener != null) {
-                    mErrorListener.onFailure(getErrorResponse(new ErrorResponse(response)));
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            mErrorListener.onFailure(getErrorResponse(new ErrorResponse(response)));
+                        }
+                    });
                 }
             }
-        } catch (ProtocolException exception) {
+        } catch (final ProtocolException exception) {
             if (mErrorListener != null) {
-                mErrorListener.onFailure(new ErrorResponse(exception));
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        mErrorListener.onFailure(new ErrorResponse(exception));
+                    }
+                });
             }
             VWOLog.e(VWOLog.DATA_LOGS, exception, false, true);
-        } catch (IOException exception) {
+        } catch (final IOException exception) {
             if (mErrorListener != null) {
-                mErrorListener.onFailure(new ErrorResponse(exception));
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        mErrorListener.onFailure(new ErrorResponse(exception));
+                    }
+                });
             }
             VWOLog.e(VWOLog.DATA_LOGS, exception, true, false);
+        } catch (final InterruptedException exception) {
+            VWOLog.e(VWOLog.DATA_LOGS, "Either connection was closed or " +
+                            "download thread was interrupted for request with tag : " + requestTag, exception,
+                    true, false);
+            if (mErrorListener != null) {
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        mErrorListener.onFailure(new ErrorResponse(exception));
+                    }
+                });
+            }
         } finally {
             if (urlConnection != null) {
                 urlConnection.disconnect();
             }
         }
+    }
+
+    public void setTag(String tag) {
+        if (tag == null) {
+            throw new NullPointerException("Request tag cannot be set to null");
+        }
+        this.requestTag = tag;
+    }
+
+    public String getTag() {
+        return this.requestTag;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof NetworkRequest) {
+            return ((NetworkRequest) obj).getTag().equals(getTag());
+        }
+        return super.equals(obj);
+    }
+
+    public boolean isCanceled() {
+        return canceled;
+    }
+
+    public void cancel() {
+        this.canceled = true;
     }
 
     protected String getParamsEncoding() {
@@ -252,10 +380,33 @@ public abstract class NetworkRequest<T> {
     }
 
     private static boolean hasResponseBody(int responseCode) {
-        return !(responseCode < HttpURLConnection.HTTP_OK && responseCode > 299)
+        return !(HTTP_CONTINUE <= responseCode && responseCode < HttpURLConnection.HTTP_OK)
                 && responseCode != HttpURLConnection.HTTP_NO_CONTENT
                 && responseCode != HttpURLConnection.HTTP_NOT_MODIFIED;
     }
+
+    @Override
+    public int compareTo(@NonNull NetworkRequest<T> tNetworkRequest) {
+        return tNetworkRequest.getPriority() - this.getPriority();
+    }
+
+    /**
+     * @return the execution priority of the request
+     */
+    @RequestPriority
+    public int getPriority() {
+        return this.priority;
+    }
+
+    /**
+     * Sets the priority of the request. This priority will decide the ordering of request executed.
+     *
+     * @param priority is the priority range of object from 1 to 10.
+     */
+    public void setPriority(@RequestPriority int priority) {
+        this.priority = priority;
+    }
+
 
     @Nullable
     public abstract T parseResponse(NetworkResponse response);
