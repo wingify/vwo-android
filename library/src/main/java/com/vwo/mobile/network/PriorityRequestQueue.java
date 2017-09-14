@@ -45,8 +45,7 @@ public class PriorityRequestQueue implements RequestQueue {
     public void addToQueue(NetworkRequest networkRequest) {
         VWOLog.i(VWOLog.URL_LOGS, "Adding request to queue : " + networkRequest.getUrl() +
                 "\nQueue size is : " + mRequestQueue.size(), true);
-        DownloadTask downloadTask = new DownloadTask(networkRequest);
-        mRequestThreadPool.execute(downloadTask.getRunnable());
+        mRequestThreadPool.execute(networkRequest);
     }
 
     public static PriorityRequestQueue getInstance() {

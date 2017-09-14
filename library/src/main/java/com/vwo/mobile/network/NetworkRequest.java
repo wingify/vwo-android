@@ -35,7 +35,7 @@ import java.util.Map;
  * Created by aman on 05/09/17.
  */
 
-public abstract class NetworkRequest<T> implements Comparable<NetworkRequest<T>> {
+public abstract class NetworkRequest<T> implements Runnable, Comparable<NetworkRequest<T>> {
     private static final String LOG_TAG = NetworkRequest.class.getSimpleName();
 
     private static final int HTTP_CONTINUE = 100;
@@ -54,6 +54,7 @@ public abstract class NetworkRequest<T> implements Comparable<NetworkRequest<T>>
     private Handler handler;
     private String requestTag;
     private boolean canceled;
+    private Thread currentThread;
 
     public static final String GET = "GET";
     public static final String PUT = "PUT";
@@ -133,6 +134,14 @@ public abstract class NetworkRequest<T> implements Comparable<NetworkRequest<T>>
         this.mErrorListener = mErrorListener;
     }
 
+    Thread getCurrentThread() {
+        return currentThread;
+    }
+
+    void setCurrentThread(Thread currentThread) {
+        this.currentThread = currentThread;
+    }
+
     @StringDef({GET, PUT, POST, DELETE})
     @interface HttpMethod {
     }
@@ -149,8 +158,8 @@ public abstract class NetworkRequest<T> implements Comparable<NetworkRequest<T>>
         return byteStream.toByteArray();
     }
 
-    void execute() {
-
+    @Override
+    public void run() {
         HttpURLConnection urlConnection;
         try {
             urlConnection = (HttpURLConnection) url.openConnection();
@@ -406,7 +415,6 @@ public abstract class NetworkRequest<T> implements Comparable<NetworkRequest<T>>
     public void setPriority(@RequestPriority int priority) {
         this.priority = priority;
     }
-
 
     @Nullable
     public abstract T parseResponse(NetworkResponse response);
