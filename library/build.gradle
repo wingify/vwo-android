@@ -19,8 +19,9 @@ android {
         }
     }
 
-    def DEBUG_DACDN_URL = '"http://dacdn.visualwebsiteoptimizer.com/"'
-    def RELEASE_DACDN_URL = '"https://dacdn.visualwebsiteoptimizer.com/"'
+    def URL_SCHEME_HTTP = '"http"'
+    def URL_SCHEME_HTTPS = '"https"'
+    def DACDN_URL = '"dacdn.visualwebsiteoptimizer.com"'
     def SENTRY_URL = '"https://1211a276aa6c4fc5b3a1bca2c3f1f4ea:045cca541af146da8b1efc7735a4c4ac@app.getsentry.com/47376?uncaught.handler.enabled=false"'
     def SOCKET_URL = '"https://mobilepreview.vwo.com:443/"'
 
@@ -30,14 +31,14 @@ android {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.config
-            it.buildConfigField 'String', 'DACDN_URL', RELEASE_DACDN_URL
+            it.buildConfigField 'String', 'SCHEME', URL_SCHEME_HTTPS
         }
         debug {
             debuggable false
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.config
-            it.buildConfigField 'String', 'DACDN_URL', DEBUG_DACDN_URL
+            it.buildConfigField 'String', 'SCHEME', URL_SCHEME_HTTP
 
         }
     }
@@ -47,6 +48,7 @@ android {
         abortOnError false
     }
     buildTypes.each {
+        it.buildConfigField 'String', 'DACDN_URL', DACDN_URL
         it.buildConfigField 'String', 'SENTRY', SENTRY_URL
         it.buildConfigField 'String', 'SOCKET_URL', SOCKET_URL
     }

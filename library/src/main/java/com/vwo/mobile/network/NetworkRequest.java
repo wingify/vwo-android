@@ -30,6 +30,7 @@ import java.net.URLEncoder;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeoutException;
 
 /**
  * Created by aman on 05/09/17.
@@ -295,7 +296,7 @@ public abstract class NetworkRequest<T> implements Runnable, Comparable<NetworkR
                 });
             }
             VWOLog.e(VWOLog.DATA_LOGS, exception, false, true);
-        } catch (final IOException exception) {
+        }catch (final IOException exception) {
             if (mErrorListener != null) {
                 handler.post(new Runnable() {
                     @Override

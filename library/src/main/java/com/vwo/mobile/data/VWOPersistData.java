@@ -1,14 +1,30 @@
 package com.vwo.mobile.data;
 
+import android.Manifest;
+import android.os.Build;
+import android.support.annotation.Nullable;
+
 import com.vwo.mobile.VWO;
 import com.vwo.mobile.constants.AppConstants;
+import com.vwo.mobile.data.io.QueueFile;
+import com.vwo.mobile.models.Entry;
+import com.vwo.mobile.utils.VWOLog;
 import com.vwo.mobile.utils.VWOPreference;
+import com.vwo.mobile.utils.VWOUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Created by abhishek on 24/09/15 at 1:28 PM.
@@ -141,10 +157,7 @@ public class VWOPersistData {
      * @param sharedPreference the shared preference
      */
     void saveCampaign(VWOPreference sharedPreference) {
-
         String campaignKey = CAMPAIGN_KEY + mCampaignId;
-
-
         try {
             sharedPreference.putString(campaignKey, getPersistCampaignAsJsonObject().toString());
 
@@ -162,22 +175,8 @@ public class VWOPersistData {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
-
     }
 
-    /**
-     * Add to queue.
-     *
-     * @param sharedPreference the shared preference
-     * @param url              the url
-     */
-    static void addToQueue(VWOPreference sharedPreference, String url) {
-        ArrayList<String> urls = sharedPreference.getListString(VWOData.VWO_QUEUE);
-        urls.add(url);
-        sharedPreference.putListString(VWOData.VWO_QUEUE, urls);
-
-    }
 
     /**
      * Is existing campaign boolean.
@@ -213,6 +212,4 @@ public class VWOPersistData {
     public static boolean isReturningUser(VWO vwo) {
         return vwo.getVwoPreference().getBoolean(AppConstants.IS_RETURNING_USER, false);
     }
-
-
 }

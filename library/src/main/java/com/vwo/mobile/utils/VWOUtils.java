@@ -7,6 +7,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.os.Build;
+import android.support.annotation.CheckResult;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
@@ -164,12 +165,32 @@ public class VWOUtils {
     }
 
     public static boolean checkForInternetPermissions(Context context) {
-        PackageManager pm = context.getPackageManager();
-        int hasPerm = pm.checkPermission(Manifest.permission.INTERNET, context.getPackageName());
-        if (hasPerm == PackageManager.PERMISSION_DENIED) {
+
+        boolean hasInternetPermission = checkForPermission(context, Manifest.permission.INTERNET);
+        if(!hasInternetPermission) {
             String errorMsg = "VWO requires Internet permission.\n" +
                     "Add <uses-permission android:name=\"android.permission.INTERNET\"/> in AndroidManifest.xml";
             VWOLog.e(VWOLog.CONFIG_LOGS, errorMsg, false, false);
+            return false;
+        }
+
+        boolean hasNetworkStatePermission = checkForPermission(context, Manifest.permission.ACCESS_NETWORK_STATE);
+
+        if(!hasNetworkStatePermission) {
+            String errorMsg = "Granting ACCESS_NETWORK_STATE permission makes VWO work smarter.\n" +
+                    "Add <uses-permission android:name=\"android.permission.ACCESS_NETWORK_STATE\"/> in AndroidManifest.xml";
+            VWOLog.e(VWOLog.CONFIG_LOGS, errorMsg, false, false);
+            return false;
+        }
+
+        return true;
+    }
+
+    @CheckResult
+    public static boolean checkForPermission(Context context, String permission) {
+        PackageManager pm = context.getPackageManager();
+        int hasPerm = pm.checkPermission(permission, context.getPackageName());
+        if (hasPerm == PackageManager.PERMISSION_DENIED) {
             return false;
         }
 

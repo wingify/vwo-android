@@ -61,8 +61,4 @@ public class PriorityRequestQueue implements RequestQueue {
         }
         return sPriorityRequestQueue;
     }
-
-    public void cancel() {
-
-    }
 }

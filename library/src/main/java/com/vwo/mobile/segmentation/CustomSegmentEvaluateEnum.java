@@ -31,7 +31,7 @@ public enum CustomSegmentEvaluateEnum {
                     }
                 } catch (NumberFormatException | JSONException exception) {
                     VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse Android Version",
-                            exception, true, true);
+                            exception, false, true);
                 }
             }
             return false;
@@ -53,7 +53,7 @@ public enum CustomSegmentEvaluateEnum {
                     }
                 } catch (NumberFormatException | JSONException ex) {
                     VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse Android Version", ex,
-                            true, true);
+                            false, true);
                 }
             }
             return true;
@@ -75,7 +75,7 @@ public enum CustomSegmentEvaluateEnum {
                     }
                 } catch (NumberFormatException | JSONException ex) {
                     VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse Android Version", ex,
-                            true, true);
+                            false, true);
                 }
             }
             return false;
@@ -97,7 +97,7 @@ public enum CustomSegmentEvaluateEnum {
                     }
                 } catch (NumberFormatException | JSONException ex) {
                     VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse Android Version", ex,
-                            true, true);
+                            false, true);
                 }
             }
             return false;
@@ -121,8 +121,8 @@ public enum CustomSegmentEvaluateEnum {
                         return true;
                     }
                 } catch (NumberFormatException | JSONException ex) {
-                    VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse day of week", ex, true,
-                            true);
+                    VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse day of week", ex,
+                            false, true);
                 }
             }
             return false;
@@ -147,7 +147,7 @@ public enum CustomSegmentEvaluateEnum {
                     }
                 } catch (NumberFormatException | JSONException ex) {
                     VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse day of week", ex,
-                            true, true);
+                            false, true);
                 }
             }
             return true;
@@ -171,7 +171,7 @@ public enum CustomSegmentEvaluateEnum {
                     }
                 } catch (NumberFormatException | JSONException ex) {
                     VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse hour of the day", ex,
-                            true, true);
+                            false, true);
                 }
             }
             return false;
@@ -195,7 +195,7 @@ public enum CustomSegmentEvaluateEnum {
                     }
                 } catch (NumberFormatException | JSONException ex) {
                     VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse hour of the day", ex,
-                            true, true);
+                            false, true);
                 }
             }
             return true;
@@ -223,7 +223,7 @@ public enum CustomSegmentEvaluateEnum {
                     }
                 } catch (JSONException exception) {
                     VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse location", exception,
-                            true, true);
+                            false, true);
                 }
             }
             return false;
@@ -251,7 +251,7 @@ public enum CustomSegmentEvaluateEnum {
                     }
                 } catch (JSONException exception) {
                     VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse location", exception,
-                            true, true);
+                            false, true);
                 }
             }
             return true;
@@ -275,7 +275,7 @@ public enum CustomSegmentEvaluateEnum {
                     }
                 } catch (JSONException | NumberFormatException exception) {
                     VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse app version", exception,
-                            true, false);
+                            false, false);
                 }
             }
             return false;
@@ -299,7 +299,7 @@ public enum CustomSegmentEvaluateEnum {
                     }
                 } catch (JSONException | NumberFormatException exception) {
                     VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse app version", exception,
-                            true, false);
+                            false, false);
                 }
             }
             return true;
@@ -324,7 +324,7 @@ public enum CustomSegmentEvaluateEnum {
                     }
                 } catch (JSONException exception) {
                     VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse app version", exception,
-                            true, false);
+                            false, false);
                 }
             }
             return false;
@@ -348,7 +348,7 @@ public enum CustomSegmentEvaluateEnum {
                     }
                 } catch (JSONException exception) {
                     VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse app version", exception,
-                            true, false);
+                            false, false);
                 }
             }
             return false;
@@ -372,7 +372,7 @@ public enum CustomSegmentEvaluateEnum {
                     }
                 } catch (JSONException exception) {
                     VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse app version", exception,
-                            true, false);
+                            false, false);
                 }
             }
             return false;
@@ -406,7 +406,7 @@ public enum CustomSegmentEvaluateEnum {
                     }
                 } catch (JSONException exception) {
                     VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse custom segment", exception,
-                            true, false);
+                            false, false);
                 }
             }
             return false;
@@ -435,7 +435,7 @@ public enum CustomSegmentEvaluateEnum {
                     }
                 } catch (JSONException exception) {
                     VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse custom segment", exception,
-                            true, false);
+                            false, false);
                 }
             }
             return true;
@@ -466,7 +466,7 @@ public enum CustomSegmentEvaluateEnum {
                     }
                 } catch (JSONException exception) {
                     VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse custom segment", exception,
-                            true, false);
+                            false, false);
                 }
             }
             return false;
@@ -496,7 +496,7 @@ public enum CustomSegmentEvaluateEnum {
                     }
                 } catch (JSONException exception) {
                     VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse custom segment", exception,
-                            true, false);
+                            false, false);
                 }
             }
             return false;
@@ -526,7 +526,7 @@ public enum CustomSegmentEvaluateEnum {
                     }
                 } catch (JSONException exception) {
                     VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse custom segment", exception,
-                            true, false);
+                            false, false);
                 }
             }
             return false;

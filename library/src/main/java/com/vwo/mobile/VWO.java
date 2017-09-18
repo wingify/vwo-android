@@ -11,6 +11,7 @@ import android.support.annotation.Nullable;
 import com.vwo.mobile.constants.AppConstants;
 import com.vwo.mobile.data.VWOData;
 import com.vwo.mobile.data.VWOLocalData;
+import com.vwo.mobile.data.VWOMessageQueue;
 import com.vwo.mobile.enums.VWOStartState;
 import com.vwo.mobile.events.VWOStatusListener;
 import com.vwo.mobile.listeners.VWOActivityLifeCycle;
@@ -24,6 +25,7 @@ import com.vwo.mobile.utils.VWOUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -66,6 +68,7 @@ public class VWO {
 
     private VWOStatusListener mStatusListener;
     private VWOStartState mVWOStartState;
+    private VWOMessageQueue mVWOMessageQueue;
 
     private VWO(@NonNull Context context, @NonNull VWOConfig vwoConfig) {
         this.mContext = context;
@@ -255,7 +258,7 @@ public class VWO {
         } else if (!isAndroidSDKSupported()) {
             String errMsg = "Minimum SDK version required is 14";
             initializeSentry();
-            VWOLog.e(VWOLog.INITIALIZATION_LOGS, errMsg, false, true);
+            VWOLog.e(VWOLog.INITIALIZATION_LOGS, errMsg, false, false);
             onLoadFailure(errMsg);
             return false;
         } else if (!VWOUtils.isValidVwoAppKey(vwoConfig.getApiKey())) {
@@ -270,7 +273,13 @@ public class VWO {
             // Everything is good so far
             this.mVWOStartState = VWOStartState.STARTING;
             ((Application) (mContext)).registerActivityLifecycleCallbacks(new VWOActivityLifeCycle());
-            this.initializeComponents();
+            try {
+                this.initializeComponents();
+            } catch (IOException exception) {
+                String message = "Unable to initialize vwo message queue";
+                VWOLog.e(VWOLog.INITIALIZATION_LOGS, message, false, false);
+                onLoadFailure(message);
+            }
 
             int vwoSession = this.mVWOPreference.getInt(AppConstants.DEVICE_SESSION, 0) + 1;
             this.mVWOPreference.putInt(AppConstants.DEVICE_SESSION, vwoSession);
@@ -356,14 +365,14 @@ public class VWO {
         }
     }
 
-    private void initializeComponents() {
+    private void initializeComponents() throws IOException {
         this.mVWOLocalData = new VWOLocalData(sSharedInstance);
         this.mVWOUtils = new VWOUtils(sSharedInstance);
         this.mVWODownloader = new VWODownloader(sSharedInstance);
         this.mVWOUrlBuilder = new VWOUrlBuilder(sSharedInstance);
         this.mVWOData = new VWOData(sSharedInstance);
         this.mVWOPreference = new VWOPreference(sSharedInstance);
-
+        this.mVWOMessageQueue = VWOMessageQueue.getInstance(getCurrentContext());
     }
 
     private void onLoadFailure(final String reason) {
@@ -436,6 +445,10 @@ public class VWO {
 
     public VWOStartState getState() {
         return this.mVWOStartState;
+    }
+
+    public VWOMessageQueue getMessageQueue() {
+        return mVWOMessageQueue;
     }
 
     @Nullable

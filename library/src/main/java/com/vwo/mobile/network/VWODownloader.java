@@ -4,7 +4,10 @@ import android.support.annotation.Nullable;
 
 import com.vwo.mobile.VWO;
 import com.vwo.mobile.data.VWOData;
+import com.vwo.mobile.data.VWOMessageQueue;
+import com.vwo.mobile.data.VWOPersistData;
 import com.vwo.mobile.listeners.VWOActivityLifeCycle;
+import com.vwo.mobile.models.Entry;
 import com.vwo.mobile.utils.NetworkUtils;
 import com.vwo.mobile.utils.VWOLog;
 
@@ -111,38 +114,39 @@ public class VWODownloader {
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                final ArrayList<String> urls = mVWO.getVwoPreference().getListString(VWOData.VWO_QUEUE);
+                VWOMessageQueue messageQueue = mVWO.getMessageQueue();
 
-                if (urls.size() != 0) {
-                    VWOLog.v(VWOLog.UPLOAD_LOGS, String.format(Locale.ENGLISH, "%d pending URLS", urls.size()));
-                }
+                Entry entry = messageQueue.peek();
 
-                if (!VWOActivityLifeCycle.isApplicationInForeground() || !NetworkUtils.shouldAttemptNetworkCall(mVWO)) {
-                    VWOLog.e(VWOLog.UPLOAD_LOGS, "Either no network, or application is not in foreground", true, false);
-                    return;
-                }
-
-                for (final String url : urls) {
+                while (entry != null) {
                     try {
+                        if (!VWOActivityLifeCycle.isApplicationInForeground() || !NetworkUtils.shouldAttemptNetworkCall(mVWO)) {
+                            VWOLog.e(VWOLog.UPLOAD_LOGS, "Either no network, or application is not in foreground", true, false);
+                            return;
+                        }
                         FutureNetworkRequest<String> futureNetworkRequest = FutureNetworkRequest.getInstance();
-                        NetworkStringRequest request = new NetworkStringRequest(url,
+                        NetworkStringRequest request = new NetworkStringRequest(entry.getUrl(),
                                 NetworkRequest.GET, NetworkUtils.Headers.getBasicHeaders(),
                                 futureNetworkRequest, futureNetworkRequest);
                         request.setGzipEnabled(true);
                         PriorityRequestQueue.getInstance().addToQueue(request);
                         String data = futureNetworkRequest.get();
-                        VWOLog.v(VWOLog.UPLOAD_LOGS, String.format("Completed Upload Request with url : %s \ndata : %s", url, data));
-                        urls.remove(url);
-                        mVWO.getVwoPreference().putListString(VWOData.VWO_QUEUE, urls);
+                        VWOLog.v(VWOLog.UPLOAD_LOGS, String.format("Completed Upload Request with url : %s \ndata : %s", entry.getUrl(), data));
+                        messageQueue.remove();
+                        entry = messageQueue.peek();
                     } catch (MalformedURLException | InterruptedException | ExecutionException exception) {
                         VWOLog.e(VWOLog.UPLOAD_LOGS, exception, false, true);
+                        entry.incrementRetryCount();
+                        entry.setException(exception);
+                        messageQueue.pushToTop(entry);
+                        entry = messageQueue.peek();
                     }
                 }
             }
         };
 
         ScheduledRequestQueue scheduledRequestQueue = ScheduledRequestQueue.getInstance();
-        scheduledRequestQueue.scheduleAtFixedRate(runnable,15,
+        scheduledRequestQueue.scheduleAtFixedRate(runnable, 15,
                 15, TimeUnit.SECONDS);
 
     }
