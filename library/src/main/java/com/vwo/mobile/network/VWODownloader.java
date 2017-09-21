@@ -1,6 +1,5 @@
 package com.vwo.mobile.network;
 
-import android.net.Uri;
 import android.support.annotation.Nullable;
 
 import com.vwo.mobile.VWO;
@@ -14,6 +13,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.io.IOException;
+import java.net.ConnectException;
 import java.net.MalformedURLException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
@@ -154,18 +154,20 @@ public class VWODownloader {
                         messageQueue.remove();
                         entry = messageQueue.peek();
                     } catch (ExecutionException exception) {
-                        if(exception.getCause() != null && exception.getCause() instanceof IOException) {
-                            VWOLog.e(VWOLog.UPLOAD_LOGS, "Throwing IO exception and exiting", exception, true, false);
-                            break;
+                        if(exception.getCause() != null && exception.getCause() instanceof ErrorResponse) {
+                            ErrorResponse errorResponse = (ErrorResponse) exception.getCause();
+                            if(errorResponse.getCause() != null && (errorResponse.getCause() instanceof IOException ||
+                                    errorResponse.getCause() instanceof ConnectException)) {
+                                VWOLog.e(VWOLog.UPLOAD_LOGS, "Throwing IO exception and exiting", exception, true, false);
+                                break;
+                            } else {
+                                VWOLog.e(VWOLog.UPLOAD_LOGS, exception, true, true);
+                                checkMessageQueueEntryStatus(entry, messageQueue, mVWO.getFailureQueue());
+                                entry = messageQueue.peek();
+                            }
                         } else {
                             VWOLog.e(VWOLog.UPLOAD_LOGS, exception, true, true);
-                            entry.incrementRetryCount();
-                            if (entry.getRetryCount() < WARN_THRESHOLD) {
-                                messageQueue.add(entry);
-                            } else {
-                                mVWO.getFailureQueue().add(entry);
-                            }
-                            messageQueue.remove();
+                            checkMessageQueueEntryStatus(entry, messageQueue, mVWO.getFailureQueue());
                             entry = messageQueue.peek();
                         }
                     }
@@ -176,6 +178,16 @@ public class VWODownloader {
         ScheduledRequestQueue scheduledRequestQueue =  new ScheduledRequestQueue();
         scheduledRequestQueue.scheduleWithFixedDelay(runnable, 5,
                 5, TimeUnit.SECONDS);
+    }
+
+    private void checkMessageQueueEntryStatus(Entry entry, VWOMessageQueue messageQueue, VWOMessageQueue failureQueue) {
+        entry.incrementRetryCount();
+        if (entry.getRetryCount() < WARN_THRESHOLD) {
+            messageQueue.add(entry);
+        } else {
+            failureQueue.add(entry);
+        }
+        messageQueue.remove();
     }
 
     public void initializeFailureQueue() {
@@ -209,19 +221,19 @@ public class VWODownloader {
                                 exception, true, true);
                         failureQueue.remove();
                     } catch (InterruptedException | ExecutionException exception) {
-                        if(exception.getCause() != null && exception.getCause() instanceof IOException) {
-                            break;
+                        if(exception.getCause() != null && exception.getCause() instanceof ErrorResponse) {
+                            ErrorResponse errorResponse = (ErrorResponse) exception.getCause();
+                            if(errorResponse.getCause() != null && (errorResponse.getCause() instanceof IOException ||
+                                    errorResponse.getCause() instanceof ConnectException)) {
+                                VWOLog.e(VWOLog.UPLOAD_LOGS, "Throwing IO exception and exiting", exception, true, false);
+                                break;
+                            } else {
+                                VWOLog.e(VWOLog.UPLOAD_LOGS, exception, true, true);
+                                checkFailureQueueEntryStatus(entry, failureQueue);
+                            }
                         } else {
                             VWOLog.e(VWOLog.UPLOAD_LOGS, exception, true, true);
-                            entry.incrementRetryCount();
-
-                            if (entry.getRetryCount() < DISCARD_THRESHOLD) {
-                                failureQueue.add(entry);
-                            } else {
-                                VWOLog.e(VWOLog.UPLOAD_LOGS, "discarding entry : " + entry.toString(),
-                                        true, true);
-                            }
-                            failureQueue.remove();
+                            checkFailureQueueEntryStatus(entry, failureQueue);
                         }
                     }
                 }
@@ -231,6 +243,18 @@ public class VWODownloader {
         ScheduledThreadPoolExecutor scheduledRequestQueue = (ScheduledThreadPoolExecutor) Executors.newScheduledThreadPool(1);
         scheduledRequestQueue.scheduleWithFixedDelay(runnable, 5,
                 5, TimeUnit.SECONDS);
+    }
+
+    private void checkFailureQueueEntryStatus(Entry entry, VWOMessageQueue failureQueue) {
+        entry.incrementRetryCount();
+
+        if (entry.getRetryCount() < DISCARD_THRESHOLD) {
+            failureQueue.add(entry);
+        } else {
+            VWOLog.e(VWOLog.UPLOAD_LOGS, "discarding entry : " + entry.toString(),
+                    true, true);
+        }
+        failureQueue.remove();
     }
 
     public interface DownloadResult {

@@ -67,7 +67,7 @@ public class FutureNetworkRequest<T> implements Future<T>, Response.Listener<T>,
         return getResult(TimeUnit.MILLISECONDS.convert(timeout, timeUnit));
     }
 
-    public synchronized T getResult(Long timeout) throws ExecutionException, InterruptedException, TimeoutException {
+    private synchronized T getResult(Long timeout) throws ExecutionException, InterruptedException, TimeoutException {
         if (mErrorResponse != null) {
             throw new ExecutionException(mErrorResponse);
         }
