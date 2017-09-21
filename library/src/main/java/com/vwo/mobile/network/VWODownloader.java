@@ -1,11 +1,10 @@
 package com.vwo.mobile.network;
 
+import android.net.Uri;
 import android.support.annotation.Nullable;
 
 import com.vwo.mobile.VWO;
-import com.vwo.mobile.data.VWOData;
 import com.vwo.mobile.data.VWOMessageQueue;
-import com.vwo.mobile.data.VWOPersistData;
 import com.vwo.mobile.listeners.VWOActivityLifeCycle;
 import com.vwo.mobile.models.Entry;
 import com.vwo.mobile.utils.NetworkUtils;
@@ -14,20 +13,25 @@ import com.vwo.mobile.utils.VWOLog;
 import org.json.JSONArray;
 import org.json.JSONException;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
-import java.util.ArrayList;
-import java.util.Locale;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 
 /**
  * Created by abhishek on 17/09/15 at 11:39 PM.
- * Modified by aman on 17/09/15 at 11:39 PM 3:27 PM.
+ * Modified by aman on 17/09/15 at 3:27 PM.
  */
 public class VWODownloader {
     private final VWO mVWO;
+
+    private static final int WARN_THRESHOLD = 2;
+    private static final int DISCARD_THRESHOLD = 5;
+
     public static final long NO_TIMEOUT = -1;
 
     public VWODownloader(VWO vwo) {
@@ -110,7 +114,7 @@ public class VWODownloader {
         }
     }
 
-    public void initializeVWOUploadScheduler() {
+    public void initializeMessageQueue() {
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
@@ -122,7 +126,7 @@ public class VWODownloader {
                     try {
                         if (!VWOActivityLifeCycle.isApplicationInForeground() || !NetworkUtils.shouldAttemptNetworkCall(mVWO)) {
                             VWOLog.e(VWOLog.UPLOAD_LOGS, "Either no network, or application is not in foreground", true, false);
-                            return;
+                            break;
                         }
                         FutureNetworkRequest<String> futureNetworkRequest = FutureNetworkRequest.getInstance();
                         NetworkStringRequest request = new NetworkStringRequest(entry.getUrl(),
@@ -134,21 +138,99 @@ public class VWODownloader {
                         VWOLog.v(VWOLog.UPLOAD_LOGS, String.format("Completed Upload Request with url : %s \ndata : %s", entry.getUrl(), data));
                         messageQueue.remove();
                         entry = messageQueue.peek();
-                    } catch (MalformedURLException | InterruptedException | ExecutionException exception) {
-                        VWOLog.e(VWOLog.UPLOAD_LOGS, exception, false, true);
-                        entry.incrementRetryCount();
-                        entry.setException(exception);
-                        messageQueue.pushToTop(entry);
+                    } catch (MalformedURLException exception) {
+                        VWOLog.e(VWOLog.UPLOAD_LOGS, "Malformed url: " + entry.getUrl(),
+                                exception, true, true);
+                        messageQueue.remove();
                         entry = messageQueue.peek();
+                    } catch (InterruptedException exception) {
+                        VWOLog.e(VWOLog.UPLOAD_LOGS, exception, true, true);
+                        entry.incrementRetryCount();
+                        if (entry.getRetryCount() < WARN_THRESHOLD) {
+                            messageQueue.add(entry);
+                        } else {
+                            mVWO.getFailureQueue().add(entry);
+                        }
+                        messageQueue.remove();
+                        entry = messageQueue.peek();
+                    } catch (ExecutionException exception) {
+                        if(exception.getCause() != null && exception.getCause() instanceof IOException) {
+                            VWOLog.e(VWOLog.UPLOAD_LOGS, "Throwing IO exception and exiting", exception, true, false);
+                            break;
+                        } else {
+                            VWOLog.e(VWOLog.UPLOAD_LOGS, exception, true, true);
+                            entry.incrementRetryCount();
+                            if (entry.getRetryCount() < WARN_THRESHOLD) {
+                                messageQueue.add(entry);
+                            } else {
+                                mVWO.getFailureQueue().add(entry);
+                            }
+                            messageQueue.remove();
+                            entry = messageQueue.peek();
+                        }
                     }
                 }
             }
         };
 
-        ScheduledRequestQueue scheduledRequestQueue = ScheduledRequestQueue.getInstance();
-        scheduledRequestQueue.scheduleAtFixedRate(runnable, 15,
-                15, TimeUnit.SECONDS);
+        ScheduledRequestQueue scheduledRequestQueue =  new ScheduledRequestQueue();
+        scheduledRequestQueue.scheduleWithFixedDelay(runnable, 5,
+                5, TimeUnit.SECONDS);
+    }
 
+    public void initializeFailureQueue() {
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                VWOMessageQueue failureQueue = mVWO.getFailureQueue();
+                int taskCount = failureQueue.size();
+                VWOLog.i(VWOLog.UPLOAD_LOGS, "Flushing failure message queue of size : " + taskCount, true);
+                for (int i = 0; i < taskCount; i++) {
+                    Entry entry = failureQueue.peek();
+                    if (entry == null) {
+                        break;
+                    }
+                    try {
+                        if (!VWOActivityLifeCycle.isApplicationInForeground() || !NetworkUtils.shouldAttemptNetworkCall(mVWO)) {
+                            VWOLog.e(VWOLog.UPLOAD_LOGS, "Either no network, or application is not in foreground", true, false);
+                            break;
+                        }
+                        FutureNetworkRequest<String> futureNetworkRequest = FutureNetworkRequest.getInstance();
+                        NetworkStringRequest request = new NetworkStringRequest(entry.getUrl(),
+                                NetworkRequest.GET, NetworkUtils.Headers.getBasicHeaders(),
+                                futureNetworkRequest, futureNetworkRequest);
+                        request.setGzipEnabled(true);
+                        PriorityRequestQueue.getInstance().addToQueue(request);
+                        String data = futureNetworkRequest.get();
+                        VWOLog.v(VWOLog.UPLOAD_LOGS, String.format("Completed Upload Request with url : %s \ndata : %s", entry.getUrl(), data));
+                        failureQueue.remove();
+                    } catch (MalformedURLException exception) {
+                        VWOLog.e(VWOLog.UPLOAD_LOGS, "Malformed url: " + entry.getUrl(),
+                                exception, true, true);
+                        failureQueue.remove();
+                    } catch (InterruptedException | ExecutionException exception) {
+                        if(exception.getCause() != null && exception.getCause() instanceof IOException) {
+                            break;
+                        } else {
+                            VWOLog.e(VWOLog.UPLOAD_LOGS, exception, true, true);
+                            entry.incrementRetryCount();
+
+                            if (entry.getRetryCount() < DISCARD_THRESHOLD) {
+                                failureQueue.add(entry);
+                            } else {
+                                VWOLog.e(VWOLog.UPLOAD_LOGS, "discarding entry : " + entry.toString(),
+                                        true, true);
+                            }
+                            failureQueue.remove();
+                        }
+                    }
+                }
+            }
+        };
+
+        ScheduledThreadPoolExecutor scheduledRequestQueue = (ScheduledThreadPoolExecutor) Executors.newScheduledThreadPool(1);
+        scheduledRequestQueue.scheduleWithFixedDelay(runnable, 5,
+                5, TimeUnit.SECONDS);
     }
 
     public interface DownloadResult {

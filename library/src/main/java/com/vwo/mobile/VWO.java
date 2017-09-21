@@ -51,6 +51,9 @@ public class VWO {
         public static final String ARG_VARIATION_NAME = "vwo_variation_name";
     }
 
+    private static final String MESSAGE_QUEUE_NAME = "queue_v1.vwo";
+    private static final String FAILURE_QUEUE_NAME = "failure_queue_v1.vwo";
+
     @SuppressLint("StaticFieldLeak")
     private static VWO sSharedInstance;
     @NonNull
@@ -68,7 +71,8 @@ public class VWO {
 
     private VWOStatusListener mStatusListener;
     private VWOStartState mVWOStartState;
-    private VWOMessageQueue mVWOMessageQueue;
+    private VWOMessageQueue messageQueue;
+    private VWOMessageQueue failureQueue;
 
     private VWO(@NonNull Context context, @NonNull VWOConfig vwoConfig) {
         this.mContext = context;
@@ -277,8 +281,8 @@ public class VWO {
                 this.initializeComponents();
             } catch (IOException exception) {
                 String message = "Unable to initialize vwo message queue";
-                VWOLog.e(VWOLog.INITIALIZATION_LOGS, message, false, false);
                 onLoadFailure(message);
+                return false;
             }
 
             int vwoSession = this.mVWOPreference.getInt(AppConstants.DEVICE_SESSION, 0) + 1;
@@ -299,7 +303,8 @@ public class VWO {
                         }
                     }
                     mVWOData.parseData(data);
-                    mVWODownloader.initializeVWOUploadScheduler();
+                    mVWODownloader.initializeMessageQueue();
+                    mVWODownloader.initializeFailureQueue();
                     initializeSocket();
                     mVWOLocalData.saveData(data);
                     mVWOStartState = VWOStartState.STARTED;
@@ -312,7 +317,8 @@ public class VWO {
                     if (ex instanceof JSONException) {
                         VWOLog.e(VWOLog.DOWNLOAD_DATA_LOGS, ex, false, true);
                     }
-                    mVWODownloader.initializeVWOUploadScheduler();
+                    mVWODownloader.initializeMessageQueue();
+                    mVWODownloader.initializeFailureQueue();
                     initializeSocket();
                     if (mVWOLocalData.isLocalDataPresent()) {
                         mVWOData.parseData(mVWOLocalData.getData());
@@ -372,7 +378,8 @@ public class VWO {
         this.mVWOUrlBuilder = new VWOUrlBuilder(sSharedInstance);
         this.mVWOData = new VWOData(sSharedInstance);
         this.mVWOPreference = new VWOPreference(sSharedInstance);
-        this.mVWOMessageQueue = VWOMessageQueue.getInstance(getCurrentContext());
+        this.messageQueue = VWOMessageQueue.getInstance(getCurrentContext(), MESSAGE_QUEUE_NAME);
+        this.failureQueue = VWOMessageQueue.getInstance(getCurrentContext(), FAILURE_QUEUE_NAME);
     }
 
     private void onLoadFailure(final String reason) {
@@ -448,7 +455,11 @@ public class VWO {
     }
 
     public VWOMessageQueue getMessageQueue() {
-        return mVWOMessageQueue;
+        return this.messageQueue;
+    }
+
+    public VWOMessageQueue getFailureQueue() {
+        return this.failureQueue;
     }
 
     @Nullable

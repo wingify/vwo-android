@@ -236,6 +236,7 @@ public class VWOData {
     }
 
     public void saveGoal(String goalIdentifier) {
+        boolean foundGoal = false;
         for (Campaign campaign : mCampaigns) {
             for (Goal goal : campaign.getGoals()) {
                 if (goal.getIdentifier().equals(goalIdentifier)) {
@@ -252,6 +253,7 @@ public class VWOData {
                                         campaign.getVariation().getId(), goal.getId());
                                 GoalEntry goalEntry = new GoalEntry(goalUrl, campaign.getId(), campaign.getVariation().getId(), goal.getId());
                                 mVWO.getMessageQueue().add(goalEntry);
+                                foundGoal = true;
                             } else {
                                 VWOLog.w(VWOLog.CAMPAIGN_LOGS, "Duplicate goal identifier: " + goalIdentifier, true);
                             }
@@ -260,10 +262,11 @@ public class VWOData {
                         }
 
                     }
-                } else {
-                    Log.v(VWOLog.CAMPAIGN_LOGS, "Goal not matched");
                 }
             }
+        }
+        if(!foundGoal) {
+            VWOLog.w(VWOLog.CAMPAIGN_LOGS, "Goal not found.", true);
         }
     }
 
