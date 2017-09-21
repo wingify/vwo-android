@@ -34,7 +34,7 @@ public class VWOUrlBuilder {
     private static final String DEVICE_TYPE = "dt";
     private static final String DEVICE_SYSTEM_VERSION = "os";
     // To prevent cached results
-    private static final String RANDOM_NUMBER = "rk";
+    private static final String RANDOM_NUMBER = "r";
     private static final String EXISTING_CAMPAIGN_LIST = "k";
 
 
