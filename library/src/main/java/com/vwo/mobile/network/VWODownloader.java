@@ -176,8 +176,8 @@ public class VWODownloader {
         };
 
         ScheduledRequestQueue scheduledRequestQueue =  new ScheduledRequestQueue();
-        scheduledRequestQueue.scheduleWithFixedDelay(runnable, 5,
-                5, TimeUnit.SECONDS);
+        scheduledRequestQueue.scheduleWithFixedDelay(runnable, 15,
+                15, TimeUnit.SECONDS);
     }
 
     private void checkMessageQueueEntryStatus(Entry entry, VWOMessageQueue messageQueue, VWOMessageQueue failureQueue) {
@@ -241,8 +241,8 @@ public class VWODownloader {
         };
 
         ScheduledThreadPoolExecutor scheduledRequestQueue = (ScheduledThreadPoolExecutor) Executors.newScheduledThreadPool(1);
-        scheduledRequestQueue.scheduleWithFixedDelay(runnable, 5,
-                5, TimeUnit.SECONDS);
+        scheduledRequestQueue.scheduleWithFixedDelay(runnable, 15,
+                15, TimeUnit.MINUTES);
     }
 
     private void checkFailureQueueEntryStatus(Entry entry, VWOMessageQueue failureQueue) {
