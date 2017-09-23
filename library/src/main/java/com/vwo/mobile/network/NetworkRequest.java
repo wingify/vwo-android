@@ -3,24 +3,17 @@ package com.vwo.mobile.network;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.IntDef;
-import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringDef;
 
 import com.vwo.mobile.utils.NetworkUtils;
-import com.vwo.mobile.utils.VWOLog;
-import com.vwo.mobile.utils.VWOUtils;
+import com.vwo.mobile.logging.VWOLog;
 
 import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.DataOutput;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -30,7 +23,6 @@ import java.net.URLEncoder;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.TimeoutException;
 
 /**
  * Created by aman on 05/09/17.

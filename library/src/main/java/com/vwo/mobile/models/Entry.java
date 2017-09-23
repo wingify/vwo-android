@@ -2,8 +2,6 @@ package com.vwo.mobile.models;
 
 import android.text.TextUtils;
 
-import com.vwo.mobile.utils.VWOLog;
-
 import java.io.Serializable;
 import java.util.Locale;
 

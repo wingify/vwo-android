@@ -5,6 +5,7 @@ import android.os.Build;
 import android.text.TextUtils;
 
 import com.vwo.mobile.constants.AppConstants;
+import com.vwo.mobile.logging.VWOLog;
 
 import org.json.JSONException;
 import org.json.JSONObject;

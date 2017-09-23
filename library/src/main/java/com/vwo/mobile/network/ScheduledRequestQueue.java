@@ -1,14 +1,8 @@
 package com.vwo.mobile.network;
 
-import com.vwo.mobile.utils.VWOLog;
+import com.vwo.mobile.logging.VWOLog;
 
-import java.util.concurrent.Executors;
-import java.util.concurrent.RejectedExecutionHandler;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Created by aman on 14/09/17.

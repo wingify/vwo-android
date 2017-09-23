@@ -1,6 +1,6 @@
 package com.vwo.mobile.network;
 
-import com.vwo.mobile.utils.VWOLog;
+import com.vwo.mobile.logging.VWOLog;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.PriorityBlockingQueue;
@@ -43,8 +43,7 @@ public class PriorityRequestQueue implements RequestQueue {
 
     @Override
     public void addToQueue(NetworkRequest networkRequest) {
-        VWOLog.i(VWOLog.URL_LOGS, "Adding request to queue : " + networkRequest.getUrl() +
-                "\nQueue size is : " + mRequestQueue.size(), true);
+        VWOLog.i(VWOLog.URL_LOGS, "Adding request to queue : " + networkRequest.getUrl(), true);
         mRequestThreadPool.execute(networkRequest);
     }
 

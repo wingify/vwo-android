@@ -1,7 +1,7 @@
 package com.vwo.mobile;
 
 import com.vwo.mobile.utils.TestUtils;
-import com.vwo.mobile.utils.VWOLog;
+import com.vwo.mobile.logging.VWOLog;
 
 import org.json.JSONException;
 import org.json.JSONObject;

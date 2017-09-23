@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
-import android.util.Log;
 
 import com.vwo.mobile.VWO;
 import com.vwo.mobile.models.Campaign;
@@ -15,14 +14,13 @@ import com.vwo.mobile.models.GoalEntry;
 import com.vwo.mobile.segmentation.CustomSegment;
 import com.vwo.mobile.segmentation.LogicalOperator;
 import com.vwo.mobile.segmentation.Segment;
-import com.vwo.mobile.utils.VWOLog;
+import com.vwo.mobile.logging.VWOLog;
 import com.vwo.mobile.utils.VWOUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -31,7 +29,7 @@ import java.util.Map;
 import java.util.Stack;
 
 /**
- * Created by abhishek on 17/09/15 at 10:10 PM.
+ * Created by Aman on Fri Fri 16:06 16:07.
  */
 public class VWOData {
     public static final String CAMPAIGN_RUNNING = "RUNNING";

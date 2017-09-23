@@ -7,14 +7,10 @@ import com.vwo.mobile.BuildConfig;
 import com.vwo.mobile.VWO;
 import com.vwo.mobile.constants.AppConstants;
 import com.vwo.mobile.data.VWOPersistData;
+import com.vwo.mobile.logging.VWOLog;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.io.UnsupportedEncodingException;
-import java.net.URL;
-import java.net.URLEncoder;
-import java.util.Locale;
 
 /**
  * Created by abhishek on 16/09/15 at 10:18 PM.

@@ -2,10 +2,6 @@ package com.vwo.mobile.network;
 
 import android.support.annotation.Nullable;
 
-import com.vwo.mobile.utils.NetworkUtils;
-import com.vwo.mobile.utils.VWOLog;
-
-import java.io.UnsupportedEncodingException;
 import java.util.Map;
 
 /**

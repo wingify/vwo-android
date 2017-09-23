@@ -1,30 +1,14 @@
 package com.vwo.mobile.data;
 
-import android.Manifest;
-import android.os.Build;
-import android.support.annotation.Nullable;
-
 import com.vwo.mobile.VWO;
 import com.vwo.mobile.constants.AppConstants;
-import com.vwo.mobile.data.io.QueueFile;
-import com.vwo.mobile.models.Entry;
-import com.vwo.mobile.utils.VWOLog;
 import com.vwo.mobile.utils.VWOPreference;
-import com.vwo.mobile.utils.VWOUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
 /**
  * Created by abhishek on 24/09/15 at 1:28 PM.

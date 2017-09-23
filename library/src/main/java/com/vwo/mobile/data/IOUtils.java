@@ -3,6 +3,7 @@ package com.vwo.mobile.data;
 import android.Manifest;
 import android.content.Context;
 import android.os.Build;
+import android.support.v4.content.ContextCompat;
 
 import com.vwo.mobile.utils.VWOUtils;
 
@@ -18,7 +19,7 @@ public class IOUtils {
         File dir;
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
             if (VWOUtils.checkForPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                dir = context.getExternalFilesDir(null);
+                dir = ContextCompat.getExternalFilesDirs(context, null)[0];
             } else {
                 dir = context.getCacheDir();
             }

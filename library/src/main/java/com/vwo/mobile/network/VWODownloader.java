@@ -7,7 +7,7 @@ import com.vwo.mobile.data.VWOMessageQueue;
 import com.vwo.mobile.listeners.VWOActivityLifeCycle;
 import com.vwo.mobile.models.Entry;
 import com.vwo.mobile.utils.NetworkUtils;
-import com.vwo.mobile.utils.VWOLog;
+import com.vwo.mobile.logging.VWOLog;
 
 import org.json.JSONArray;
 import org.json.JSONException;

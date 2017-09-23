@@ -4,7 +4,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.vwo.mobile.utils.NetworkUtils;
-import com.vwo.mobile.utils.VWOLog;
+import com.vwo.mobile.logging.VWOLog;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;

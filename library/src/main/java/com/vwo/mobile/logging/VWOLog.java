@@ -1,4 +1,4 @@
-package com.vwo.mobile.utils;
+package com.vwo.mobile.logging;
 
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
@@ -6,8 +6,7 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.vwo.mobile.BuildConfig;
-
-import org.w3c.dom.Text;
+import com.vwo.mobile.utils.VWOUtils;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -66,6 +65,8 @@ public class VWOLog {
     public static final String CAMPAIGN_LOGS = "campaign";
 
     public static final String STORAGE_LOGS = "storage";
+
+    public static final String UNCAUGHT = "uncaught";
 
     public static final String DATA = "data";
 
@@ -126,7 +127,7 @@ public class VWOLog {
     }
 
     /**
-     * V.
+     * Verbose logging
      *
      * @param tag is the log tag
      * @param msg is the message to log.
@@ -166,9 +167,9 @@ public class VWOLog {
     }
 
     /**
-     * D.
+     * Debug logging
      *
-     * @param tag           the tag
+     * @param tag           the log tag
      * @param msg           the msg
      * @param checkLoggable the check loggable
      */
@@ -193,7 +194,7 @@ public class VWOLog {
      */
 
     /**
-     * D.
+     * Debug logging
      *
      * @param tag           the tag
      * @param msg           the msg
@@ -221,7 +222,7 @@ public class VWOLog {
     }
 
     /**
-     * .
+     * information.
      *
      * @param tag           the tag
      * @param msg           the msg
@@ -243,7 +244,7 @@ public class VWOLog {
     }
 
     /**
-     * .
+     * information.
      *
      * @param tag           the tag
      * @param msg           the msg
@@ -271,14 +272,14 @@ public class VWOLog {
     }
 
     /**
-     * E.
+     * Method for error logging.
      *
      * @param tag           the tag
      * @param ex            the ex
      * @param checkLoggable the check loggable
      * @param sendToServer  check to send data to server
      */
-    public static void e(@NonNull String tag, @NonNull Exception ex, boolean checkLoggable, boolean sendToServer) {
+    public static void e(@NonNull String tag, @NonNull Throwable ex, boolean checkLoggable, boolean sendToServer) {
         if (LEVEL <= SEVERE) {
             if (checkLoggable) {
                 if (Log.isLoggable(tag, Log.ERROR)) {

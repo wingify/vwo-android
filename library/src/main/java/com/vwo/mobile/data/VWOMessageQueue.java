@@ -5,7 +5,7 @@ import android.support.annotation.Nullable;
 
 import com.vwo.mobile.data.io.QueueFile;
 import com.vwo.mobile.models.Entry;
-import com.vwo.mobile.utils.VWOLog;
+import com.vwo.mobile.logging.VWOLog;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -14,8 +14,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Locale;
-
-import io.socket.client.IO;
 
 /**
  * Created by aman on 18/09/17.

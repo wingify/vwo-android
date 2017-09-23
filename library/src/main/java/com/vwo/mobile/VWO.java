@@ -15,9 +15,10 @@ import com.vwo.mobile.data.VWOMessageQueue;
 import com.vwo.mobile.enums.VWOStartState;
 import com.vwo.mobile.events.VWOStatusListener;
 import com.vwo.mobile.listeners.VWOActivityLifeCycle;
+import com.vwo.mobile.logging.VWOLoggingClient;
 import com.vwo.mobile.models.Campaign;
 import com.vwo.mobile.network.VWODownloader;
-import com.vwo.mobile.utils.VWOLog;
+import com.vwo.mobile.logging.VWOLog;
 import com.vwo.mobile.utils.VWOPreference;
 import com.vwo.mobile.utils.VWOUrlBuilder;
 import com.vwo.mobile.utils.VWOUtils;
@@ -31,6 +32,7 @@ import java.util.Map;
 
 import io.sentry.Sentry;
 import io.sentry.SentryClient;
+import io.sentry.SentryClientFactory;
 import io.sentry.android.AndroidSentryClientFactory;
 
 /**
@@ -140,15 +142,21 @@ public class VWO {
     /**
      * Get variation for a given key. returns control if key does not exist in any
      * Campaigns.
+     *
      * <p>
      * This function will return a variation for a given key. This function will search for key in
      * all the currently active campaigns.
+     * </p>
+     *
      * <p>
      * If key exists in multiple campaigns it will return the value for the key of the latest
      * {@link Campaign}.
+     * </p>
+     *
      * <p>
      * If user is not already part of a the {@link Campaign} in which the key exists. User automatically
      * becomes part of all the campaign for which that key exists.
+     * </p>
      *
      * @param key     is the key for which variation is to be requested
      * @param control is the default value to be returned if key is not found in any campaigns.
@@ -169,7 +177,7 @@ public class VWO {
 
     /**
      * Function for marking a goal when it is achieved.
-     * <p>
+     *
      * NOTE: This function should be called only after initializing VWO SDK.
      *
      * @param goalIdentifier is name of the goal set in VWO dashboard
@@ -229,7 +237,7 @@ public class VWO {
      * <p>
      * This function can be used to segment users based on this key value pair.
      * This will decide whether user will be a part of campaign or not.
-     *
+     * </p>
      * @param key   is given key
      * @param value is the value corresponding to the given key.
      */
@@ -355,6 +363,8 @@ public class VWO {
     }
 
     private void initializeSentry() {
+        VWOLoggingClient.getInstance().init();
+
         if(VWOUtils.checkIfClassExists("io.sentry.Sentry")) {
             Map<String, String> extras = new HashMap<>();
             extras.put("VWO-SDK-Version", version());

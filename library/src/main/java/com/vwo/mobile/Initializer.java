@@ -5,7 +5,7 @@ import android.support.annotation.RestrictTo;
 
 import com.vwo.mobile.events.VWOStatusListener;
 import com.vwo.mobile.network.VWODownloader;
-import com.vwo.mobile.utils.VWOLog;
+import com.vwo.mobile.logging.VWOLog;
 
 /**
  * Created by aman on 28/06/17.

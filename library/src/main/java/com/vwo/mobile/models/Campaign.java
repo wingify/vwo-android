@@ -5,7 +5,7 @@ import com.vwo.mobile.segmentation.CustomSegment;
 import com.vwo.mobile.segmentation.DefaultSegment;
 import com.vwo.mobile.segmentation.PredefinedSegment;
 import com.vwo.mobile.segmentation.Segment;
-import com.vwo.mobile.utils.VWOLog;
+import com.vwo.mobile.logging.VWOLog;
 
 import org.json.JSONArray;
 import org.json.JSONException;
