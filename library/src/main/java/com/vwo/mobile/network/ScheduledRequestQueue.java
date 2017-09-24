@@ -1,6 +1,6 @@
 package com.vwo.mobile.network;
 
-import com.vwo.mobile.logging.VWOLog;
+import com.vwo.mobile.utils.VWOLog;
 
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 

@@ -5,7 +5,7 @@ import android.support.annotation.Nullable;
 
 import com.vwo.mobile.data.io.QueueFile;
 import com.vwo.mobile.models.Entry;
-import com.vwo.mobile.logging.VWOLog;
+import com.vwo.mobile.utils.VWOLog;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;

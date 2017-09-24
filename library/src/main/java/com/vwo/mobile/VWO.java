@@ -15,10 +15,10 @@ import com.vwo.mobile.data.VWOMessageQueue;
 import com.vwo.mobile.enums.VWOStartState;
 import com.vwo.mobile.events.VWOStatusListener;
 import com.vwo.mobile.listeners.VWOActivityLifeCycle;
+import com.vwo.mobile.utils.VWOLog;
 import com.vwo.mobile.logging.VWOLoggingClient;
 import com.vwo.mobile.models.Campaign;
 import com.vwo.mobile.network.VWODownloader;
-import com.vwo.mobile.logging.VWOLog;
 import com.vwo.mobile.utils.VWOPreference;
 import com.vwo.mobile.utils.VWOUrlBuilder;
 import com.vwo.mobile.utils.VWOUtils;
@@ -32,7 +32,6 @@ import java.util.Map;
 
 import io.sentry.Sentry;
 import io.sentry.SentryClient;
-import io.sentry.SentryClientFactory;
 import io.sentry.android.AndroidSentryClientFactory;
 
 /**
@@ -120,7 +119,7 @@ public class VWO {
      */
     @SuppressWarnings("unused")
     @Nullable
-    public static Object getVariationForKey(@NonNull String key) {
+    public static synchronized Object getVariationForKey(@NonNull String key) {
 
         if (sSharedInstance != null && sSharedInstance.mVWOStartState.getValue() >= VWOStartState.STARTED.getValue()) {
             // Only when the VWO has completely started or loaded from disk
@@ -164,7 +163,7 @@ public class VWO {
      */
     @SuppressWarnings("unused")
     @NonNull
-    public static Object getVariationForKey(@NonNull String key, @NonNull Object control) {
+    public static synchronized Object getVariationForKey(@NonNull String key, @NonNull Object control) {
         Object data = getVariationForKey(key);
         if (data == null) {
             VWOLog.e(VWOLog.DATA_LOGS, "No data found for key: " + key, false, false);
@@ -182,7 +181,7 @@ public class VWO {
      *
      * @param goalIdentifier is name of the goal set in VWO dashboard
      */
-    public static void markConversionForGoal(@NonNull String goalIdentifier) {
+    public static synchronized void markConversionForGoal(@NonNull String goalIdentifier) {
 
         if (sSharedInstance != null && sSharedInstance.mVWOStartState.getValue() >= VWOStartState.STARTED.getValue()) {
 
@@ -202,7 +201,7 @@ public class VWO {
      * @param goalIdentifier is name of the goal that is set in VWO dashboard
      * @param value          is the revenue achieved by hitting this goal.
      */
-    public static void markConversionForGoal(@NonNull String goalIdentifier, double value) {
+    public static synchronized void markConversionForGoal(@NonNull String goalIdentifier, double value) {
 
         if (sSharedInstance != null && sSharedInstance.mVWOStartState.getValue() >= VWOStartState.STARTED.getValue()) {
 

@@ -14,7 +14,6 @@ import android.util.DisplayMetrics;
 
 import com.vwo.mobile.VWO;
 import com.vwo.mobile.constants.AppConstants;
-import com.vwo.mobile.logging.VWOLog;
 
 import java.util.HashMap;
 import java.util.Locale;

@@ -14,7 +14,7 @@ import com.vwo.mobile.models.GoalEntry;
 import com.vwo.mobile.segmentation.CustomSegment;
 import com.vwo.mobile.segmentation.LogicalOperator;
 import com.vwo.mobile.segmentation.Segment;
-import com.vwo.mobile.logging.VWOLog;
+import com.vwo.mobile.utils.VWOLog;
 import com.vwo.mobile.utils.VWOUtils;
 
 import org.json.JSONArray;

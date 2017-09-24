@@ -7,7 +7,6 @@ import com.vwo.mobile.BuildConfig;
 import com.vwo.mobile.VWO;
 import com.vwo.mobile.constants.AppConstants;
 import com.vwo.mobile.data.VWOPersistData;
-import com.vwo.mobile.logging.VWOLog;
 
 import org.json.JSONException;
 import org.json.JSONObject;

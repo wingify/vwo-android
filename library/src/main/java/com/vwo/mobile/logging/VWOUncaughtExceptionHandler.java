@@ -1,5 +1,7 @@
 package com.vwo.mobile.logging;
 
+import com.vwo.mobile.utils.VWOLog;
+
 /**
  * Created by aman on Fri 13:13.
  */

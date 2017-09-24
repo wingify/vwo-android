@@ -8,7 +8,7 @@ import android.support.annotation.Nullable;
 import android.support.annotation.StringDef;
 
 import com.vwo.mobile.utils.NetworkUtils;
-import com.vwo.mobile.logging.VWOLog;
+import com.vwo.mobile.utils.VWOLog;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;

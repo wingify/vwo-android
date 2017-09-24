@@ -1,4 +1,4 @@
-package com.vwo.mobile.logging;
+package com.vwo.mobile.utils;
 
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
@@ -6,7 +6,6 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.vwo.mobile.BuildConfig;
-import com.vwo.mobile.utils.VWOUtils;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

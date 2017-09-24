@@ -8,7 +8,6 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
 import com.vwo.mobile.VWO;
-import com.vwo.mobile.logging.VWOLog;
 
 import java.util.HashMap;
 import java.util.Map;
