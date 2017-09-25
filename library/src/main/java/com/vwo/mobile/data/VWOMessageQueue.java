@@ -21,7 +21,7 @@ import java.util.Locale;
 
 public class VWOMessageQueue implements MessageQueue<Entry> {
 
-    private QueueFile queueFile;
+    private final QueueFile queueFile;
     private String filename;
 
     private VWOMessageQueue(Context context, String fileName) throws IOException {
@@ -50,23 +50,25 @@ public class VWOMessageQueue implements MessageQueue<Entry> {
         Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
-                VWOLog.i(VWOLog.STORAGE_LOGS, String.format(Locale.ENGLISH, "Adding to queue %s\n%s", filename, entry.toString()), true);
-                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                ObjectOutputStream objectOutputStream;
-                try {
-                    objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
-                    objectOutputStream.writeObject(entry);
-                    objectOutputStream.flush();
-                    queueFile.add(byteArrayOutputStream.toByteArray());
-                } catch (IOException exception) {
-                    VWOLog.e(VWOLog.STORAGE_LOGS, String.format(Locale.ENGLISH, "File %s corrupted. Clearing last entry...", filename), true, false);
-                    remove();
-                    VWOLog.e(VWOLog.STORAGE_LOGS, "Unable to create Object", exception, true, true);
-                } finally {
+                synchronized (queueFile) {
+                    VWOLog.i(VWOLog.STORAGE_LOGS, String.format(Locale.ENGLISH, "Adding to queue %s\n%s", filename, entry.toString()), true);
+                    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                    ObjectOutputStream objectOutputStream;
                     try {
-                        byteArrayOutputStream.close();
-                    } catch (Exception exception) {
-                        VWOLog.e(VWOLog.STORAGE_LOGS, exception, true, true);
+                        objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
+                        objectOutputStream.writeObject(entry);
+                        objectOutputStream.flush();
+                        queueFile.add(byteArrayOutputStream.toByteArray());
+                    } catch (IOException exception) {
+                        VWOLog.e(VWOLog.STORAGE_LOGS, String.format(Locale.ENGLISH, "File %s corrupted. Clearing last entry...", filename), true, false);
+                        remove();
+                        VWOLog.e(VWOLog.STORAGE_LOGS, "Unable to create Object", exception, true, true);
+                    } finally {
+                        try {
+                            byteArrayOutputStream.close();
+                        } catch (Exception exception) {
+                            VWOLog.e(VWOLog.STORAGE_LOGS, exception, true, true);
+                        }
                     }
                 }
             }
@@ -79,49 +81,54 @@ public class VWOMessageQueue implements MessageQueue<Entry> {
     @Override
     @Nullable
     public Entry peek() {
-        VWOLog.i(VWOLog.STORAGE_LOGS, String.format(Locale.ENGLISH, "Reading from queue %s", this.filename), true);
-        try {
-            byte[] data = queueFile.peek();
-            if (data == null) {
-                return null;
-            }
-            ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(data);
-            ObjectInputStream objectInputStream = new ObjectInputStream(byteArrayInputStream);
+        synchronized (queueFile) {
+            VWOLog.i(VWOLog.STORAGE_LOGS, String.format(Locale.ENGLISH, "Reading from queue %s", this.filename), true);
             try {
-                return (Entry) objectInputStream.readObject();
-            } catch (ClassNotFoundException exception) {
-                VWOLog.e(VWOLog.STORAGE_LOGS, exception, true, true);
+                byte[] data = queueFile.peek();
+                if (data == null) {
+                    return null;
+                }
+                ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(data);
+                ObjectInputStream objectInputStream = new ObjectInputStream(byteArrayInputStream);
+                try {
+                    return (Entry) objectInputStream.readObject();
+                } catch (ClassNotFoundException exception) {
+                    VWOLog.e(VWOLog.STORAGE_LOGS, exception, true, true);
+                }
+            } catch (IOException exception) {
+                VWOLog.e(VWOLog.STORAGE_LOGS, String.format(Locale.ENGLISH, "File %s corrupted. Clearing last entry...", filename), true, false);
+                remove();
+                VWOLog.e(VWOLog.STORAGE_LOGS, exception, true, false);
             }
-        } catch (IOException exception) {
-            VWOLog.e(VWOLog.STORAGE_LOGS, String.format(Locale.ENGLISH, "File %s corrupted. Clearing last entry...", filename), true, false);
-            remove();
-            VWOLog.e(VWOLog.STORAGE_LOGS, exception, true, false);
+            return null;
         }
-
-        return null;
     }
 
     @Override
     public void removeAll() {
-        VWOLog.i(VWOLog.STORAGE_LOGS, String.format(Locale.ENGLISH, "Emptying queue %s", this.filename), true);
-        try {
-            queueFile.clear();
-        } catch (IOException exception) {
-            VWOLog.e(VWOLog.STORAGE_LOGS, "Unable to clear corrupted file data..", exception, true, false);
+        synchronized (queueFile) {
+            VWOLog.i(VWOLog.STORAGE_LOGS, String.format(Locale.ENGLISH, "Emptying queue %s", this.filename), true);
+            try {
+                queueFile.clear();
+            } catch (IOException exception) {
+                VWOLog.e(VWOLog.STORAGE_LOGS, "Unable to clear corrupted file data..", exception, true, false);
+            }
         }
     }
 
     @Override
     public void remove() {
-        VWOLog.i(VWOLog.STORAGE_LOGS, String.format(Locale.ENGLISH, "Removing top element from queue %s", this.filename), true);
-        try {
-            queueFile.remove();
-            VWOLog.i(VWOLog.STORAGE_LOGS, "Removed top element from queue", true);
-        } catch (IOException exception) {
-            VWOLog.e(VWOLog.STORAGE_LOGS, String.format(Locale.ENGLISH, "File %s corrupted. Clearing file data...", filename), true, false);
-            removeAll();
-            VWOLog.e(VWOLog.STORAGE_LOGS, "Failed to remove top element from queue.", exception,
-                    true, false);
+        synchronized (queueFile) {
+            VWOLog.i(VWOLog.STORAGE_LOGS, String.format(Locale.ENGLISH, "Removing top element from queue %s", this.filename), true);
+            try {
+                queueFile.remove();
+                VWOLog.i(VWOLog.STORAGE_LOGS, "Removed top element from queue", true);
+            } catch (IOException exception) {
+                VWOLog.e(VWOLog.STORAGE_LOGS, String.format(Locale.ENGLISH, "File %s corrupted. Clearing file data...", filename), true, false);
+                removeAll();
+                VWOLog.e(VWOLog.STORAGE_LOGS, "Failed to remove top element from queue.", exception,
+                        true, false);
+            }
         }
     }
 
@@ -135,7 +142,9 @@ public class VWOMessageQueue implements MessageQueue<Entry> {
 
     @Override
     public int size() {
-        return queueFile.size();
+        synchronized (queueFile) {
+            return queueFile.size();
+        }
     }
 
     @Override
