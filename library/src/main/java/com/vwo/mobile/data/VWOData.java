@@ -299,7 +299,6 @@ public class VWOData {
                         } catch (JSONException exception) {
                             VWOLog.w(VWOLog.CAMPAIGN_LOGS, "Unable to generate goal data object", exception, true);
                         }
-
                     }
                 }
             }

@@ -119,23 +119,24 @@ public class VWO {
      */
     @SuppressWarnings("unused")
     @Nullable
-    public static synchronized Object getVariationForKey(@NonNull String key) {
+    public static Object getVariationForKey(@NonNull String key) {
+        synchronized(sSharedInstance) {
+            if (sSharedInstance != null && sSharedInstance.mVWOStartState.getValue() >= VWOStartState.STARTED.getValue()) {
+                // Only when the VWO has completely started or loaded from disk
+                Object object;
 
-        if (sSharedInstance != null && sSharedInstance.mVWOStartState.getValue() >= VWOStartState.STARTED.getValue()) {
-            // Only when the VWO has completely started or loaded from disk
-            Object object;
+                if (sSharedInstance.isEditMode()) {
+                    object = sSharedInstance.getVwoSocket().getVariationForKey(key);
+                } else {
+                    object = sSharedInstance.getVwoData().getVariationForKey(key);
+                }
+                return object;
 
-            if (sSharedInstance.isEditMode()) {
-                object = sSharedInstance.getVwoSocket().getVariationForKey(key);
-            } else {
-                object = sSharedInstance.getVwoData().getVariationForKey(key);
             }
-            return object;
-
+            VWOLog.e(VWOLog.DATA_LOGS, new IllegalStateException("Cannot call getVariationForKey(String key) " +
+                    "method before VWO SDK is completely initialized."), false, false);
+            return null;
         }
-        VWOLog.e(VWOLog.DATA_LOGS, new IllegalStateException("Cannot call getVariationForKey(String key) " +
-                "method before VWO SDK is completely initialized."), false, false);
-        return null;
     }
 
     /**
@@ -163,13 +164,15 @@ public class VWO {
      */
     @SuppressWarnings("unused")
     @NonNull
-    public static synchronized Object getVariationForKey(@NonNull String key, @NonNull Object control) {
-        Object data = getVariationForKey(key);
-        if (data == null) {
-            VWOLog.e(VWOLog.DATA_LOGS, "No data found for key: " + key, false, false);
-            return control;
-        } else {
-            return data;
+    public static Object getVariationForKey(@NonNull String key, @NonNull Object control) {
+        synchronized(sSharedInstance) {
+            Object data = getVariationForKey(key);
+            if (data == null) {
+                VWOLog.e(VWOLog.DATA_LOGS, "No data found for key: " + key, false, false);
+                return control;
+            } else {
+                return data;
+            }
         }
 
     }
@@ -181,17 +184,18 @@ public class VWO {
      *
      * @param goalIdentifier is name of the goal set in VWO dashboard
      */
-    public static synchronized void markConversionForGoal(@NonNull String goalIdentifier) {
+    public static void markConversionForGoal(@NonNull String goalIdentifier) {
+        synchronized(sSharedInstance) {
+            if (sSharedInstance != null && sSharedInstance.mVWOStartState.getValue() >= VWOStartState.STARTED.getValue()) {
 
-        if (sSharedInstance != null && sSharedInstance.mVWOStartState.getValue() >= VWOStartState.STARTED.getValue()) {
-
-            if (sSharedInstance.isEditMode()) {
-                sSharedInstance.getVwoSocket().triggerGoal(goalIdentifier);
+                if (sSharedInstance.isEditMode()) {
+                    sSharedInstance.getVwoSocket().triggerGoal(goalIdentifier);
+                } else {
+                    sSharedInstance.mVWOData.saveGoal(goalIdentifier);
+                }
             } else {
-                sSharedInstance.mVWOData.saveGoal(goalIdentifier);
+                VWOLog.e(VWOLog.UPLOAD_LOGS, "SDK not initialized completely", false, false);
             }
-        } else {
-            VWOLog.e(VWOLog.UPLOAD_LOGS, "SDK not initialized completely", false, false);
         }
     }
 
@@ -201,18 +205,20 @@ public class VWO {
      * @param goalIdentifier is name of the goal that is set in VWO dashboard
      * @param value          is the revenue achieved by hitting this goal.
      */
-    public static synchronized void markConversionForGoal(@NonNull String goalIdentifier, double value) {
+    public static void markConversionForGoal(@NonNull String goalIdentifier, double value) {
 
-        if (sSharedInstance != null && sSharedInstance.mVWOStartState.getValue() >= VWOStartState.STARTED.getValue()) {
+        synchronized(sSharedInstance) {
+            if (sSharedInstance != null && sSharedInstance.mVWOStartState.getValue() >= VWOStartState.STARTED.getValue()) {
 
-            if (sSharedInstance.isEditMode()) {
-                sSharedInstance.getVwoSocket().triggerGoal(goalIdentifier);
+                if (sSharedInstance.isEditMode()) {
+                    sSharedInstance.getVwoSocket().triggerGoal(goalIdentifier);
+                } else {
+                    // Check if already present in persisting data
+                    sSharedInstance.mVWOData.saveGoal(goalIdentifier, value);
+                }
             } else {
-                // Check if already present in persisting data
-                sSharedInstance.mVWOData.saveGoal(goalIdentifier, value);
+                VWOLog.e(VWOLog.UPLOAD_LOGS, "SDK not initialized completely", false, false);
             }
-        } else {
-            VWOLog.e(VWOLog.UPLOAD_LOGS, "SDK not initialized completely", false, false);
         }
     }
 

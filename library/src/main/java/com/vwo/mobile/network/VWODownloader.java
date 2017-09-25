@@ -29,8 +29,8 @@ import java.util.concurrent.TimeoutException;
 public class VWODownloader {
     private final VWO mVWO;
 
-    private static final int WARN_THRESHOLD = 2;
-    private static final int DISCARD_THRESHOLD = 5;
+    private static final int WARN_THRESHOLD = 3;
+    private static final int DISCARD_THRESHOLD = 20;
 
     public static final long NO_TIMEOUT = -1;
 
@@ -175,9 +175,15 @@ public class VWODownloader {
             }
         };
 
-        ScheduledRequestQueue scheduledRequestQueue =  new ScheduledRequestQueue();
-        scheduledRequestQueue.scheduleWithFixedDelay(runnable, 15,
-                15, TimeUnit.SECONDS);
+        ScheduledRequestQueue scheduledRequestQueue = ScheduledRequestQueue.getInstance("message queue");
+        if(!scheduledRequestQueue.isRunning()) {
+            VWOLog.w(VWOLog.UPLOAD_LOGS, "Starting new Scheduler", true);
+            scheduledRequestQueue.scheduleWithFixedDelay(runnable, 15,
+                    15, TimeUnit.SECONDS);
+            scheduledRequestQueue.setRunning(true);
+        } else {
+            VWOLog.w(VWOLog.UPLOAD_LOGS, "Scheduler already running", true);
+        }
     }
 
     private void checkMessageQueueEntryStatus(Entry entry, VWOMessageQueue messageQueue, VWOMessageQueue failureQueue) {
@@ -240,9 +246,16 @@ public class VWODownloader {
             }
         };
 
-        ScheduledThreadPoolExecutor scheduledRequestQueue = (ScheduledThreadPoolExecutor) Executors.newScheduledThreadPool(1);
-        scheduledRequestQueue.scheduleWithFixedDelay(runnable, 15,
-                15, TimeUnit.MINUTES);
+        ScheduledRequestQueue scheduledRequestQueue = ScheduledRequestQueue.getInstance("failure queue");
+
+        if(!scheduledRequestQueue.isRunning()) {
+            VWOLog.v(VWOLog.UPLOAD_LOGS, "Starting failed message queue scheduler");
+            scheduledRequestQueue.scheduleWithFixedDelay(runnable, 15,
+                    15, TimeUnit.MINUTES);
+            scheduledRequestQueue.setRunning(true);
+        } else {
+            VWOLog.v(VWOLog.UPLOAD_LOGS, "Failed message queue scheduler already running");
+        }
     }
 
     private void checkFailureQueueEntryStatus(Entry entry, VWOMessageQueue failureQueue) {
