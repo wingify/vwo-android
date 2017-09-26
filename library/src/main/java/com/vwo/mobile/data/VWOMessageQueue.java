@@ -151,4 +151,16 @@ public class VWOMessageQueue implements MessageQueue<Entry> {
     public String toString() {
         return String.format(Locale.ENGLISH, "Tag: %s\nSize: %d", this.filename, size());
     }
+
+    /**
+     * Retrieves and removes the head of this queue, or returns null if this queue is empty.
+     *
+     * @return the element {@link Entry}
+     */
+    @Override
+    public Entry poll() {
+        Entry entry = peek();
+        remove();
+        return entry;
+    }
 }

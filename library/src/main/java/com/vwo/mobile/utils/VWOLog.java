@@ -485,7 +485,7 @@ public class VWOLog {
      * The interface Log level.
      */
     @Retention(RetentionPolicy.SOURCE)
-    @IntDef({OFF, SEVERE, WARNING, CONFIG, INFO, ALL})
+    @IntDef(value = {OFF, SEVERE, WARNING, CONFIG, INFO, ALL})
     public @interface LogLevel {
     }
 }

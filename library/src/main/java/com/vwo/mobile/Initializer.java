@@ -1,6 +1,8 @@
 package com.vwo.mobile;
 
+import android.Manifest;
 import android.support.annotation.NonNull;
+import android.support.annotation.RequiresPermission;
 import android.support.annotation.RestrictTo;
 
 import com.vwo.mobile.events.VWOStatusListener;
@@ -29,6 +31,9 @@ public class Initializer {
      * </p>
      *
      */
+    @RequiresPermission(allOf = {
+            Manifest.permission.INTERNET,
+            Manifest.permission.ACCESS_NETWORK_STATE})
     public void launch() {
         if (vwo == null) {
             throw new IllegalArgumentException("You need to initialize vwo instance first");
@@ -48,6 +53,9 @@ public class Initializer {
      * @param statusListener is the listener for receiving callback launch status update. i.e. Failure
      *                       or success.
      */
+    @RequiresPermission(allOf = {
+            Manifest.permission.INTERNET,
+            Manifest.permission.ACCESS_NETWORK_STATE})
     public void launch(@NonNull VWOStatusListener statusListener) {
         setup(VWODownloader.NO_TIMEOUT);
         VWO.setVWOStatusListener(statusListener);
@@ -65,6 +73,9 @@ public class Initializer {
      * @param timeout is the timeout(in Milliseconds) for the HTTP call made to server.
      *
      */
+    @RequiresPermission(allOf = {
+            Manifest.permission.INTERNET,
+            Manifest.permission.ACCESS_NETWORK_STATE})
     public void launchSynchronously(long timeout) {
         setup(timeout);
         vwo.startVwoInstance();

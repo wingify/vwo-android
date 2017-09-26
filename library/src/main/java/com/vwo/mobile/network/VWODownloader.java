@@ -24,7 +24,6 @@ import java.util.concurrent.TimeoutException;
 
 /**
  * Created by abhishek on 17/09/15 at 11:39 PM.
- * Modified by aman on 17/09/15 at 3:27 PM.
  */
 public class VWODownloader {
     private final VWO mVWO;
@@ -50,16 +49,27 @@ public class VWODownloader {
                 downloadResult.onDownloadError(exception);
                 VWOLog.e(VWOLog.DOWNLOAD_DATA_LOGS, "**** Data Download Interrupted ****", true, false);
             } catch (ExecutionException exception) {
-                VWOLog.e(VWOLog.DOWNLOAD_DATA_LOGS, "**** Data Download Execution Exception ****", true, false);
+                if(exception.getCause() != null && exception.getCause() instanceof ErrorResponse) {
+                    ErrorResponse errorResponse = (ErrorResponse) exception.getCause();
+                    if (errorResponse.getCause() != null && (errorResponse.getCause() instanceof IOException ||
+                            errorResponse.getCause() instanceof ConnectException)) {
+                        VWOLog.e(VWOLog.UPLOAD_LOGS, "Either no internet connectivity or internet is very slow",
+                                exception, true, false);
+                    } else {
+                        VWOLog.e(VWOLog.DOWNLOAD_DATA_LOGS, "**** Data Download Execution Exception ****", true, false);
+                    }
+                } else {
+                    VWOLog.e(VWOLog.DOWNLOAD_DATA_LOGS, "**** Data Download Execution Exception ****", true, false);
+                }
                 downloadResult.onDownloadError(exception);
             } catch (TimeoutException exception) {
-                VWOLog.e(VWOLog.DOWNLOAD_DATA_LOGS, "**** Data Download Timeout ****", true, false);
+                VWOLog.e(VWOLog.DOWNLOAD_DATA_LOGS, "**** Data Download Timeout ****", false, false);
                 downloadResult.onDownloadError(exception);
             } catch (MalformedURLException exception) {
-                VWOLog.e(VWOLog.DOWNLOAD_DATA_LOGS, "**** Invalid Url : " + url, false, true);
+                VWOLog.e(VWOLog.DOWNLOAD_DATA_LOGS, "**** Invalid Url : " + url, true, true);
                 downloadResult.onDownloadError(exception);
             } catch (JSONException exception) {
-                VWOLog.e(VWOLog.DOWNLOAD_DATA_LOGS, "**** Unable to parse data.", false, true);
+                VWOLog.e(VWOLog.DOWNLOAD_DATA_LOGS, "**** Unable to parse data.", true, true);
                 downloadResult.onDownloadError(exception);
             }
         } else {
@@ -95,21 +105,21 @@ public class VWODownloader {
                     try {
                         downloadResult.onDownloadSuccess(new JSONArray(response));
                     } catch (JSONException exception) {
-                        VWOLog.e(VWOLog.DOWNLOAD_DATA_LOGS, exception, false, true);
+                        VWOLog.e(VWOLog.DOWNLOAD_DATA_LOGS, exception, true, true);
                         downloadResult.onDownloadError(exception);
                     }
                 }
             }, new Response.ErrorListener() {
                 @Override
                 public void onFailure(ErrorResponse exception) {
-                    VWOLog.e(VWOLog.DOWNLOAD_DATA_LOGS, exception, false, true);
+                    VWOLog.e(VWOLog.DOWNLOAD_DATA_LOGS, exception, true, true);
                     downloadResult.onDownloadError(exception);
                 }
             });
             request.setGzipEnabled(true);
             PriorityRequestQueue.getInstance().addToQueue(request);
         } catch (MalformedURLException exception) {
-            VWOLog.e(VWOLog.DOWNLOAD_DATA_LOGS, exception, false, true);
+            VWOLog.e(VWOLog.DOWNLOAD_DATA_LOGS, exception, true, true);
             downloadResult.onDownloadError(exception);
         }
     }
@@ -118,8 +128,8 @@ public class VWODownloader {
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                VWOMessageQueue messageQueue = mVWO.getMessageQueue();
-
+                final VWOMessageQueue messageQueue = mVWO.getMessageQueue();
+                final VWOMessageQueue failureQueue = mVWO.getFailureQueue();
                 Entry entry = messageQueue.peek();
 
                 while (entry != null) {
@@ -146,28 +156,29 @@ public class VWODownloader {
                     } catch (InterruptedException exception) {
                         VWOLog.e(VWOLog.UPLOAD_LOGS, exception, true, true);
                         entry.incrementRetryCount();
+                        messageQueue.remove();
                         if (entry.getRetryCount() < WARN_THRESHOLD) {
                             messageQueue.add(entry);
                         } else {
-                            mVWO.getFailureQueue().add(entry);
+                            failureQueue.add(entry);
                         }
-                        messageQueue.remove();
                         entry = messageQueue.peek();
                     } catch (ExecutionException exception) {
                         if(exception.getCause() != null && exception.getCause() instanceof ErrorResponse) {
                             ErrorResponse errorResponse = (ErrorResponse) exception.getCause();
                             if(errorResponse.getCause() != null && (errorResponse.getCause() instanceof IOException ||
                                     errorResponse.getCause() instanceof ConnectException)) {
-                                VWOLog.e(VWOLog.UPLOAD_LOGS, "Throwing IO exception and exiting", exception, true, false);
+                                VWOLog.e(VWOLog.UPLOAD_LOGS, "Either no internet connectivity or internet is very slow",
+                                        exception, true, false);
                                 break;
                             } else {
                                 VWOLog.e(VWOLog.UPLOAD_LOGS, exception, true, true);
-                                checkMessageQueueEntryStatus(entry, messageQueue, mVWO.getFailureQueue());
+                                checkMessageQueueEntryStatus(entry, messageQueue, failureQueue);
                                 entry = messageQueue.peek();
                             }
                         } else {
                             VWOLog.e(VWOLog.UPLOAD_LOGS, exception, true, true);
-                            checkMessageQueueEntryStatus(entry, messageQueue, mVWO.getFailureQueue());
+                            checkMessageQueueEntryStatus(entry, messageQueue, failureQueue);
                             entry = messageQueue.peek();
                         }
                     }
@@ -188,19 +199,19 @@ public class VWODownloader {
 
     private void checkMessageQueueEntryStatus(Entry entry, VWOMessageQueue messageQueue, VWOMessageQueue failureQueue) {
         entry.incrementRetryCount();
+        messageQueue.remove();
         if (entry.getRetryCount() < WARN_THRESHOLD) {
             messageQueue.add(entry);
         } else {
             failureQueue.add(entry);
         }
-        messageQueue.remove();
     }
 
     public void initializeFailureQueue() {
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                VWOMessageQueue failureQueue = mVWO.getFailureQueue();
+                final VWOMessageQueue failureQueue = mVWO.getFailureQueue();
                 int taskCount = failureQueue.size();
                 VWOLog.i(VWOLog.UPLOAD_LOGS, "Flushing failure message queue of size : " + taskCount, true);
                 for (int i = 0; i < taskCount; i++) {
@@ -231,7 +242,8 @@ public class VWODownloader {
                             ErrorResponse errorResponse = (ErrorResponse) exception.getCause();
                             if(errorResponse.getCause() != null && (errorResponse.getCause() instanceof IOException ||
                                     errorResponse.getCause() instanceof ConnectException)) {
-                                VWOLog.e(VWOLog.UPLOAD_LOGS, "Throwing IO exception and exiting", exception, true, false);
+                                VWOLog.e(VWOLog.UPLOAD_LOGS, "Either no internet connectivity or internet is very slow",
+                                        exception, true, false);
                                 break;
                             } else {
                                 VWOLog.e(VWOLog.UPLOAD_LOGS, exception, true, true);
@@ -260,14 +272,13 @@ public class VWODownloader {
 
     private void checkFailureQueueEntryStatus(Entry entry, VWOMessageQueue failureQueue) {
         entry.incrementRetryCount();
-
+        failureQueue.remove();
         if (entry.getRetryCount() < DISCARD_THRESHOLD) {
             failureQueue.add(entry);
         } else {
             VWOLog.e(VWOLog.UPLOAD_LOGS, "discarding entry : " + entry.toString(),
                     true, true);
         }
-        failureQueue.remove();
     }
 
     public interface DownloadResult {
