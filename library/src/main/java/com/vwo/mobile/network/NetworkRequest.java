@@ -1,7 +1,5 @@
 package com.vwo.mobile.network;
 
-import android.os.Handler;
-import android.os.Looper;
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -44,7 +42,6 @@ public abstract class NetworkRequest<T> implements Runnable, Comparable<NetworkR
     private Response.Listener<T> mResponseListener;
     @Nullable
     private Response.ErrorListener mErrorListener;
-    private Handler handler;
     private String requestTag;
     private boolean canceled;
     private Thread currentThread;
@@ -77,7 +74,6 @@ public abstract class NetworkRequest<T> implements Runnable, Comparable<NetworkR
         this.requestTag = requestTag;
         this.mResponseListener = listener;
         this.mErrorListener = errorListener;
-        this.handler = new Handler(Looper.getMainLooper());
         this.priority = PRIORITY_NORMAL;
     }
 
@@ -235,12 +231,7 @@ public abstract class NetworkRequest<T> implements Runnable, Comparable<NetworkR
                 }
 
                 if (mResponseListener != null) {
-                    handler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            mResponseListener.onResponse(parseResponse(response));
-                        }
-                    });
+                    mResponseListener.onResponse(parseResponse(response));
                 }
             } else {
                 NetworkResponse.Builder responseBuilder = new NetworkResponse
@@ -270,32 +261,17 @@ public abstract class NetworkRequest<T> implements Runnable, Comparable<NetworkR
                 }
 
                 if (mErrorListener != null) {
-                    handler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            mErrorListener.onFailure(getErrorResponse(new ErrorResponse(response)));
-                        }
-                    });
+                    mErrorListener.onFailure(getErrorResponse(new ErrorResponse(response)));
                 }
             }
         } catch (final ProtocolException exception) {
             if (mErrorListener != null) {
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        mErrorListener.onFailure(new ErrorResponse(exception));
-                    }
-                });
+                mErrorListener.onFailure(new ErrorResponse(exception));
             }
             VWOLog.e(VWOLog.DATA_LOGS, exception, false, true);
         }catch (final IOException exception) {
             if (mErrorListener != null) {
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        mErrorListener.onFailure(new ErrorResponse(exception));
-                    }
-                });
+                mErrorListener.onFailure(new ErrorResponse(exception));
             }
             VWOLog.e(VWOLog.DATA_LOGS, exception, true, false);
         } catch (final InterruptedException exception) {
@@ -303,12 +279,7 @@ public abstract class NetworkRequest<T> implements Runnable, Comparable<NetworkR
                             "download thread was interrupted for request with tag : " + requestTag, exception,
                     true, false);
             if (mErrorListener != null) {
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        mErrorListener.onFailure(new ErrorResponse(exception));
-                    }
-                });
+                mErrorListener.onFailure(new ErrorResponse(exception));
             }
         } finally {
             if (urlConnection != null) {
