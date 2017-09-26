@@ -49,7 +49,7 @@ In your top level build.gradle file add the following code under repositories.
         }
     }
 	
-Add vwo and socket.io dependency to app/build.gradle file
+Add dependencies to app/build.gradle file
 
 	dependencies {
 	    ...
