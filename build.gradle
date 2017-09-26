@@ -44,8 +44,13 @@ allprojects {
         maven {
             url 'https://raw.githubusercontent.com/wingify/vwo-mobile-android/master/'
         }
+        // Snapshot Repo
+        maven {
+            url 'https://raw.githubusercontent.com/wingify/vwo-android-snapshot/master/'
+        }
+//        local repo
 //        maven {
-//            url uri('/Users/aman/git/vwo-mobile-android')
+//            url uri('/Users/aman/git/vwo-android-snapshot')
 //        }
     }
 }
