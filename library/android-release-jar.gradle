@@ -6,6 +6,7 @@ def artifactId = project.PUBLISH_ARTIFACT_ID
 def version = project.PUBLISH_VERSION
 
 def localReleaseDest = "/Users/aman/git/vwo-mobile-android"
+def snapshotRepo = "/Users/aman/git/vwo-android-snapshot"
 
 android.libraryVariants.all { variant ->
     def name = variant.buildType.name
@@ -35,20 +36,23 @@ task androidSourcesJar(type: Jar) {
 }
 
 uploadArchives {
-    repositories.mavenDeployer {
-        pom.groupId = groupId
-        pom.artifactId = artifactId
-        pom.version = version
+    repositories {
+        mavenDeployer {
+            pom.groupId = groupId
+            pom.artifactId = artifactId
+            pom.version = version
 
-        pom.project {
-            name 'Vwo Mobile SDK'
-            packaging 'jar'
-            description 'Vwo mobile SDK for A/B Testing android apps'
-            url 'https://github.com/wingify/vwo-mobile-android'
+            pom.project {
+                name 'Vwo Mobile SDK'
+                packaging 'jar'
+                description 'Vwo mobile SDK for A/B Testing android apps'
+                url 'https://github.com/wingify/vwo-mobile-android'
+            }
+
+            // Add other pom properties here if you want (developer details / licenses)
+            repository(url: "file://${localReleaseDest}")
+            snapshotRepository(url: "file://${snapshotRepo}")
         }
-        
-        // Add other pom properties here if you want (developer details / licenses)
-        repository(url: "file://${localReleaseDest}")
     }
 }
 
