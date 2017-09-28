@@ -44,33 +44,36 @@ public class VWODownloader {
 
         if (mVWO.getConfig().getTimeout() != NO_TIMEOUT) {
             try {
-                downloadResult.onDownloadSuccess(new JSONArray(downloadDataSynchronous(url, downloadResult, mVWO)));
+                downloadResult.onDownloadSuccess(downloadDataSynchronous(url, downloadResult, mVWO));
             } catch (InterruptedException exception) {
-                downloadResult.onDownloadError(exception);
-                VWOLog.e(VWOLog.DOWNLOAD_DATA_LOGS, "**** Data Download Interrupted ****", true, false);
+                String message = "Request timed out";
+                downloadResult.onDownloadError(exception, message);
+                VWOLog.e(VWOLog.DOWNLOAD_DATA_LOGS, "**** Request timed out or thread interrupted ****", true, false);
             } catch (ExecutionException exception) {
-                if(exception.getCause() != null && exception.getCause() instanceof ErrorResponse) {
+                String message;
+                if (exception.getCause() != null && exception.getCause() instanceof ErrorResponse) {
                     ErrorResponse errorResponse = (ErrorResponse) exception.getCause();
                     if (errorResponse.getCause() != null && (errorResponse.getCause() instanceof IOException ||
                             errorResponse.getCause() instanceof ConnectException)) {
+                        message = "Either no internet connectivity or internet is very slow";
                         VWOLog.e(VWOLog.UPLOAD_LOGS, "Either no internet connectivity or internet is very slow",
                                 exception, true, false);
                     } else {
+                        message = "Something went wrong";
                         VWOLog.e(VWOLog.DOWNLOAD_DATA_LOGS, "**** Data Download Execution Exception ****", true, false);
                     }
                 } else {
+                    message = "Something went wrong";
                     VWOLog.e(VWOLog.DOWNLOAD_DATA_LOGS, "**** Data Download Execution Exception ****", true, false);
                 }
-                downloadResult.onDownloadError(exception);
+                downloadResult.onDownloadError(exception, message);
             } catch (TimeoutException exception) {
+                String message = "Request timed out";
                 VWOLog.e(VWOLog.DOWNLOAD_DATA_LOGS, "**** Data Download Timeout ****", false, false);
-                downloadResult.onDownloadError(exception);
+                downloadResult.onDownloadError(exception, message);
             } catch (MalformedURLException exception) {
                 VWOLog.e(VWOLog.DOWNLOAD_DATA_LOGS, "**** Invalid Url : " + url, true, true);
-                downloadResult.onDownloadError(exception);
-            } catch (JSONException exception) {
-                VWOLog.e(VWOLog.DOWNLOAD_DATA_LOGS, "**** Unable to parse data.", true, true);
-                downloadResult.onDownloadError(exception);
+                downloadResult.onDownloadError(exception, "Invalid download url");
             }
         } else {
             downloadData(url, downloadResult, mVWO);
@@ -80,7 +83,7 @@ public class VWODownloader {
     private String downloadDataSynchronous(String url, final DownloadResult downloadResult, VWO vwo)
             throws MalformedURLException, InterruptedException, ExecutionException, TimeoutException {
         if (!NetworkUtils.shouldAttemptNetworkCall(vwo)) {
-            downloadResult.onDownloadError(new Exception("No internet"));
+            downloadResult.onDownloadError(new ConnectException(), "No Internet Connectivity");
             return null;
         }
 
@@ -94,7 +97,7 @@ public class VWODownloader {
 
     private void downloadData(String url, final DownloadResult downloadResult, VWO vwo) {
         if (!NetworkUtils.shouldAttemptNetworkCall(vwo)) {
-            downloadResult.onDownloadError(new Exception("No internet"));
+            downloadResult.onDownloadError(new ConnectException(), "No Internet Connectivity");
             return;
         }
         try {
@@ -102,25 +105,30 @@ public class VWODownloader {
                     NetworkUtils.Headers.getBasicHeaders(), new Response.Listener<String>() {
                 @Override
                 public void onResponse(@Nullable String response) {
-                    try {
-                        downloadResult.onDownloadSuccess(new JSONArray(response));
-                    } catch (JSONException exception) {
-                        VWOLog.e(VWOLog.DOWNLOAD_DATA_LOGS, exception, true, true);
-                        downloadResult.onDownloadError(exception);
-                    }
+                    downloadResult.onDownloadSuccess(response);
                 }
             }, new Response.ErrorListener() {
                 @Override
                 public void onFailure(ErrorResponse exception) {
-                    VWOLog.e(VWOLog.DOWNLOAD_DATA_LOGS, exception, true, true);
-                    downloadResult.onDownloadError(exception);
+                    String message;
+                    ErrorResponse errorResponse = (ErrorResponse) exception.getCause();
+                    if (errorResponse.getCause() != null && (errorResponse.getCause() instanceof IOException ||
+                            errorResponse.getCause() instanceof ConnectException)) {
+                        message = "Either no internet connectivity or internet is very slow";
+                        VWOLog.e(VWOLog.UPLOAD_LOGS, "Either no internet connectivity or internet is very slow",
+                                exception, true, false);
+                    } else {
+                        message = "Something went wrong";
+                        VWOLog.e(VWOLog.DOWNLOAD_DATA_LOGS, "Something went wrong", exception, true, false);
+                    }
+                    downloadResult.onDownloadError(exception, message);
                 }
             });
             request.setGzipEnabled(true);
             PriorityRequestQueue.getInstance().addToQueue(request);
         } catch (MalformedURLException exception) {
             VWOLog.e(VWOLog.DOWNLOAD_DATA_LOGS, exception, true, true);
-            downloadResult.onDownloadError(exception);
+            downloadResult.onDownloadError(exception, "Invalid download url");
         }
     }
 
@@ -164,9 +172,9 @@ public class VWODownloader {
                         }
                         entry = messageQueue.peek();
                     } catch (ExecutionException exception) {
-                        if(exception.getCause() != null && exception.getCause() instanceof ErrorResponse) {
+                        if (exception.getCause() != null && exception.getCause() instanceof ErrorResponse) {
                             ErrorResponse errorResponse = (ErrorResponse) exception.getCause();
-                            if(errorResponse.getCause() != null && (errorResponse.getCause() instanceof IOException ||
+                            if (errorResponse.getCause() != null && (errorResponse.getCause() instanceof IOException ||
                                     errorResponse.getCause() instanceof ConnectException)) {
                                 VWOLog.e(VWOLog.UPLOAD_LOGS, "Either no internet connectivity or internet is very slow",
                                         exception, true, false);
@@ -187,7 +195,7 @@ public class VWODownloader {
         };
 
         ScheduledRequestQueue scheduledRequestQueue = ScheduledRequestQueue.getInstance("message queue");
-        if(!scheduledRequestQueue.isRunning()) {
+        if (!scheduledRequestQueue.isRunning()) {
             VWOLog.w(VWOLog.UPLOAD_LOGS, "Starting new Scheduler", true);
             scheduledRequestQueue.scheduleWithFixedDelay(runnable, 15,
                     15, TimeUnit.SECONDS);
@@ -238,9 +246,9 @@ public class VWODownloader {
                                 exception, true, true);
                         failureQueue.remove();
                     } catch (InterruptedException | ExecutionException exception) {
-                        if(exception.getCause() != null && exception.getCause() instanceof ErrorResponse) {
+                        if (exception.getCause() != null && exception.getCause() instanceof ErrorResponse) {
                             ErrorResponse errorResponse = (ErrorResponse) exception.getCause();
-                            if(errorResponse.getCause() != null && (errorResponse.getCause() instanceof IOException ||
+                            if (errorResponse.getCause() != null && (errorResponse.getCause() instanceof IOException ||
                                     errorResponse.getCause() instanceof ConnectException)) {
                                 VWOLog.e(VWOLog.UPLOAD_LOGS, "Either no internet connectivity or internet is very slow",
                                         exception, true, false);
@@ -260,7 +268,7 @@ public class VWODownloader {
 
         ScheduledRequestQueue scheduledRequestQueue = ScheduledRequestQueue.getInstance("failure queue");
 
-        if(!scheduledRequestQueue.isRunning()) {
+        if (!scheduledRequestQueue.isRunning()) {
             VWOLog.v(VWOLog.UPLOAD_LOGS, "Starting failed message queue scheduler");
             scheduledRequestQueue.scheduleWithFixedDelay(runnable, 15,
                     15, TimeUnit.MINUTES);
@@ -282,9 +290,9 @@ public class VWODownloader {
     }
 
     public interface DownloadResult {
-        void onDownloadSuccess(JSONArray data);
+        void onDownloadSuccess(String data);
 
-        void onDownloadError(Exception ex);
+        void onDownloadError(Exception ex, String message);
 
     }
 }
