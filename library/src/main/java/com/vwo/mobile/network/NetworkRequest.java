@@ -18,8 +18,10 @@ import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -38,13 +40,14 @@ public abstract class NetworkRequest<T> implements Runnable, Comparable<NetworkR
     @HttpMethod
     @NonNull
     private String method;
-    @Nullable
-    private Response.Listener<T> mResponseListener;
-    @Nullable
-    private Response.ErrorListener mErrorListener;
+    @NonNull
+    private List<Response.Listener<T>> mResponseListeners;
+    @NonNull
+    private List<Response.ErrorListener> mErrorListeners;
     private String requestTag;
     private boolean canceled;
     private Thread currentThread;
+    private boolean executed;
 
     public static final String GET = "GET";
     public static final String PUT = "PUT";
@@ -72,8 +75,14 @@ public abstract class NetworkRequest<T> implements Runnable, Comparable<NetworkR
         this.url = new URL(url);
         this.method = method;
         this.requestTag = requestTag;
-        this.mResponseListener = listener;
-        this.mErrorListener = errorListener;
+        this.mResponseListeners = new ArrayList<>();
+        this.mErrorListeners = new ArrayList<>();
+        if(listener != null) {
+            this.mResponseListeners.add(listener);
+        }
+        if(errorListener != null) {
+            this.mErrorListeners.add(errorListener);
+        }
         this.priority = PRIORITY_NORMAL;
     }
 
@@ -105,22 +114,20 @@ public abstract class NetworkRequest<T> implements Runnable, Comparable<NetworkR
         return DEFAULT_CONNECT_TIMEOUT;
     }
 
-    @Nullable
-    public Response.Listener<T> getResponseListener() {
-        return mResponseListener;
+    public void addResponseListener(Response.Listener<T> responseListener) {
+        this.mResponseListeners.add(responseListener);
     }
 
-    @Nullable
-    public Response.ErrorListener getErrorListener() {
-        return mErrorListener;
+    public void addErrorListener(@Nullable Response.ErrorListener mErrorListener) {
+        this.mErrorListeners.add(mErrorListener);
     }
 
-    public void setResponseListener(Response.Listener<T> responseListener) {
-        this.mResponseListener = responseListener;
+    public void removeResponseListener(Response.Listener<T> responseListener) {
+        this.mResponseListeners.remove(responseListener);
     }
 
-    public void setErrorListener(@Nullable Response.ErrorListener mErrorListener) {
-        this.mErrorListener = mErrorListener;
+    public void removeErrorListener(Response.ErrorListener errorListener) {
+        this.mErrorListeners.remove(errorListener);
     }
 
     Thread getCurrentThread() {
@@ -230,9 +237,7 @@ public abstract class NetworkRequest<T> implements Runnable, Comparable<NetworkR
                     throw new InterruptedException();
                 }
 
-                if (mResponseListener != null) {
-                    mResponseListener.onResponse(parseResponse(response));
-                }
+                notifyResponseListeners(response);
             } else {
                 NetworkResponse.Builder responseBuilder = new NetworkResponse
                         .Builder(urlConnection.getResponseCode(), false);
@@ -260,31 +265,39 @@ public abstract class NetworkRequest<T> implements Runnable, Comparable<NetworkR
                     throw new InterruptedException();
                 }
 
-                if (mErrorListener != null) {
-                    mErrorListener.onFailure(getErrorResponse(new ErrorResponse(response)));
-                }
+                notifyErrorListeners(getErrorResponse(new ErrorResponse(response)));
             }
         } catch (final ProtocolException exception) {
-            if (mErrorListener != null) {
-                mErrorListener.onFailure(new ErrorResponse(exception));
-            }
+            notifyErrorListeners(new ErrorResponse(exception));
+
             VWOLog.e(VWOLog.DATA_LOGS, exception, false, true);
         }catch (final IOException exception) {
-            if (mErrorListener != null) {
-                mErrorListener.onFailure(new ErrorResponse(exception));
-            }
+            notifyErrorListeners(new ErrorResponse(exception));
+
             VWOLog.e(VWOLog.DATA_LOGS, exception, true, false);
         } catch (final InterruptedException exception) {
             VWOLog.e(VWOLog.DATA_LOGS, "Either connection was closed or " +
                             "download thread was interrupted for request with tag : " + requestTag, exception,
                     true, false);
-            if (mErrorListener != null) {
-                mErrorListener.onFailure(new ErrorResponse(exception));
-            }
+            notifyErrorListeners(new ErrorResponse(exception));
         } finally {
             if (urlConnection != null) {
                 urlConnection.disconnect();
             }
+        }
+    }
+
+    private void notifyErrorListeners(ErrorResponse exception) {
+        executed = true;
+        for(Response.ErrorListener mErrorListener : mErrorListeners) {
+            mErrorListener.onFailure(exception);
+        }
+    }
+
+    private void notifyResponseListeners(NetworkResponse networkResponse) {
+        executed = true;
+        for (Response.Listener<T> mResponseListener : mResponseListeners) {
+            mResponseListener.onResponse(this, parseResponse(networkResponse));
         }
     }
 
@@ -313,6 +326,10 @@ public abstract class NetworkRequest<T> implements Runnable, Comparable<NetworkR
 
     public void cancel() {
         this.canceled = true;
+    }
+
+    public boolean isExecuted() {
+        return executed;
     }
 
     protected String getParamsEncoding() {

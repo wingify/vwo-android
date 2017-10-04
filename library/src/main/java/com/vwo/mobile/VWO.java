@@ -8,6 +8,7 @@ import android.os.Handler;
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 
 import com.vwo.mobile.constants.AppConstants;
 import com.vwo.mobile.data.VWOData;
@@ -15,6 +16,7 @@ import com.vwo.mobile.data.VWOLocalData;
 import com.vwo.mobile.data.VWOMessageQueue;
 import com.vwo.mobile.events.VWOStatusListener;
 import com.vwo.mobile.listeners.VWOActivityLifeCycle;
+import com.vwo.mobile.network.ErrorResponse;
 import com.vwo.mobile.utils.VWOLog;
 import com.vwo.mobile.logging.VWOLoggingClient;
 import com.vwo.mobile.models.Campaign;
@@ -27,6 +29,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.io.IOException;
+import java.net.ConnectException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -324,8 +327,8 @@ public class VWO implements VWODownloader.DownloadResult {
     }
 
     @Override
-    public void onDownloadSuccess(String data) {
-        if (data.length() == 0) {
+    public void onDownloadSuccess(@Nullable String data) {
+        if (TextUtils.isEmpty(data)) {
             VWOLog.e(VWOLog.DOWNLOAD_DATA_LOGS, "Empty data downloaded : " + data, true, true);
             onDownloadError(new Exception(), "Empty data downloaded");
         } else {
@@ -345,9 +348,19 @@ public class VWO implements VWODownloader.DownloadResult {
     }
 
     @Override
-    public void onDownloadError(Exception ex, String message) {
-        if (ex instanceof JSONException) {
-            VWOLog.e(VWOLog.DOWNLOAD_DATA_LOGS, ex, true, false);
+    public void onDownloadError(@Nullable Exception exception, @Nullable String message) {
+        if (exception != null && exception instanceof JSONException) {
+            VWOLog.e(VWOLog.DOWNLOAD_DATA_LOGS, exception, true, false);
+        }
+        if (exception != null && exception.getCause() != null && exception.getCause() instanceof ErrorResponse) {
+            ErrorResponse errorResponse = (ErrorResponse) exception.getCause();
+            int responseCode = errorResponse.getNetworkResponse().getResponseCode();
+            if(responseCode >= 400 && responseCode <= 499) {
+                message = "Invalid api key";
+                VWOLog.e(VWOLog.INITIALIZATION_LOGS, message, false, false);
+                onLoadFailure(message);
+                return;
+            }
         }
         if (mVWOLocalData.isLocalDataPresent()) {
             mVWOData.parseData(mVWOLocalData.getData());

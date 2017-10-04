@@ -1,7 +1,11 @@
 package com.vwo.mobile.network;
 
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
 import com.vwo.mobile.utils.VWOLog;
 
+import java.util.HashSet;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -24,17 +28,6 @@ public class PriorityRequestQueue implements RequestQueue {
     private final BlockingQueue<Runnable> mRequestQueue;
     private ThreadPoolExecutor mRequestThreadPool;
 
-    protected PriorityRequestQueue(BlockingQueue<Runnable> blockingQueue) {
-        mRequestQueue = blockingQueue;
-        this.mRequestThreadPool = new ThreadPoolExecutor(NUMBER_OF_CORES, NUMBER_OF_CORES,
-                KEEP_ALIVE_TIME, KEEP_ALIVE_TIME_UNIT, mRequestQueue);
-    }
-
-    protected PriorityRequestQueue(ThreadPoolExecutor threadPoolExecutor) {
-        mRequestQueue = new PriorityBlockingQueue<>();
-        this.mRequestThreadPool = threadPoolExecutor;
-    }
-
     protected PriorityRequestQueue() {
         mRequestQueue = new PriorityBlockingQueue<>();
         mRequestThreadPool = new ThreadPoolExecutor(NUMBER_OF_CORES, NUMBER_OF_CORES,
@@ -42,21 +35,13 @@ public class PriorityRequestQueue implements RequestQueue {
     }
 
     @Override
-    public void addToQueue(NetworkRequest networkRequest) {
-        VWOLog.i(VWOLog.URL_LOGS, "Adding request to queue : " + networkRequest.getUrl(), true);
+    public void addToQueue(final NetworkRequest networkRequest) {
         mRequestThreadPool.execute(networkRequest);
     }
 
     public static PriorityRequestQueue getInstance() {
         if (sPriorityRequestQueue == null) {
             sPriorityRequestQueue = new PriorityRequestQueue();
-        }
-        return sPriorityRequestQueue;
-    }
-
-    public static PriorityRequestQueue getInstance(ThreadPoolExecutor threadPoolExecutor) {
-        if (sPriorityRequestQueue == null) {
-            sPriorityRequestQueue = new PriorityRequestQueue(threadPoolExecutor);
         }
         return sPriorityRequestQueue;
     }

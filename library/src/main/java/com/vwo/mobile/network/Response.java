@@ -1,5 +1,6 @@
 package com.vwo.mobile.network;
 
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 /**
@@ -14,7 +15,7 @@ public class Response<T> {
 
 
     public interface Listener<T> {
-        void onResponse(@Nullable T response);
+        void onResponse(@NonNull NetworkRequest<T> request, @Nullable T response);
     }
 
     public interface ErrorListener {

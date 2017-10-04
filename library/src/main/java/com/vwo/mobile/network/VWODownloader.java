@@ -1,5 +1,6 @@
 package com.vwo.mobile.network;
 
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.vwo.mobile.VWO;
@@ -103,8 +104,9 @@ public class VWODownloader {
         try {
             NetworkStringRequest request = new NetworkStringRequest(url, NetworkRequest.GET,
                     NetworkUtils.Headers.getBasicHeaders(), new Response.Listener<String>() {
+
                 @Override
-                public void onResponse(@Nullable String response) {
+                public void onResponse(@NonNull NetworkRequest<String> networkRequest, @Nullable String response) {
                     downloadResult.onDownloadSuccess(response);
                 }
             }, new Response.ErrorListener() {
@@ -290,9 +292,9 @@ public class VWODownloader {
     }
 
     public interface DownloadResult {
-        void onDownloadSuccess(String data);
+        void onDownloadSuccess(@Nullable String data);
 
-        void onDownloadError(Exception ex, String message);
+        void onDownloadError(@Nullable Exception ex, @Nullable String message);
 
     }
 }

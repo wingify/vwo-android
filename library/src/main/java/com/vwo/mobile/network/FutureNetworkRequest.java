@@ -94,7 +94,7 @@ public class FutureNetworkRequest<T> implements Future<T>, Response.Listener<T>,
     }
 
     @Override
-    public synchronized void onResponse(@Nullable T response) {
+    public synchronized void onResponse(@NonNull NetworkRequest<T> networkRequest, @Nullable T response) {
         resultReceived = true;
         mResult = response;
         notifyAll();
