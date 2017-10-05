@@ -201,7 +201,7 @@ public class NetworkStringRequest extends NetworkRequest<String> {
                     body = errorResponse.getNetworkResponse().getBody();
                 }
                 String err = new String(body, NetworkUtils.Headers.parseCharset(errorResponse.getNetworkResponse().getHeaders()));
-                VWOLog.e(VWOLog.DOWNLOAD_DATA_LOGS, err, false, true);
+                VWOLog.e(VWOLog.DOWNLOAD_DATA_LOGS, err, false, false);
             } else {
                 VWOLog.e(VWOLog.DOWNLOAD_DATA_LOGS, "Response body is empty", true, false);
             }

@@ -29,11 +29,11 @@ import java.util.Map;
 import java.util.Stack;
 
 /**
- * Created by Aman on Fri Fri 16:06 16:07.
+ * Created by Aman on Fri 16:06.
  */
 public class VWOData {
     public static final String CAMPAIGN_RUNNING = "RUNNING";
-    public static final String CAMPAIGN_EXCLUDED = "EXCLUED";
+    public static final String CAMPAIGN_EXCLUDED = "EXCLUDED";
 
     private ArrayList<Campaign> mCampaigns;
     private Map<String, Campaign> mVariations;

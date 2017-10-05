@@ -18,11 +18,15 @@ public class VWOUrlBuilder {
     private static final String DACDN_URL = BuildConfig.DACDN_URL;
     private static final String DACDN_URL_SCHEME = BuildConfig.SCHEME;
     private static final String PATH_MOBILE = "mobile";
-    private static final String PATH_DACDN_GOAL = "c.gif";
-    private static final String PATH_DACDN_CAMPAIGN = "l.gif";
+//    private static final String PATH_DACDN_GOAL = "c.gif";
+    private static final String PATH_DACDN_GOAL = "track-goal";
+//    private static final String PATH_DACDN_CAMPAIGN = "l.gif";
+    private static final String PATH_DACDN_CAMPAIGN = "track-user";
 
     private static final String VALUE_DEVICE_TYPE = "android";
 
+    private static final String API_VERSION = "api-version";
+    private static final String VALUE_API_VERSION = "2";
     private static final String ACCOUNT_ID = "a";
     private static final String SDK_VERSION = "v";
     private static final String APP_KEY = "i";
@@ -69,6 +73,7 @@ public class VWOUrlBuilder {
         Uri.Builder uriBuilder = new Uri.Builder().scheme(DACDN_URL_SCHEME)
                 .authority(DACDN_URL)
                 .appendEncodedPath(PATH_MOBILE)
+                .appendQueryParameter(API_VERSION, VALUE_API_VERSION)
                 .appendQueryParameter(ACCOUNT_ID, accountId)
                 .appendQueryParameter(SDK_VERSION, sdkVersion)
                 .appendQueryParameter(APP_KEY, appKey)

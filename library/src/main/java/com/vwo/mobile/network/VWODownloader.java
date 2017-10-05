@@ -10,15 +10,10 @@ import com.vwo.mobile.models.Entry;
 import com.vwo.mobile.utils.NetworkUtils;
 import com.vwo.mobile.utils.VWOLog;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-
 import java.io.IOException;
 import java.net.ConnectException;
 import java.net.MalformedURLException;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -84,7 +79,7 @@ public class VWODownloader {
     private String downloadDataSynchronous(String url, final DownloadResult downloadResult, VWO vwo)
             throws MalformedURLException, InterruptedException, ExecutionException, TimeoutException {
         if (!NetworkUtils.shouldAttemptNetworkCall(vwo)) {
-            downloadResult.onDownloadError(new ConnectException(), "No Internet Connectivity");
+            downloadResult.onDownloadError(new ConnectException("No internet connectivity"), "No Internet Connectivity");
             return null;
         }
 
@@ -98,7 +93,7 @@ public class VWODownloader {
 
     private void downloadData(String url, final DownloadResult downloadResult, VWO vwo) {
         if (!NetworkUtils.shouldAttemptNetworkCall(vwo)) {
-            downloadResult.onDownloadError(new ConnectException(), "No Internet Connectivity");
+            downloadResult.onDownloadError(new ConnectException("No internet connectivity"), "No Internet Connectivity");
             return;
         }
         try {
@@ -111,19 +106,18 @@ public class VWODownloader {
                 }
             }, new Response.ErrorListener() {
                 @Override
-                public void onFailure(ErrorResponse exception) {
+                public void onFailure(ErrorResponse errorResponse) {
                     String message;
-                    ErrorResponse errorResponse = (ErrorResponse) exception.getCause();
                     if (errorResponse.getCause() != null && (errorResponse.getCause() instanceof IOException ||
                             errorResponse.getCause() instanceof ConnectException)) {
                         message = "Either no internet connectivity or internet is very slow";
                         VWOLog.e(VWOLog.UPLOAD_LOGS, "Either no internet connectivity or internet is very slow",
-                                exception, true, false);
+                                errorResponse, true, false);
                     } else {
                         message = "Something went wrong";
-                        VWOLog.e(VWOLog.DOWNLOAD_DATA_LOGS, "Something went wrong", exception, true, false);
+                        VWOLog.e(VWOLog.DOWNLOAD_DATA_LOGS, "Something went wrong", errorResponse, true, false);
                     }
-                    downloadResult.onDownloadError(exception, message);
+                    downloadResult.onDownloadError(errorResponse, message);
                 }
             });
             request.setGzipEnabled(true);
@@ -230,8 +224,8 @@ public class VWODownloader {
                         break;
                     }
                     try {
-                        if (!VWOActivityLifeCycle.isApplicationInForeground() || !NetworkUtils.shouldAttemptNetworkCall(mVWO)) {
-                            VWOLog.e(VWOLog.UPLOAD_LOGS, "Either no network, or application is not in foreground", true, false);
+                        if (!NetworkUtils.shouldAttemptNetworkCall(mVWO)) {
+                            VWOLog.e(VWOLog.UPLOAD_LOGS, "No internet connectivity", true, false);
                             break;
                         }
                         FutureNetworkRequest<String> futureNetworkRequest = FutureNetworkRequest.getInstance();
@@ -272,8 +266,8 @@ public class VWODownloader {
 
         if (!scheduledRequestQueue.isRunning()) {
             VWOLog.v(VWOLog.UPLOAD_LOGS, "Starting failed message queue scheduler");
-            scheduledRequestQueue.scheduleWithFixedDelay(runnable, 15,
-                    15, TimeUnit.MINUTES);
+            scheduledRequestQueue.scheduleWithFixedDelay(runnable, 30,
+                    300, TimeUnit.SECONDS);
             scheduledRequestQueue.setRunning(true);
         } else {
             VWOLog.v(VWOLog.UPLOAD_LOGS, "Failed message queue scheduler already running");
