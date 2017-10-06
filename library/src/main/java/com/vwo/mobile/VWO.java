@@ -16,11 +16,11 @@ import com.vwo.mobile.data.VWOLocalData;
 import com.vwo.mobile.data.VWOMessageQueue;
 import com.vwo.mobile.events.VWOStatusListener;
 import com.vwo.mobile.listeners.VWOActivityLifeCycle;
-import com.vwo.mobile.network.ErrorResponse;
-import com.vwo.mobile.utils.VWOLog;
 import com.vwo.mobile.logging.VWOLoggingClient;
 import com.vwo.mobile.models.Campaign;
+import com.vwo.mobile.network.ErrorResponse;
 import com.vwo.mobile.network.VWODownloader;
+import com.vwo.mobile.utils.VWOLog;
 import com.vwo.mobile.utils.VWOPreference;
 import com.vwo.mobile.utils.VWOUrlBuilder;
 import com.vwo.mobile.utils.VWOUtils;
@@ -29,7 +29,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.io.IOException;
-import java.net.ConnectException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -140,6 +139,11 @@ public class VWO implements VWODownloader.DownloadResult {
     @SuppressWarnings("unused")
     @Nullable
     public static Object getVariationForKey(@NonNull String key) {
+        if(sSharedInstance == null) {
+            VWOLog.e(VWOLog.DATA_LOGS, new IllegalStateException("Cannot call getVariationForKey(String key) " +
+                    "method before VWO SDK is completely initialized."), false, false);
+            return null;
+        }
         synchronized (sSharedInstance) {
             if (sSharedInstance != null && sSharedInstance.mVWOStartState >= STATE_STARTED) {
                 // Only when the VWO has completely started or loaded from disk
@@ -185,6 +189,9 @@ public class VWO implements VWODownloader.DownloadResult {
     @SuppressWarnings("unused")
     @NonNull
     public static Object getVariationForKey(@NonNull String key, @NonNull Object control) {
+        if(sSharedInstance == null) {
+            return control;
+        }
         synchronized (sSharedInstance) {
             Object data = getVariationForKey(key);
             if (data == null) {
@@ -205,6 +212,10 @@ public class VWO implements VWODownloader.DownloadResult {
      * @param goalIdentifier is name of the goal set in VWO dashboard
      */
     public static void markConversionForGoal(@NonNull String goalIdentifier) {
+        if(sSharedInstance == null) {
+            VWOLog.e(VWOLog.UPLOAD_LOGS, "SDK not initialized completely", false, false);
+            return;
+        }
         synchronized (sSharedInstance) {
             if (sSharedInstance != null && sSharedInstance.mVWOStartState >= STATE_STARTED) {
 
@@ -226,6 +237,10 @@ public class VWO implements VWODownloader.DownloadResult {
      * @param value          is the revenue achieved by hitting this goal.
      */
     public static void markConversionForGoal(@NonNull String goalIdentifier, double value) {
+        if(sSharedInstance == null) {
+            VWOLog.e(VWOLog.UPLOAD_LOGS, "SDK not initialized completely", false, false);
+            return;
+        }
 
         synchronized (sSharedInstance) {
             if (sSharedInstance != null && sSharedInstance.mVWOStartState >= STATE_STARTED) {
