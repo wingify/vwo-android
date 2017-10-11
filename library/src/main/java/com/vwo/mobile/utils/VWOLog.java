@@ -1,6 +1,8 @@
 package com.vwo.mobile.utils;
 
 import android.support.annotation.IntDef;
+import android.support.annotation.NonNull;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.vwo.mobile.BuildConfig;
@@ -61,6 +63,10 @@ public class VWOLog {
      */
     public static final String CAMPAIGN_LOGS = "campaign";
 
+    public static final String STORAGE_LOGS = "storage";
+
+    public static final String UNCAUGHT = "uncaught";
+
     public static final String DATA = "data";
 
     public static final String ANALYTICS = "analytics";
@@ -120,12 +126,15 @@ public class VWOLog {
     }
 
     /**
-     * V.
+     * Verbose logging
      *
      * @param tag is the log tag
      * @param msg is the message to log.
      */
     public static void v(String tag, String msg) {
+        if (TextUtils.isEmpty(msg)) {
+            return;
+        }
         if (LEVEL <= INFO) {
             if (Log.isLoggable(tag, Log.VERBOSE)) {
                 Log.v(tag, msg);
@@ -147,19 +156,26 @@ public class VWOLog {
     public static void v(String tag, String msg, Throwable exception) {
         if (LEVEL <= INFO) {
             if (Log.isLoggable(tag, Log.VERBOSE)) {
-                Log.v(tag, msg, exception);
+                if (!TextUtils.isEmpty(msg)) {
+                    Log.v(tag, msg, exception);
+                } else {
+                    Log.v(tag, "", exception);
+                }
             }
         }
     }
 
     /**
-     * D.
+     * Debug logging
      *
-     * @param tag           the tag
+     * @param tag           the log tag
      * @param msg           the msg
      * @param checkLoggable the check loggable
      */
     public static void d(String tag, String msg, boolean checkLoggable) {
+        if (TextUtils.isEmpty(msg)) {
+            return;
+        }
         if (LEVEL <= CONFIG) {
             if (checkLoggable) {
                 if (Log.isLoggable(tag, Log.DEBUG)) {
@@ -177,33 +193,44 @@ public class VWOLog {
      */
 
     /**
-     * D.
+     * Debug logging
      *
      * @param tag           the tag
      * @param msg           the msg
      * @param exception     the exception
      * @param checkLoggable the check loggable
      */
-    public static void d(String tag, String msg, Throwable exception, boolean checkLoggable) {
+    public static void d(@NonNull String tag, @NonNull String msg, @NonNull Throwable exception, boolean checkLoggable) {
         if (LEVEL <= CONFIG) {
             if (checkLoggable) {
                 if (Log.isLoggable(tag, Log.DEBUG)) {
-                    Log.d(tag, msg, exception);
+                    if (!TextUtils.isEmpty(msg)) {
+                        Log.d(tag, msg, exception);
+                    } else {
+                        Log.d(tag, "", exception);
+                    }
                 }
             } else {
-                Log.d(tag, msg, exception);
+                if (!TextUtils.isEmpty(msg)) {
+                    Log.d(tag, msg, exception);
+                } else {
+                    Log.d(tag, "", exception);
+                }
             }
         }
     }
 
     /**
-     * .
+     * information.
      *
      * @param tag           the tag
      * @param msg           the msg
      * @param checkLoggable the check loggable
      */
-    public static void i(String tag, String msg, boolean checkLoggable) {
+    public static void i(@NonNull String tag, @NonNull String msg, boolean checkLoggable) {
+        if (TextUtils.isEmpty(msg)) {
+            return;
+        }
         if (LEVEL <= INFO) {
             if (checkLoggable) {
                 if (Log.isLoggable(tag, Log.INFO)) {
@@ -216,51 +243,49 @@ public class VWOLog {
     }
 
     /**
-     * .
+     * information.
      *
      * @param tag           the tag
      * @param msg           the msg
      * @param exception     the exception
      * @param checkLoggable the check loggable
      */
-    public static void i(String tag, String msg, Throwable exception, boolean checkLoggable) {
+    public static void i(@NonNull String tag, @NonNull String msg, @NonNull Throwable exception, boolean checkLoggable) {
         if (LEVEL <= INFO) {
             if (checkLoggable) {
                 if (Log.isLoggable(tag, Log.INFO)) {
-                    Log.i(tag, msg, exception);
+                    if (!TextUtils.isEmpty(msg)) {
+                        Log.i(tag, msg, exception);
+                    } else {
+                        Log.i(tag, "", exception);
+                    }
                 }
             } else {
-                Log.i(tag, msg, exception);
+                if (!TextUtils.isEmpty(msg)) {
+                    Log.i(tag, msg, exception);
+                } else {
+                    Log.i(tag, "", exception);
+                }
             }
         }
     }
 
     /**
-     * E.
+     * Method for error logging.
      *
      * @param tag           the tag
      * @param ex            the ex
      * @param checkLoggable the check loggable
      * @param sendToServer  check to send data to server
      */
-    public static void e(String tag, Exception ex, boolean checkLoggable, boolean sendToServer) {
+    public static void e(@NonNull String tag, @NonNull Throwable ex, boolean checkLoggable, boolean sendToServer) {
         if (LEVEL <= SEVERE) {
             if (checkLoggable) {
                 if (Log.isLoggable(tag, Log.ERROR)) {
-                    try {
-                        Log.e(tag, ex.getLocalizedMessage());
-                        ex.printStackTrace();
-                    } catch (Exception e) {
-                        e(tag, e.getLocalizedMessage(), true, sendToServer);
-                    }
+                    ex.printStackTrace();
                 }
             } else {
-                try {
-                    Log.e(tag, ex.getLocalizedMessage());
-                    ex.printStackTrace();
-                } catch (Exception e) {
-                    e(tag, e.getLocalizedMessage(), false, sendToServer);
-                }
+                ex.printStackTrace();
             }
 
             if (sendToServer && VWOUtils.checkIfClassExists("io.sentry.Sentry")) {
@@ -277,7 +302,10 @@ public class VWOLog {
      * @param checkLoggable the check loggable
      * @param sendToServer  check to send data to server
      */
-    public static void e(String tag, String msg, boolean checkLoggable, boolean sendToServer) {
+    public static void e(@NonNull String tag, @NonNull String msg, boolean checkLoggable, boolean sendToServer) {
+        if (TextUtils.isEmpty(msg)) {
+            return;
+        }
         if (LEVEL <= SEVERE) {
             if (checkLoggable) {
                 if (Log.isLoggable(tag, Log.ERROR)) {
@@ -302,18 +330,27 @@ public class VWOLog {
      * @param checkLoggable the check loggable
      * @param sendToServer  check to send data to server
      */
-    public static void e(String tag, String msg, Throwable exception, boolean checkLoggable, boolean sendToServer) {
+    public static void e(@NonNull String tag, @NonNull String msg, @NonNull Throwable exception,
+                         boolean checkLoggable, boolean sendToServer) {
         if (LEVEL <= SEVERE) {
             if (checkLoggable) {
                 if (Log.isLoggable(tag, Log.ERROR)) {
-                    Log.e(tag, msg, exception);
+                    if (!TextUtils.isEmpty(msg)) {
+                        Log.e(tag, msg, exception);
+                    } else {
+                        Log.e(tag, "", exception);
+                    }
                 }
             } else {
-                Log.e(tag, msg, exception);
+                if (!TextUtils.isEmpty(msg)) {
+                    Log.e(tag, msg, exception);
+                } else {
+                    Log.e(tag, "", exception);
+                }
             }
 
-            if (sendToServer && VWOUtils.checkIfClassExists("io.sentry.Sentry")) {
-                Sentry.capture(new Exception(tag + ": " + msg));
+            if (!TextUtils.isEmpty(msg) && sendToServer && VWOUtils.checkIfClassExists("io.sentry.Sentry")) {
+                Sentry.capture(tag + ": " + msg);
             }
         }
     }
@@ -325,7 +362,10 @@ public class VWOLog {
      * @param msg           the msg
      * @param checkLoggable the check loggable
      */
-    public static void w(String tag, String msg, boolean checkLoggable) {
+    public static void w(@NonNull String tag, @NonNull String msg, boolean checkLoggable) {
+        if (TextUtils.isEmpty(msg)) {
+            return;
+        }
         if (LEVEL <= WARNING) {
             if (checkLoggable) {
                 if (Log.isLoggable(tag, Log.WARN)) {
@@ -345,14 +385,23 @@ public class VWOLog {
      * @param exception     the exception
      * @param checkLoggable the check loggable
      */
-    public static void w(String tag, String msg, Throwable exception, boolean checkLoggable) {
+    public static void w(@NonNull String tag, @NonNull String msg, @NonNull Throwable exception,
+                         boolean checkLoggable) {
         if (LEVEL <= WARNING) {
             if (checkLoggable) {
                 if (Log.isLoggable(tag, Log.WARN)) {
-                    Log.w(tag, msg, exception);
+                    if (!TextUtils.isEmpty(msg)) {
+                        Log.w(tag, msg, exception);
+                    } else {
+                        Log.w(tag, exception);
+                    }
                 }
             } else {
-                Log.w(tag, msg, exception);
+                if (!TextUtils.isEmpty(msg)) {
+                    Log.w(tag, msg, exception);
+                } else {
+                    Log.w(tag, exception);
+                }
             }
         }
     }
@@ -364,7 +413,10 @@ public class VWOLog {
      * @param msg           the msg
      * @param checkLoggable the check loggable
      */
-    public static void wtf(String tag, String msg, boolean checkLoggable) {
+    public static void wtf(@NonNull String tag, @NonNull String msg, boolean checkLoggable) {
+        if (TextUtils.isEmpty(msg)) {
+            return;
+        }
         if (LEVEL <= SEVERE) {
             if (checkLoggable) {
                 if (Log.isLoggable(tag, Log.ERROR)) {
@@ -381,7 +433,7 @@ public class VWOLog {
      * @param exception     the exception
      * @param checkLoggable check if message is loggable. @see Log#isLoggable(String, int)
      */
-    public static void wtf(String tag, Throwable exception, boolean checkLoggable) {
+    public static void wtf(@NonNull String tag, @NonNull Throwable exception, boolean checkLoggable) {
         if (LEVEL <= SEVERE) {
             if (checkLoggable) {
                 if (Log.isLoggable(tag, Log.ERROR)) {
@@ -402,17 +454,28 @@ public class VWOLog {
      * @param exception     the exception to be logged
      * @param checkLoggable the check loggable {@link Log#isLoggable(String, int)}
      */
-    public static void wtf(String tag, String msg, Throwable exception, boolean checkLoggable) {
+    public static void wtf(@NonNull String tag, @NonNull String msg, @NonNull Throwable exception,
+                           boolean checkLoggable) {
         if (LEVEL <= SEVERE) {
             if (checkLoggable) {
                 if (Log.isLoggable(tag, Log.ERROR)) {
-                    Log.wtf(tag, msg, exception);
+                    if (!TextUtils.isEmpty(msg)) {
+                        Log.wtf(tag, msg, exception);
+                    } else {
+                        Log.wtf(tag, exception);
+                    }
                 }
             } else {
-                Log.wtf(tag, msg, exception);
+                if (!TextUtils.isEmpty(msg)) {
+                    Log.wtf(tag, msg, exception);
+                } else {
+                    Log.wtf(tag, exception);
+                }
             }
             if (VWOUtils.checkIfClassExists("io.sentry.Sentry")) {
-                Sentry.capture(msg);
+                if (!TextUtils.isEmpty(msg)) {
+                    Sentry.capture(msg);
+                }
                 Sentry.capture(exception);
             }
         }
@@ -422,7 +485,7 @@ public class VWOLog {
      * The interface Log level.
      */
     @Retention(RetentionPolicy.SOURCE)
-    @IntDef({OFF, SEVERE, WARNING, CONFIG, INFO, ALL})
+    @IntDef(value = {OFF, SEVERE, WARNING, CONFIG, INFO, ALL})
     public @interface LogLevel {
     }
 }

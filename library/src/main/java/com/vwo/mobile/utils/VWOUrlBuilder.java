@@ -1,5 +1,8 @@
 package com.vwo.mobile.utils;
 
+import android.net.Uri;
+import android.text.TextUtils;
+
 import com.vwo.mobile.BuildConfig;
 import com.vwo.mobile.VWO;
 import com.vwo.mobile.constants.AppConstants;
@@ -8,19 +11,49 @@ import com.vwo.mobile.data.VWOPersistData;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.Locale;
-
 /**
  * Created by abhishek on 16/09/15 at 10:18 PM.
  */
 public class VWOUrlBuilder {
     private static final String DACDN_URL = BuildConfig.DACDN_URL;
-    private static final String DACDN_FETCH_URL_WITH_K = DACDN_URL + "mobile?a=%s&v=%s&i=%s&dt=%s&os=%s&r=%f&k=%s";
-    private static final String DACDN_FETCH_URL_WITHOUT_K = DACDN_URL + "mobile?a=%s&v=%s&i=%s&dt=%s&os=%s&r=%f";
-    public static final String DACDN_GOAL = DACDN_URL + "c.gif";
-    public static final String DACDN_CAMPAIGN = DACDN_URL + "l.gif";
+    private static final String DACDN_URL_SCHEME = BuildConfig.SCHEME;
+    private static final String PATH_MOBILE = "mobile";
+//    private static final String PATH_DACDN_GOAL = "c.gif";
+    private static final String PATH_DACDN_GOAL = "track-goal";
+//    private static final String PATH_DACDN_CAMPAIGN = "l.gif";
+    private static final String PATH_DACDN_CAMPAIGN = "track-user";
+
+    private static final String VALUE_DEVICE_TYPE = "android";
+
+    private static final String API_VERSION = "api-version";
+    private static final String VALUE_API_VERSION = "2";
+    private static final String ACCOUNT_ID = "a";
+    private static final String SDK_VERSION = "v";
+    private static final String APP_KEY = "i";
+    private static final String DEVICE_TYPE = "dt";
+    private static final String DEVICE_SYSTEM_VERSION = "os";
+    // To prevent cached results
+    private static final String RANDOM_NUMBER = "r";
+    private static final String EXISTING_CAMPAIGN_LIST = "k";
+
+
+    private static final String EXPERIMENT_ID = "experiment_id";
+    private static final String GOAL_ACCOUNT_ID = "account_id";
+    private static final String COMBINATION = "combination";
+    private static final String UUID = "u";
+    private static final String SESSION = "s";
+    private static final String GOAL_RANDOM = "random";
+    private static final String EXTRA_DATA = "ed";
+    private static final String REVENUE = "r";
+    private static final String GOAL_ID = "goal_id";
+
+
+    private static final String EXTRA_TIME_IN_SECONDS = "lt";
+    private static final String EXTRA_VERSION_CODE = "v";
+    private static final String EXTRA_API_KEY = "ai";
+    private static final String EXTRA_APPLICATION_VERSION = "av";
+    private static final String EXTRA_DEVICE_TYPE = "dt";
+    private static final String EXTRA_OPERATING_SYSTEM = "os";
 
 
     private final VWO vwo;
@@ -30,36 +63,32 @@ public class VWOUrlBuilder {
     }
 
     public String getDownloadUrl() {
-        String sdkVersion = add(BuildConfig.VERSION_NAME);
+        String sdkVersion = String.valueOf(VWO.versionCode());
         String accountId = vwo.getConfig().getAccountId();
         String appKey = vwo.getConfig().getAppKey();
-        String deviceType = "android";
         String currentDeviceSystemVersion = VWOUtils.androidVersion();
-        String k = add(vwo.getVwoPreference().getString(VWOPersistData.CAMPAIGN_LIST));
+        String existingCampaignList = vwo.getVwoPreference().getString(VWOPersistData.CAMPAIGN_LIST);
         double randomNo = VWOUtils.getRandomNumber();
 
-        String url;
-        if (k.equals("")) {
-            url = String.format(Locale.ENGLISH, DACDN_FETCH_URL_WITHOUT_K, accountId, sdkVersion, appKey, deviceType, currentDeviceSystemVersion, randomNo);
-        } else {
-            url = String.format(Locale.ENGLISH, DACDN_FETCH_URL_WITH_K, accountId, sdkVersion, appKey, deviceType, currentDeviceSystemVersion, randomNo, k);
+        Uri.Builder uriBuilder = new Uri.Builder().scheme(DACDN_URL_SCHEME)
+                .authority(DACDN_URL)
+                .appendEncodedPath(PATH_MOBILE)
+                .appendQueryParameter(API_VERSION, VALUE_API_VERSION)
+                .appendQueryParameter(ACCOUNT_ID, accountId)
+                .appendQueryParameter(SDK_VERSION, sdkVersion)
+                .appendQueryParameter(APP_KEY, appKey)
+                .appendQueryParameter(DEVICE_TYPE, VALUE_DEVICE_TYPE)
+                .appendQueryParameter(DEVICE_SYSTEM_VERSION, currentDeviceSystemVersion)
+                .appendQueryParameter(RANDOM_NUMBER, String.valueOf(randomNo));
+
+        if (!TextUtils.isEmpty(existingCampaignList)) {
+            uriBuilder.appendQueryParameter(EXISTING_CAMPAIGN_LIST, existingCampaignList);
         }
+        String url = uriBuilder.build().toString();
 
         VWOLog.v(VWOLog.URL_LOGS, "Campaign download url : " + url);
 
         return url;
-    }
-
-    private String add(String data) {
-        if (data == null) {
-            return "";
-        }
-        try {
-            return URLEncoder.encode(data, "UTF-8");
-        } catch (UnsupportedEncodingException exception) {
-            VWOLog.e(VWOLog.URL_LOGS, "Exception generation url", exception, true, true);
-            return "";
-        }
     }
 
     public String getCampaignUrl(long experimentId, int variationId) {
@@ -67,20 +96,23 @@ public class VWOUrlBuilder {
         String deviceUuid = VWOUtils.getDeviceUUID(vwo);
 
         String accountId = vwo.getConfig().getAccountId();
-        String uuid = add(deviceUuid);
-        String url = DACDN_CAMPAIGN + "?experiment_id=%d" +
-                "&account_id=%s" +
-                "&combination=%d" +
-                "&u=%s" +
-                "&s=%d" +
-                "&random=%f";
-
 
         int session = vwo.getVwoPreference().getInt(AppConstants.DEVICE_SESSION, 0);
 
-        url = String.format(Locale.ENGLISH, url, experimentId, accountId, variationId, uuid, session, VWOUtils.getRandomNumber());
-        String extraData = add(getExtraData());
-        url += "&ed=" + extraData;
+        Uri.Builder uriBuilder = new Uri.Builder().scheme(DACDN_URL_SCHEME)
+                .authority(DACDN_URL)
+                .appendEncodedPath(PATH_DACDN_CAMPAIGN)
+                .appendQueryParameter(EXPERIMENT_ID, String.valueOf(experimentId))
+                .appendQueryParameter(GOAL_ACCOUNT_ID, accountId)
+                .appendQueryParameter(COMBINATION, String.valueOf(variationId))
+                .appendQueryParameter(UUID, deviceUuid)
+                .appendQueryParameter(SESSION, String.valueOf(session))
+                .appendQueryParameter(GOAL_RANDOM, String.valueOf(VWOUtils.getRandomNumber()))
+                .appendQueryParameter(EXTRA_DATA, getExtraData());
+
+
+
+        String url = uriBuilder.build().toString();
         VWOLog.v(VWOLog.URL_LOGS, "Campaign url: " + url);
         return url;
     }
@@ -89,42 +121,46 @@ public class VWOUrlBuilder {
         String accountId = vwo.getConfig().getAccountId();
         String deviceUuid = VWOUtils.getDeviceUUID(vwo);
 
-        String uuid = add(deviceUuid);
-        String url = DACDN_GOAL + "?experiment_id=%d" +
-                "&account_id=%s" +
-                "&combination=%d" +
-                "&u=%s" +
-                "&s=%d" +
-                "&random=%f" +
-                "&goal_id=%d";
-
         int session = vwo.getVwoPreference().getInt(AppConstants.DEVICE_SESSION, 0);
 
-        url = String.format(Locale.ENGLISH, url, experimentId, accountId, variationId, uuid, session, VWOUtils.getRandomNumber(), goalId);
+        Uri.Builder uriBuilder = new Uri.Builder().scheme(DACDN_URL_SCHEME)
+                .authority(DACDN_URL)
+                .appendEncodedPath(PATH_DACDN_GOAL)
+                .appendQueryParameter(EXPERIMENT_ID, String.valueOf(experimentId))
+                .appendQueryParameter(GOAL_ACCOUNT_ID, accountId)
+                .appendQueryParameter(COMBINATION, String.valueOf(variationId))
+                .appendQueryParameter(UUID, deviceUuid)
+                .appendQueryParameter(SESSION, String.valueOf(session))
+                .appendQueryParameter(GOAL_RANDOM, String.valueOf(VWOUtils.getRandomNumber()))
+                .appendQueryParameter(GOAL_ID, String.valueOf(goalId))
+                .appendQueryParameter(EXTRA_DATA, getExtraData());
 
-        String extraData = add(getExtraData());
-        url += "&ed=" + extraData;
+
+
+        String url = uriBuilder.build().toString();
         VWOLog.v(VWOLog.URL_LOGS, "Goal URL: " + url);
         return url;
     }
 
     public String getGoalUrl(long experimentId, int variationId, int goalId, float revenue) {
-        String url = getGoalUrl(experimentId, variationId, goalId);
-        url += "&r=" + revenue;
 
-        return url;
+        return Uri.parse(getGoalUrl(experimentId, variationId, goalId))
+                .buildUpon()
+                .appendQueryParameter(REVENUE, String.valueOf(revenue))
+                .build()
+                .toString();
     }
 
     private String getExtraData() {
 
         JSONObject jsonObject = new JSONObject();
         try {
-            jsonObject.put("lt", System.currentTimeMillis() / 1000);
-            jsonObject.put("v", VWOUtils.getVwoSdkVersion());
-            jsonObject.put("ai", vwo.getConfig().getAppKey());
-            jsonObject.put("av", VWOUtils.applicationVersion(vwo));
-            jsonObject.put("dt", "android");
-            jsonObject.put("os", VWOUtils.androidVersion());
+            jsonObject.put(EXTRA_TIME_IN_SECONDS, System.currentTimeMillis() / 1000);
+            jsonObject.put(EXTRA_VERSION_CODE, VWO.versionCode());
+            jsonObject.put(EXTRA_API_KEY, vwo.getConfig().getAppKey());
+            jsonObject.put(EXTRA_APPLICATION_VERSION, VWOUtils.applicationVersion(vwo.getCurrentContext()));
+            jsonObject.put(EXTRA_DEVICE_TYPE, VALUE_DEVICE_TYPE);
+            jsonObject.put(EXTRA_OPERATING_SYSTEM, VWOUtils.androidVersion());
 
             return jsonObject.toString();
         } catch (JSONException exception) {

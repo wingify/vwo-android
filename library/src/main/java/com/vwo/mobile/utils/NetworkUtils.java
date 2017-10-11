@@ -9,6 +9,9 @@ import android.net.NetworkInfo;
 
 import com.vwo.mobile.VWO;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Created by abhishek on 19/10/15 at 12:46 AM.
  */
@@ -55,6 +58,52 @@ public class NetworkUtils {
         ConnectivityManager connectivityManager = (ConnectivityManager) vwo.getCurrentContext().getSystemService(Context.CONNECTIVITY_SERVICE);
         @SuppressLint("MissingPermission") NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
+
+    public static class Headers {
+        public static final String HEADER_CONTENT_TYPE = "Content-type";
+        public static final String ACCEPT_CONTENT_TYPE = "Accept";
+        public static final String CONTENT_TYPE_JSON = "application/json";
+        public static final String CONTENT_TYPE_PLAIN = "text/plain";
+        public static final String CONTENT_TYPE_FORM_URL_ENCODED = "application/x-www-form-urlencoded";
+
+        public static final String HEADER_CHARSET = "charset";
+        public static final String CHARSET_DEFAULT = "utf-8";
+
+        public static final String HEADER_CONTENT_ENCODING = "Content-Encoding";
+        public static final String HEADER_ACCEPT_ENCODING = "Accept-Encoding";
+        public static final String ENCODING_GZIP = "gzip";
+
+        public static final String HEADER_CACHE_CONTROL = "Cache-Control";
+        public static final String CACHE_NO = "no-cache";
+
+        public static String parseCharset(Map<String, String> headers, String defaultCharset) {
+            String contentType = headers.get(HEADER_CONTENT_TYPE);
+            if (contentType != null) {
+                String[] params = contentType.split(";");
+                for (int i = 1; i < params.length; i++) {
+                    String[] pair = params[i].trim().split("=");
+                    if (pair.length == 2) {
+                        if (pair[0].equals("charset")) {
+                            return pair[1];
+                        }
+                    }
+                }
+            }
+
+            return defaultCharset;
+        }
+
+        public static String parseCharset(Map<String, String> headers) {
+            return parseCharset(headers, CHARSET_DEFAULT);
+        }
+
+        public static  Map<String, String> getBasicHeaders() {
+            Map<String, String> headers = new HashMap<>();
+            headers.put(HEADER_CONTENT_TYPE, CONTENT_TYPE_JSON);
+            headers.put(ACCEPT_CONTENT_TYPE, CONTENT_TYPE_JSON);
+            return headers;
+        }
     }
 
 }

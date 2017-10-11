@@ -21,7 +21,7 @@ import java.util.Map;
 
 
 public class VWOPreference {
-    private SharedPreferences preferences;
+    private final SharedPreferences preferences;
     private String DEFAULT_APP_IMAGEDATA_DIRECTORY;
     private String lastImagePath = "";
     private static final String PART_OF_CAMPAIGNS = "partOfCampaigns";
@@ -393,8 +393,10 @@ public class VWOPreference {
      * @param stringList ArrayList of String to be added
      */
     public void putListString(String key, ArrayList<String> stringList) {
-        String[] myStringList = stringList.toArray(new String[stringList.size()]);
-        preferences.edit().putString(key, TextUtils.join("‚‗‚", myStringList)).apply();
+        synchronized (preferences) {
+            String[] myStringList = stringList.toArray(new String[stringList.size()]);
+            preferences.edit().putString(key, TextUtils.join("‚‗‚", myStringList)).apply();
+        }
     }
 
     /**

@@ -5,17 +5,22 @@ import android.app.Application;
 import android.content.Context;
 import android.os.Build;
 import android.os.Handler;
+import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
+import android.text.TextUtils;
 
 import com.vwo.mobile.constants.AppConstants;
 import com.vwo.mobile.data.VWOData;
 import com.vwo.mobile.data.VWOLocalData;
-import com.vwo.mobile.enums.VWOStartState;
+import com.vwo.mobile.data.VWOMessageQueue;
 import com.vwo.mobile.events.VWOStatusListener;
 import com.vwo.mobile.listeners.ActivityLifecycleListener;
 import com.vwo.mobile.listeners.VWOActivityLifeCycle;
+import com.vwo.mobile.logging.VWOLoggingClient;
 import com.vwo.mobile.models.Campaign;
+import com.vwo.mobile.network.ErrorResponse;
 import com.vwo.mobile.network.VWODownloader;
 import com.vwo.mobile.utils.VWOLog;
 import com.vwo.mobile.utils.VWOPreference;
@@ -25,6 +30,7 @@ import com.vwo.mobile.utils.VWOUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,15 +39,15 @@ import io.sentry.SentryClient;
 import io.sentry.android.AndroidSentryClientFactory;
 
 /**
- * Created by abhishek on 17/09/15 at 10:02 PM.
+ * Created by Aman on Wed 27/09/17 at 14:55.
  */
-public class VWO {
+public class VWO implements VWODownloader.DownloadResult {
     /**
      * Constants exposed to developers
      */
     public static class Constants {
         /**
-         *  Key for local broadcast Receiver
+         * Key for local broadcast Receiver
          */
         public static final String NOTIFY_USER_TRACKING_STARTED = "VWOUserStartedTrackingInCampaignNotification";
         public static final String ARG_CAMPAIGN_ID = "vwo_campaign_id";
@@ -49,6 +55,24 @@ public class VWO {
         public static final String ARG_VARIATION_ID = "vwo_variation_id";
         public static final String ARG_VARIATION_NAME = "vwo_variation_name";
     }
+
+    private static final String MESSAGE_QUEUE_NAME = "queue_v1.vwo";
+    private static final String FAILURE_QUEUE_NAME = "failure_queue_v1.vwo";
+
+    private static final int STATE_NOT_STARTED = 0;
+    private static final int STATE_STARTING = 1;
+    private static final int STATE_STARTED = 2;
+    private static final int STATE_FAILED = 3;
+
+    @IntDef({
+            STATE_NOT_STARTED,
+            STATE_STARTING,
+            STATE_STARTED,
+            STATE_FAILED
+    })
+    @interface VWOState {
+    }
+
 
     @SuppressLint("StaticFieldLeak")
     private static VWO sSharedInstance;
@@ -66,13 +90,18 @@ public class VWO {
     private VWOConfig vwoConfig;
 
     private VWOStatusListener mStatusListener;
-    private VWOStartState mVWOStartState;
 
+    @VWOState
+    private int mVWOStartState;
+    private VWOMessageQueue messageQueue;
+    private VWOMessageQueue failureQueue;
+
+    @VisibleForTesting
     private VWO(@NonNull Context context, @NonNull VWOConfig vwoConfig) {
         this.mContext = context;
         this.mIsEditMode = false;
         this.vwoConfig = vwoConfig;
-        this.mVWOStartState = VWOStartState.NOT_STARTED;
+        this.mVWOStartState = STATE_NOT_STARTED;
     }
 
     public static Initializer with(@NonNull Context context, @NonNull String apiKey) {
@@ -113,36 +142,50 @@ public class VWO {
     @SuppressWarnings("unused")
     @Nullable
     public static Object getVariationForKey(@NonNull String key) {
-
-        if (sSharedInstance != null && sSharedInstance.mVWOStartState.getValue() >= VWOStartState.STARTED.getValue()) {
-            // Only when the VWO has completely started or loaded from disk
-            Object object;
-
-            if (sSharedInstance.isEditMode()) {
-                object = sSharedInstance.getVwoSocket().getVariationForKey(key);
-            } else {
-                object = sSharedInstance.getVwoData().getVariationForKey(key);
-            }
-            return object;
-
+        if(sSharedInstance == null) {
+            VWOLog.e(VWOLog.DATA_LOGS, new IllegalStateException("Cannot call getVariationForKey(String key) " +
+                    "method before VWO SDK is completely initialized."), false, false);
+            return null;
         }
-        VWOLog.e(VWOLog.DATA_LOGS, new IllegalStateException("Cannot call getVariationForKey(String key) " +
-                "method before VWO SDK is completely initialized."), false, false);
-        return null;
+
+        //noinspection SynchronizeOnNonFinalField
+        synchronized (sSharedInstance) {
+            if (sSharedInstance != null && sSharedInstance.mVWOStartState >= STATE_STARTED) {
+                // Only when the VWO has completely started or loaded from disk
+                Object object;
+
+                if (sSharedInstance.isEditMode()) {
+                    object = sSharedInstance.getVwoSocket().getVariationForKey(key);
+                } else {
+                    object = sSharedInstance.getVwoData().getVariationForKey(key);
+                }
+                return object;
+
+            }
+            VWOLog.e(VWOLog.DATA_LOGS, new IllegalStateException("Cannot call getVariationForKey(String key) " +
+                    "method before VWO SDK is completely initialized."), false, false);
+            return null;
+        }
     }
 
     /**
      * Get variation for a given key. returns control if key does not exist in any
      * Campaigns.
      * <p>
+     * <p>
      * This function will return a variation for a given key. This function will search for key in
      * all the currently active campaigns.
+     * </p>
+     * <p>
      * <p>
      * If key exists in multiple campaigns it will return the value for the key of the latest
      * {@link Campaign}.
+     * </p>
+     * <p>
      * <p>
      * If user is not already part of a the {@link Campaign} in which the key exists. User automatically
      * becomes part of all the campaign for which that key exists.
+     * </p>
      *
      * @param key     is the key for which variation is to be requested
      * @param control is the default value to be returned if key is not found in any campaigns.
@@ -151,12 +194,19 @@ public class VWO {
     @SuppressWarnings("unused")
     @NonNull
     public static Object getVariationForKey(@NonNull String key, @NonNull Object control) {
-        Object data = getVariationForKey(key);
-        if (data == null) {
-            VWOLog.e(VWOLog.DATA_LOGS, "No data found for key: " + key, false, false);
+        if(sSharedInstance == null) {
             return control;
-        } else {
-            return data;
+        }
+
+        //noinspection SynchronizeOnNonFinalField
+        synchronized (sSharedInstance) {
+            Object data = getVariationForKey(key);
+            if (data == null) {
+                VWOLog.e(VWOLog.DATA_LOGS, "No data found for key: " + key, false, false);
+                return control;
+            } else {
+                return data;
+            }
         }
 
     }
@@ -169,16 +219,23 @@ public class VWO {
      * @param goalIdentifier is name of the goal set in VWO dashboard
      */
     public static void markConversionForGoal(@NonNull String goalIdentifier) {
-
-        if (sSharedInstance != null && sSharedInstance.mVWOStartState.getValue() >= VWOStartState.STARTED.getValue()) {
-
-            if (sSharedInstance.isEditMode()) {
-                sSharedInstance.getVwoSocket().triggerGoal(goalIdentifier);
-            } else {
-                sSharedInstance.mVWOData.saveGoal(goalIdentifier);
-            }
-        } else {
+        if(sSharedInstance == null) {
             VWOLog.e(VWOLog.UPLOAD_LOGS, "SDK not initialized completely", false, false);
+            return;
+        }
+
+        //noinspection SynchronizeOnNonFinalField
+        synchronized (sSharedInstance) {
+            if (sSharedInstance != null && sSharedInstance.mVWOStartState >= STATE_STARTED) {
+
+                if (sSharedInstance.isEditMode()) {
+                    sSharedInstance.getVwoSocket().triggerGoal(goalIdentifier);
+                } else {
+                    sSharedInstance.mVWOData.saveGoal(goalIdentifier);
+                }
+            } else {
+                VWOLog.e(VWOLog.UPLOAD_LOGS, "SDK not initialized completely", false, false);
+            }
         }
     }
 
@@ -189,17 +246,24 @@ public class VWO {
      * @param value          is the revenue achieved by hitting this goal.
      */
     public static void markConversionForGoal(@NonNull String goalIdentifier, double value) {
-
-        if (sSharedInstance != null && sSharedInstance.mVWOStartState.getValue() >= VWOStartState.STARTED.getValue()) {
-
-            if (sSharedInstance.isEditMode()) {
-                sSharedInstance.getVwoSocket().triggerGoal(goalIdentifier);
-            } else {
-                // Check if already present in persisting data
-                sSharedInstance.mVWOData.saveGoal(goalIdentifier, value);
-            }
-        } else {
+        if(sSharedInstance == null) {
             VWOLog.e(VWOLog.UPLOAD_LOGS, "SDK not initialized completely", false, false);
+            return;
+        }
+
+        //noinspection SynchronizeOnNonFinalField
+        synchronized (sSharedInstance) {
+            if (sSharedInstance != null && sSharedInstance.mVWOStartState >= STATE_STARTED) {
+
+                if (sSharedInstance.isEditMode()) {
+                    sSharedInstance.getVwoSocket().triggerGoal(goalIdentifier);
+                } else {
+                    // Check if already present in persisting data
+                    sSharedInstance.mVWOData.saveGoal(goalIdentifier, value);
+                }
+            } else {
+                VWOLog.e(VWOLog.UPLOAD_LOGS, "SDK not initialized completely", false, false);
+            }
         }
     }
 
@@ -223,6 +287,7 @@ public class VWO {
      * <p>
      * This function can be used to segment users based on this key value pair.
      * This will decide whether user will be a part of campaign or not.
+     * </p>
      *
      * @param key   is given key
      * @param value is the value corresponding to the given key.
@@ -239,9 +304,13 @@ public class VWO {
         return BuildConfig.VERSION_NAME;
     }
 
+    public static int versionCode() {
+        return BuildConfig.VERSION_CODE;
+    }
+
     @SuppressWarnings("SpellCheckingInspection")
     boolean startVwoInstance() {
-        VWOLog.v(VWOLog.INITIALIZATION_LOGS, "**** Starting VWO ver " + VWOUtils.getVwoSdkVersion() + " ****");
+        VWOLog.i(VWOLog.INITIALIZATION_LOGS, String.format("**** Starting VWO version: %s\nBuild: %s ****", version(), versionCode()), false);
         if (!VWOUtils.checkForInternetPermissions(mContext)) {
             String errMsg = "Internet permission not added to Manifest. Please add" +
                     "\n\n<uses-permission android:name=\"android.permission.INTERNET\"/> \n\npermission to your app Manifest file.";
@@ -249,94 +318,104 @@ public class VWO {
                     false, false);
             onLoadFailure("Missing internet permission");
             return false;
-        } else if (!VWOUtils.checkIfClassExists("okhttp3.OkHttpClient")) {
-            String errMsg = "VWO sdk is dependent on following libraries:\n" +
-                    "In application level build.gradle file add\n" +
-                    "compile 'com.squareup.okhttp3:okhttp:3.8.1'\n";
+        } else if (!isAndroidSDKSupported()) {
+            String errMsg = "Minimum SDK version required is 14";
             VWOLog.e(VWOLog.INITIALIZATION_LOGS, errMsg, false, false);
             onLoadFailure(errMsg);
             return false;
-        } else if (!isAndroidSDKSupported()) {
-            String errMsg = "Minimum SDK version required is 14";
-            initializeSentry();
-            VWOLog.e(VWOLog.INITIALIZATION_LOGS, errMsg, false, true);
-            onLoadFailure(errMsg);
-            return false;
         } else if (!VWOUtils.isValidVwoAppKey(vwoConfig.getApiKey())) {
-            initializeSentry();
             VWOLog.e(VWOLog.INITIALIZATION_LOGS, "Invalid API Key: " + vwoConfig.getAppKey(), false, false);
             onLoadFailure("Invalid API Key.");
             return false;
-        } else if (this.mVWOStartState == VWOStartState.STARTING) {
+        } else if (this.mVWOStartState == STATE_STARTING) {
             VWOLog.w(VWOLog.INITIALIZATION_LOGS, "VWO is already in intialization state.", true);
             return true;
         } else {
             // Everything is good so far
-            this.mVWOStartState = VWOStartState.STARTING;
+            this.mVWOStartState = STATE_STARTING;
             if(sSharedInstance.getConfig().getActivityLifecycleListener() == null) {
                 ((Application) (mContext)).registerActivityLifecycleCallbacks(new VWOActivityLifeCycle());
+            }            try {
+                this.initializeComponents();
+            } catch (IOException exception) {
+                String message = "Unable to initialize vwo message queue";
+                onLoadFailure(message);
+                return false;
             }
-            this.initializeComponents();
 
             int vwoSession = this.mVWOPreference.getInt(AppConstants.DEVICE_SESSION, 0) + 1;
             this.mVWOPreference.putInt(AppConstants.DEVICE_SESSION, vwoSession);
 
-            this.mVWODownloader.fetchFromServer(new VWODownloader.DownloadResult() {
-                @Override
-                public void onDownloadSuccess(JSONArray data) {
-                    initializeSentry();
-                    if (data.length() == 0) {
-                        VWOLog.e(VWOLog.DOWNLOAD_DATA_LOGS, "Empty data downloaded : " + data, true, true);
-                        // FIXME: Handle this. Can crash here.
-                    } else {
-                        try {
-                            VWOLog.i(VWOLog.INITIALIZATION_LOGS, data.toString(4), true);
-                        } catch (JSONException exception) {
-                            VWOLog.e(VWOLog.DOWNLOAD_DATA_LOGS, "Data not Downloaded", exception, true, true);
-                        }
-                    }
-                    mVWOData.parseData(data);
-                    mVWODownloader.startUpload();
-                    initializeSocket();
-                    mVWOLocalData.saveData(data);
-                    mVWOStartState = VWOStartState.STARTED;
-                    onLoadSuccess();
-                }
-
-                @Override
-                public void onDownloadError(Exception ex) {
-                    initializeSentry();
-                    if (ex instanceof JSONException) {
-                        VWOLog.e(VWOLog.DOWNLOAD_DATA_LOGS, ex, false, true);
-                    }
-                    mVWODownloader.startUpload();
-                    initializeSocket();
-                    if (mVWOLocalData.isLocalDataPresent()) {
-                        mVWOData.parseData(mVWOLocalData.getData());
-                        mVWOStartState = VWOStartState.STARTED;
-                        VWOLog.w(VWOLog.INITIALIZATION_LOGS, "Failed to fetch data serving cached data.", false);
-                        onLoadSuccess();
-                    } else {
-                        String errMsg = "Either slow or not internet";
-                        mVWOStartState = VWOStartState.NO_INTERNET;
-                        onLoadFailure(errMsg);
-                    }
-                }
-            });
+            this.mVWODownloader.fetchFromServer(this);
 
             return true;
         }
     }
 
+    @Override
+    public void onDownloadSuccess(@Nullable String data) {
+        if (TextUtils.isEmpty(data)) {
+            VWOLog.e(VWOLog.DOWNLOAD_DATA_LOGS, "Empty data downloaded : " + data, true, true);
+            onDownloadError(new Exception(), "Empty data downloaded");
+        } else {
+            try {
+                JSONArray jsonArray = new JSONArray(data);
+
+                VWOLog.i(VWOLog.INITIALIZATION_LOGS, jsonArray.toString(4), true);
+
+                mVWOData.parseData(jsonArray);
+                mVWOLocalData.saveData(jsonArray);
+                mVWOStartState = STATE_STARTED;
+                onLoadSuccess();
+            } catch (JSONException exception) {
+                onDownloadError(exception, "Unable to parse data");
+            }
+        }
+    }
+
+    @Override
+    public void onDownloadError(@Nullable Exception exception, @Nullable String message) {
+        if (exception != null && exception instanceof JSONException) {
+            VWOLog.e(VWOLog.DOWNLOAD_DATA_LOGS, exception, true, false);
+        }
+        if (exception != null && exception.getCause() != null && exception.getCause() instanceof ErrorResponse) {
+            ErrorResponse errorResponse = (ErrorResponse) exception.getCause();
+            int responseCode = errorResponse.getNetworkResponse().getResponseCode();
+            if(responseCode >= 400 && responseCode <= 499) {
+                message = "Invalid api key";
+                VWOLog.e(VWOLog.INITIALIZATION_LOGS, message, false, false);
+                onLoadFailure(message);
+                return;
+            }
+        }
+        if (mVWOLocalData.isLocalDataPresent()) {
+            mVWOData.parseData(mVWOLocalData.getData());
+            mVWOStartState = STATE_STARTED;
+            VWOLog.w(VWOLog.INITIALIZATION_LOGS, "Failed to fetch data serving cached data.", false);
+            onLoadSuccess();
+        } else {
+            mVWOStartState = STATE_FAILED;
+            onLoadFailure(message);
+        }
+    }
+
+    /**
+     * Initialize socket to use VWO in preview mode.
+     * Cases in which socket is not initialized:
+     * <ul>
+     * <li>socket.io dependency is not added to gradle</li>
+     * <li>App is in release mode</li>
+     * </ul>
+     */
     private void initializeSocket() {
-        if(getVwoUtils().isDebugMode()) {
+        if (getVwoUtils().isDebugMode()) {
             if (VWOUtils.checkIfClassExists("io.socket.client.Socket")) {
                 this.mVWOSocket = new VWOSocket(sSharedInstance);
                 mVWOSocket.connectToSocket();
             } else {
                 VWOLog.e(VWOLog.INITIALIZATION_LOGS, "You need to add following dependency " +
-                        "\n\t\tcompile 'io.socket:socket.io-client:1.0.0\n" +
-                        " to your build.gradle file in order to use VWO's preview mode.",
+                                "\n\t\tcompile 'io.socket:socket.io-client:1.0.0\n" +
+                                " to your build.gradle file in order to use VWO's preview mode.",
                         false, false);
             }
         } else {
@@ -346,9 +425,12 @@ public class VWO {
     }
 
     private void initializeSentry() {
-        if(VWOUtils.checkIfClassExists("io.sentry.Sentry")) {
+        VWOLoggingClient.getInstance().init();
+
+        if (VWOUtils.checkIfClassExists("io.sentry.Sentry")) {
             Map<String, String> extras = new HashMap<>();
             extras.put("VWO-SDK-Version", version());
+            extras.put("VWO-SDK-Version-Code", String.valueOf(versionCode()));
             extras.put("VWO-Account-ID", vwoConfig.getAccountId());
             extras.put("Package-name", mContext.getPackageName());
             SentryClient sentryClient = Sentry.init(BuildConfig.SENTRY,
@@ -361,7 +443,8 @@ public class VWO {
         }
     }
 
-    private void initializeComponents() {
+    private void initializeComponents() throws IOException {
+        initializeSentry();
         this.mVWOLocalData = new VWOLocalData(sSharedInstance);
         this.mVWOUtils = new VWOUtils(sSharedInstance);
         this.mVWODownloader = new VWODownloader(sSharedInstance);
@@ -369,6 +452,13 @@ public class VWO {
         this.mVWOData = new VWOData(sSharedInstance);
         this.mVWOPreference = new VWOPreference(sSharedInstance);
 
+        // Initialize message queues
+        this.messageQueue = VWOMessageQueue.getInstance(getCurrentContext(), MESSAGE_QUEUE_NAME);
+        this.failureQueue = VWOMessageQueue.getInstance(getCurrentContext(), FAILURE_QUEUE_NAME);
+        mVWODownloader.initializeMessageQueue();
+        mVWODownloader.initializeFailureQueue();
+
+        initializeSocket();
     }
 
     private void onLoadFailure(final String reason) {
@@ -447,8 +537,17 @@ public class VWO {
         this.vwoConfig = config;
     }
 
-    public VWOStartState getState() {
+    @VWOState
+    public int getState() {
         return this.mVWOStartState;
+    }
+
+    public VWOMessageQueue getMessageQueue() {
+        return this.messageQueue;
+    }
+
+    public VWOMessageQueue getFailureQueue() {
+        return this.failureQueue;
     }
 
     @Nullable
@@ -496,5 +595,4 @@ public class VWO {
         }
 
     }
-
 }

@@ -31,7 +31,7 @@ public enum CustomSegmentEvaluateEnum {
                     }
                 } catch (NumberFormatException | JSONException exception) {
                     VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse Android Version",
-                            exception, true, true);
+                            exception, false, true);
                 }
             }
             return false;
@@ -53,7 +53,7 @@ public enum CustomSegmentEvaluateEnum {
                     }
                 } catch (NumberFormatException | JSONException ex) {
                     VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse Android Version", ex,
-                            true, true);
+                            false, true);
                 }
             }
             return true;
@@ -75,7 +75,7 @@ public enum CustomSegmentEvaluateEnum {
                     }
                 } catch (NumberFormatException | JSONException ex) {
                     VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse Android Version", ex,
-                            true, true);
+                            false, true);
                 }
             }
             return false;
@@ -97,7 +97,7 @@ public enum CustomSegmentEvaluateEnum {
                     }
                 } catch (NumberFormatException | JSONException ex) {
                     VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse Android Version", ex,
-                            true, true);
+                            false, true);
                 }
             }
             return false;
@@ -121,8 +121,8 @@ public enum CustomSegmentEvaluateEnum {
                         return true;
                     }
                 } catch (NumberFormatException | JSONException ex) {
-                    VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse day of week", ex, true,
-                            true);
+                    VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse day of week", ex,
+                            false, true);
                 }
             }
             return false;
@@ -147,7 +147,7 @@ public enum CustomSegmentEvaluateEnum {
                     }
                 } catch (NumberFormatException | JSONException ex) {
                     VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse day of week", ex,
-                            true, true);
+                            false, true);
                 }
             }
             return true;
@@ -171,7 +171,7 @@ public enum CustomSegmentEvaluateEnum {
                     }
                 } catch (NumberFormatException | JSONException ex) {
                     VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse hour of the day", ex,
-                            true, true);
+                            false, true);
                 }
             }
             return false;
@@ -195,7 +195,7 @@ public enum CustomSegmentEvaluateEnum {
                     }
                 } catch (NumberFormatException | JSONException ex) {
                     VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse hour of the day", ex,
-                            true, true);
+                            false, true);
                 }
             }
             return true;
@@ -223,7 +223,7 @@ public enum CustomSegmentEvaluateEnum {
                     }
                 } catch (JSONException exception) {
                     VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse location", exception,
-                            true, true);
+                            false, true);
                 }
             }
             return false;
@@ -251,7 +251,7 @@ public enum CustomSegmentEvaluateEnum {
                     }
                 } catch (JSONException exception) {
                     VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse location", exception,
-                            true, true);
+                            false, true);
                 }
             }
             return true;
@@ -266,7 +266,7 @@ public enum CustomSegmentEvaluateEnum {
     APP_VERSION_EQUAL_TO(AppConstants.APP_VERSION, AppConstants.EQUAL_TO, new EvaluateSegment() {
         @Override
         public boolean evaluate(VWO vwo, JSONArray data) {
-            int appVersion = VWOUtils.applicationVersion(vwo);
+            int appVersion = VWOUtils.applicationVersion(vwo.getCurrentContext());
             for (int i = 0; i < data.length(); i++) {
                 try {
                     int version = Integer.parseInt(data.getString(i));
@@ -275,7 +275,7 @@ public enum CustomSegmentEvaluateEnum {
                     }
                 } catch (JSONException | NumberFormatException exception) {
                     VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse app version", exception,
-                            true, false);
+                            false, false);
                 }
             }
             return false;
@@ -290,7 +290,7 @@ public enum CustomSegmentEvaluateEnum {
     APP_VERSION_NOT_EQUAL_TO(AppConstants.APP_VERSION, AppConstants.NOT_EQUAL_TO, new EvaluateSegment() {
         @Override
         public boolean evaluate(VWO vwo, JSONArray data) {
-            int appVersion = VWOUtils.applicationVersion(vwo);
+            int appVersion = VWOUtils.applicationVersion(vwo.getCurrentContext());
             for (int i = 0; i < data.length(); i++) {
                 try {
                     int version = Integer.parseInt(data.getString(i));
@@ -299,7 +299,7 @@ public enum CustomSegmentEvaluateEnum {
                     }
                 } catch (JSONException | NumberFormatException exception) {
                     VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse app version", exception,
-                            true, false);
+                            false, false);
                 }
             }
             return true;
@@ -314,7 +314,7 @@ public enum CustomSegmentEvaluateEnum {
     APP_VERSION_MATCHES_REGEX(AppConstants.APP_VERSION, AppConstants.MATCHES_REGEX, new EvaluateSegment() {
         @Override
         public boolean evaluate(VWO vwo, JSONArray data) {
-            String appVersion = String.valueOf(VWOUtils.applicationVersion(vwo));
+            String appVersion = String.valueOf(VWOUtils.applicationVersion(vwo.getCurrentContext()));
             for (int i = 0; i < data.length(); i++) {
                 try {
                     Pattern pattern = Pattern.compile(data.getString(i));
@@ -324,7 +324,7 @@ public enum CustomSegmentEvaluateEnum {
                     }
                 } catch (JSONException exception) {
                     VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse app version", exception,
-                            true, false);
+                            false, false);
                 }
             }
             return false;
@@ -339,7 +339,7 @@ public enum CustomSegmentEvaluateEnum {
     APP_VERSION_CONTAINS(AppConstants.APP_VERSION, AppConstants.CONTAINS, new EvaluateSegment() {
         @Override
         public boolean evaluate(VWO vwo, JSONArray data) {
-            String appVersion = String.valueOf(VWOUtils.applicationVersion(vwo));
+            String appVersion = String.valueOf(VWOUtils.applicationVersion(vwo.getCurrentContext()));
             for (int i = 0; i < data.length(); i++) {
                 try {
                     String version = data.getString(i);
@@ -348,7 +348,7 @@ public enum CustomSegmentEvaluateEnum {
                     }
                 } catch (JSONException exception) {
                     VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse app version", exception,
-                            true, false);
+                            false, false);
                 }
             }
             return false;
@@ -363,7 +363,7 @@ public enum CustomSegmentEvaluateEnum {
     APP_VERSION_STARTS_WITH(AppConstants.APP_VERSION, AppConstants.STARTS_WITH, new EvaluateSegment() {
         @Override
         public boolean evaluate(VWO vwo, JSONArray data) {
-            String appVersion = String.valueOf(VWOUtils.applicationVersion(vwo));
+            String appVersion = String.valueOf(VWOUtils.applicationVersion(vwo.getCurrentContext()));
             for (int i = 0; i < data.length(); i++) {
                 try {
                     String version = data.getString(i);
@@ -372,7 +372,7 @@ public enum CustomSegmentEvaluateEnum {
                     }
                 } catch (JSONException exception) {
                     VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse app version", exception,
-                            true, false);
+                            false, false);
                 }
             }
             return false;
@@ -406,7 +406,7 @@ public enum CustomSegmentEvaluateEnum {
                     }
                 } catch (JSONException exception) {
                     VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse custom segment", exception,
-                            true, false);
+                            false, false);
                 }
             }
             return false;
@@ -435,7 +435,7 @@ public enum CustomSegmentEvaluateEnum {
                     }
                 } catch (JSONException exception) {
                     VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse custom segment", exception,
-                            true, false);
+                            false, false);
                 }
             }
             return true;
@@ -466,7 +466,7 @@ public enum CustomSegmentEvaluateEnum {
                     }
                 } catch (JSONException exception) {
                     VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse custom segment", exception,
-                            true, false);
+                            false, false);
                 }
             }
             return false;
@@ -496,7 +496,7 @@ public enum CustomSegmentEvaluateEnum {
                     }
                 } catch (JSONException exception) {
                     VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse custom segment", exception,
-                            true, false);
+                            false, false);
                 }
             }
             return false;
@@ -526,7 +526,7 @@ public enum CustomSegmentEvaluateEnum {
                     }
                 } catch (JSONException exception) {
                     VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse custom segment", exception,
-                            true, false);
+                            false, false);
                 }
             }
             return false;

@@ -141,10 +141,7 @@ public class VWOPersistData {
      * @param sharedPreference the shared preference
      */
     void saveCampaign(VWOPreference sharedPreference) {
-
         String campaignKey = CAMPAIGN_KEY + mCampaignId;
-
-
         try {
             sharedPreference.putString(campaignKey, getPersistCampaignAsJsonObject().toString());
 
@@ -162,22 +159,8 @@ public class VWOPersistData {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
-
     }
 
-    /**
-     * Add to queue.
-     *
-     * @param sharedPreference the shared preference
-     * @param url              the url
-     */
-    static void addToQueue(VWOPreference sharedPreference, String url) {
-        ArrayList<String> urls = sharedPreference.getListString(VWOData.VWO_QUEUE);
-        urls.add(url);
-        sharedPreference.putListString(VWOData.VWO_QUEUE, urls);
-
-    }
 
     /**
      * Is existing campaign boolean.
@@ -213,6 +196,4 @@ public class VWOPersistData {
     public static boolean isReturningUser(VWO vwo) {
         return vwo.getVwoPreference().getBoolean(AppConstants.IS_RETURNING_USER, false);
     }
-
-
 }

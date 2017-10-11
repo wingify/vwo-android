@@ -34,8 +34,9 @@ import java.util.logging.Logger;
 
 /**
  * This is the base Activity extending {@link android.support.v7.app.AppCompatActivity}.
- * <p/>
+ * <p>
  * All other activities extends from this activity, following an inheritance pattern.
+ * </p>
  */
 public abstract class BaseActivity extends AppCompatActivity implements ChangeFragment {
 

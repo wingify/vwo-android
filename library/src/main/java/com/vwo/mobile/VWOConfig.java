@@ -25,7 +25,7 @@ public class VWOConfig {
     private ActivityLifecycleListener activityLifecycleListener;
 
     // Timeout in case data is fetched synchronously
-    private long timeout;
+    private Long timeout;
 
     // Is the VWO api key
     private String apiKey;
@@ -77,11 +77,12 @@ public class VWOConfig {
         return this.activityLifecycleListener;
     }
 
-    public long getTimeout() {
+    @Nullable
+    public Long getTimeout() {
         return this.timeout;
     }
 
-    void setTimeout(long timeout) {
+    void setTimeout(@Nullable Long timeout) {
         this.timeout = timeout;
     }
 
