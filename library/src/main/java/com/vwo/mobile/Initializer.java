@@ -38,7 +38,7 @@ public class Initializer {
         if (vwo == null) {
             throw new IllegalArgumentException("You need to initialize vwo instance first");
         }
-        setup(VWODownloader.NO_TIMEOUT);
+        setup(null);
         vwo.startVwoInstance();
     }
 
@@ -57,7 +57,7 @@ public class Initializer {
             Manifest.permission.INTERNET,
             Manifest.permission.ACCESS_NETWORK_STATE})
     public void launch(@NonNull VWOStatusListener statusListener) {
-        setup(VWODownloader.NO_TIMEOUT);
+        setup(null);
         VWO.setVWOStatusListener(statusListener);
         vwo.startVwoInstance();
     }
@@ -96,7 +96,7 @@ public class Initializer {
     }
 
     @RestrictTo(RestrictTo.Scope.LIBRARY)
-    private void setup(long timeout) {
+    private void setup(Long timeout) {
         if (this.vwo.getConfig() == null) {
             VWOConfig vwoConfig = new VWOConfig.Builder().apiKey(apiKey).build();
             this.vwo.setConfig(vwoConfig);

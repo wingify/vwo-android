@@ -38,7 +38,7 @@ public class VWODownloader {
         String url = mVWO.getVwoUrlBuilder().getDownloadUrl();
         VWOLog.i(VWOLog.URL_LOGS, "Fetching data from: " + url, true);
 
-        if (mVWO.getConfig().getTimeout() != NO_TIMEOUT) {
+        if (mVWO.getConfig().getTimeout() != null) {
             try {
                 downloadResult.onDownloadSuccess(downloadDataSynchronous(url, downloadResult, mVWO));
             } catch (InterruptedException exception) {
@@ -88,6 +88,7 @@ public class VWODownloader {
                 NetworkUtils.Headers.getBasicHeaders(), futureNetworkRequest, futureNetworkRequest);
         request.setGzipEnabled(true);
         PriorityRequestQueue.getInstance().addToQueue(request);
+        assert vwo.getConfig().getTimeout() != null;
         return futureNetworkRequest.get(vwo.getConfig().getTimeout(), TimeUnit.MILLISECONDS);
     }
 

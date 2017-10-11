@@ -8,6 +8,7 @@ import android.os.Handler;
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
 import android.text.TextUtils;
 
 import com.vwo.mobile.constants.AppConstants;
@@ -94,6 +95,7 @@ public class VWO implements VWODownloader.DownloadResult {
     private VWOMessageQueue messageQueue;
     private VWOMessageQueue failureQueue;
 
+    @VisibleForTesting
     private VWO(@NonNull Context context, @NonNull VWOConfig vwoConfig) {
         this.mContext = context;
         this.mIsEditMode = false;
@@ -144,6 +146,8 @@ public class VWO implements VWODownloader.DownloadResult {
                     "method before VWO SDK is completely initialized."), false, false);
             return null;
         }
+
+        //noinspection SynchronizeOnNonFinalField
         synchronized (sSharedInstance) {
             if (sSharedInstance != null && sSharedInstance.mVWOStartState >= STATE_STARTED) {
                 // Only when the VWO has completely started or loaded from disk
@@ -192,6 +196,8 @@ public class VWO implements VWODownloader.DownloadResult {
         if(sSharedInstance == null) {
             return control;
         }
+
+        //noinspection SynchronizeOnNonFinalField
         synchronized (sSharedInstance) {
             Object data = getVariationForKey(key);
             if (data == null) {
@@ -216,6 +222,8 @@ public class VWO implements VWODownloader.DownloadResult {
             VWOLog.e(VWOLog.UPLOAD_LOGS, "SDK not initialized completely", false, false);
             return;
         }
+
+        //noinspection SynchronizeOnNonFinalField
         synchronized (sSharedInstance) {
             if (sSharedInstance != null && sSharedInstance.mVWOStartState >= STATE_STARTED) {
 
@@ -242,6 +250,7 @@ public class VWO implements VWODownloader.DownloadResult {
             return;
         }
 
+        //noinspection SynchronizeOnNonFinalField
         synchronized (sSharedInstance) {
             if (sSharedInstance != null && sSharedInstance.mVWOStartState >= STATE_STARTED) {
 
@@ -300,7 +309,7 @@ public class VWO implements VWODownloader.DownloadResult {
 
     @SuppressWarnings("SpellCheckingInspection")
     boolean startVwoInstance() {
-        VWOLog.v(VWOLog.INITIALIZATION_LOGS, "**** Starting VWO ver " + VWO.version() + " ****");
+        VWOLog.i(VWOLog.INITIALIZATION_LOGS, String.format("**** Starting VWO version: %s\nBuild: %s ****", version(), versionCode()), false);
         if (!VWOUtils.checkForInternetPermissions(mContext)) {
             String errMsg = "Internet permission not added to Manifest. Please add" +
                     "\n\n<uses-permission android:name=\"android.permission.INTERNET\"/> \n\npermission to your app Manifest file.";

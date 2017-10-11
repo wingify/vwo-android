@@ -22,7 +22,7 @@ public class VWOConfig {
     private String mAccountId;
 
     // Timeout in case data is fetched synchronously
-    private long timeout;
+    private Long timeout;
 
     // Is the VWO api key
     private String apiKey;
@@ -61,11 +61,12 @@ public class VWOConfig {
         return mAppKey;
     }
 
-    public long getTimeout() {
+    @Nullable
+    public Long getTimeout() {
         return this.timeout;
     }
 
-    void setTimeout(long timeout) {
+    void setTimeout(@Nullable Long timeout) {
         this.timeout = timeout;
     }
 
