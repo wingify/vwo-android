@@ -2,6 +2,7 @@ package com.vwo.mobile.segmentation;
 
 import android.os.Build;
 
+import com.vwo.mobile.BuildConfig;
 import com.vwo.mobile.VWO;
 import com.vwo.mobile.mock.ShadowConfiguration;
 import com.vwo.mobile.mock.VWOMock;
@@ -20,10 +21,9 @@ import org.robolectric.annotation.Config;
  * Created by aman on Fri 06/10/17 16:33.
  */
 
-
-@Config(sdk = Build.VERSION_CODES.JELLY_BEAN, shadows = {ShadowConfiguration.class,
-        VWOPersistDataMock.class }, packageName = "com.vwo.mobile.test")
 @RunWith(RobolectricTestRunner.class)
+@Config(constants = BuildConfig.class, sdk = Build.VERSION_CODES.JELLY_BEAN, shadows = {ShadowConfiguration.class,
+        VWOPersistDataMock.class }, manifest = "AndroidManifest.xml")
 public class CustomSegmentTest {
 
     /**

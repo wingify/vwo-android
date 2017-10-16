@@ -22,6 +22,22 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".DeepLinkActivity"
+            android:screenOrientation="landscape">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <!-- Accepts URIs that begin with "app://vwo/sample” -->
+                <data
+                    android:host="vwo"
+                    android:pathPrefix="/sample"
+                    android:scheme="app" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".DetailActivity"
             android:label="@string/title_activity_detail"

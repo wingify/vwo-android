@@ -32,7 +32,7 @@
 
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <!-- Accepts URIs that begin with "app://vwo/login” -->
+                <!-- Accepts URIs that begin with "app://vwo/launch” -->
                 <data
                     android:host="vwo"
                     android:pathPrefix="/launch"

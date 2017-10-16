@@ -35,7 +35,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="32dp"
             android:onClick="gotoNext"
-            android:text="Text and button"
+            android:text="Mark All goals"
             android:textColor="@color/white_secondary_text"/>
 
         <Button
@@ -44,7 +44,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="32dp"
             android:onClick="gotoNext"
-            android:text="Experiment Images"
+            android:text="Mark single goal"
             android:textColor="@color/white_secondary_text"/>
 
         <!--<Button-->

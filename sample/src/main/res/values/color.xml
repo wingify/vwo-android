@@ -26,4 +26,8 @@
     <!-- Miscellaneous-->
     <color name="activated_bg">#66BBDEFB</color>
 
+    <color name="green">#27AE60</color>
+    <color name="white">#ffffff</color>
+    <color name="black">@android:color/black</color>
+
 </resources>

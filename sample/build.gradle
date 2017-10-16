@@ -7,8 +7,8 @@ android {
         applicationId "com.vwo.sample"
         minSdkVersion parent.ext.minSDKVersion
         targetSdkVersion parent.ext.targetSDKVersion
-        versionCode 1
-        versionName "1.0.0"
+        versionCode 10
+        versionName "10.0.0"
     }
     buildTypes {
         debug {
@@ -67,10 +67,12 @@ dependencies {
     implementation 'com.squareup.picasso:picasso:2.5.2'
 //    implementation project(':library')
     implementation 'io.sentry:sentry-android:1.4.0'
-    implementation 'com.vwo:mobile:2.0.0-beta8@aar'
+    implementation 'com.vwo:mobile:2.0.0-SNAPSHOT@aar'
     debugImplementation('io.socket:socket.io-client:1.0.0') {
         // excluding org.json which is provided by Android
         exclude group: 'org.json', module: 'json'
     }
     releaseImplementation 'com.squareup.okhttp3:okhttp:3.8.1'
+    implementation 'com.airbnb:deeplinkdispatch:3.1.0'
+    annotationProcessor 'com.airbnb:deeplinkdispatch-processor:3.1.0'
 }
