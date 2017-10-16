@@ -3,10 +3,8 @@ package com.vwo.mobile;
 import android.Manifest;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresPermission;
-import android.support.annotation.RestrictTo;
 
 import com.vwo.mobile.events.VWOStatusListener;
-import com.vwo.mobile.network.VWODownloader;
 import com.vwo.mobile.utils.VWOLog;
 
 /**
@@ -95,7 +93,6 @@ public class Initializer {
         return this;
     }
 
-    @RestrictTo(RestrictTo.Scope.LIBRARY)
     private void setup(Long timeout) {
         if (this.vwo.getConfig() == null) {
             VWOConfig vwoConfig = new VWOConfig.Builder().apiKey(apiKey).build();

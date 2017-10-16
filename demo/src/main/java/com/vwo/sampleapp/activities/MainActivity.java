@@ -32,6 +32,7 @@ import android.widget.Toast;
 
 import com.airbnb.deeplinkdispatch.DeepLink;
 import com.vwo.mobile.VWO;
+import com.vwo.mobile.VWOConfig;
 import com.vwo.mobile.events.VWOStatusListener;
 import com.vwo.mobile.utils.VWOLog;
 import com.vwo.sampleapp.R;
@@ -41,6 +42,10 @@ import com.vwo.sampleapp.interfaces.AppDeepLink;
 import com.vwo.sampleapp.interfaces.NavigationToggleListener;
 import com.vwo.sampleapp.utils.SharedPreferencesHelper;
 
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 @AppDeepLink("/launch/{id}")
@@ -81,14 +86,30 @@ public class MainActivity extends BaseActivity
         Intent intent = getIntent();
         if (intent.getBooleanExtra(DeepLink.IS_DEEP_LINK, false)) {
             Bundle parameters = intent.getExtras();
-            String apiKey = parameters.getString("id");
-            Log.d(LOG_TAG, "API_KEY: " + apiKey);
-            // Do something with idString
-            if (validateAndSetApiKey(apiKey)) {
-                initVWO(apiKey, true);
+            if(parameters != null) {
+                String apiKey = parameters.getString("id");
+                Log.d(LOG_TAG, "API_KEY: " + apiKey);
+
+                Set<String> list = parameters.keySet();
+                list.remove("id");
+                list.remove("is_deep_link_flag");
+                Map<String, String> customKeys = new HashMap<>();
+                for (String key : list) {
+                    if(key.startsWith("__vwo__")) {
+                        customKeys.put(key.replace("__vwo__", ""), parameters.getString(key));
+                        Log.d(LOG_TAG, String.format(Locale.ENGLISH, "KEY: %s, VALUE: %s", key.replace("__vwo__", ""), parameters.getString(key)));
+                    }
+                }
+
+                // Do something with idString
+                if (validateAndSetApiKey(apiKey)) {
+                    initVWO(apiKey, true, customKeys);
+                }
+            } else {
+                initVWO(SharedPreferencesHelper.getApiKey(this), true, null);
             }
         } else {
-            initVWO(SharedPreferencesHelper.getApiKey(this), true);
+            initVWO(SharedPreferencesHelper.getApiKey(this), true, null);
         }
 
         navigationView = findViewById(R.id.nav_view);
@@ -220,7 +241,7 @@ public class MainActivity extends BaseActivity
                         String apiKey = input.getText().toString().trim();
 
                         if (validateAndSetApiKey(apiKey)) {
-                            initVWO(apiKey, false);
+                            initVWO(apiKey, false, null);
                             alertDialog.dismiss();
                         } else {
                             textInputLayout.setErrorEnabled(true);
@@ -249,14 +270,19 @@ public class MainActivity extends BaseActivity
     }
 
 
-    private void initVWO(String key, final boolean showProgress) {
+    private void initVWO(String key, final boolean showProgress, @Nullable Map<String, String> keys) {
         Log.d("INIT", "Calling initVWO");
         if (!TextUtils.isEmpty(key)) {
             if (showProgress) {
                 progressBar.setVisibility(View.VISIBLE);
             }
             VWOLog.setLogLevel(VWOLog.ALL);
-            VWO.with(this, key).launch(new VWOStatusListener() {
+            VWOConfig.Builder vwoConfigBuilder = new VWOConfig.Builder();
+            if(keys != null) {
+                vwoConfigBuilder.setCustomSegmentationMapping(keys);
+            }
+
+            VWO.with(this, key).config(vwoConfigBuilder.build()).launch(new VWOStatusListener() {
                 @Override
                 public void onVWOLoaded() {
                     if (showProgress) {
