@@ -90,6 +90,8 @@ public class VWO implements VWODownloader.DownloadResult {
 
     private VWOStatusListener mStatusListener;
 
+    private static final Object lock = new Object();
+
     @VWOState
     private int mVWOStartState;
     private VWOMessageQueue messageQueue;
@@ -111,7 +113,7 @@ public class VWO implements VWODownloader.DownloadResult {
             throw new IllegalArgumentException("key cannot be null");
         }
         if (sSharedInstance == null) {
-            synchronized (VWO.class) {
+            synchronized (lock) {
                 if (sSharedInstance == null) {
                     sSharedInstance = new Builder(context)
                             .build();
@@ -141,14 +143,7 @@ public class VWO implements VWODownloader.DownloadResult {
     @SuppressWarnings("unused")
     @Nullable
     public static Object getVariationForKey(@NonNull String key) {
-        if(sSharedInstance == null) {
-            VWOLog.e(VWOLog.DATA_LOGS, new IllegalStateException("Cannot call getVariationForKey(String key) " +
-                    "method before VWO SDK is completely initialized."), false, false);
-            return null;
-        }
-
-        //noinspection SynchronizeOnNonFinalField
-        synchronized (sSharedInstance) {
+        synchronized (lock) {
             if (sSharedInstance != null && sSharedInstance.mVWOStartState >= STATE_STARTED) {
                 // Only when the VWO has completely started or loaded from disk
                 Object object;
@@ -193,12 +188,7 @@ public class VWO implements VWODownloader.DownloadResult {
     @SuppressWarnings("unused")
     @NonNull
     public static Object getVariationForKey(@NonNull String key, @NonNull Object control) {
-        if(sSharedInstance == null) {
-            return control;
-        }
-
-        //noinspection SynchronizeOnNonFinalField
-        synchronized (sSharedInstance) {
+        synchronized (lock) {
             Object data = getVariationForKey(key);
             if (data == null) {
                 VWOLog.e(VWOLog.DATA_LOGS, "No data found for key: " + key, false, false);
@@ -218,13 +208,7 @@ public class VWO implements VWODownloader.DownloadResult {
      * @param goalIdentifier is name of the goal set in VWO dashboard
      */
     public static void markConversionForGoal(@NonNull String goalIdentifier) {
-        if(sSharedInstance == null) {
-            VWOLog.e(VWOLog.UPLOAD_LOGS, "SDK not initialized completely", false, false);
-            return;
-        }
-
-        //noinspection SynchronizeOnNonFinalField
-        synchronized (sSharedInstance) {
+        synchronized (lock) {
             if (sSharedInstance != null && sSharedInstance.mVWOStartState >= STATE_STARTED) {
 
                 if (sSharedInstance.isEditMode()) {
@@ -245,13 +229,7 @@ public class VWO implements VWODownloader.DownloadResult {
      * @param value          is the revenue achieved by hitting this goal.
      */
     public static void markConversionForGoal(@NonNull String goalIdentifier, double value) {
-        if(sSharedInstance == null) {
-            VWOLog.e(VWOLog.UPLOAD_LOGS, "SDK not initialized completely", false, false);
-            return;
-        }
-
-        //noinspection SynchronizeOnNonFinalField
-        synchronized (sSharedInstance) {
+        synchronized (lock) {
             if (sSharedInstance != null && sSharedInstance.mVWOStartState >= STATE_STARTED) {
 
                 if (sSharedInstance.isEditMode()) {
