@@ -353,12 +353,14 @@ public class VWO implements VWODownloader.DownloadResult {
         }
         if (exception != null && exception.getCause() != null && exception.getCause() instanceof ErrorResponse) {
             ErrorResponse errorResponse = (ErrorResponse) exception.getCause();
-            int responseCode = errorResponse.getNetworkResponse().getResponseCode();
-            if (responseCode >= 400 && responseCode <= 499) {
-                message = "Invalid api key";
-                VWOLog.e(VWOLog.INITIALIZATION_LOGS, message, false, false);
-                onLoadFailure(message);
-                return;
+            if(errorResponse.getNetworkResponse() != null) {
+                int responseCode = errorResponse.getNetworkResponse().getResponseCode();
+                if (responseCode >= 400 && responseCode <= 499) {
+                    message = "Invalid api key";
+                    VWOLog.e(VWOLog.INITIALIZATION_LOGS, message, false, false);
+                    onLoadFailure(message);
+                    return;
+                }
             }
         }
         if (mVWOLocalData.isLocalDataPresent()) {
