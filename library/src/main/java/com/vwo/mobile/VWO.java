@@ -284,7 +284,7 @@ public class VWO implements VWODownloader.DownloadResult {
 
     @SuppressWarnings("SpellCheckingInspection")
     boolean startVwoInstance() {
-        VWOLog.i(VWOLog.INITIALIZATION_LOGS, String.format("**** Starting VWO version: %s\nBuild: %s ****", version(), versionCode()), false);
+        VWOLog.i(VWOLog.INITIALIZATION_LOGS, String.format("**** Starting VWO version: %s Build: %s ****", version(), versionCode()), false);
         if (!VWOUtils.checkForInternetPermissions(mContext)) {
             String errMsg = "Internet permission not added to Manifest. Please add" +
                     "\n\n<uses-permission android:name=\"android.permission.INTERNET\"/> \n\npermission to your app Manifest file.";
