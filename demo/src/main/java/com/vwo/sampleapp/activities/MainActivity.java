@@ -86,7 +86,7 @@ public class MainActivity extends BaseActivity
         Intent intent = getIntent();
         if (intent.getBooleanExtra(DeepLink.IS_DEEP_LINK, false)) {
             Bundle parameters = intent.getExtras();
-            if(parameters != null) {
+            if (parameters != null) {
                 String apiKey = parameters.getString("id");
                 Log.d(LOG_TAG, "API_KEY: " + apiKey);
 
@@ -95,7 +95,7 @@ public class MainActivity extends BaseActivity
                 list.remove("is_deep_link_flag");
                 Map<String, String> customKeys = new HashMap<>();
                 for (String key : list) {
-                    if(key.startsWith("__vwo__")) {
+                    if (key.startsWith("__vwo__")) {
                         customKeys.put(key.replace("__vwo__", ""), parameters.getString(key));
                         Log.d(LOG_TAG, String.format(Locale.ENGLISH, "KEY: %s, VALUE: %s", key.replace("__vwo__", ""), parameters.getString(key)));
                     }
@@ -278,7 +278,7 @@ public class MainActivity extends BaseActivity
             }
             VWOLog.setLogLevel(VWOLog.ALL);
             VWOConfig.Builder vwoConfigBuilder = new VWOConfig.Builder();
-            if(keys != null) {
+            if (keys != null) {
                 vwoConfigBuilder.setCustomSegmentationMapping(keys);
             }
 

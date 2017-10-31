@@ -189,16 +189,13 @@ public class VWO implements VWODownloader.DownloadResult {
     @SuppressWarnings("unused")
     @NonNull
     public static Object getVariationForKey(@NonNull String key, @NonNull Object control) {
-        synchronized (lock) {
-            Object data = getVariationForKey(key);
-            if (data == null) {
-                VWOLog.e(VWOLog.DATA_LOGS, "No data found for key: " + key, false, false);
-                return control;
-            } else {
-                return data;
-            }
+        Object data = getVariationForKey(key);
+        if (data == null) {
+            VWOLog.e(VWOLog.DATA_LOGS, "No data found for key: " + key, false, false);
+            return control;
+        } else {
+            return data;
         }
-
     }
 
     /**
@@ -288,7 +285,7 @@ public class VWO implements VWODownloader.DownloadResult {
 
     @SuppressWarnings("SpellCheckingInspection")
     boolean startVwoInstance() {
-        VWOLog.i(VWOLog.INITIALIZATION_LOGS, String.format("**** Starting VWO version: %s\nBuild: %s ****", version(), versionCode()), false);
+        VWOLog.i(VWOLog.INITIALIZATION_LOGS, String.format("**** Starting VWO version: %s Build: %s ****", version(), versionCode()), false);
         if (!VWOUtils.checkForInternetPermissions(mContext)) {
             String errMsg = "Internet permission not added to Manifest. Please add" +
                     "\n\n<uses-permission android:name=\"android.permission.INTERNET\"/> \n\npermission to your app Manifest file.";
@@ -358,12 +355,14 @@ public class VWO implements VWODownloader.DownloadResult {
         }
         if (exception != null && exception.getCause() != null && exception.getCause() instanceof ErrorResponse) {
             ErrorResponse errorResponse = (ErrorResponse) exception.getCause();
-            int responseCode = errorResponse.getNetworkResponse().getResponseCode();
-            if(responseCode >= 400 && responseCode <= 499) {
-                message = "Invalid api key";
-                VWOLog.e(VWOLog.INITIALIZATION_LOGS, message, false, false);
-                onLoadFailure(message);
-                return;
+            if(errorResponse.getNetworkResponse() != null) {
+                int responseCode = errorResponse.getNetworkResponse().getResponseCode();
+                if (responseCode >= 400 && responseCode <= 499) {
+                    message = "Invalid api key";
+                    VWOLog.e(VWOLog.INITIALIZATION_LOGS, message, false, false);
+                    onLoadFailure(message);
+                    return;
+                }
             }
         }
         if (mVWOLocalData.isLocalDataPresent()) {
