@@ -5,6 +5,7 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:background="@color/white"
+    android:id="@+id/constraint_sorting_list"
     >
 
     <android.support.v7.widget.AppCompatImageView
