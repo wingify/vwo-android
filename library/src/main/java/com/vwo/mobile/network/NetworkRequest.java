@@ -13,6 +13,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
@@ -65,6 +67,7 @@ public abstract class NetworkRequest<T> implements Runnable, Comparable<NetworkR
     private static final int PRIORITY_HIGH = 3;
     private static final int PRIORITY_VERY_HIGH = 4;
 
+    @Retention(RetentionPolicy.SOURCE)
     @IntDef({PRIORITY_VERY_LOW, PRIORITY_LOW, PRIORITY_NORMAL, PRIORITY_HIGH, PRIORITY_VERY_HIGH})
     @interface RequestPriority {
     }
@@ -138,6 +141,7 @@ public abstract class NetworkRequest<T> implements Runnable, Comparable<NetworkR
         this.currentThread = currentThread;
     }
 
+    @Retention(RetentionPolicy.SOURCE)
     @StringDef({GET, PUT, POST, DELETE})
     @interface HttpMethod {
     }

@@ -30,6 +30,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.io.IOException;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -55,14 +57,15 @@ public class VWO implements VWODownloader.DownloadResult {
         public static final String ARG_VARIATION_NAME = "vwo_variation_name";
     }
 
-    private static final String MESSAGE_QUEUE_NAME = "queue_v1.vwo";
-    private static final String FAILURE_QUEUE_NAME = "failure_queue_v1.vwo";
+    private static final String MESSAGE_QUEUE_NAME = "queue_v2.vwo";
+    private static final String FAILURE_QUEUE_NAME = "failure_queue_v2.vwo";
 
     private static final int STATE_NOT_STARTED = 0;
     private static final int STATE_STARTING = 1;
     private static final int STATE_STARTED = 2;
     private static final int STATE_FAILED = 3;
 
+    @Retention(RetentionPolicy.SOURCE)
     @IntDef({
             STATE_NOT_STARTED,
             STATE_STARTING,
@@ -430,6 +433,7 @@ public class VWO implements VWODownloader.DownloadResult {
         // Initialize message queues
         this.messageQueue = VWOMessageQueue.getInstance(getCurrentContext(), MESSAGE_QUEUE_NAME);
         this.failureQueue = VWOMessageQueue.getInstance(getCurrentContext(), FAILURE_QUEUE_NAME);
+
         mVWODownloader.initializeMessageQueue();
         mVWODownloader.initializeFailureQueue();
 

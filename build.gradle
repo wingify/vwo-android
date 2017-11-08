@@ -6,30 +6,10 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.1.0-alpha01'
-        classpath 'com.google.gms:google-services:3.1.0'
+        classpath 'com.android.tools.build:gradle:3.1.0-alpha02'
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
-    }
-
-    ext {
-        supportLibraryVersion = '26.0.1'
-        buildToolsVersion = '26.0.1'
-        compileSDKVersion = 26
-        minSDKVersion = 14
-        targetSDKVersion = 26
-
-        supportLibraryDependencies = [
-                gridLayout  : "com.android.support:gridlayout-v7:${supportLibraryVersion}",
-                constraint  : "com.android.support.constraint:constraint-layout:1.0.2",
-                recycler    : "com.android.support:recyclerview-v7:${supportLibraryVersion}",
-                cardview    : "com.android.support:cardview-v7:${supportLibraryVersion}",
-                vector      : "com.android.support:support-vector-drawable:${supportLibraryVersion}",
-                annotations : "com.android.support:support-annotations:${supportLibraryVersion}",
-                design      : "com.android.support:design:${supportLibraryVersion}",
-                appcompat_v4: "com.android.support:support-v4:${supportLibraryVersion}"
-        ]
     }
 }
 
