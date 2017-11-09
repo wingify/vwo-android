@@ -31,13 +31,11 @@
 #    java.lang.Object readResolve();
 #}
 #
-#-dontobfuscate
--printmapping out.map
--verbose
+-dontobfuscate
 -keepparameternames
 -renamesourcefileattribute SourceFile
 -keepattributes Exceptions,InnerClasses,Signature,Deprecated,SourceFile,LineNumberTable,*Annotation*,EnclosingMethod
--keepnames public class * extends com.vwo.mobile.models.Entry
+-keep public class * extends com.vwo.mobile.models.Entry
 
 -keepclassmembers class * extends com.vwo.mobile.models.Entry{
  public <init>(android.os.Parcel);
