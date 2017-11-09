@@ -31,12 +31,15 @@
 #    java.lang.Object readResolve();
 #}
 #
-
 -dontobfuscate
-
 -keepparameternames
 -renamesourcefileattribute SourceFile
 -keepattributes Exceptions,InnerClasses,Signature,Deprecated,SourceFile,LineNumberTable,*Annotation*,EnclosingMethod
+-keep public class * extends com.vwo.mobile.models.Entry
+
+-keepclassmembers class * extends com.vwo.mobile.models.Entry{
+ public <init>(android.os.Parcel);
+}
 
 -keep public class * {
     public protected *;

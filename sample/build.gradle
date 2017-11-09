@@ -1,12 +1,13 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion parent.ext.compileSDKVersion
-    buildToolsVersion parent.ext.buildToolsVersion
+    compileSdkVersion 27
+    buildToolsVersion '26.0.2'
     defaultConfig {
+        versionCode 9
+        minSdkVersion 14
+        targetSdkVersion 27
         applicationId "com.vwo.sample"
-        minSdkVersion parent.ext.minSDKVersion
-        targetSdkVersion parent.ext.targetSDKVersion
         versionCode 10
         versionName "10.0.0"
     }
@@ -62,8 +63,8 @@ android {
 }
 
 dependencies {
-    implementation 'com.android.support:appcompat-v7:26.1.0'
-    implementation 'com.android.support:design:26.1.0'
+    implementation 'com.android.support:appcompat-v7:27.0.0'
+    implementation 'com.android.support:design:27.0.0'
     implementation 'com.squareup.picasso:picasso:2.5.2'
     implementation project(':library')
 //    implementation 'io.sentry:sentry-android:1.4.0'

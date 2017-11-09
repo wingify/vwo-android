@@ -1,10 +1,12 @@
 package com.vwo.mobile.data;
 
 import android.content.Context;
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
 
 import com.vwo.mobile.data.io.QueueFile;
 import com.vwo.mobile.models.Entry;
+import com.vwo.mobile.utils.Parceler;
 import com.vwo.mobile.utils.VWOLog;
 
 import java.io.ByteArrayInputStream;
@@ -51,25 +53,15 @@ public class VWOMessageQueue implements MessageQueue<Entry> {
             @Override
             public void run() {
                 VWOLog.i(VWOLog.STORAGE_LOGS, String.format(Locale.ENGLISH, "Adding to queue %s\n%s", filename, entry.toString()), true);
-                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                ObjectOutputStream objectOutputStream;
+                byte[] data = Parceler.marshall(entry);
                 try {
-                    objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
-                    objectOutputStream.writeObject(entry);
-                    objectOutputStream.flush();
                     synchronized (queueFile) {
-                        queueFile.add(byteArrayOutputStream.toByteArray());
+                        queueFile.add(data);
                     }
                 } catch (IOException exception) {
                     VWOLog.e(VWOLog.STORAGE_LOGS, String.format(Locale.ENGLISH, "File %s corrupted. Clearing last entry...", filename), true, false);
                     remove();
                     VWOLog.e(VWOLog.STORAGE_LOGS, "Unable to create Object", exception, true, true);
-                } finally {
-                    try {
-                        byteArrayOutputStream.close();
-                    } catch (Exception exception) {
-                        VWOLog.e(VWOLog.STORAGE_LOGS, exception, true, true);
-                    }
                 }
             }
         });
@@ -91,13 +83,7 @@ public class VWOMessageQueue implements MessageQueue<Entry> {
             if (data == null) {
                 return null;
             }
-            ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(data);
-            ObjectInputStream objectInputStream = new ObjectInputStream(byteArrayInputStream);
-            try {
-                return (Entry) objectInputStream.readObject();
-            } catch (ClassNotFoundException exception) {
-                VWOLog.e(VWOLog.STORAGE_LOGS, exception, true, true);
-            }
+            return Parceler.unmarshall(data, Entry.CREATOR);
         } catch (IOException exception) {
             VWOLog.e(VWOLog.STORAGE_LOGS, String.format(Locale.ENGLISH, "File %s corrupted. Clearing last entry...", filename), true, false);
             remove();

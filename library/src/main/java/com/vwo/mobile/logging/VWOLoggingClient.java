@@ -11,7 +11,7 @@ public class VWOLoggingClient {
     }
 
     public static VWOLoggingClient getInstance() {
-        if(sentryClient == null) {
+        if (sentryClient == null) {
             sentryClient = new VWOLoggingClient();
         }
 
@@ -20,8 +20,15 @@ public class VWOLoggingClient {
 
     private void setUncaughtExceptionHandler() {
         Thread.UncaughtExceptionHandler defaultHandler = Thread.getDefaultUncaughtExceptionHandler();
-        if(!(defaultHandler instanceof VWOUncaughtExceptionHandler)) {
-            Thread.setDefaultUncaughtExceptionHandler(new VWOUncaughtExceptionHandler());
+        VWOUncaughtExceptionHandler handler;
+        if (defaultHandler == null) {
+            handler = new VWOUncaughtExceptionHandler();
+            Thread.setDefaultUncaughtExceptionHandler(handler);
+        } else {
+            if (!(defaultHandler instanceof VWOUncaughtExceptionHandler)) {
+                handler = new VWOUncaughtExceptionHandler(defaultHandler);
+                Thread.setDefaultUncaughtExceptionHandler(handler);
+            }
         }
     }
 

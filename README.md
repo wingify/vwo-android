@@ -53,7 +53,7 @@ Add dependencies to app/build.gradle file
 
 	dependencies {
 	    ...
-	    compile 'com.vwo:mobile:2.0.0-RC1@aar'
+	    compile 'com.vwo:mobile:2.0.0-RC2@aar'
         debugCompile ('io.socket:socket.io-client:1.0.0') {
             // excluding org.json which is provided by Android
             exclude group: 'org.json', module: 'json'
@@ -61,7 +61,7 @@ Add dependencies to app/build.gradle file
         compile 'io.sentry:sentry-android:1.4.0'
         
         // Skip this if you are already including support library in your app.
-        compile 'com.android.support:support-core-utils:26.0.2'
+        compile 'com.android.support:support-core-utils:27.0.0'
 	    ...
 	}
 	

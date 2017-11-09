@@ -69,6 +69,8 @@ public class VWOLog {
 
     public static final String DATA = "data";
 
+    public static final String QUEUE = "queue";
+
     public static final String ANALYTICS = "analytics";
     /**
      * OFF is a special level that can be used to turn off logging.

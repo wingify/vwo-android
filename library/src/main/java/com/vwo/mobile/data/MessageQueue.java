@@ -24,7 +24,7 @@ public interface MessageQueue<T> {
 
     /**
      *
-     * @return the total count of elements int the queue
+     * @return the total count of elements in the queue
      */
     int size();
 
