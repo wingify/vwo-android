@@ -4,7 +4,7 @@ android {
     compileSdkVersion 27
     buildToolsVersion '26.0.2'
     defaultConfig {
-        versionCode 9
+        versionCode 10
         minSdkVersion 14
         targetSdkVersion 27
         versionName "2.0.0-RC2"
@@ -59,7 +59,7 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     // Optional -- Mockito framework
     testImplementation 'org.mockito:mockito-core:2.2.29'
-    testImplementation 'org.robolectric:robolectric:3.4.2'
+    testImplementation 'org.robolectric:robolectric:3.5.1'
     implementation('io.socket:socket.io-client:1.0.0') {
         exclude group: 'org.json', module: 'json'
     }

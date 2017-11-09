@@ -70,7 +70,7 @@ public class CampaignEntry extends Entry {
         dest.writeInt(this.variationId);
     }
 
-    protected CampaignEntry(Parcel in) {
+    public CampaignEntry(Parcel in) {
         super(in);
         this.campaignId = in.readLong();
         this.variationId = in.readInt();

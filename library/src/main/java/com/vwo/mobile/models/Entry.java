@@ -92,7 +92,7 @@ public abstract class Entry implements Parcelable {
         dest.writeInt(this.retryCount);
     }
 
-    protected Entry(Parcel in) {
+    public Entry(Parcel in) {
         VWOLog.v(VWOLog.QUEUE, "Unmarshalling class " + in.readString());
 
         this.url = in.readString();

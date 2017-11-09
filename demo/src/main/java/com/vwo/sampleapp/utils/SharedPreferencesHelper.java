@@ -37,12 +37,7 @@ public class SharedPreferencesHelper {
      * @return the shared prefs
      */
     public static SharedPreferences getVWOSharedPrefs(Context mContext) {
-
-        if (mSharedPreference == null) {
-            mSharedPreference = mContext.getSharedPreferences("VWO_shared_prefs", Activity.MODE_PRIVATE);
-        }
-
-        return mSharedPreference;
+        return mContext.getSharedPreferences("VWO_shared_prefs", Activity.MODE_PRIVATE);
     }
 
     /**
@@ -77,7 +72,7 @@ public class SharedPreferencesHelper {
     }
 
     public static void clearData(Context context) {
-        removeApiKey(context);
+//        removeApiKey(context);
         getVWOSharedPrefs(context).edit().clear().apply();
     }
 

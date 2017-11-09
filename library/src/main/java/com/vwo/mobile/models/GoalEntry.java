@@ -80,7 +80,7 @@ public class GoalEntry extends Entry {
         dest.writeInt(this.variationId);
     }
 
-    protected GoalEntry(Parcel in) {
+     public GoalEntry(Parcel in) {
         super(in);
         this.campaignId = in.readLong();
         this.goalId = in.readInt();
