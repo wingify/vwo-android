@@ -31,10 +31,26 @@
 #    java.lang.Object readResolve();
 #}
 #
--dontobfuscate
 -keepparameternames
 -renamesourcefileattribute SourceFile
 -keepattributes Exceptions,InnerClasses,Signature,Deprecated,SourceFile,LineNumberTable,*Annotation*,EnclosingMethod
+
+#Sentry
+-keepattributes LineNumberTable,SourceFile
+-dontwarn org.slf4j.**
+-dontwarn javax.**
+
+# Support libraries
+-keep class android.support.v4.content.LocalBroadcastManager
+
+# okhttp3 and okio
+-dontwarn okhttp3.**
+-dontwarn okio.**
+-dontwarn javax.annotation.**
+# A resource is loaded with a relative path so the package of this class must be preserved.
+-keepnames class okhttp3.internal.publicsuffix.PublicSuffixDatabase
+
+# VWO module
 -keep public class * extends com.vwo.mobile.models.Entry
 
 -keepclassmembers class * extends com.vwo.mobile.models.Entry{

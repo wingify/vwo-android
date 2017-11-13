@@ -4,10 +4,10 @@ android {
     compileSdkVersion 27
     buildToolsVersion '26.0.2'
     defaultConfig {
-        versionCode 10
+        versionCode 11
         minSdkVersion 14
         targetSdkVersion 27
-        versionName "2.0.0-RC2"
+        versionName "2.0.0-RC3"
     }
     signingConfigs {
         config {
@@ -24,11 +24,16 @@ android {
     def SOCKET_URL = '"https://mobilepreview.vwo.com:443/"'
     buildTypes {
         release {
-            debuggable false
-            minifyEnabled true
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.config
             it.buildConfigField 'String', 'SCHEME', URL_SCHEME_HTTPS
+
+            postprocessing {
+                removeUnusedCode true
+                removeUnusedResources false
+                obfuscate true
+                optimizeCode true
+                proguardFile 'proguard-rules.pro'
+            }
         }
         debug {
             debuggable false

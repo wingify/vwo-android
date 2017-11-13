@@ -14,6 +14,9 @@ android.libraryVariants.all { variant ->
         def task = project.tasks.create "jar${name.capitalize()}", Jar
         task.dependsOn variant.javaCompile
         task.from variant.javaCompile.destinationDir
+        task.exclude "**/R.class"
+        task.exclude "**/R\$*.class"
+        task.exclude "android/**"
         artifacts.add('archives', task)
     }
 }
@@ -43,9 +46,9 @@ uploadArchives {
             pom.version = version
 
             pom.project {
-                name 'Vwo Mobile SDK'
+                name 'VWO Mobile SDK'
                 packaging 'jar'
-                description 'Vwo mobile SDK for A/B Testing android apps'
+                description 'VWO mobile SDK for A/B Testing android apps'
                 url 'https://github.com/wingify/vwo-mobile-android'
             }
 
@@ -54,10 +57,12 @@ uploadArchives {
             snapshotRepository(url: "file://${snapshotRepo}")
         }
     }
+}.doLast {
+    println "Release ${version} can be found at ${localReleaseDest}/"
 }
 
-task generateRelease << {
-    println "Release ${version} can be found at ${localReleaseDest}/"
+task generateRelease {
+    println "Generating Release ${version}"
 }
 
 subprojects {
