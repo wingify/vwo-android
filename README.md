@@ -258,6 +258,27 @@ public class MainActivity extends AppCompatActivity {
 }
 ```
 
+## Proguard
+
+if you are using proguard. Add the following rules to your proguard file
+
+```proguard
+    # Sentry
+    -keepattributes LineNumberTable,SourceFile
+    -dontwarn org.slf4j.**
+    -dontwarn javax.**
+    
+    # Support libraries
+    -keep class android.support.v4.content.LocalBroadcastManager
+    
+    # VWO module
+    -keep public class * extends com.vwo.mobile.models.Entry
+    
+    -keepclassmembers class * extends com.vwo.mobile.models.Entry{
+     public <init>(android.os.Parcel);
+    }
+```
+
 
 ## License
 
