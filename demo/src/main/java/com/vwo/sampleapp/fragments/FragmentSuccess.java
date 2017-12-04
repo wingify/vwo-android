@@ -41,7 +41,7 @@ public class FragmentSuccess extends Fragment {
         }
 
         binding.setSuccess(success);
-        VWO.markConversionForGoal(Constants.VWOKeys.GOAL_LANDING_PAGE);
+        VWO.trackConversion(Constants.VWOKeys.GOAL_LANDING_PAGE);
 
         return view;
     }

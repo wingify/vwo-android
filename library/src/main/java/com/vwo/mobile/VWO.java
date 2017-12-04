@@ -64,13 +64,15 @@ public class VWO implements VWODownloader.DownloadResult {
     private static final int STATE_STARTING = 1;
     private static final int STATE_STARTED = 2;
     private static final int STATE_FAILED = 3;
+    private static final int STATE_OPTED_OUT = Integer.MAX_VALUE;
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({
             STATE_NOT_STARTED,
             STATE_STARTING,
             STATE_STARTED,
-            STATE_FAILED
+            STATE_FAILED,
+            STATE_OPTED_OUT
     })
     @interface VWOState {
     }
@@ -207,7 +209,7 @@ public class VWO implements VWODownloader.DownloadResult {
      *
      * @param goalIdentifier is name of the goal set in VWO dashboard
      */
-    public static void markConversionForGoal(@NonNull String goalIdentifier) {
+    public static void trackConversion(@NonNull String goalIdentifier) {
         synchronized (lock) {
             if (sSharedInstance != null && sSharedInstance.mVWOStartState >= STATE_STARTED) {
 
@@ -228,7 +230,7 @@ public class VWO implements VWODownloader.DownloadResult {
      * @param goalIdentifier is name of the goal that is set in VWO dashboard
      * @param value          is the revenue achieved by hitting this goal.
      */
-    public static void markConversionForGoal(@NonNull String goalIdentifier, double value) {
+    public static void trackConversion(@NonNull String goalIdentifier, double value) {
         synchronized (lock) {
             if (sSharedInstance != null && sSharedInstance.mVWOStartState >= STATE_STARTED) {
 
@@ -288,6 +290,12 @@ public class VWO implements VWODownloader.DownloadResult {
     @SuppressWarnings("SpellCheckingInspection")
     boolean startVwoInstance() {
         VWOLog.i(VWOLog.INITIALIZATION_LOGS, String.format("**** Starting VWO version: %s Build: %s ****", version(), versionCode()), false);
+        if (getConfig().isOptOut()) {
+            this.mVWOStartState = STATE_OPTED_OUT;
+            VWOLog.w(VWOLog.INITIALIZATION_LOGS, "Ignoring initalization, User opted out.", false);
+            onLoadSuccess();
+            return true;
+        }
         if (!VWOUtils.checkForInternetPermissions(mContext)) {
             String errMsg = "Internet permission not added to Manifest. Please add" +
                     "\n\n<uses-permission android:name=\"android.permission.INTERNET\"/> \n\npermission to your app Manifest file.";

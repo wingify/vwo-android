@@ -20,6 +20,7 @@ public class VWOConfig {
     private Map<String, String> customSegmentationMapping;
     private String mAppKey;
     private String mAccountId;
+    private boolean optOut;
 
     // Timeout in case data is fetched synchronously
     private Long timeout;
@@ -27,11 +28,12 @@ public class VWOConfig {
     // Is the VWO api key
     private String apiKey;
 
-    private VWOConfig(Map<String, String> customSegmentationMapping, @Nullable String apiKey) {
-        this.customSegmentationMapping = customSegmentationMapping;
-        if (apiKey != null) {
-            setApiKey(apiKey);
+    private VWOConfig(Builder builder) {
+        this.customSegmentationMapping = builder.customSegmentationMapping;
+        if (builder.apiKey != null) {
+            setApiKey(builder.apiKey);
         }
+        this.optOut = builder.optOut;
     }
 
     public Map<String, String> getCustomSegmentationMapping() {
@@ -50,7 +52,6 @@ public class VWOConfig {
         this.apiKey = apiKey;
         this.mAccountId = apiKey.substring(apiKey.indexOf("-") + 1);
         this.mAppKey = apiKey.substring(0, apiKey.indexOf("-"));
-
     }
 
     public String getApiKey() {
@@ -75,6 +76,13 @@ public class VWOConfig {
     }
 
     /**
+     * @return whether user is opted out of VWO SDK or not
+     */
+    public boolean isOptOut() {
+        return this.optOut;
+    }
+
+    /**
      * @param customSegmentKeys is the keymap for custom segmentation variables
      */
     void setCustomSegmentKeys(Map<String, String> customSegmentKeys) {
@@ -92,6 +100,10 @@ public class VWOConfig {
             customSegmentationMapping = new HashMap<>();
         }
         this.customSegmentationMapping.put(key, value);
+    }
+
+    void setOptOut(boolean optOut) {
+        this.optOut = optOut;
     }
 
     /**
@@ -115,10 +127,16 @@ public class VWOConfig {
     public static class Builder {
         // This variable
         private Map<String, String> customSegmentationMapping;
+        private boolean optOut;
         private String apiKey = null;
 
         public VWOConfig build() {
-            return new VWOConfig(customSegmentationMapping, apiKey);
+            return new VWOConfig(this);
+        }
+
+        public Builder setOptOut(boolean optOut) {
+            this.optOut = optOut;
+            return this;
         }
 
         Builder apiKey(@NonNull String apiKey) {
