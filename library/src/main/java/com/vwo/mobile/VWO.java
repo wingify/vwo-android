@@ -309,7 +309,7 @@ public class VWO implements VWODownloader.DownloadResult {
         VWOLog.i(VWOLog.INITIALIZATION_LOGS, String.format("**** Starting VWO version: %s Build: %s ****", version(), versionCode()), false);
         if (getConfig().isOptOut()) {
             this.mVWOStartState = STATE_OPTED_OUT;
-            sSharedInstance.getVwoPreference().clear();
+            new VWOPreference(sSharedInstance).clear();
             VWOLog.w(VWOLog.INITIALIZATION_LOGS, "Ignoring initalization, User opted out.", false);
             onLoadSuccess();
             return true;
