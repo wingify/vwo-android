@@ -78,7 +78,7 @@ public class VWOConfig {
     /**
      * @return whether user is opted out of VWO SDK or not
      */
-    public boolean isOptOut() {
+    boolean isOptOut() {
         return this.optOut;
     }
 
@@ -134,7 +134,7 @@ public class VWOConfig {
             return new VWOConfig(this);
         }
 
-        public Builder setOptOut(boolean optOut) {
+        Builder setOptOut(boolean optOut) {
             this.optOut = optOut;
             return this;
         }
