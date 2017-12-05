@@ -150,7 +150,7 @@ public class VWO implements VWODownloader.DownloadResult {
     public static Object getVariationForKey(@NonNull String key) {
         synchronized (lock) {
             if (sSharedInstance != null) {
-                if(sSharedInstance.mVWOStartState >= STATE_STARTED) {
+                if (sSharedInstance.mVWOStartState >= STATE_STARTED) {
                     // Only when the VWO has completely started or loaded from disk
                     Object object;
 
@@ -160,10 +160,10 @@ public class VWO implements VWODownloader.DownloadResult {
                         object = sSharedInstance.getVwoData().getVariationForKey(key);
                     }
                     return object;
-                } else if(sSharedInstance.mVWOStartState == STATE_OPTED_OUT) {
+                } else if (sSharedInstance.mVWOStartState == STATE_OPTED_OUT) {
                     VWOLog.e(VWOLog.DATA_LOGS, "Not default value. User opted out.", true, false);
                     return null;
-                } else if(sSharedInstance.mVWOStartState == STATE_FAILED) {
+                } else if (sSharedInstance.mVWOStartState == STATE_FAILED) {
                     VWOLog.e(VWOLog.DATA_LOGS, "Not default value. SDK Failed to Initialize", true, false);
                 }
 
@@ -219,15 +219,15 @@ public class VWO implements VWODownloader.DownloadResult {
     public static void trackConversion(@NonNull String goalIdentifier) {
         synchronized (lock) {
             if (sSharedInstance != null) {
-                if(sSharedInstance.mVWOStartState >= STATE_STARTED) {
+                if (sSharedInstance.mVWOStartState >= STATE_STARTED) {
                     if (sSharedInstance.isEditMode()) {
                         sSharedInstance.getVwoSocket().triggerGoal(goalIdentifier);
                     } else {
                         sSharedInstance.mVWOData.saveGoal(goalIdentifier);
                     }
-                } else if(sSharedInstance.mVWOStartState == STATE_OPTED_OUT) {
+                } else if (sSharedInstance.mVWOStartState == STATE_OPTED_OUT) {
                     VWOLog.e(VWOLog.DATA_LOGS, "Conversion not tracked. User opted out.", true, false);
-                } else if(sSharedInstance.mVWOStartState == STATE_FAILED) {
+                } else if (sSharedInstance.mVWOStartState == STATE_FAILED) {
                     VWOLog.e(VWOLog.DATA_LOGS, "Conversion not tracked. SDK Failed to Initialize", true, false);
                 }
             } else {
@@ -245,7 +245,7 @@ public class VWO implements VWODownloader.DownloadResult {
     public static void trackConversion(@NonNull String goalIdentifier, double value) {
         synchronized (lock) {
             if (sSharedInstance != null) {
-                if(sSharedInstance.mVWOStartState >= STATE_STARTED) {
+                if (sSharedInstance.mVWOStartState >= STATE_STARTED) {
 
                     if (sSharedInstance.isEditMode()) {
                         sSharedInstance.getVwoSocket().triggerGoal(goalIdentifier);
@@ -253,9 +253,9 @@ public class VWO implements VWODownloader.DownloadResult {
                         // Check if already present in persisting data
                         sSharedInstance.mVWOData.saveGoal(goalIdentifier, value);
                     }
-                } else if(sSharedInstance.mVWOStartState == STATE_OPTED_OUT) {
+                } else if (sSharedInstance.mVWOStartState == STATE_OPTED_OUT) {
                     VWOLog.e(VWOLog.DATA_LOGS, "Conversion not tracked. User opted out.", true, false);
-                } else if(sSharedInstance.mVWOStartState == STATE_FAILED) {
+                } else if (sSharedInstance.mVWOStartState == STATE_FAILED) {
                     VWOLog.e(VWOLog.DATA_LOGS, "Conversion not tracked. SDK Failed to Initialize", true, false);
                 }
             } else {
@@ -309,6 +309,7 @@ public class VWO implements VWODownloader.DownloadResult {
         VWOLog.i(VWOLog.INITIALIZATION_LOGS, String.format("**** Starting VWO version: %s Build: %s ****", version(), versionCode()), false);
         if (getConfig().isOptOut()) {
             this.mVWOStartState = STATE_OPTED_OUT;
+            sSharedInstance.getVwoPreference().clear();
             VWOLog.w(VWOLog.INITIALIZATION_LOGS, "Ignoring initalization, User opted out.", false);
             onLoadSuccess();
             return true;
@@ -381,7 +382,7 @@ public class VWO implements VWODownloader.DownloadResult {
         }
         if (exception != null && exception.getCause() != null && exception.getCause() instanceof ErrorResponse) {
             ErrorResponse errorResponse = (ErrorResponse) exception.getCause();
-            if(errorResponse.getNetworkResponse() != null) {
+            if (errorResponse.getNetworkResponse() != null) {
                 int responseCode = errorResponse.getNetworkResponse().getResponseCode();
                 if (responseCode >= 400 && responseCode <= 499) {
                     message = "Invalid api key";
@@ -531,10 +532,10 @@ public class VWO implements VWODownloader.DownloadResult {
 
     /**
      * To opt-out of the VWO SDK, This function can called by passing a true value.
-     *
+     * <p>
      * After opting out, User won't become part of any campaign and won't be tracked by the
      * VWO.
-     *
+     * <p>
      * Note: Opting out can only be done before initialization of VWO SDK i.e. before calling
      * {@link Initializer#launch()} or {@link Initializer#launch(VWOStatusListener)} or
      * {@link Initializer#launchSynchronously(long)}
@@ -542,7 +543,7 @@ public class VWO implements VWODownloader.DownloadResult {
      * @param optOut is the {@link Boolean} value.
      */
     public static void setOptOut(boolean optOut) {
-        if(sSharedInstance != null && sSharedInstance.getState() > STATE_NOT_STARTED) {
+        if (sSharedInstance != null && sSharedInstance.getState() > STATE_NOT_STARTED) {
             VWOLog.e(VWOLog.CONFIG_LOGS, "Cannot opt-out after SDK is initialized", false, false);
         } else {
             VWO.optOut = optOut;
