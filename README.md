@@ -197,9 +197,9 @@ Object variation2 = VWO.getVariationForKey(key2, "default_value");
 You can mark a goal conversion using following methods:
 
 ```
-VWO.markConversionForGoal("conversionGoal");
+VWO.trackConversion("conversionGoal");
 
-VWO.markConversionForGoal("conversionGoal", 133.25);
+VWO.trackConversion("conversionGoal", 133.25);
 ```
 
 second method is for marking a revenue goals you can pass the revenue value in double as second 
@@ -257,7 +257,11 @@ public class MainActivity extends AppCompatActivity {
     }
 }
 ```
-
+###Opt-Out
+Use Following code to opt-out a user from SDK:
+    
+    VWO.setOptOut(true);
+ 
 ## Proguard
 
 if you are using proguard. Add the following rules to your proguard file
