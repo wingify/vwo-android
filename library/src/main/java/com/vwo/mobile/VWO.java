@@ -60,9 +60,9 @@ public class VWO implements VWODownloader.DownloadResult {
     private static final String MESSAGE_QUEUE_NAME = "queue_v2.vwo";
     private static final String FAILURE_QUEUE_NAME = "failure_queue_v2.vwo";
 
-    private static final int STATE_FAILED = -2;
-    private static final int STATE_OPTED_OUT = -1;
+    private static final int STATE_FAILED = -1;
     private static final int STATE_NOT_STARTED = 0;
+    private static final int STATE_OPTED_OUT = 1;
     private static final int STATE_STARTING = 2;
     private static final int STATE_STARTED = 3;
 
@@ -161,10 +161,12 @@ public class VWO implements VWODownloader.DownloadResult {
                     }
                     return object;
                 } else if (sSharedInstance.mVWOStartState == STATE_OPTED_OUT) {
-                    VWOLog.e(VWOLog.DATA_LOGS, "Not default value. User opted out.", true, false);
+                    VWOLog.e(VWOLog.DATA_LOGS, "Not default value. User opted out.",
+                            true, false);
                     return null;
                 } else if (sSharedInstance.mVWOStartState == STATE_FAILED) {
-                    VWOLog.e(VWOLog.DATA_LOGS, "Not default value. SDK Failed to Initialize", true, false);
+                    VWOLog.e(VWOLog.DATA_LOGS, "Not default value. SDK Failed to Initialize",
+                            true, false);
                 }
 
             }
@@ -226,12 +228,15 @@ public class VWO implements VWODownloader.DownloadResult {
                         sSharedInstance.mVWOData.saveGoal(goalIdentifier);
                     }
                 } else if (sSharedInstance.mVWOStartState == STATE_OPTED_OUT) {
-                    VWOLog.e(VWOLog.DATA_LOGS, "Conversion not tracked. User opted out.", true, false);
+                    VWOLog.e(VWOLog.DATA_LOGS, "Conversion not tracked. User opted out.",
+                            true, false);
                 } else if (sSharedInstance.mVWOStartState == STATE_FAILED) {
-                    VWOLog.e(VWOLog.DATA_LOGS, "Conversion not tracked. SDK Failed to Initialize", true, false);
+                    VWOLog.e(VWOLog.DATA_LOGS, "Conversion not tracked. SDK Failed to Initialize",
+                            true, false);
                 }
             } else {
-                VWOLog.e(VWOLog.UPLOAD_LOGS, "SDK not initialized completely", false, false);
+                VWOLog.e(VWOLog.UPLOAD_LOGS, "SDK not initialized completely",
+                        false, false);
             }
         }
     }
@@ -254,12 +259,15 @@ public class VWO implements VWODownloader.DownloadResult {
                         sSharedInstance.mVWOData.saveGoal(goalIdentifier, value);
                     }
                 } else if (sSharedInstance.mVWOStartState == STATE_OPTED_OUT) {
-                    VWOLog.e(VWOLog.DATA_LOGS, "Conversion not tracked. User opted out.", true, false);
+                    VWOLog.e(VWOLog.DATA_LOGS, "Conversion not tracked. User opted out.",
+                            true, false);
                 } else if (sSharedInstance.mVWOStartState == STATE_FAILED) {
-                    VWOLog.e(VWOLog.DATA_LOGS, "Conversion not tracked. SDK Failed to Initialize", true, false);
+                    VWOLog.e(VWOLog.DATA_LOGS, "Conversion not tracked. SDK Failed to Initialize",
+                            true, false);
                 }
             } else {
-                VWOLog.e(VWOLog.UPLOAD_LOGS, "SDK not initialized completely", false, false);
+                VWOLog.e(VWOLog.UPLOAD_LOGS, "SDK not initialized completely",
+                        false, false);
             }
         }
     }
@@ -306,7 +314,8 @@ public class VWO implements VWODownloader.DownloadResult {
 
     @SuppressWarnings("SpellCheckingInspection")
     boolean startVwoInstance() {
-        VWOLog.i(VWOLog.INITIALIZATION_LOGS, String.format("**** Starting VWO version: %s Build: %s ****", version(), versionCode()), false);
+        VWOLog.i(VWOLog.INITIALIZATION_LOGS, String.format("**** Starting VWO version: %s Build: %s ****",
+                version(), versionCode()), false);
         if (getConfig().isOptOut()) {
             this.mVWOStartState = STATE_OPTED_OUT;
             new VWOPreference(sSharedInstance).clear();
@@ -326,11 +335,13 @@ public class VWO implements VWODownloader.DownloadResult {
             onLoadFailure(errMsg);
             return false;
         } else if (!VWOUtils.isValidVwoAppKey(vwoConfig.getApiKey())) {
-            VWOLog.e(VWOLog.INITIALIZATION_LOGS, "Invalid API Key: " + vwoConfig.getAppKey(), false, false);
+            VWOLog.e(VWOLog.INITIALIZATION_LOGS, "Invalid API Key: " + vwoConfig.getAppKey(),
+                    false, false);
             onLoadFailure("Invalid API Key.");
             return false;
         } else if (this.mVWOStartState >= STATE_STARTING) {
-            VWOLog.w(VWOLog.INITIALIZATION_LOGS, "VWO is already in intialization state.", true);
+            VWOLog.w(VWOLog.INITIALIZATION_LOGS, "VWO is already in intialization state.",
+                    true);
             return true;
         } else {
             // Everything is good so far
@@ -356,7 +367,8 @@ public class VWO implements VWODownloader.DownloadResult {
     @Override
     public void onDownloadSuccess(@Nullable String data) {
         if (TextUtils.isEmpty(data)) {
-            VWOLog.e(VWOLog.DOWNLOAD_DATA_LOGS, "Empty data downloaded : " + data, true, true);
+            VWOLog.e(VWOLog.DOWNLOAD_DATA_LOGS, "Empty data downloaded : " + data,
+                    true, true);
             onDownloadError(new Exception(), "Empty data downloaded");
         } else {
             try {
@@ -394,7 +406,8 @@ public class VWO implements VWODownloader.DownloadResult {
         if (mVWOLocalData.isLocalDataPresent()) {
             mVWOData.parseData(mVWOLocalData.getData());
             mVWOStartState = STATE_STARTED;
-            VWOLog.w(VWOLog.INITIALIZATION_LOGS, "Failed to fetch data serving cached data.", false);
+            VWOLog.w(VWOLog.INITIALIZATION_LOGS, "Failed to fetch data serving cached data.",
+                    false);
             onLoadSuccess();
         } else {
             mVWOStartState = STATE_FAILED;
@@ -542,8 +555,11 @@ public class VWO implements VWODownloader.DownloadResult {
      * @param optOut is the {@link Boolean} value.
      */
     public static void setOptOut(boolean optOut) {
-        if (sSharedInstance != null && sSharedInstance.getState() > STATE_NOT_STARTED) {
-            VWOLog.e(VWOLog.CONFIG_LOGS, "Cannot opt-out after SDK is initialized", false, false);
+        if (sSharedInstance != null) {
+            if(sSharedInstance.getState() > STATE_NOT_STARTED) {
+                VWOLog.e(VWOLog.CONFIG_LOGS, "Cannot change opt-out setting after SDK is initialized",
+                        false, false);
+            }
         } else {
             VWO.optOut = optOut;
         }
