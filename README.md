@@ -53,7 +53,7 @@ Add dependencies to app/build.gradle file
 
 	dependencies {
 	    ...
-	    compile 'com.vwo:mobile:2.0.0-RC3@aar'
+	    compile 'com.vwo:mobile:2.0.0-rc.4@aar'
         debugCompile ('io.socket:socket.io-client:1.0.0') {
             // excluding org.json which is provided by Android
             exclude group: 'org.json', module: 'json'
@@ -61,7 +61,7 @@ Add dependencies to app/build.gradle file
         compile 'io.sentry:sentry-android:1.4.0'
         
         // Skip this if you are already including support library in your app.
-        compile 'com.android.support:support-core-utils:27.0.0'
+        compile 'com.android.support:support-core-utils:27.0.2'
 	    ...
 	}
 	
@@ -197,9 +197,9 @@ Object variation2 = VWO.getVariationForKey(key2, "default_value");
 You can mark a goal conversion using following methods:
 
 ```
-VWO.markConversionForGoal("conversionGoal");
+VWO.trackConversion("conversionGoal");
 
-VWO.markConversionForGoal("conversionGoal", 133.25);
+VWO.trackConversion("conversionGoal", 133.25);
 ```
 
 second method is for marking a revenue goals you can pass the revenue value in double as second 
@@ -257,7 +257,11 @@ public class MainActivity extends AppCompatActivity {
     }
 }
 ```
-
+###Opt-Out
+Use Following code to opt-out a user from SDK:
+    
+    VWO.setOptOut(true);
+ 
 ## Proguard
 
 if you are using proguard. Add the following rules to your proguard file

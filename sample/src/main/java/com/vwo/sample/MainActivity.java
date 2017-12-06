@@ -341,15 +341,15 @@ public class MainActivity extends AppCompatActivity {
         switch (id) {
             case R.id.exp_text:
                 for(String goal : goalList) {
-                    VWO.markConversionForGoal(goal);
+                    VWO.trackConversion(goal);
                 }
                 break;
             case R.id.exp_image:
-                VWO.markConversionForGoal(goalList[index++]);
+                VWO.trackConversion(goalList[index++]);
                 break;
             case R.id.exp_var:
                 startActivity(new Intent(getApplicationContext(), ExperimentVariable.class));
-                VWO.markConversionForGoal("variable", 9.0);
+                VWO.trackConversion("variable", 9.0);
                 break;
 
         }

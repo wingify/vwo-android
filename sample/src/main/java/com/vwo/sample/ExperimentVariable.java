@@ -62,7 +62,7 @@ public class ExperimentVariable extends AppCompatActivity {
             int newAmount = (int) (amt * discount / 100);
 
             finalPrice.setText("Rs " + newAmount);
-            VWO.markConversionForGoal("discountCalculated", newAmount);
+            VWO.trackConversion("discountCalculated", newAmount);
 
 
         } catch (NumberFormatException e) {

@@ -282,6 +282,8 @@ public class MainActivity extends BaseActivity
                 vwoConfigBuilder.setCustomSegmentationMapping(keys);
             }
 
+            VWO.setOptOut(false);
+
             VWO.with(this, key).config(vwoConfigBuilder.build()).launch(new VWOStatusListener() {
                 @Override
                 public void onVWOLoaded() {

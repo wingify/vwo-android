@@ -28,7 +28,7 @@ public class ExperimentImages extends AppCompatActivity {
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
 
-                VWO.markConversionForGoal("backgroundLoaded");
+                VWO.trackConversion("backgroundLoaded");
             }
         });
 
@@ -38,7 +38,7 @@ public class ExperimentImages extends AppCompatActivity {
         varImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                VWO.markConversionForGoal("bannerTapped");
+                VWO.trackConversion("bannerTapped");
             }
         });
 

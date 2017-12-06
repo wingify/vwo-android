@@ -2,12 +2,12 @@ apply plugin: 'com.android.library'
 
 android {
     compileSdkVersion 27
-    buildToolsVersion '26.0.2'
+    buildToolsVersion '27.0.1'
     defaultConfig {
-        versionCode 11
+        versionCode 12
         minSdkVersion 14
         targetSdkVersion 27
-        versionName "2.0.0-RC3"
+        versionName "2.0.0-rc.4"
     }
     signingConfigs {
         config {
@@ -63,14 +63,16 @@ dependencies {
     // Required -- JUnit 4 framework
     testImplementation 'junit:junit:4.12'
     // Optional -- Mockito framework
-    testImplementation 'org.mockito:mockito-core:2.2.29'
+    testImplementation 'org.mockito:mockito-core:2.12.0'
+    testImplementation 'org.powermock:powermock-api-easymock:1.7.3'
     testImplementation 'org.robolectric:robolectric:3.5.1'
+    testImplementation 'com.squareup.okhttp3:mockwebserver:3.9.1'
     implementation('io.socket:socket.io-client:1.0.0') {
         exclude group: 'org.json', module: 'json'
     }
     implementation 'io.sentry:sentry-android:1.4.0'
-    implementation 'com.android.support:support-annotations:27.0.0'
-    implementation 'com.android.support:support-core-utils:27.0.0'
+    implementation 'com.android.support:support-annotations:27.0.2'
+    implementation 'com.android.support:support-core-utils:27.0.2'
 }
 
 ext {

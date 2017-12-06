@@ -14,10 +14,12 @@ import com.vwo.mobile.utils.VWOLog;
 public class Initializer {
     private final VWO vwo;
     private final String apiKey;
+    private final boolean optOut;
 
-    Initializer(VWO vwo, String apiKey) {
+    Initializer(VWO vwo, String apiKey, boolean optOut) {
         this.vwo = vwo;
         this.apiKey = apiKey;
+        this.optOut = optOut;
     }
 
     /**
@@ -95,10 +97,16 @@ public class Initializer {
 
     private void setup(Long timeout) {
         if (this.vwo.getConfig() == null) {
-            VWOConfig vwoConfig = new VWOConfig.Builder().apiKey(apiKey).build();
+            VWOConfig vwoConfig = new VWOConfig
+                    .Builder()
+                    .apiKey(apiKey)
+                    .setOptOut(optOut)
+                    .build();
             this.vwo.setConfig(vwoConfig);
         } else {
-            this.vwo.getConfig().setApiKey(apiKey);
+            VWOConfig vwoConfig = this.vwo.getConfig();
+            vwoConfig.setApiKey(apiKey);
+            vwoConfig.setOptOut(optOut);
         }
 
         this.vwo.getConfig().setTimeout(timeout);
