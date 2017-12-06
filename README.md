@@ -61,7 +61,7 @@ Add dependencies to app/build.gradle file
         compile 'io.sentry:sentry-android:1.4.0'
         
         // Skip this if you are already including support library in your app.
-        compile 'com.android.support:support-core-utils:27.0.0'
+        compile 'com.android.support:support-core-utils:27.0.2'
 	    ...
 	}
 	

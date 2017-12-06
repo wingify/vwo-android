@@ -6,7 +6,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.1.0-alpha04'
+        classpath 'com.android.tools.build:gradle:3.1.0-alpha05'
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -17,13 +17,13 @@ allprojects {
     repositories {
         google()
         jcenter()
-        mavenLocal()
+//        mavenLocal()
         maven {
             url "https://maven.google.com"
         }
-//        maven {
-//            url 'https://raw.githubusercontent.com/wingify/vwo-mobile-android/master/'
-//        }
+        maven {
+            url 'https://raw.githubusercontent.com/wingify/vwo-mobile-android/master/'
+        }
         // Snapshot Repo
         maven {
             url 'https://raw.githubusercontent.com/wingify/vwo-android-snapshot/master/'
@@ -33,9 +33,9 @@ allprojects {
 //            url uri('/Users/aman/git/vwo-android-snapshot')
 //        }
 //        local Repo
-        maven {
-            url uri('/Users/aman/git/vwo-mobile-android')
-        }
+//        maven {
+//            url uri('/Users/aman/git/vwo-mobile-android')
+//        }
     }
 }
 
