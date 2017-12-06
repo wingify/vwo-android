@@ -412,7 +412,6 @@ public class VWO implements VWODownloader.DownloadResult {
                     false);
             onLoadSuccess();
         } else {
-            mVWOStartState = STATE_FAILED;
             onLoadFailure(message);
         }
     }
@@ -481,6 +480,7 @@ public class VWO implements VWODownloader.DownloadResult {
     }
 
     private void onLoadFailure(final String reason) {
+        this.mVWOStartState = STATE_FAILED;
         if (mStatusListener != null) {
             new Handler(mContext.getMainLooper()).post(new Runnable() {
                 @Override
