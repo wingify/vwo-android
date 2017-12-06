@@ -75,7 +75,7 @@ dependencies {
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
 //    implementation project(':library')
     implementation 'io.sentry:sentry-android:1.4.0'
-    implementation 'com.vwo:mobile:2.0.0-RC4'
+    implementation 'com.vwo:mobile:2.0.0-rc.4'
     debugImplementation('io.socket:socket.io-client:1.0.0') {
         // excluding org.json which is provided by Android
         exclude group: 'org.json', module: 'json'

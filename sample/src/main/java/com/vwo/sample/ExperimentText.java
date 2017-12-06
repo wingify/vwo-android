@@ -41,7 +41,7 @@ public class ExperimentText extends AppCompatActivity {
         findViewById(R.id.buttonText).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                VWO.markConversionForGoal("buttonClick");
+                VWO.trackConversion("buttonClick");
             }
         });
 

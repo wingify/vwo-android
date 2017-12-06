@@ -33,8 +33,8 @@ public class DetailActivity extends AppCompatActivity {
             Log.d("QOL", data.toString());
         }
 
-        VWO.markConversionForGoal("goal123");
-        VWO.markConversionForGoal("goal456Revenue", 89.7);
+        VWO.trackConversion("goal123");
+        VWO.trackConversion("goal456Revenue", 89.7);
     }
 
     @Override
