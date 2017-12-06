@@ -313,8 +313,7 @@ public class VWO implements VWODownloader.DownloadResult {
             VWOLog.w(VWOLog.INITIALIZATION_LOGS, "Ignoring initalization, User opted out.", false);
             onLoadSuccess();
             return true;
-        }
-        if (!VWOUtils.checkForInternetPermissions(mContext)) {
+        } if (!VWOUtils.checkForInternetPermissions(mContext)) {
             String errMsg = "Internet permission not added to Manifest. Please add" +
                     "\n\n<uses-permission android:name=\"android.permission.INTERNET\"/> \n\npermission to your app Manifest file.";
             VWOLog.e(VWOLog.INITIALIZATION_LOGS, errMsg,
