@@ -4,6 +4,7 @@ import android.databinding.BindingAdapter;
 import android.databinding.DataBindingUtil;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.res.ResourcesCompat;
@@ -34,7 +35,7 @@ public class FragmentItemDetails extends Fragment {
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         FragmentItemDetailsBinding binding = DataBindingUtil.inflate(inflater, R.layout.fragment_item_details, container, false);
         View view = binding.getRoot();
         closeButton = view.findViewById(R.id.button_close);
@@ -61,7 +62,7 @@ public class FragmentItemDetails extends Fragment {
         }
 
         binding.setMobile(mobile);
-        VWO.markConversionForGoal(Constants.VWOKeys.GOAL_PRODUCT_VIEWED);
+        VWO.trackConversion(Constants.VWOKeys.GOAL_PRODUCT_VIEWED);
 
         return view;
     }
