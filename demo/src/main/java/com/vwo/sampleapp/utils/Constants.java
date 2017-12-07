@@ -6,9 +6,9 @@ package com.vwo.sampleapp.utils;
 
 public class Constants {
     public static class VWOKeys {
-        public static final String KEY_LOGIN = "login";
-        public static final String VALUE_SKIP = "skip";
-        public static final String VALUE_SOCIAL_MEDIA = "socialMedia";
+//        public static final String KEY_LOGIN = "login";
+        public static final String KEY_SKIP = "skip";
+        public static final String KEY_SOCIAL_MEDIA = "socialMedia";
         public static final String VALUE_EMAIL = "email";
 
         public static final String KEY_LAYOUT = "layout";

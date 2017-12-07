@@ -76,6 +76,9 @@ public class FragmentOnBoardingMain extends Fragment implements ChangeFragment {
         titleVariation = view.findViewById(R.id.variation_text_view_title);
         toolbarTitle = view.findViewById(R.id.toolbar_title);
 
+        titleControl.setVisibility(View.GONE);
+        titleVariation.setVisibility(View.GONE);
+
         navigation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -99,21 +102,22 @@ public class FragmentOnBoardingMain extends Fragment implements ChangeFragment {
 
     private void loadDefaultFragments() {
         loadFragment(null, CONTROL_LOGIN_TYPE_NORMAL, null);
+        loadFragment(null, VARIATION_LOGIN_TYPE_NORMAL, null);
 
-        String value = String.valueOf(VWO.getVariationForKey(Constants.VWOKeys.KEY_LOGIN, Constants.VWOKeys.VALUE_EMAIL));
-        switch (value) {
-            case Constants.VWOKeys.VALUE_EMAIL:
-                loadFragment(null, VARIATION_LOGIN_TYPE_NORMAL, null);
-                break;
-            case Constants.VWOKeys.VALUE_SKIP:
-                loadFragment(null, VARIATION_LOGIN_TYPE_SKIP, null);
-                break;
-            case Constants.VWOKeys.VALUE_SOCIAL_MEDIA:
-                loadFragment(null, VARIATION_LOGIN_TYPE_SOCIAL, null);
-                break;
-            default:
-                loadFragment(null, VARIATION_LOGIN_TYPE_NORMAL, null);
-        }
+//        String value = String.valueOf(VWO.getVariationForKey(Constants.VWOKeys.KEY_LOGIN, Constants.VWOKeys.VALUE_EMAIL));
+//        switch (value) {
+//            case Constants.VWOKeys.VALUE_EMAIL:
+//                loadFragment(null, VARIATION_LOGIN_TYPE_NORMAL, null);
+//                break;
+//            case Constants.VWOKeys.VALUE_SKIP:
+//                loadFragment(null, VARIATION_LOGIN_TYPE_SKIP, null);
+//                break;
+//            case Constants.VWOKeys.VALUE_SOCIAL_MEDIA:
+//                loadFragment(null, VARIATION_LOGIN_TYPE_SOCIAL, null);
+//                break;
+//            default:
+//                loadFragment(null, VARIATION_LOGIN_TYPE_NORMAL, null);
+//        }
     }
 
     /**
