@@ -322,7 +322,8 @@ public class VWO implements VWODownloader.DownloadResult {
             VWOLog.w(VWOLog.INITIALIZATION_LOGS, "Ignoring initalization, User opted out.", false);
             onLoadSuccess();
             return true;
-        } if (!VWOUtils.checkForInternetPermissions(mContext)) {
+        }
+        if (!VWOUtils.checkForInternetPermissions(mContext)) {
             String errMsg = "Internet permission not added to Manifest. Please add" +
                     "\n\n<uses-permission android:name=\"android.permission.INTERNET\"/> \n\npermission to your app Manifest file.";
             VWOLog.e(VWOLog.INITIALIZATION_LOGS, errMsg,
@@ -555,11 +556,9 @@ public class VWO implements VWODownloader.DownloadResult {
      * @param optOut is the {@link Boolean} value.
      */
     public static void setOptOut(boolean optOut) {
-        if (sSharedInstance != null) {
-            if(sSharedInstance.getState() >= STATE_STARTING) {
-                VWOLog.e(VWOLog.CONFIG_LOGS, "Cannot change opt-out setting after SDK is initialized",
-                        false, false);
-            }
+        if (sSharedInstance != null && sSharedInstance.getState() >= STATE_STARTING) {
+            VWOLog.e(VWOLog.CONFIG_LOGS, "Cannot change opt-out setting after SDK is initialized",
+                    false, false);
         } else {
             VWO.optOut = optOut;
         }
