@@ -340,7 +340,7 @@ public class VWO implements VWODownloader.DownloadResult {
             onLoadFailure("Invalid API Key.");
             return false;
         } else if (this.mVWOStartState >= STATE_STARTING) {
-            VWOLog.w(VWOLog.INITIALIZATION_LOGS, "VWO is already in intialization state.",
+            VWOLog.w(VWOLog.INITIALIZATION_LOGS, "VWO is already initialized.",
                     true);
             return true;
         } else {
@@ -556,7 +556,7 @@ public class VWO implements VWODownloader.DownloadResult {
      */
     public static void setOptOut(boolean optOut) {
         if (sSharedInstance != null) {
-            if(sSharedInstance.getState() > STATE_NOT_STARTED) {
+            if(sSharedInstance.getState() >= STATE_STARTING) {
                 VWOLog.e(VWOLog.CONFIG_LOGS, "Cannot change opt-out setting after SDK is initialized",
                         false, false);
             }
