@@ -3,9 +3,6 @@ VWO Android SDK
 
 This open source library allows you to A/B Test your Android app.
 
-**IMPORTANT! VWO Android SDK is currently a beta release; its content
-and functionality are likely to change significantly and without warning.**
-
 Getting Started
 ---------------
 
