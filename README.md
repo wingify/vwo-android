@@ -3,9 +3,6 @@ VWO Android SDK
 
 This open source library allows you to A/B Test your Android app.
 
-**IMPORTANT! VWO Android SDK is currently a beta release; its content
-and functionality are likely to change significantly and without warning.**
-
 Getting Started
 ---------------
 
@@ -53,7 +50,7 @@ Add dependencies to app/build.gradle file
 
 	dependencies {
 	    ...
-	    compile 'com.vwo:mobile:2.0.0-rc.4@aar'
+	    compile 'com.vwo:mobile:2.0.0@aar'
         debugCompile ('io.socket:socket.io-client:1.0.0') {
             // excluding org.json which is provided by Android
             exclude group: 'org.json', module: 'json'

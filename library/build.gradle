@@ -4,10 +4,10 @@ android {
     compileSdkVersion 27
     buildToolsVersion '27.0.2'
     defaultConfig {
-        versionCode 12
+        versionCode 13
         minSdkVersion 14
         targetSdkVersion 27
-        versionName "2.0.0-rc.4"
+        versionName "2.0.0"
     }
     signingConfigs {
         config {
