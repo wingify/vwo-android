@@ -162,11 +162,11 @@ public class VWO implements VWODownloader.DownloadResult {
                     }
                     return object;
                 } else if (sSharedInstance.mVWOStartState == STATE_OPTED_OUT) {
-                    VWOLog.e(VWOLog.DATA_LOGS, "Not default value. User opted out.",
+                    VWOLog.e(VWOLog.DATA_LOGS, "Key not found. User opted out.",
                             true, false);
                     return null;
                 } else if (sSharedInstance.mVWOStartState == STATE_FAILED) {
-                    VWOLog.e(VWOLog.DATA_LOGS, "Not default value. SDK Failed to Initialize",
+                    VWOLog.e(VWOLog.DATA_LOGS, "Key not found. SDK failed to Initialize",
                             true, false);
                 }
 
