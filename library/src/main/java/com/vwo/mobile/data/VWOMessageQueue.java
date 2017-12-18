@@ -1,7 +1,6 @@
 package com.vwo.mobile.data;
 
 import android.content.Context;
-import android.os.Parcelable;
 import android.support.annotation.Nullable;
 
 import com.vwo.mobile.data.io.QueueFile;
@@ -9,13 +8,13 @@ import com.vwo.mobile.models.Entry;
 import com.vwo.mobile.utils.Parceler;
 import com.vwo.mobile.utils.VWOLog;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.util.Locale;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Created by aman on 18/09/17.
@@ -25,12 +24,37 @@ public class VWOMessageQueue implements MessageQueue<Entry> {
 
     private final QueueFile queueFile;
     private String filename;
+    private Queue<Entry> waitingQueue;
+    private ExecutorService executorService;
+    private Thread thread;
 
     private VWOMessageQueue(Context context, String fileName) throws IOException {
         File file = new File(IOUtils.getCacheDirectory(context), fileName);
         try {
             queueFile = new QueueFile(file);
             this.filename = fileName;
+            this.waitingQueue = new ConcurrentLinkedQueue<>();
+            executorService = Executors.newSingleThreadExecutor();
+
+            thread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    while (!waitingQueue.isEmpty()) {
+                        Entry entry = waitingQueue.poll();
+                        VWOLog.i(VWOLog.STORAGE_LOGS, String.format(Locale.ENGLISH, "Adding to queue %s\n%s", filename, entry.toString()), true);
+                        byte[] data = Parceler.marshall(entry);
+                        try {
+                            synchronized (queueFile) {
+                                queueFile.add(data);
+                            }
+                        } catch (IOException exception) {
+                            VWOLog.e(VWOLog.STORAGE_LOGS, String.format(Locale.ENGLISH, "File %s corrupted. Clearing last entry...", filename), true, false);
+                            remove();
+                            VWOLog.e(VWOLog.STORAGE_LOGS, "Unable to create Object", exception, true, true);
+                        }
+                    }
+                }
+            });
         } catch (IOException exception) {
             VWOLog.e(VWOLog.STORAGE_LOGS, "Failed to initialize queue: " + fileName, exception,
                     false, true);
@@ -49,25 +73,8 @@ public class VWOMessageQueue implements MessageQueue<Entry> {
      */
     @Override
     public void add(final Entry entry) {
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                VWOLog.i(VWOLog.STORAGE_LOGS, String.format(Locale.ENGLISH, "Adding to queue %s\n%s", filename, entry.toString()), true);
-                byte[] data = Parceler.marshall(entry);
-                try {
-                    synchronized (queueFile) {
-                        queueFile.add(data);
-                    }
-                } catch (IOException exception) {
-                    VWOLog.e(VWOLog.STORAGE_LOGS, String.format(Locale.ENGLISH, "File %s corrupted. Clearing last entry...", filename), true, false);
-                    remove();
-                    VWOLog.e(VWOLog.STORAGE_LOGS, "Unable to create Object", exception, true, true);
-                }
-            }
-        });
-
-        thread.start();
-
+        waitingQueue.add(entry);
+        startInsertionThread();
     }
 
     @Override
@@ -150,5 +157,9 @@ public class VWOMessageQueue implements MessageQueue<Entry> {
         Entry entry = peek();
         remove();
         return entry;
+    }
+
+    private void startInsertionThread() {
+        executorService.execute(thread);
     }
 }

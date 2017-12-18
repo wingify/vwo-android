@@ -95,13 +95,6 @@ public abstract class NetworkRequest<T> implements Runnable, Comparable<NetworkR
         this(url, method, listener, errorListener, LOG_TAG);
     }
 
-    public void setUrl(String url) throws MalformedURLException {
-        if(isExecuted() || isCanceled()) {
-            throw new IllegalStateException("Cannot change URL after request is initiated.");
-        }
-        this.url = new URL(url);
-    }
-
     public String getUrl() {
         return this.url.toString();
     }

@@ -1,10 +1,6 @@
 package com.vwo.mobile.data;
 
-import android.content.Context;
-import android.content.pm.PackageManager;
-
 import com.vwo.mobile.BuildConfig;
-import com.vwo.mobile.data.io.QueueFile;
 import com.vwo.mobile.models.Entry;
 import com.vwo.mobile.models.GoalEntry;
 
@@ -15,8 +11,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
@@ -25,7 +19,6 @@ import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
-import java.io.File;
 import java.io.IOException;
 
 /**
@@ -36,13 +29,9 @@ import java.io.IOException;
 @PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "android.*"})
 @PrepareForTest({VWOMessageQueue.class})
 public class VWOMessageQueueTest {
-    VWOMessageQueue vwoMessageQueue;
+    private VWOMessageQueue vwoMessageQueue;
 
-    @Mock(name = "queueFile")
-    QueueFile queueFile;
-
-    @Mock
-    Context context;
+    private final Object lock = new Object();
 
     @Rule
     public TemporaryFolder temporaryFolder = new TemporaryFolder();
@@ -53,28 +42,229 @@ public class VWOMessageQueueTest {
     @Before
     public void setup() throws IOException {
         MockitoAnnotations.initMocks(VWOMessageQueue.class);
-        PackageManager packageManager = Mockito.mock(PackageManager.class);
-//        mockStatic(IOUtils.class);
-        File parent = temporaryFolder.getRoot();
-        File file = new File(parent, "object-queue");
-//        Mockito.when(IOUtils.getCacheDirectory(ArgumentMatchers.any(Context.class))).thenReturn(file);
-//        PowerMockito.verifyStatic(IOUtils.class);
-        queueFile = new QueueFile(file);
-        vwoMessageQueue = VWOMessageQueue.getInstance(RuntimeEnvironment.application.getApplicationContext(), "test");
+        vwoMessageQueue = VWOMessageQueue.getInstance(RuntimeEnvironment.application.getApplicationContext(), "queue.vwo");
     }
 
     @Test
-    public void addTest() throws IOException {
+    public void insertTest() throws InterruptedException {
         GoalEntry goalEntry = new GoalEntry("http://www.abc.com", 1, 2, 3);
-        GoalEntry goalEntry2 = new GoalEntry("https://www.abc1.com", 11, 21, 31);
+
         vwoMessageQueue.add(goalEntry);
+
+        synchronized (lock) {
+            lock.wait(1000);
+        }
+
+        Entry entry = vwoMessageQueue.poll();
+        Assert.assertNotNull(entry);
+        Assert.assertEquals(entry.getUrl(), goalEntry.getUrl());
+
+        Assert.assertNull(vwoMessageQueue.peek());
+    }
+
+    @Test
+    public void bulkInsertTest() throws InterruptedException {
+        int count = 10000;
+        for(int i = 0; i < count; i++) {
+            GoalEntry goalEntry = new GoalEntry("http://www.abc" + i + ".com", 1, 2, 3);
+            vwoMessageQueue.add(goalEntry);
+        }
+        GoalEntry goalEntry2 = new GoalEntry("https://www.abcFinal.com", 11, 21, 31);
+        final Object object = new Object();
+
         vwoMessageQueue.add(goalEntry2);
+
+        synchronized (lock) {
+            lock.wait(count * 2);
+        }
+
+        int size = vwoMessageQueue.size();
+        Assert.assertEquals(10001, size);
+
+        for(int i = 0; i < count; i++) {
+            Entry entry = vwoMessageQueue.poll();
+            Assert.assertNotNull(entry);
+            Assert.assertEquals(entry.getUrl(), "http://www.abc" + i + ".com");
+        }
+
+        Entry entry = vwoMessageQueue.poll();
+        Assert.assertNotNull(entry);
+        Assert.assertEquals(entry.getUrl(), goalEntry2.getUrl());
+    }
+
+    @Test
+    public void delayedInsertTest() throws InterruptedException {
+        int count = 1000;
+        for(int i = 0; i < count; i++) {
+            GoalEntry goalEntry = new GoalEntry("http://www.abc" + i + ".com", 1, 2, 3);
+            vwoMessageQueue.add(goalEntry);
+            if(i % 20 == 0) {
+                Thread.sleep(100);
+            }
+        }
+
+        GoalEntry goalEntry2 = new GoalEntry("https://www.abcFinal.com", 11, 21, 31);
+
+        vwoMessageQueue.add(goalEntry2);
+
+        synchronized (lock) {
+            lock.wait(count * 2);
+        }
+
+        int size = vwoMessageQueue.size();
+        Assert.assertEquals(count + 1, size);
+
+        for(int i = 0; i < count; i++) {
+            Entry entry = vwoMessageQueue.poll();
+            Assert.assertNotNull(entry);
+            Assert.assertEquals(entry.getUrl(), "http://www.abc" + i + ".com");
+        }
+
+        Entry entry = vwoMessageQueue.poll();
+        Assert.assertNotNull(entry);
+        Assert.assertEquals(entry.getUrl(), goalEntry2.getUrl());
+    }
+
+    @Test
+    public void bulkRemoveTest() throws InterruptedException {
+        int count = 10000;
+        for(int i = 0; i < count; i++) {
+            GoalEntry goalEntry = new GoalEntry("http://www.abc" + i + ".com", 1, 2, 3);
+            vwoMessageQueue.add(goalEntry);
+        }
+
+        GoalEntry goalEntry2 = new GoalEntry("https://www.abcFinal.com", 11, 21, 31);
+
+        vwoMessageQueue.add(goalEntry2);
+
+        synchronized (lock) {
+            lock.wait(2000);
+        }
+
+        for(int i = 0; i < count; i++) {
+            Entry entry = vwoMessageQueue.poll();
+            Assert.assertNotNull(entry);
+            Assert.assertEquals(entry.getUrl(), "http://www.abc" + i + ".com");
+        }
+
+        Entry entry = vwoMessageQueue.poll();
+        Assert.assertNotNull(entry);
+        Assert.assertEquals(entry.getUrl(), goalEntry2.getUrl());
+    }
+
+    @Test
+    public void delayedInsertRemoveTest() throws InterruptedException {
+        final int count = 100;
+        Thread writeThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                for(int i = 0; i < count; i++) {
+                    GoalEntry goalEntry = new GoalEntry("http://www.abc" + i + ".com", 1, 2, 3);
+                    vwoMessageQueue.add(goalEntry);
+                    System.out.println("Added: " + goalEntry.getUrl());
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+
+        Thread readThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                int readCounter = 0;
+                while(readCounter < count) {
+                    if(vwoMessageQueue.peek() == null) {
+                        continue;
+                    }
+                    Entry entry = vwoMessageQueue.poll();
+                    Assert.assertNotNull(entry);
+                    Assert.assertEquals(entry.getUrl(), "http://www.abc" + readCounter + ".com");
+                    System.out.println("Verified: " + entry.getUrl());
+                    if(readCounter % 20 == 0) {
+                        try {
+                            Thread.sleep(2000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    readCounter++;
+                }
+
+                synchronized (lock) {
+                    lock.notify();
+                }
+
+            }
+        });
+
+        writeThread.start();
+        readThread.start();
+
+        synchronized (lock) {
+            lock.wait();
+        }
+    }
+
+    @Test
+    public void insertRemoveTest() throws InterruptedException {
+        final int count = 10000;
+        Thread writeThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                for(int i = 0; i < count; i++) {
+                    GoalEntry goalEntry = new GoalEntry("http://www.abc" + i + ".com", 1, 2, 3);
+                    vwoMessageQueue.add(goalEntry);
+                    System.out.println("Added: " + goalEntry.getUrl());
+                }
+            }
+        });
+
+        Thread readThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                int readCounter = 0;
+                while(readCounter < count) {
+                    if(vwoMessageQueue.peek() == null) {
+                        continue;
+                    }
+                    Entry entry = vwoMessageQueue.poll();
+                    Assert.assertNotNull(entry);
+                    Assert.assertEquals(entry.getUrl(), "http://www.abc" + readCounter + ".com");
+                    System.out.println("Verified: " + entry.getUrl());
+                    readCounter++;
+                }
+
+                synchronized (lock) {
+                    lock.notify();
+                }
+
+            }
+        });
+
+        readThread.start();
+        writeThread.start();
+
+        synchronized (lock) {
+            lock.wait();
+        }
+    }
+
+    @Test
+    public void peekTest() throws InterruptedException {
+        GoalEntry goalEntry = new GoalEntry("http://www.abc.com", 1, 2, 3);
+        vwoMessageQueue.add(goalEntry);
+
+        vwoMessageQueue.add(goalEntry);
+
+        synchronized (lock) {
+            lock.wait(2000);
+        }
 
         Entry entry = vwoMessageQueue.peek();
         Assert.assertNotNull(entry);
-        Assert.assertEquals(goalEntry.getUrl(), entry.getUrl());
-
-//        byte[] data = queueFile.peek();
-//        Assert.assertArrayEquals(test, data);
+        Assert.assertEquals(entry.getUrl(), goalEntry.getUrl());
     }
 }

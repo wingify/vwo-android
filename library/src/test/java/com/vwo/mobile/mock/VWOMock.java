@@ -14,8 +14,6 @@ public class VWOMock {
 
     public VWOMock() {
         vwo = Mockito.mock(VWO.class);
-
-//        Mockito.when(vwo.getConfig().getValueForCustomSegment("key")).thenReturn("value");
         Mockito.when(vwo.getCurrentContext()).thenReturn(RuntimeEnvironment.application);
         Mockito.when(vwo.getState()).thenReturn(1);
     }

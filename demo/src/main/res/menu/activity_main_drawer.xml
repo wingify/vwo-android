@@ -3,7 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:showIn="navigation_view">
 
-    <item android:title="@string/choose_campaign">
+    <item
+        android:id="@+id/choose_campaign_menu"
+        android:title="@string/choose_campaign">
         <menu>
             <group android:checkableBehavior="single">
                 <item
@@ -16,7 +18,9 @@
         </menu>
     </item>
 
-    <item android:title="@string/settings">
+    <item
+        android:id="@+id/settings_menu"
+        android:title="@string/settings">
         <menu>
             <item
                 android:id="@+id/action_clear_data"
