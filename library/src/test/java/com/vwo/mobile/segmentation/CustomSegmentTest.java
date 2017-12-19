@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Build;
 
 import com.vwo.mobile.VWO;
+import com.vwo.mobile.mock.GregorianCalendarShadow;
 import com.vwo.mobile.mock.ShadowConfiguration;
 import com.vwo.mobile.mock.VWOMock;
 import com.vwo.mobile.mock.VWOPersistDataMock;
@@ -24,13 +25,15 @@ import org.powermock.modules.junit4.rule.PowerMockRule;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
+import java.util.regex.Pattern;
+
 /**
  * Created by aman on Fri 06/10/17 16:33.
  */
 
 @RunWith(RobolectricTestRunner.class)
 @Config(packageName = "com.abc", sdk = Build.VERSION_CODES.JELLY_BEAN_MR2, shadows = {ShadowConfiguration.class,
-        VWOPersistDataMock.class}, manifest = "AndroidManifest.xml")
+        VWOPersistDataMock.class, GregorianCalendarShadow.class}, manifest = "AndroidManifest.xml")
 @PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "android.*", "org.json.*"})
 @PrepareForTest(VWOUtils.class)
 public class CustomSegmentTest {
@@ -262,5 +265,136 @@ public class CustomSegmentTest {
         Assert.assertFalse(segmentRegexMatchesFalse.evaluate(vwo));
     }
 
+    @Test
+    public void customVariableEqualsTest() throws JSONException {
+        VWO vwo = new VWOMock().getVWOMockObject();
+
+        String customVariableEqualsTrue = "{\n" +
+                "\"type\": \"7\",\n" +
+                "\"operator\": 11,\n" +
+                "\"lOperandValue\": \"userType\",\n" +
+                "\"rOperandValue\": \"paid\"\n" +
+                "}\n";
+
+        CustomSegment segmentCustomVariableEqualsTrue = new CustomSegment(new JSONObject(customVariableEqualsTrue));
+        Assert.assertTrue(segmentCustomVariableEqualsTrue.evaluate(vwo));
+
+        String customVariableEqualsFalse = "{\n" +
+                "\"type\": \"7\",\n" +
+                "\"operator\": 11,\n" +
+                "\"lOperandValue\": \"userType\",\n" +
+                "\"rOperandValue\": \"free\"\n" +
+                "}\n";
+
+        CustomSegment segmentCustomVariableEqualsFalse = new CustomSegment(new JSONObject(customVariableEqualsFalse));
+        Assert.assertFalse(segmentCustomVariableEqualsFalse.evaluate(vwo));
+    }
+
+    @Test
+    public void customVariableNotEqualsTest() throws JSONException {
+        VWO vwo = new VWOMock().getVWOMockObject();
+
+        String notEqualsTrue = "{\n" +
+                "\"type\": \"7\",\n" +
+                "\"operator\": 12,\n" +
+                "\"lOperandValue\": \"userType\",\n" +
+                "\"rOperandValue\": \"free\"\n" +
+                "}\n";
+
+        CustomSegment segmentNotEqualsTrue = new CustomSegment(new JSONObject(notEqualsTrue));
+        Assert.assertTrue(segmentNotEqualsTrue.evaluate(vwo));
+
+        String notEqualsFalse = "{\n" +
+                "\"type\": \"7\",\n" +
+                "\"operator\": 12,\n" +
+                "\"lOperandValue\": \"userType\",\n" +
+                "\"rOperandValue\": \"paid\"\n" +
+                "}\n";
+
+        CustomSegment segmentNotEqualsFalse = new CustomSegment(new JSONObject(notEqualsFalse));
+        Assert.assertFalse(segmentNotEqualsFalse.evaluate(vwo));
+
+    }
+
+    @Test
+    public void customVariableContainsTest() throws JSONException {
+        VWO vwo = new VWOMock().getVWOMockObject();
+
+        PowerMockito.mockStatic(VWOUtils.class);
+        PowerMockito.when(VWOUtils.applicationVersion(ArgumentMatchers.any(Context.class))).thenReturn(20);
+
+        String containsTrue = "{\n" +
+                "\"type\": \"7\",\n" +
+                "\"operator\": 7,\n" +
+                "\"lOperandValue\": \"userType\",\n" +
+                "\"rOperandValue\": \"ai\"\n" +
+                "}";
+
+        CustomSegment segmentContainsTrue = new CustomSegment(new JSONObject(containsTrue));
+        Assert.assertTrue(segmentContainsTrue.evaluate(vwo));
+
+        String containsFalse = "{\n" +
+                "\"type\": \"7\",\n" +
+                "\"operator\": 7,\n" +
+                "\"lOperandValue\": \"userType\",\n" +
+                "\"rOperandValue\": \"ee\"\n" +
+                "}";
+
+        CustomSegment segmentContainsFalse = new CustomSegment(new JSONObject(containsFalse));
+        Assert.assertFalse(segmentContainsFalse.evaluate(vwo));
+    }
+
+    @Test
+    public void customVariableStartsWithTest() throws JSONException {
+        VWO vwo = new VWOMock().getVWOMockObject();
+
+        PowerMockito.mockStatic(VWOUtils.class);
+        PowerMockito.when(VWOUtils.applicationVersion(ArgumentMatchers.any(Context.class))).thenReturn(20);
+
+        String startsWithTrue = "{\n" +
+                "\"type\": \"7\",\n" +
+                "\"operator\": 13,\n" +
+                "\"lOperandValue\": \"userType\",\n" +
+                "\"rOperandValue\": \"pai\"\n" +
+                "}";
+
+        CustomSegment segmentStartsWithTrue = new CustomSegment(new JSONObject(startsWithTrue));
+        Assert.assertTrue(segmentStartsWithTrue.evaluate(vwo));
+
+        String startsWithFalse = "{\n" +
+                "\"type\": \"7\",\n" +
+                "\"operator\": 13,\n" +
+                "\"lOperandValue\": \"userType\",\n" +
+                "\"rOperandValue\": \"fr\"\n" +
+                "}";
+
+        CustomSegment segmentStartsWithFalse = new CustomSegment(new JSONObject(startsWithFalse));
+        Assert.assertFalse(segmentStartsWithFalse.evaluate(vwo));
+    }
+
+    @Test
+    public void customVariableMatchesRegexTest() throws JSONException {
+        VWO vwo = new VWOMock().getVWOMockObject();
+
+        String matchesRegexTrue = "{\n" +
+                "\"type\": \"7\",\n" +
+                "\"operator\": 5,\n" +
+                "\"lOperandValue\": \"userType\",\n" +
+                "\"rOperandValue\": \"[a-p]*\"\n" +
+                "}";
+
+        CustomSegment segmentRegexMatchesTrue = new CustomSegment(new JSONObject(matchesRegexTrue));
+        Assert.assertTrue(segmentRegexMatchesTrue.evaluate(vwo));
+
+        String matchesRegexFalse = "{\n" +
+                "\"type\": \"7\",\n" +
+                "\"operator\": 5,\n" +
+                "\"lOperandValue\": \"userType\",\n" +
+                "\"rOperandValue\": \"[p-z]*\"\n" +
+                "}";
+
+        CustomSegment segmentRegexMatchesFalse = new CustomSegment(new JSONObject(matchesRegexFalse));
+        Assert.assertFalse(segmentRegexMatchesFalse.evaluate(vwo));
+    }
 
 }

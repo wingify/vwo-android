@@ -8,7 +8,6 @@ import com.vwo.mobile.data.VWOPersistData;
 import com.vwo.mobile.mock.ShadowConfiguration;
 import com.vwo.mobile.mock.VWOMock;
 import com.vwo.mobile.mock.VWOPersistDataMock;
-import com.vwo.mobile.utils.VWOUtils;
 
 import junit.framework.Assert;
 
