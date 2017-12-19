@@ -3,7 +3,6 @@ package com.vwo.mobile.segmentation;
 import android.content.Context;
 import android.os.Build;
 
-import com.vwo.mobile.BuildConfig;
 import com.vwo.mobile.VWO;
 import com.vwo.mobile.mock.ShadowConfiguration;
 import com.vwo.mobile.mock.VWOMock;
@@ -14,7 +13,6 @@ import junit.framework.Assert;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,10 +20,8 @@ import org.mockito.ArgumentMatchers;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunnerDelegate;
 import org.powermock.modules.junit4.rule.PowerMockRule;
 import org.robolectric.RobolectricTestRunner;
-import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
 /**
@@ -39,37 +35,100 @@ import org.robolectric.annotation.Config;
 @PrepareForTest(VWOUtils.class)
 public class CustomSegmentTest {
 
-    @Before
-    public void setup() {
-    }
-
     @Rule
     public PowerMockRule rule = new PowerMockRule();
 
-    /**
-     * Unit tests for custom segments
-     */
     @Test
-    public void androidVersionTest() {
-        try {
-            VWO vwo = new VWOMock().getVWOMockObject();
+    public void androidVersionEqualToTest() throws JSONException {
+        VWO vwo = new VWOMock().getVWOMockObject();
 
-            String androidVersionGreaterThan = "{\n" +
-                    "\"prevLogicalOperator\": \"AND\",\n" +
-                    "\"type\": \"1\",\n" +
-                    "\"operator\": 15,\n" +
-                    "\"rOperandValue\": \"14\",\n" +
-                    "\"rBracket\": true\n" +
-                    "}";
+        String equalToTrue = "{\n" +
+                "\"type\": \"1\",\n" +
+                "\"operator\": 11,\n" +
+                "\"rOperandValue\": \"18\"\n" +
+                "}";
 
 
-            CustomSegment customSegmentAndroidVersionGreaterThan = new CustomSegment(new JSONObject(androidVersionGreaterThan));
-            Assert.assertTrue(customSegmentAndroidVersionGreaterThan.evaluate(vwo));
+        CustomSegment segmentEqualToTrue = new CustomSegment(new JSONObject(equalToTrue));
+        Assert.assertTrue(segmentEqualToTrue.evaluate(vwo));
+
+        String equalToFalse = "{\n" +
+                "\"type\": \"1\",\n" +
+                "\"operator\": 11,\n" +
+                "\"rOperandValue\": \"20\"\n" +
+                "}";
+        CustomSegment segmentEqualToFalse = new CustomSegment(new JSONObject(equalToFalse));
+        Assert.assertFalse(segmentEqualToFalse.evaluate(vwo));
+    }
+
+    @Test
+    public void androidVersionNotEqualToTest() throws JSONException {
+        VWO vwo = new VWOMock().getVWOMockObject();
+
+        String notEqualToTrue = "{\n" +
+                "\"type\": \"1\",\n" +
+                "\"operator\": 12,\n" +
+                "\"rOperandValue\": \"14\"\n" +
+                "}";
 
 
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        CustomSegment segmentNotEqualToTrue = new CustomSegment(new JSONObject(notEqualToTrue));
+        Assert.assertTrue(segmentNotEqualToTrue.evaluate(vwo));
+
+        String notEqualToFalse = "{\n" +
+                "\"type\": \"1\",\n" +
+                "\"operator\": 12,\n" +
+                "\"rOperandValue\": \"18\"\n" +
+                "}";
+        CustomSegment segmentNotEqualToFalse = new CustomSegment(new JSONObject(notEqualToFalse));
+        Assert.assertFalse(segmentNotEqualToFalse.evaluate(vwo));
+    }
+
+
+    @Test
+    public void androidVersionGreaterThanTest() throws JSONException {
+        VWO vwo = new VWOMock().getVWOMockObject();
+
+        String androidVersionGreaterThanTrue = "{\n" +
+                "\"type\": \"1\",\n" +
+                "\"operator\": 15,\n" +
+                "\"rOperandValue\": \"14\"\n" +
+                "}";
+
+
+        CustomSegment segmentAndroidVersionGreaterThanTrue = new CustomSegment(new JSONObject(androidVersionGreaterThanTrue));
+        Assert.assertTrue(segmentAndroidVersionGreaterThanTrue.evaluate(vwo));
+
+        String androidVersionGreaterThanFalse = "{\n" +
+                "\"type\": \"1\",\n" +
+                "\"operator\": 15,\n" +
+                "\"rOperandValue\": \"20\"\n" +
+                "}";
+        CustomSegment segmentAndroidVersionGreaterThanFalse = new CustomSegment(new JSONObject(androidVersionGreaterThanFalse));
+        Assert.assertFalse(segmentAndroidVersionGreaterThanFalse.evaluate(vwo));
+    }
+
+    @Test
+    public void androidVersionLessThanTest() throws JSONException {
+        VWO vwo = new VWOMock().getVWOMockObject();
+
+        String lessThanTrue = "{\n" +
+                "\"type\": \"1\",\n" +
+                "\"operator\": 16,\n" +
+                "\"rOperandValue\": \"20\"\n" +
+                "}";
+
+
+        CustomSegment segmentLessThanTrue = new CustomSegment(new JSONObject(lessThanTrue));
+        Assert.assertTrue(segmentLessThanTrue.evaluate(vwo));
+
+        String lessThanFalse = "{\n" +
+                "\"type\": \"1\",\n" +
+                "\"operator\": 16,\n" +
+                "\"rOperandValue\": \"14\"\n" +
+                "}";
+        CustomSegment segmentLessThanFalse = new CustomSegment(new JSONObject(lessThanFalse));
+        Assert.assertFalse(segmentLessThanFalse.evaluate(vwo));
     }
 
     @Test
@@ -202,5 +261,6 @@ public class CustomSegmentTest {
         CustomSegment segmentRegexMatchesFalse = new CustomSegment(new JSONObject(matchesRegexFalse));
         Assert.assertFalse(segmentRegexMatchesFalse.evaluate(vwo));
     }
+
 
 }
