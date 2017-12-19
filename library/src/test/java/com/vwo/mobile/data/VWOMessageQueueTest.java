@@ -1,6 +1,5 @@
 package com.vwo.mobile.data;
 
-import com.vwo.mobile.BuildConfig;
 import com.vwo.mobile.models.Entry;
 import com.vwo.mobile.models.GoalEntry;
 
@@ -25,7 +24,7 @@ import java.io.IOException;
  * Created by aman on Thu 14/12/17 11:09.
  */
 @RunWith(RobolectricTestRunner.class)
-@Config(constants = BuildConfig.class, sdk = 16)
+@Config(sdk = 16)
 @PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "android.*"})
 @PrepareForTest({VWOMessageQueue.class})
 public class VWOMessageQueueTest {

@@ -294,7 +294,7 @@ public enum CustomSegmentEvaluateEnum {
             for (int i = 0; i < data.length(); i++) {
                 try {
                     int version = Integer.parseInt(data.getString(i));
-                    if (version == appVersion) {
+                    if (version != appVersion) {
                         return true;
                     }
                 } catch (JSONException | NumberFormatException exception) {
@@ -302,7 +302,7 @@ public enum CustomSegmentEvaluateEnum {
                             false, false);
                 }
             }
-            return true;
+            return false;
         }
 
         @Override
@@ -319,7 +319,7 @@ public enum CustomSegmentEvaluateEnum {
                 try {
                     Pattern pattern = Pattern.compile(data.getString(i));
                     Matcher matcher = pattern.matcher(appVersion);
-                    if (matcher.find()) {
+                    if (matcher.matches()) {
                         return true;
                     }
                 } catch (JSONException exception) {
@@ -461,7 +461,7 @@ public enum CustomSegmentEvaluateEnum {
                 try {
                     Pattern pattern = Pattern.compile(data.getString(i));
                     Matcher matcher = pattern.matcher(customVariable);
-                    if (matcher.find()) {
+                    if (matcher.matches()) {
                         return true;
                     }
                 } catch (JSONException exception) {
