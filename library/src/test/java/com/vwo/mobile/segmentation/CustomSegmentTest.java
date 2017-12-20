@@ -4,7 +4,6 @@ import android.content.Context;
 import android.os.Build;
 
 import com.vwo.mobile.VWO;
-import com.vwo.mobile.mock.GregorianCalendarShadow;
 import com.vwo.mobile.mock.ShadowConfiguration;
 import com.vwo.mobile.mock.VWOMock;
 import com.vwo.mobile.mock.VWOPersistDataMock;
@@ -18,6 +17,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
+import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
@@ -25,7 +25,8 @@ import org.powermock.modules.junit4.rule.PowerMockRule;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
-import java.util.regex.Pattern;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 /**
  * Created by aman on Fri 06/10/17 16:33.
@@ -33,9 +34,9 @@ import java.util.regex.Pattern;
 
 @RunWith(RobolectricTestRunner.class)
 @Config(packageName = "com.abc", sdk = Build.VERSION_CODES.JELLY_BEAN_MR2, shadows = {ShadowConfiguration.class,
-        VWOPersistDataMock.class, GregorianCalendarShadow.class}, manifest = "AndroidManifest.xml")
+        VWOPersistDataMock.class}, manifest = "AndroidManifest.xml")
 @PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "android.*", "org.json.*"})
-@PrepareForTest(VWOUtils.class)
+@PrepareForTest({VWOUtils.class, CustomSegmentEvaluateEnum.class, CustomSegmentEvaluateEnum.EvaluateSegment.class})
 public class CustomSegmentTest {
 
     @Rule
@@ -397,4 +398,98 @@ public class CustomSegmentTest {
         Assert.assertFalse(segmentRegexMatchesFalse.evaluate(vwo));
     }
 
+    @Test
+    @PrepareForTest({VWOUtils.class})
+    public void dayOfWeekEqualsTest() throws JSONException {
+        VWO vwo = new VWOMock().getVWOMockObject();
+
+        String dayOfTheWeekTrue = "{\n" +
+        "\"type\": \"3\",\n" +
+        "\"operator\": 11,\n" +
+        "\"rOperandValue\": [\n" +
+        "0,\n" +
+        "1,\n" +
+        "2\n" +
+        "]\n" +
+        "}";
+
+
+        Calendar calendar = PowerMockito.mock(GregorianCalendar.class);
+        calendar.set(2017, Calendar.DECEMBER, 15);
+
+        PowerMockito.mockStatic(VWOUtils.class);
+        PowerMockito.when(VWOUtils.getCalendar()).thenReturn(calendar);
+
+        Mockito.when(calendar.get(ArgumentMatchers.anyInt())).thenReturn(1);
+
+        CustomSegment customSegment = new CustomSegment(new JSONObject(dayOfTheWeekTrue));
+
+        Assert.assertTrue(customSegment.evaluate(vwo));
+
+        Mockito.when(calendar.get(ArgumentMatchers.anyInt())).thenReturn(2);
+        Assert.assertTrue(customSegment.evaluate(vwo));
+
+        Mockito.when(calendar.get(ArgumentMatchers.anyInt())).thenReturn(3);
+        Assert.assertTrue(customSegment.evaluate(vwo));
+
+        Mockito.when(calendar.get(ArgumentMatchers.anyInt())).thenReturn(4);
+        Assert.assertFalse(customSegment.evaluate(vwo));
+
+        Mockito.when(calendar.get(ArgumentMatchers.anyInt())).thenReturn(5);
+        Assert.assertFalse(customSegment.evaluate(vwo));
+
+        Mockito.when(calendar.get(ArgumentMatchers.anyInt())).thenReturn(6);
+        Assert.assertFalse(customSegment.evaluate(vwo));
+
+        Mockito.when(calendar.get(ArgumentMatchers.anyInt())).thenReturn(7);
+        Assert.assertFalse(customSegment.evaluate(vwo));
+    }
+
+
+    @Test
+    @PrepareForTest({VWOUtils.class})
+    public void dayOfWeekNotEqualsTest() throws JSONException {
+        VWO vwo = new VWOMock().getVWOMockObject();
+
+        String dayOfTheWeekTrue = "{\n" +
+                "\"type\": \"3\",\n" +
+                "\"operator\": 12,\n" +
+                "\"rOperandValue\": [\n" +
+                "0,\n" +
+                "1,\n" +
+                "2\n" +
+                "]\n" +
+                "}";
+
+
+        Calendar calendar = PowerMockito.mock(GregorianCalendar.class);
+        calendar.set(2017, Calendar.DECEMBER, 15);
+
+        PowerMockito.mockStatic(VWOUtils.class);
+        PowerMockito.when(VWOUtils.getCalendar()).thenReturn(calendar);
+
+        Mockito.when(calendar.get(ArgumentMatchers.anyInt())).thenReturn(1);
+
+        CustomSegment customSegment = new CustomSegment(new JSONObject(dayOfTheWeekTrue));
+
+        Assert.assertFalse(customSegment.evaluate(vwo));
+
+        Mockito.when(calendar.get(ArgumentMatchers.anyInt())).thenReturn(2);
+        Assert.assertFalse(customSegment.evaluate(vwo));
+
+        Mockito.when(calendar.get(ArgumentMatchers.anyInt())).thenReturn(3);
+        Assert.assertFalse(customSegment.evaluate(vwo));
+
+        Mockito.when(calendar.get(ArgumentMatchers.anyInt())).thenReturn(4);
+        Assert.assertTrue(customSegment.evaluate(vwo));
+
+        Mockito.when(calendar.get(ArgumentMatchers.anyInt())).thenReturn(5);
+        Assert.assertTrue(customSegment.evaluate(vwo));
+
+        Mockito.when(calendar.get(ArgumentMatchers.anyInt())).thenReturn(6);
+        Assert.assertTrue(customSegment.evaluate(vwo));
+
+        Mockito.when(calendar.get(ArgumentMatchers.anyInt())).thenReturn(7);
+        Assert.assertTrue(customSegment.evaluate(vwo));
+    }
 }

@@ -15,6 +15,8 @@ import android.util.DisplayMetrics;
 import com.vwo.mobile.VWO;
 import com.vwo.mobile.constants.AppConstants;
 
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -201,6 +203,10 @@ public class VWOUtils {
             VWOLog.e(VWOLog.CONFIG_LOGS, errorMsg, false, false);
         }
         return true;
+    }
+
+    public static Calendar getCalendar() {
+        return GregorianCalendar.getInstance();
     }
 
     public static boolean checkIfClassExists(String className) {
