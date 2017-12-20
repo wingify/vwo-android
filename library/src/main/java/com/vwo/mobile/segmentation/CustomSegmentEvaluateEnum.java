@@ -269,7 +269,7 @@ public enum CustomSegmentEvaluateEnum {
             for (int i = 0; i < data.length(); i++) {
                 try {
                     int version = Integer.parseInt(data.getString(i));
-                    if (version != appVersion) {
+                    if (version == appVersion) {
                         return true;
                     }
                 } catch (JSONException | NumberFormatException exception) {
@@ -293,15 +293,15 @@ public enum CustomSegmentEvaluateEnum {
             for (int i = 0; i < data.length(); i++) {
                 try {
                     int version = Integer.parseInt(data.getString(i));
-                    if (version == appVersion) {
-                        return false;
+                    if (version != appVersion) {
+                        return true;
                     }
                 } catch (JSONException | NumberFormatException exception) {
                     VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse app version", exception,
                             false, false);
                 }
             }
-            return true;
+            return false;
         }
 
         @Override

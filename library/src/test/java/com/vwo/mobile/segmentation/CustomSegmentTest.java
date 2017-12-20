@@ -203,7 +203,7 @@ public class CustomSegmentTest {
                 "}";
 
         CustomSegment segmentInvalid = new CustomSegment(new JSONObject(invalid));
-        Assert.assertTrue(segmentInvalid.evaluate(vwo));
+        Assert.assertFalse(segmentInvalid.evaluate(vwo));
     }
 
     @Test
