@@ -36,7 +36,7 @@ import java.util.GregorianCalendar;
 @Config(packageName = "com.abc", sdk = Build.VERSION_CODES.JELLY_BEAN_MR2, shadows = {ShadowConfiguration.class,
         VWOPersistDataMock.class}, manifest = "AndroidManifest.xml")
 @PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "android.*", "org.json.*"})
-@PrepareForTest({VWOUtils.class, CustomSegmentEvaluateEnum.class, CustomSegmentEvaluateEnum.EvaluateSegment.class})
+@PrepareForTest({VWOUtils.class, CustomSegmentEvaluateEnum.class})
 public class CustomSegmentTest {
 
     @Rule
@@ -61,6 +61,7 @@ public class CustomSegmentTest {
                 "\"operator\": 11,\n" +
                 "\"rOperandValue\": \"20\"\n" +
                 "}";
+
         CustomSegment segmentEqualToFalse = new CustomSegment(new JSONObject(equalToFalse));
         Assert.assertFalse(segmentEqualToFalse.evaluate(vwo));
     }
@@ -159,6 +160,15 @@ public class CustomSegmentTest {
 
         CustomSegment customSegmentAppVersionEqualsFalse = new CustomSegment(new JSONObject(appVersionEqualsFalse));
         Assert.assertFalse(customSegmentAppVersionEqualsFalse.evaluate(vwo));
+
+        String equalToInvalid = "{\n" +
+                "\"type\": \"6\",\n" +
+                "\"operator\": 11,\n" +
+                "\"rOperandValue\": \"abc\"\n" +
+                "}";
+
+        CustomSegment segmentInvalid = new CustomSegment(new JSONObject(equalToInvalid));
+        Assert.assertFalse(segmentInvalid.evaluate(vwo));
     }
 
     @Test
@@ -186,6 +196,14 @@ public class CustomSegmentTest {
         CustomSegment customSegmentAppVersionNotEqualsFalse = new CustomSegment(new JSONObject(appVersionNotEqualsFalse));
         Assert.assertFalse(customSegmentAppVersionNotEqualsFalse.evaluate(vwo));
 
+        String invalid = "{\n" +
+                "\"type\": \"6\",\n" +
+                "\"operator\": 12,\n" +
+                "\"rOperandValue\": \"abc\"\n" +
+                "}";
+
+        CustomSegment segmentInvalid = new CustomSegment(new JSONObject(invalid));
+        Assert.assertTrue(segmentInvalid.evaluate(vwo));
     }
 
     @Test
@@ -212,6 +230,15 @@ public class CustomSegmentTest {
 
         CustomSegment customSegmentAppVersionContainsFalse = new CustomSegment(new JSONObject(appVersionContainsFalse));
         Assert.assertFalse(customSegmentAppVersionContainsFalse.evaluate(vwo));
+
+        String invalid = "{\n" +
+                "\"type\": \"6\",\n" +
+                "\"operator\": 7,\n" +
+                "\"rOperandValue\": \"abc\"\n" +
+                "}";
+
+        CustomSegment segmentInvalid = new CustomSegment(new JSONObject(invalid));
+        Assert.assertFalse(segmentInvalid.evaluate(vwo));
     }
 
     @Test
@@ -238,6 +265,15 @@ public class CustomSegmentTest {
 
         CustomSegment segmentStartsWithFalse = new CustomSegment(new JSONObject(startsWithFalse));
         Assert.assertFalse(segmentStartsWithFalse.evaluate(vwo));
+
+        String invalid = "{\n" +
+                "\"type\": \"6\",\n" +
+                "\"operator\": 7,\n" +
+                "\"rOperandValue\": \"abc\"\n" +
+                "}";
+
+        CustomSegment segmentInvalid = new CustomSegment(new JSONObject(invalid));
+        Assert.assertFalse(segmentInvalid.evaluate(vwo));
     }
 
     @Test
@@ -264,6 +300,15 @@ public class CustomSegmentTest {
 
         CustomSegment segmentRegexMatchesFalse = new CustomSegment(new JSONObject(matchesRegexFalse));
         Assert.assertFalse(segmentRegexMatchesFalse.evaluate(vwo));
+
+        String invalid = "{\n" +
+                "\"type\": \"6\",\n" +
+                "\"operator\": 7,\n" +
+                "\"rOperandValue\": \"abc\"\n" +
+                "}";
+
+        CustomSegment segmentInvalid = new CustomSegment(new JSONObject(invalid));
+        Assert.assertFalse(segmentInvalid.evaluate(vwo));
     }
 
     @Test
@@ -399,7 +444,6 @@ public class CustomSegmentTest {
     }
 
     @Test
-    @PrepareForTest({VWOUtils.class})
     public void dayOfWeekEqualsTest() throws JSONException {
         VWO vwo = new VWOMock().getVWOMockObject();
 
@@ -415,15 +459,14 @@ public class CustomSegmentTest {
 
 
         Calendar calendar = PowerMockito.mock(GregorianCalendar.class);
-        calendar.set(2017, Calendar.DECEMBER, 15);
 
         PowerMockito.mockStatic(VWOUtils.class);
         PowerMockito.when(VWOUtils.getCalendar()).thenReturn(calendar);
 
-        Mockito.when(calendar.get(ArgumentMatchers.anyInt())).thenReturn(1);
 
         CustomSegment customSegment = new CustomSegment(new JSONObject(dayOfTheWeekTrue));
 
+        Mockito.when(calendar.get(ArgumentMatchers.anyInt())).thenReturn(1);
         Assert.assertTrue(customSegment.evaluate(vwo));
 
         Mockito.when(calendar.get(ArgumentMatchers.anyInt())).thenReturn(2);
@@ -447,11 +490,10 @@ public class CustomSegmentTest {
 
 
     @Test
-    @PrepareForTest({VWOUtils.class})
     public void dayOfWeekNotEqualsTest() throws JSONException {
         VWO vwo = new VWOMock().getVWOMockObject();
 
-        String dayOfTheWeekTrue = "{\n" +
+        String dayOfTheWeekJson = "{\n" +
                 "\"type\": \"3\",\n" +
                 "\"operator\": 12,\n" +
                 "\"rOperandValue\": [\n" +
@@ -463,15 +505,13 @@ public class CustomSegmentTest {
 
 
         Calendar calendar = PowerMockito.mock(GregorianCalendar.class);
-        calendar.set(2017, Calendar.DECEMBER, 15);
 
         PowerMockito.mockStatic(VWOUtils.class);
         PowerMockito.when(VWOUtils.getCalendar()).thenReturn(calendar);
 
+        CustomSegment customSegment = new CustomSegment(new JSONObject(dayOfTheWeekJson));
+
         Mockito.when(calendar.get(ArgumentMatchers.anyInt())).thenReturn(1);
-
-        CustomSegment customSegment = new CustomSegment(new JSONObject(dayOfTheWeekTrue));
-
         Assert.assertFalse(customSegment.evaluate(vwo));
 
         Mockito.when(calendar.get(ArgumentMatchers.anyInt())).thenReturn(2);
@@ -491,5 +531,139 @@ public class CustomSegmentTest {
 
         Mockito.when(calendar.get(ArgumentMatchers.anyInt())).thenReturn(7);
         Assert.assertTrue(customSegment.evaluate(vwo));
+    }
+
+    @Test
+    public void hourOfDayEqualsTest() throws JSONException {
+        VWO vwo = new VWOMock().getVWOMockObject();
+
+        String hourOfDayJson = "{\n" +
+                "\"type\": \"4\",\n" +
+                "\"operator\": 11,\n" +
+                "\"rOperandValue\": [\n" +
+                "0,\n" +
+                "3,\n" +
+                "7\n" +
+                "]\n" +
+                "}";
+
+        Calendar calendar = PowerMockito.mock(GregorianCalendar.class);
+
+        PowerMockito.mockStatic(VWOUtils.class);
+        PowerMockito.when(VWOUtils.getCalendar()).thenReturn(calendar);
+
+        CustomSegment customSegment = new CustomSegment(new JSONObject(hourOfDayJson));
+        customSegment.evaluate(vwo);
+
+        Mockito.when(calendar.get(ArgumentMatchers.anyInt())).thenReturn(0);
+        Assert.assertTrue(customSegment.evaluate(vwo));
+
+        Mockito.when(calendar.get(ArgumentMatchers.anyInt())).thenReturn(2);
+        Assert.assertFalse(customSegment.evaluate(vwo));
+
+        Mockito.when(calendar.get(ArgumentMatchers.anyInt())).thenReturn(3);
+        Assert.assertTrue(customSegment.evaluate(vwo));
+
+        Mockito.when(calendar.get(ArgumentMatchers.anyInt())).thenReturn(25);
+        Assert.assertFalse(customSegment.evaluate(vwo));
+
+        Mockito.when(calendar.get(ArgumentMatchers.anyInt())).thenReturn(5);
+        Assert.assertFalse(customSegment.evaluate(vwo));
+
+        Mockito.when(calendar.get(ArgumentMatchers.anyInt())).thenReturn(6);
+        Assert.assertFalse(customSegment.evaluate(vwo));
+
+        Mockito.when(calendar.get(ArgumentMatchers.anyInt())).thenReturn(7);
+        Assert.assertTrue(customSegment.evaluate(vwo));
+    }
+
+    @Test
+    public void hourOfDayNotEqualsTest() throws JSONException {
+        VWO vwo = new VWOMock().getVWOMockObject();
+
+        String hourOfDayJson = "{\n" +
+                "\"type\": \"4\",\n" +
+                "\"operator\": 12,\n" +
+                "\"rOperandValue\": [\n" +
+                "0,\n" +
+                "3,\n" +
+                "7\n" +
+                "]\n" +
+                "}";
+
+        Calendar calendar = PowerMockito.mock(GregorianCalendar.class);
+
+        PowerMockito.mockStatic(VWOUtils.class);
+        PowerMockito.when(VWOUtils.getCalendar()).thenReturn(calendar);
+
+        CustomSegment customSegment = new CustomSegment(new JSONObject(hourOfDayJson));
+        customSegment.evaluate(vwo);
+
+        Mockito.when(calendar.get(ArgumentMatchers.anyInt())).thenReturn(0);
+        Assert.assertFalse(customSegment.evaluate(vwo));
+
+        Mockito.when(calendar.get(ArgumentMatchers.anyInt())).thenReturn(2);
+        Assert.assertTrue(customSegment.evaluate(vwo));
+
+        Mockito.when(calendar.get(ArgumentMatchers.anyInt())).thenReturn(3);
+        Assert.assertFalse(customSegment.evaluate(vwo));
+
+        Mockito.when(calendar.get(ArgumentMatchers.anyInt())).thenReturn(24);
+        Assert.assertTrue(customSegment.evaluate(vwo));
+
+        Mockito.when(calendar.get(ArgumentMatchers.anyInt())).thenReturn(5);
+        Assert.assertTrue(customSegment.evaluate(vwo));
+
+        Mockito.when(calendar.get(ArgumentMatchers.anyInt())).thenReturn(6);
+        Assert.assertTrue(customSegment.evaluate(vwo));
+
+        Mockito.when(calendar.get(ArgumentMatchers.anyInt())).thenReturn(7);
+        Assert.assertFalse(customSegment.evaluate(vwo));
+    }
+
+    @Test
+    public void invalidSegmentTest() throws JSONException {
+        VWO vwo = new VWOMock().getVWOMockObject();
+
+        String invalidSegmentTypeUpperBound = "{\n" +
+                "\"type\": \"8\",\n" +
+                "\"operator\": 7,\n" +
+                "\"rOperandValue\": \"2\"\n" +
+                "}";
+
+        CustomSegment upperBoundSegment = new CustomSegment(new JSONObject(invalidSegmentTypeUpperBound));
+        Assert.assertFalse(upperBoundSegment.evaluate(vwo));
+
+        String invalidSegmentTypeLowerBound = "{\n" +
+                "\"type\": \"0\",\n" +
+                "\"operator\": 7,\n" +
+                "\"rOperandValue\": \"2\"\n" +
+                "}";
+
+        CustomSegment lowerBoundSegment = new CustomSegment(new JSONObject(invalidSegmentTypeLowerBound));
+        Assert.assertFalse(lowerBoundSegment.evaluate(vwo));
+    }
+
+    @Test
+    public void invalidOperatorTest() throws JSONException {
+        VWO vwo = new VWOMock().getVWOMockObject();
+
+        String invalidSegmentTypeUpperBound = "{\n" +
+                "\"type\": \"1\",\n" +
+                "\"operator\": -1,\n" +
+                "\"rOperandValue\": \"2\"\n" +
+                "}";
+
+        CustomSegment upperBoundSegment = new CustomSegment(new JSONObject(invalidSegmentTypeUpperBound));
+        Assert.assertFalse(upperBoundSegment.evaluate(vwo));
+
+        String invalidSegmentTypeLowerBound = "{\n" +
+                "\"type\": \"0\",\n" +
+                "\"operator\": 200,\n" +
+                "\"rOperandValue\": \"2\"\n" +
+                "}";
+
+        CustomSegment lowerBoundSegment = new CustomSegment(new JSONObject(invalidSegmentTypeLowerBound));
+        Assert.assertFalse(lowerBoundSegment.evaluate(vwo));
     }
 }
