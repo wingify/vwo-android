@@ -366,9 +366,6 @@ public class CustomSegmentTest {
     public void customVariableContainsTest() throws JSONException {
         VWO vwo = new VWOMock().getVWOMockObject();
 
-        PowerMockito.mockStatic(VWOUtils.class);
-        PowerMockito.when(VWOUtils.applicationVersion(ArgumentMatchers.any(Context.class))).thenReturn(20);
-
         String containsTrue = "{\n" +
                 "\"type\": \"7\",\n" +
                 "\"operator\": 7,\n" +
@@ -393,9 +390,6 @@ public class CustomSegmentTest {
     @Test
     public void customVariableStartsWithTest() throws JSONException {
         VWO vwo = new VWOMock().getVWOMockObject();
-
-        PowerMockito.mockStatic(VWOUtils.class);
-        PowerMockito.when(VWOUtils.applicationVersion(ArgumentMatchers.any(Context.class))).thenReturn(20);
 
         String startsWithTrue = "{\n" +
                 "\"type\": \"7\",\n" +
@@ -658,12 +652,17 @@ public class CustomSegmentTest {
         Assert.assertFalse(upperBoundSegment.evaluate(vwo));
 
         String invalidSegmentTypeLowerBound = "{\n" +
-                "\"type\": \"0\",\n" +
+                "\"type\": \"1\",\n" +
                 "\"operator\": 200,\n" +
                 "\"rOperandValue\": \"2\"\n" +
                 "}";
 
         CustomSegment lowerBoundSegment = new CustomSegment(new JSONObject(invalidSegmentTypeLowerBound));
         Assert.assertFalse(lowerBoundSegment.evaluate(vwo));
+    }
+
+
+    public void andOperatorTest() throws JSONException {
+
     }
 }
