@@ -115,10 +115,8 @@ public class Campaign {
                 mSegments.add(new DefaultSegment());
                 mSegmentType = SEGMENT_DEFAULT;
             }
-
-
         } catch (JSONException e) {
-            e.printStackTrace();
+            VWOLog.e(VWOLog.DOWNLOAD_DATA_LOGS, e.getMessage(), true, true);
         }
     }
 

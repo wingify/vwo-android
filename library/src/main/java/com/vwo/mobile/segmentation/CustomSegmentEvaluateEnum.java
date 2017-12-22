@@ -112,8 +112,7 @@ public enum CustomSegmentEvaluateEnum {
     DAY_OF_WEEK_EQUAL_TO(AppConstants.DAY_OF_WEEK, AppConstants.EQUAL_TO, new EvaluateSegment() {
         @Override
         public boolean evaluate(VWO vwo, JSONArray data) {
-
-            Calendar c = GregorianCalendar.getInstance();
+            Calendar c = VWOUtils.getCalendar();
             int dayOfWeek = c.get(GregorianCalendar.DAY_OF_WEEK) - 1;
             for (int i = 0; i < data.length(); i++) {
                 try {
@@ -138,7 +137,7 @@ public enum CustomSegmentEvaluateEnum {
         @Override
         public boolean evaluate(VWO vwo, JSONArray data) {
 
-            Calendar c = GregorianCalendar.getInstance();
+            Calendar c = VWOUtils.getCalendar();
             int dayOfWeek = c.get(GregorianCalendar.DAY_OF_WEEK) - 1;
             for (int i = 0; i < data.length(); i++) {
                 try {
@@ -162,7 +161,7 @@ public enum CustomSegmentEvaluateEnum {
     HOUR_OF_DAY_EQUAL_TO(AppConstants.HOUR_OF_DAY, AppConstants.EQUAL_TO, new EvaluateSegment() {
         @Override
         public boolean evaluate(VWO vwo, JSONArray data) {
-            Calendar c = GregorianCalendar.getInstance();
+            Calendar c = VWOUtils.getCalendar();
             int hourOfTheDay = c.get(GregorianCalendar.HOUR_OF_DAY);
             for (int i = 0; i < data.length(); i++) {
                 try {
@@ -186,7 +185,7 @@ public enum CustomSegmentEvaluateEnum {
     HOUR_OF_DAY_NOT_EQUAL_TO(AppConstants.HOUR_OF_DAY, AppConstants.NOT_EQUAL_TO, new EvaluateSegment() {
         @Override
         public boolean evaluate(VWO vwo, JSONArray data) {
-            Calendar c = GregorianCalendar.getInstance();
+            Calendar c = VWOUtils.getCalendar();
             int hourOfTheDay = c.get(GregorianCalendar.HOUR_OF_DAY);
             for (int i = 0; i < data.length(); i++) {
                 try {
@@ -294,7 +293,7 @@ public enum CustomSegmentEvaluateEnum {
             for (int i = 0; i < data.length(); i++) {
                 try {
                     int version = Integer.parseInt(data.getString(i));
-                    if (version == appVersion) {
+                    if (version != appVersion) {
                         return true;
                     }
                 } catch (JSONException | NumberFormatException exception) {
@@ -302,7 +301,7 @@ public enum CustomSegmentEvaluateEnum {
                             false, false);
                 }
             }
-            return true;
+            return false;
         }
 
         @Override
@@ -319,7 +318,7 @@ public enum CustomSegmentEvaluateEnum {
                 try {
                     Pattern pattern = Pattern.compile(data.getString(i));
                     Matcher matcher = pattern.matcher(appVersion);
-                    if (matcher.find()) {
+                    if (matcher.matches()) {
                         return true;
                     }
                 } catch (JSONException exception) {
@@ -461,7 +460,7 @@ public enum CustomSegmentEvaluateEnum {
                 try {
                     Pattern pattern = Pattern.compile(data.getString(i));
                     Matcher matcher = pattern.matcher(customVariable);
-                    if (matcher.find()) {
+                    if (matcher.matches()) {
                         return true;
                     }
                 } catch (JSONException exception) {

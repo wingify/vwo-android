@@ -12,7 +12,7 @@ public interface MessageQueue<T> {
     T peek();
 
     /**
-     * Inserts the specified element into this queue if it is possible to do so immediately without violating capacity restrictions.
+     * Inserts the specified element asynchronously into this queue if it is possible to do so immediately without violating capacity restrictions.
      * @param t {@link T} is the element to be inserted
      */
     void add(T t);

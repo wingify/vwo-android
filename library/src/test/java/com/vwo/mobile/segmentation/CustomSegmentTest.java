@@ -1,142 +1,668 @@
 package com.vwo.mobile.segmentation;
 
+import android.content.Context;
 import android.os.Build;
 
-import com.vwo.mobile.BuildConfig;
 import com.vwo.mobile.VWO;
 import com.vwo.mobile.mock.ShadowConfiguration;
 import com.vwo.mobile.mock.VWOMock;
 import com.vwo.mobile.mock.VWOPersistDataMock;
+import com.vwo.mobile.utils.VWOUtils;
 
 import junit.framework.Assert;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentMatchers;
+import org.mockito.Mockito;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.rule.PowerMockRule;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
+
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 /**
  * Created by aman on Fri 06/10/17 16:33.
  */
 
 @RunWith(RobolectricTestRunner.class)
-@Config(constants = BuildConfig.class, sdk = Build.VERSION_CODES.JELLY_BEAN, shadows = {ShadowConfiguration.class,
-        VWOPersistDataMock.class }, manifest = "AndroidManifest.xml")
+@Config(packageName = "com.abc", sdk = Build.VERSION_CODES.JELLY_BEAN_MR2, shadows = {ShadowConfiguration.class,
+        VWOPersistDataMock.class}, manifest = "AndroidManifest.xml")
+@PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "android.*", "org.json.*"})
+@PrepareForTest({VWOUtils.class, CustomSegmentEvaluateEnum.class})
 public class CustomSegmentTest {
 
-    /**
-     * Unit tests for custom segments
-     */
+    @Rule
+    public PowerMockRule rule = new PowerMockRule();
+
     @Test
-    public void customSegmentationAndroidVersionTest() {
-        try {
-            VWO vwo = new VWOMock().getVWOMockObject();
+    public void androidVersionEqualToTest() throws JSONException {
+        VWO vwo = new VWOMock().getVWOMockObject();
 
-            String androidVersionGreaterThan = "{\n" +
-                    "\"prevLogicalOperator\": \"AND\",\n" +
-                    "\"type\": \"1\",\n" +
-                    "\"operator\": 15,\n" +
-                    "\"rOperandValue\": \"14\",\n" +
-                    "\"rBracket\": true\n" +
-                    "}";
+        String equalToTrue = "{\n" +
+                "\"type\": \"1\",\n" +
+                "\"operator\": 11,\n" +
+                "\"rOperandValue\": \"18\"\n" +
+                "}";
 
 
-            CustomSegment customSegmentAndroidVersionGreaterThan = new CustomSegment(new JSONObject(androidVersionGreaterThan));
-            Assert.assertEquals(customSegmentAndroidVersionGreaterThan.evaluate(vwo), true);
+        CustomSegment segmentEqualToTrue = new CustomSegment(new JSONObject(equalToTrue));
+        Assert.assertTrue(segmentEqualToTrue.evaluate(vwo));
 
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        String equalToFalse = "{\n" +
+                "\"type\": \"1\",\n" +
+                "\"operator\": 11,\n" +
+                "\"rOperandValue\": \"20\"\n" +
+                "}";
+
+        CustomSegment segmentEqualToFalse = new CustomSegment(new JSONObject(equalToFalse));
+        Assert.assertFalse(segmentEqualToFalse.evaluate(vwo));
     }
 
     @Test
-    public void customSegmentationAppVersionTest() {
-        try {
-            VWO vwo = new VWOMock().getVWOMockObject();
+    public void androidVersionNotEqualToTest() throws JSONException {
+        VWO vwo = new VWOMock().getVWOMockObject();
 
-            String appVersion = "{\n" +
-                    "\"type\": \"6\",\n" +
-                    "\"operator\": 11,\n" +
-                    "\"rOperandValue\": \"1\"\n" +
-                    "}";
+        String notEqualToTrue = "{\n" +
+                "\"type\": \"1\",\n" +
+                "\"operator\": 12,\n" +
+                "\"rOperandValue\": \"14\"\n" +
+                "}";
 
-            CustomSegment customSegmentAppVersionEquals = new CustomSegment(new JSONObject(appVersion));
-            Assert.assertEquals(customSegmentAppVersionEquals.evaluate(vwo), false);
 
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        CustomSegment segmentNotEqualToTrue = new CustomSegment(new JSONObject(notEqualToTrue));
+        Assert.assertTrue(segmentNotEqualToTrue.evaluate(vwo));
+
+        String notEqualToFalse = "{\n" +
+                "\"type\": \"1\",\n" +
+                "\"operator\": 12,\n" +
+                "\"rOperandValue\": \"18\"\n" +
+                "}";
+        CustomSegment segmentNotEqualToFalse = new CustomSegment(new JSONObject(notEqualToFalse));
+        Assert.assertFalse(segmentNotEqualToFalse.evaluate(vwo));
     }
 
-    /**
-     * Unit tests for predefined segments
-     */
+
     @Test
-    public void predefinedSegmentationTest() {
+    public void androidVersionGreaterThanTest() throws JSONException {
+        VWO vwo = new VWOMock().getVWOMockObject();
 
-        try {
-            VWO vwo = new VWOMock().getVWOMockObject();
+        String androidVersionGreaterThanTrue = "{\n" +
+                "\"type\": \"1\",\n" +
+                "\"operator\": 15,\n" +
+                "\"rOperandValue\": \"14\"\n" +
+                "}";
 
-            String phoneUser = "{\n" +
-                    "\"segment_code\": {\n" +
-                    "\"device\": \"Phone\"\n" +
-                    "},\n" +
-                    "\"id\": \"87\",\n" +
-                    "\"type\": \"predefined\",\n" +
-                    "\"platform\": \"mobile-app\",\n" +
-                    "\"name\": \"Phone Users\",\n" +
-                    "\"description\": \"Segment for Phone users only\"\n" +
-                    "}";
 
-            String tabletUser = "{\n" +
-                    "\"segment_code\": {\n" +
-                    "\"device\": \"Tablet\"\n" +
-                    "},\n" +
-                    "\"id\": \"88\",\n" +
-                    "\"type\": \"predefined\",\n" +
-                    "\"platform\": \"mobile-app\",\n" +
-                    "\"name\": \"Tablet Users\",\n" +
-                    "\"description\": \"Segment for Tablet users only\"\n" +
-                    "}";
+        CustomSegment segmentAndroidVersionGreaterThanTrue = new CustomSegment(new JSONObject(androidVersionGreaterThanTrue));
+        Assert.assertTrue(segmentAndroidVersionGreaterThanTrue.evaluate(vwo));
 
-            String newUser = "{\n" +
-                    "\"segment_code\": {\n" +
-                    "\"returning_visitor\": false\n" +
-                    "},\n" +
-                    "\"id\": \"89\",\n" +
-                    "\"type\": \"predefined\",\n" +
-                    "\"platform\": \"mobile-app\",\n" +
-                    "\"name\": \"New Users\",\n" +
-                    "\"description\": \"Segment for new users only\"\n" +
-                    "}";
+        String androidVersionGreaterThanFalse = "{\n" +
+                "\"type\": \"1\",\n" +
+                "\"operator\": 15,\n" +
+                "\"rOperandValue\": \"20\"\n" +
+                "}";
+        CustomSegment segmentAndroidVersionGreaterThanFalse = new CustomSegment(new JSONObject(androidVersionGreaterThanFalse));
+        Assert.assertFalse(segmentAndroidVersionGreaterThanFalse.evaluate(vwo));
+    }
 
-            String returningUser = "{\n" +
-                    "\"segment_code\": {\n" +
-                    "\"returning_visitor\": true\n" +
-                    "},\n" +
-                    "\"id\": \"90\",\n" +
-                    "\"type\": \"predefined\",\n" +
-                    "\"platform\": \"mobile-app\",\n" +
-                    "\"name\": \"Returning Users\",\n" +
-                    "\"description\": \"Segment for returning users only\"\n" +
-                    "}";
+    @Test
+    public void androidVersionLessThanTest() throws JSONException {
+        VWO vwo = new VWOMock().getVWOMockObject();
 
-            PredefinedSegment predefinedSegmentIsNotPhoneUser = new PredefinedSegment(new JSONObject(phoneUser));
-            Assert.assertEquals(predefinedSegmentIsNotPhoneUser.evaluate(vwo), false);
+        String lessThanTrue = "{\n" +
+                "\"type\": \"1\",\n" +
+                "\"operator\": 16,\n" +
+                "\"rOperandValue\": \"20\"\n" +
+                "}";
 
-            PredefinedSegment predefinedSegmentIsTabletUser = new PredefinedSegment(new JSONObject(tabletUser));
-            Assert.assertEquals(predefinedSegmentIsTabletUser.evaluate(vwo), true);
 
-            PredefinedSegment predefinedSegmentIsNewUser = new PredefinedSegment(new JSONObject(newUser));
-            Assert.assertEquals(predefinedSegmentIsNewUser.evaluate(vwo), false);
+        CustomSegment segmentLessThanTrue = new CustomSegment(new JSONObject(lessThanTrue));
+        Assert.assertTrue(segmentLessThanTrue.evaluate(vwo));
 
-            PredefinedSegment predefinedSegmentIsReturningUser = new PredefinedSegment(new JSONObject(returningUser));
-            Assert.assertEquals(predefinedSegmentIsReturningUser.evaluate(vwo), true);
+        String lessThanFalse = "{\n" +
+                "\"type\": \"1\",\n" +
+                "\"operator\": 16,\n" +
+                "\"rOperandValue\": \"14\"\n" +
+                "}";
+        CustomSegment segmentLessThanFalse = new CustomSegment(new JSONObject(lessThanFalse));
+        Assert.assertFalse(segmentLessThanFalse.evaluate(vwo));
+    }
 
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+    @Test
+    public void appVersionEqualsTest() throws JSONException {
+        VWO vwo = new VWOMock().getVWOMockObject();
+
+        PowerMockito.mockStatic(VWOUtils.class);
+        PowerMockito.when(VWOUtils.applicationVersion(ArgumentMatchers.any(Context.class))).thenReturn(20);
+
+        String appVersionEqualsTrue = "{\n" +
+                "\"type\": \"6\",\n" +
+                "\"operator\": 11,\n" +
+                "\"rOperandValue\": \"20\"\n" +
+                "}";
+
+        CustomSegment customSegmentAppVersionEqualsTrue = new CustomSegment(new JSONObject(appVersionEqualsTrue));
+        Assert.assertTrue(customSegmentAppVersionEqualsTrue.evaluate(vwo));
+
+        String appVersionEqualsFalse = "{\n" +
+                "\"type\": \"6\",\n" +
+                "\"operator\": 11,\n" +
+                "\"rOperandValue\": \"15\"\n" +
+                "}";
+
+        CustomSegment customSegmentAppVersionEqualsFalse = new CustomSegment(new JSONObject(appVersionEqualsFalse));
+        Assert.assertFalse(customSegmentAppVersionEqualsFalse.evaluate(vwo));
+
+        String equalToInvalid = "{\n" +
+                "\"type\": \"6\",\n" +
+                "\"operator\": 11,\n" +
+                "\"rOperandValue\": \"abc\"\n" +
+                "}";
+
+        CustomSegment segmentInvalid = new CustomSegment(new JSONObject(equalToInvalid));
+        Assert.assertFalse(segmentInvalid.evaluate(vwo));
+    }
+
+    @Test
+    public void appVersionNotEqualsTest() throws JSONException {
+        VWO vwo = new VWOMock().getVWOMockObject();
+
+        PowerMockito.mockStatic(VWOUtils.class);
+        PowerMockito.when(VWOUtils.applicationVersion(ArgumentMatchers.any(Context.class))).thenReturn(20);
+
+        String appVersionNotEqualsTrue = "{\n" +
+                "\"type\": \"6\",\n" +
+                "\"operator\": 12,\n" +
+                "\"rOperandValue\": \"10\"\n" +
+                "}";
+
+        CustomSegment customSegmentAppVersionNotEqualsTrue = new CustomSegment(new JSONObject(appVersionNotEqualsTrue));
+        Assert.assertTrue(customSegmentAppVersionNotEqualsTrue.evaluate(vwo));
+
+        String appVersionNotEqualsFalse = "{\n" +
+                "\"type\": \"6\",\n" +
+                "\"operator\": 12,\n" +
+                "\"rOperandValue\": \"20\"\n" +
+                "}";
+
+        CustomSegment customSegmentAppVersionNotEqualsFalse = new CustomSegment(new JSONObject(appVersionNotEqualsFalse));
+        Assert.assertFalse(customSegmentAppVersionNotEqualsFalse.evaluate(vwo));
+
+        String invalid = "{\n" +
+                "\"type\": \"6\",\n" +
+                "\"operator\": 12,\n" +
+                "\"rOperandValue\": \"abc\"\n" +
+                "}";
+
+        CustomSegment segmentInvalid = new CustomSegment(new JSONObject(invalid));
+        Assert.assertFalse(segmentInvalid.evaluate(vwo));
+    }
+
+    @Test
+    public void appVersionContainsTest() throws JSONException {
+        VWO vwo = new VWOMock().getVWOMockObject();
+
+        PowerMockito.mockStatic(VWOUtils.class);
+        PowerMockito.when(VWOUtils.applicationVersion(ArgumentMatchers.any(Context.class))).thenReturn(20);
+
+        String appVersionContainsTrue = "{\n" +
+                "\"type\": \"6\",\n" +
+                "\"operator\": 7,\n" +
+                "\"rOperandValue\": \"2\"\n" +
+                "}";
+
+        CustomSegment customSegmentAppVersionContainsTrue = new CustomSegment(new JSONObject(appVersionContainsTrue));
+        Assert.assertTrue(customSegmentAppVersionContainsTrue.evaluate(vwo));
+
+        String appVersionContainsFalse = "{\n" +
+                "\"type\": \"6\",\n" +
+                "\"operator\": 7,\n" +
+                "\"rOperandValue\": \"1\"\n" +
+                "}";
+
+        CustomSegment customSegmentAppVersionContainsFalse = new CustomSegment(new JSONObject(appVersionContainsFalse));
+        Assert.assertFalse(customSegmentAppVersionContainsFalse.evaluate(vwo));
+
+        String invalid = "{\n" +
+                "\"type\": \"6\",\n" +
+                "\"operator\": 7,\n" +
+                "\"rOperandValue\": \"abc\"\n" +
+                "}";
+
+        CustomSegment segmentInvalid = new CustomSegment(new JSONObject(invalid));
+        Assert.assertFalse(segmentInvalid.evaluate(vwo));
+    }
+
+    @Test
+    public void appVersionStartsWithTest() throws JSONException {
+        VWO vwo = new VWOMock().getVWOMockObject();
+
+        PowerMockito.mockStatic(VWOUtils.class);
+        PowerMockito.when(VWOUtils.applicationVersion(ArgumentMatchers.any(Context.class))).thenReturn(20);
+
+        String startsWithTrue = "{\n" +
+                "\"type\": \"6\",\n" +
+                "\"operator\": 13,\n" +
+                "\"rOperandValue\": \"2\"\n" +
+                "}";
+
+        CustomSegment segmentStartsWithTrue = new CustomSegment(new JSONObject(startsWithTrue));
+        Assert.assertTrue(segmentStartsWithTrue.evaluate(vwo));
+
+        String startsWithFalse = "{\n" +
+                "\"type\": \"6\",\n" +
+                "\"operator\": 13,\n" +
+                "\"rOperandValue\": \"1\"\n" +
+                "}";
+
+        CustomSegment segmentStartsWithFalse = new CustomSegment(new JSONObject(startsWithFalse));
+        Assert.assertFalse(segmentStartsWithFalse.evaluate(vwo));
+
+        String invalid = "{\n" +
+                "\"type\": \"6\",\n" +
+                "\"operator\": 7,\n" +
+                "\"rOperandValue\": \"abc\"\n" +
+                "}";
+
+        CustomSegment segmentInvalid = new CustomSegment(new JSONObject(invalid));
+        Assert.assertFalse(segmentInvalid.evaluate(vwo));
+    }
+
+    @Test
+    public void appVersionMatchesRegexTest() throws JSONException {
+        VWO vwo = new VWOMock().getVWOMockObject();
+
+        PowerMockito.mockStatic(VWOUtils.class);
+        PowerMockito.when(VWOUtils.applicationVersion(ArgumentMatchers.any(Context.class))).thenReturn(20);
+
+        String matchesRegexTrue = "{\n" +
+                "\"type\": \"6\",\n" +
+                "\"operator\": 5,\n" +
+                "\"rOperandValue\": \"[0-9]*\"\n" +
+                "}";
+
+        CustomSegment segmentRegexMatchesTrue = new CustomSegment(new JSONObject(matchesRegexTrue));
+        Assert.assertTrue(segmentRegexMatchesTrue.evaluate(vwo));
+
+        String matchesRegexFalse = "{\n" +
+                "\"type\": \"6\",\n" +
+                "\"operator\": 5,\n" +
+                "\"rOperandValue\": \"[3-9]*\"\n" +
+                "}";
+
+        CustomSegment segmentRegexMatchesFalse = new CustomSegment(new JSONObject(matchesRegexFalse));
+        Assert.assertFalse(segmentRegexMatchesFalse.evaluate(vwo));
+
+        String invalid = "{\n" +
+                "\"type\": \"6\",\n" +
+                "\"operator\": 7,\n" +
+                "\"rOperandValue\": \"abc\"\n" +
+                "}";
+
+        CustomSegment segmentInvalid = new CustomSegment(new JSONObject(invalid));
+        Assert.assertFalse(segmentInvalid.evaluate(vwo));
+    }
+
+    @Test
+    public void customVariableEqualsTest() throws JSONException {
+        VWO vwo = new VWOMock().getVWOMockObject();
+
+        String customVariableEqualsTrue = "{\n" +
+                "\"type\": \"7\",\n" +
+                "\"operator\": 11,\n" +
+                "\"lOperandValue\": \"userType\",\n" +
+                "\"rOperandValue\": \"paid\"\n" +
+                "}\n";
+
+        CustomSegment segmentCustomVariableEqualsTrue = new CustomSegment(new JSONObject(customVariableEqualsTrue));
+        Assert.assertTrue(segmentCustomVariableEqualsTrue.evaluate(vwo));
+
+        String customVariableEqualsFalse = "{\n" +
+                "\"type\": \"7\",\n" +
+                "\"operator\": 11,\n" +
+                "\"lOperandValue\": \"userType\",\n" +
+                "\"rOperandValue\": \"free\"\n" +
+                "}\n";
+
+        CustomSegment segmentCustomVariableEqualsFalse = new CustomSegment(new JSONObject(customVariableEqualsFalse));
+        Assert.assertFalse(segmentCustomVariableEqualsFalse.evaluate(vwo));
+    }
+
+    @Test
+    public void customVariableNotEqualsTest() throws JSONException {
+        VWO vwo = new VWOMock().getVWOMockObject();
+
+        String notEqualsTrue = "{\n" +
+                "\"type\": \"7\",\n" +
+                "\"operator\": 12,\n" +
+                "\"lOperandValue\": \"userType\",\n" +
+                "\"rOperandValue\": \"free\"\n" +
+                "}\n";
+
+        CustomSegment segmentNotEqualsTrue = new CustomSegment(new JSONObject(notEqualsTrue));
+        Assert.assertTrue(segmentNotEqualsTrue.evaluate(vwo));
+
+        String notEqualsFalse = "{\n" +
+                "\"type\": \"7\",\n" +
+                "\"operator\": 12,\n" +
+                "\"lOperandValue\": \"userType\",\n" +
+                "\"rOperandValue\": \"paid\"\n" +
+                "}\n";
+
+        CustomSegment segmentNotEqualsFalse = new CustomSegment(new JSONObject(notEqualsFalse));
+        Assert.assertFalse(segmentNotEqualsFalse.evaluate(vwo));
+
+    }
+
+    @Test
+    public void customVariableContainsTest() throws JSONException {
+        VWO vwo = new VWOMock().getVWOMockObject();
+
+        String containsTrue = "{\n" +
+                "\"type\": \"7\",\n" +
+                "\"operator\": 7,\n" +
+                "\"lOperandValue\": \"userType\",\n" +
+                "\"rOperandValue\": \"ai\"\n" +
+                "}";
+
+        CustomSegment segmentContainsTrue = new CustomSegment(new JSONObject(containsTrue));
+        Assert.assertTrue(segmentContainsTrue.evaluate(vwo));
+
+        String containsFalse = "{\n" +
+                "\"type\": \"7\",\n" +
+                "\"operator\": 7,\n" +
+                "\"lOperandValue\": \"userType\",\n" +
+                "\"rOperandValue\": \"ee\"\n" +
+                "}";
+
+        CustomSegment segmentContainsFalse = new CustomSegment(new JSONObject(containsFalse));
+        Assert.assertFalse(segmentContainsFalse.evaluate(vwo));
+    }
+
+    @Test
+    public void customVariableStartsWithTest() throws JSONException {
+        VWO vwo = new VWOMock().getVWOMockObject();
+
+        String startsWithTrue = "{\n" +
+                "\"type\": \"7\",\n" +
+                "\"operator\": 13,\n" +
+                "\"lOperandValue\": \"userType\",\n" +
+                "\"rOperandValue\": \"pai\"\n" +
+                "}";
+
+        CustomSegment segmentStartsWithTrue = new CustomSegment(new JSONObject(startsWithTrue));
+        Assert.assertTrue(segmentStartsWithTrue.evaluate(vwo));
+
+        String startsWithFalse = "{\n" +
+                "\"type\": \"7\",\n" +
+                "\"operator\": 13,\n" +
+                "\"lOperandValue\": \"userType\",\n" +
+                "\"rOperandValue\": \"fr\"\n" +
+                "}";
+
+        CustomSegment segmentStartsWithFalse = new CustomSegment(new JSONObject(startsWithFalse));
+        Assert.assertFalse(segmentStartsWithFalse.evaluate(vwo));
+    }
+
+    @Test
+    public void customVariableMatchesRegexTest() throws JSONException {
+        VWO vwo = new VWOMock().getVWOMockObject();
+
+        String matchesRegexTrue = "{\n" +
+                "\"type\": \"7\",\n" +
+                "\"operator\": 5,\n" +
+                "\"lOperandValue\": \"userType\",\n" +
+                "\"rOperandValue\": \"[a-p]*\"\n" +
+                "}";
+
+        CustomSegment segmentRegexMatchesTrue = new CustomSegment(new JSONObject(matchesRegexTrue));
+        Assert.assertTrue(segmentRegexMatchesTrue.evaluate(vwo));
+
+        String matchesRegexFalse = "{\n" +
+                "\"type\": \"7\",\n" +
+                "\"operator\": 5,\n" +
+                "\"lOperandValue\": \"userType\",\n" +
+                "\"rOperandValue\": \"[p-z]*\"\n" +
+                "}";
+
+        CustomSegment segmentRegexMatchesFalse = new CustomSegment(new JSONObject(matchesRegexFalse));
+        Assert.assertFalse(segmentRegexMatchesFalse.evaluate(vwo));
+    }
+
+    @Test
+    public void dayOfWeekEqualsTest() throws JSONException {
+        VWO vwo = new VWOMock().getVWOMockObject();
+
+        String dayOfTheWeekTrue = "{\n" +
+        "\"type\": \"3\",\n" +
+        "\"operator\": 11,\n" +
+        "\"rOperandValue\": [\n" +
+        "0,\n" +
+        "1,\n" +
+        "2\n" +
+        "]\n" +
+        "}";
+
+
+        Calendar calendar = PowerMockito.mock(GregorianCalendar.class);
+
+        PowerMockito.mockStatic(VWOUtils.class);
+        PowerMockito.when(VWOUtils.getCalendar()).thenReturn(calendar);
+
+
+        CustomSegment customSegment = new CustomSegment(new JSONObject(dayOfTheWeekTrue));
+
+        Mockito.when(calendar.get(ArgumentMatchers.anyInt())).thenReturn(1);
+        Assert.assertTrue(customSegment.evaluate(vwo));
+
+        Mockito.when(calendar.get(ArgumentMatchers.anyInt())).thenReturn(2);
+        Assert.assertTrue(customSegment.evaluate(vwo));
+
+        Mockito.when(calendar.get(ArgumentMatchers.anyInt())).thenReturn(3);
+        Assert.assertTrue(customSegment.evaluate(vwo));
+
+        Mockito.when(calendar.get(ArgumentMatchers.anyInt())).thenReturn(4);
+        Assert.assertFalse(customSegment.evaluate(vwo));
+
+        Mockito.when(calendar.get(ArgumentMatchers.anyInt())).thenReturn(5);
+        Assert.assertFalse(customSegment.evaluate(vwo));
+
+        Mockito.when(calendar.get(ArgumentMatchers.anyInt())).thenReturn(6);
+        Assert.assertFalse(customSegment.evaluate(vwo));
+
+        Mockito.when(calendar.get(ArgumentMatchers.anyInt())).thenReturn(7);
+        Assert.assertFalse(customSegment.evaluate(vwo));
+    }
+
+
+    @Test
+    public void dayOfWeekNotEqualsTest() throws JSONException {
+        VWO vwo = new VWOMock().getVWOMockObject();
+
+        String dayOfTheWeekJson = "{\n" +
+                "\"type\": \"3\",\n" +
+                "\"operator\": 12,\n" +
+                "\"rOperandValue\": [\n" +
+                "0,\n" +
+                "1,\n" +
+                "2\n" +
+                "]\n" +
+                "}";
+
+
+        Calendar calendar = PowerMockito.mock(GregorianCalendar.class);
+
+        PowerMockito.mockStatic(VWOUtils.class);
+        PowerMockito.when(VWOUtils.getCalendar()).thenReturn(calendar);
+
+        CustomSegment customSegment = new CustomSegment(new JSONObject(dayOfTheWeekJson));
+
+        Mockito.when(calendar.get(ArgumentMatchers.anyInt())).thenReturn(1);
+        Assert.assertFalse(customSegment.evaluate(vwo));
+
+        Mockito.when(calendar.get(ArgumentMatchers.anyInt())).thenReturn(2);
+        Assert.assertFalse(customSegment.evaluate(vwo));
+
+        Mockito.when(calendar.get(ArgumentMatchers.anyInt())).thenReturn(3);
+        Assert.assertFalse(customSegment.evaluate(vwo));
+
+        Mockito.when(calendar.get(ArgumentMatchers.anyInt())).thenReturn(4);
+        Assert.assertTrue(customSegment.evaluate(vwo));
+
+        Mockito.when(calendar.get(ArgumentMatchers.anyInt())).thenReturn(5);
+        Assert.assertTrue(customSegment.evaluate(vwo));
+
+        Mockito.when(calendar.get(ArgumentMatchers.anyInt())).thenReturn(6);
+        Assert.assertTrue(customSegment.evaluate(vwo));
+
+        Mockito.when(calendar.get(ArgumentMatchers.anyInt())).thenReturn(7);
+        Assert.assertTrue(customSegment.evaluate(vwo));
+    }
+
+    @Test
+    public void hourOfDayEqualsTest() throws JSONException {
+        VWO vwo = new VWOMock().getVWOMockObject();
+
+        String hourOfDayJson = "{\n" +
+                "\"type\": \"4\",\n" +
+                "\"operator\": 11,\n" +
+                "\"rOperandValue\": [\n" +
+                "0,\n" +
+                "3,\n" +
+                "7\n" +
+                "]\n" +
+                "}";
+
+        Calendar calendar = PowerMockito.mock(GregorianCalendar.class);
+
+        PowerMockito.mockStatic(VWOUtils.class);
+        PowerMockito.when(VWOUtils.getCalendar()).thenReturn(calendar);
+
+        CustomSegment customSegment = new CustomSegment(new JSONObject(hourOfDayJson));
+        customSegment.evaluate(vwo);
+
+        Mockito.when(calendar.get(ArgumentMatchers.anyInt())).thenReturn(0);
+        Assert.assertTrue(customSegment.evaluate(vwo));
+
+        Mockito.when(calendar.get(ArgumentMatchers.anyInt())).thenReturn(2);
+        Assert.assertFalse(customSegment.evaluate(vwo));
+
+        Mockito.when(calendar.get(ArgumentMatchers.anyInt())).thenReturn(3);
+        Assert.assertTrue(customSegment.evaluate(vwo));
+
+        Mockito.when(calendar.get(ArgumentMatchers.anyInt())).thenReturn(25);
+        Assert.assertFalse(customSegment.evaluate(vwo));
+
+        Mockito.when(calendar.get(ArgumentMatchers.anyInt())).thenReturn(5);
+        Assert.assertFalse(customSegment.evaluate(vwo));
+
+        Mockito.when(calendar.get(ArgumentMatchers.anyInt())).thenReturn(6);
+        Assert.assertFalse(customSegment.evaluate(vwo));
+
+        Mockito.when(calendar.get(ArgumentMatchers.anyInt())).thenReturn(7);
+        Assert.assertTrue(customSegment.evaluate(vwo));
+    }
+
+    @Test
+    public void hourOfDayNotEqualsTest() throws JSONException {
+        VWO vwo = new VWOMock().getVWOMockObject();
+
+        String hourOfDayJson = "{\n" +
+                "\"type\": \"4\",\n" +
+                "\"operator\": 12,\n" +
+                "\"rOperandValue\": [\n" +
+                "0,\n" +
+                "3,\n" +
+                "7\n" +
+                "]\n" +
+                "}";
+
+        Calendar calendar = PowerMockito.mock(GregorianCalendar.class);
+
+        PowerMockito.mockStatic(VWOUtils.class);
+        PowerMockito.when(VWOUtils.getCalendar()).thenReturn(calendar);
+
+        CustomSegment customSegment = new CustomSegment(new JSONObject(hourOfDayJson));
+        customSegment.evaluate(vwo);
+
+        Mockito.when(calendar.get(ArgumentMatchers.anyInt())).thenReturn(0);
+        Assert.assertFalse(customSegment.evaluate(vwo));
+
+        Mockito.when(calendar.get(ArgumentMatchers.anyInt())).thenReturn(2);
+        Assert.assertTrue(customSegment.evaluate(vwo));
+
+        Mockito.when(calendar.get(ArgumentMatchers.anyInt())).thenReturn(3);
+        Assert.assertFalse(customSegment.evaluate(vwo));
+
+        Mockito.when(calendar.get(ArgumentMatchers.anyInt())).thenReturn(24);
+        Assert.assertTrue(customSegment.evaluate(vwo));
+
+        Mockito.when(calendar.get(ArgumentMatchers.anyInt())).thenReturn(5);
+        Assert.assertTrue(customSegment.evaluate(vwo));
+
+        Mockito.when(calendar.get(ArgumentMatchers.anyInt())).thenReturn(6);
+        Assert.assertTrue(customSegment.evaluate(vwo));
+
+        Mockito.when(calendar.get(ArgumentMatchers.anyInt())).thenReturn(7);
+        Assert.assertFalse(customSegment.evaluate(vwo));
+    }
+
+    @Test
+    public void invalidSegmentTest() throws JSONException {
+        VWO vwo = new VWOMock().getVWOMockObject();
+
+        String invalidSegmentTypeUpperBound = "{\n" +
+                "\"type\": \"8\",\n" +
+                "\"operator\": 7,\n" +
+                "\"rOperandValue\": \"2\"\n" +
+                "}";
+
+        CustomSegment upperBoundSegment = new CustomSegment(new JSONObject(invalidSegmentTypeUpperBound));
+        Assert.assertFalse(upperBoundSegment.evaluate(vwo));
+
+        String invalidSegmentTypeLowerBound = "{\n" +
+                "\"type\": \"0\",\n" +
+                "\"operator\": 7,\n" +
+                "\"rOperandValue\": \"2\"\n" +
+                "}";
+
+        CustomSegment lowerBoundSegment = new CustomSegment(new JSONObject(invalidSegmentTypeLowerBound));
+        Assert.assertFalse(lowerBoundSegment.evaluate(vwo));
+    }
+
+    @Test
+    public void invalidOperatorTest() throws JSONException {
+        VWO vwo = new VWOMock().getVWOMockObject();
+
+        String invalidSegmentTypeUpperBound = "{\n" +
+                "\"type\": \"1\",\n" +
+                "\"operator\": -1,\n" +
+                "\"rOperandValue\": \"2\"\n" +
+                "}";
+
+        CustomSegment upperBoundSegment = new CustomSegment(new JSONObject(invalidSegmentTypeUpperBound));
+        Assert.assertFalse(upperBoundSegment.evaluate(vwo));
+
+        String invalidSegmentTypeLowerBound = "{\n" +
+                "\"type\": \"1\",\n" +
+                "\"operator\": 200,\n" +
+                "\"rOperandValue\": \"2\"\n" +
+                "}";
+
+        CustomSegment lowerBoundSegment = new CustomSegment(new JSONObject(invalidSegmentTypeLowerBound));
+        Assert.assertFalse(lowerBoundSegment.evaluate(vwo));
+    }
+
+
+    public void andOperatorTest() throws JSONException {
+
     }
 }

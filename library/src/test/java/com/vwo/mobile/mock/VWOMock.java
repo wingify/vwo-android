@@ -1,6 +1,7 @@
 package com.vwo.mobile.mock;
 
 import com.vwo.mobile.VWO;
+import com.vwo.mobile.VWOConfig;
 
 import org.mockito.Mockito;
 import org.robolectric.RuntimeEnvironment;
@@ -15,9 +16,12 @@ public class VWOMock {
     public VWOMock() {
         vwo = Mockito.mock(VWO.class);
 
-//        Mockito.when(vwo.getConfig().getValueForCustomSegment("key")).thenReturn("value");
+        VWOConfig vwoConfig = Mockito.mock(VWOConfig.class);
+        Mockito.when(vwoConfig.getValueForCustomSegment("userType")).thenReturn("paid");
+
         Mockito.when(vwo.getCurrentContext()).thenReturn(RuntimeEnvironment.application);
         Mockito.when(vwo.getState()).thenReturn(1);
+        Mockito.when(vwo.getConfig()).thenReturn(vwoConfig);
     }
 
     public VWO getVWOMockObject() {
