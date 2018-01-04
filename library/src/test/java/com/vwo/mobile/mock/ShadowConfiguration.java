@@ -6,8 +6,6 @@ import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
 import org.robolectric.annotation.RealObject;
 
-import java.util.Locale;
-
 /**
  * Created by aman on Tue 10/10/17 16:08.
  */
@@ -25,10 +23,5 @@ public class ShadowConfiguration {
     public void setToDefaults() {
         realConfiguration.screenLayout =
                 Configuration.SCREENLAYOUT_SIZE_LARGE;
-    }
-
-    @Implementation
-    public void setLocale(Locale l) {
-        realConfiguration.locale = l;
     }
 }

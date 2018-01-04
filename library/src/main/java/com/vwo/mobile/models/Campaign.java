@@ -182,4 +182,9 @@ public class Campaign {
     public boolean equals(Object obj) {
         return obj instanceof Campaign && ((Campaign) obj).getId() == this.mId || super.equals(obj);
     }
+
+    @Override
+    public int hashCode() {
+        return (int) mId;
+    }
 }
