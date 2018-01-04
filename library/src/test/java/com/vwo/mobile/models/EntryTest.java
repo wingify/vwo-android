@@ -1,7 +1,5 @@
 package com.vwo.mobile.models;
 
-import android.os.Build;
-
 import com.vwo.mobile.BuildConfig;
 import com.vwo.mobile.utils.Parceler;
 
@@ -15,7 +13,7 @@ import org.robolectric.annotation.Config;
  * Created by aman on Thu 09/11/17 11:18.
  */
 @RunWith(RobolectricTestRunner.class)
-@Config(constants = BuildConfig.class, sdk = Build.VERSION_CODES.JELLY_BEAN)
+@Config(constants = BuildConfig.class, sdk = Config.ALL_SDKS)
 public class EntryTest {
 
     @Test

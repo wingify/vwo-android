@@ -1,7 +1,5 @@
 package com.vwo.mobile.models;
 
-import android.os.Build;
-
 import com.vwo.mobile.BuildConfig;
 
 import junit.framework.Assert;
@@ -17,7 +15,7 @@ import org.robolectric.annotation.Config;
  * Created by aman on Thu 04/01/18 13:06.
  */
 @RunWith(RobolectricTestRunner.class)
-@Config(constants = BuildConfig.class, sdk = Build.VERSION_CODES.JELLY_BEAN)
+@Config(constants = BuildConfig.class, sdk = Config.ALL_SDKS)
 public class VariationTest {
 
     @Test

@@ -1,7 +1,5 @@
 package com.vwo.mobile.models;
 
-import android.os.Build;
-
 import com.vwo.mobile.BuildConfig;
 
 import junit.framework.Assert;
@@ -21,7 +19,7 @@ import java.util.Set;
  */
 
 @RunWith(RobolectricTestRunner.class)
-@Config(constants = BuildConfig.class, sdk = Build.VERSION_CODES.JELLY_BEAN)
+@Config(constants = BuildConfig.class, sdk = Config.ALL_SDKS)
 public class CampaignTest {
 
     @Test

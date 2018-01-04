@@ -1,7 +1,5 @@
 package com.vwo.mobile.segmentation;
 
-import android.os.Build;
-
 import com.vwo.mobile.BuildConfig;
 import com.vwo.mobile.VWO;
 import com.vwo.mobile.data.VWOPersistData;
@@ -29,7 +27,7 @@ import org.robolectric.annotation.Config;
  */
 
 @RunWith(RobolectricTestRunner.class)
-@Config(constants = BuildConfig.class, sdk = Build.VERSION_CODES.JELLY_BEAN, shadows = {
+@Config(constants = BuildConfig.class, sdk = Config.ALL_SDKS, shadows = {
         VWOPersistDataMock.class}, manifest = "AndroidManifest.xml")
 @PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "android.*", "org.json.*"})
 @PrepareForTest(VWOPersistData.class)

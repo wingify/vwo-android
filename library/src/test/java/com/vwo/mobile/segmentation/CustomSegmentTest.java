@@ -33,8 +33,8 @@ import java.util.GregorianCalendar;
  */
 
 @RunWith(RobolectricTestRunner.class)
-@Config(packageName = "com.abc", sdk = Build.VERSION_CODES.JELLY_BEAN_MR2, shadows = {ShadowConfiguration.class,
-        VWOPersistDataMock.class}, manifest = "AndroidManifest.xml")
+@Config(packageName = "com.abc", sdk = Config.ALL_SDKS, shadows = {VWOPersistDataMock.class},
+        manifest = "AndroidManifest.xml")
 @PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "android.*", "org.json.*"})
 @PrepareForTest({VWOUtils.class, CustomSegmentEvaluateEnum.class})
 public class CustomSegmentTest {
@@ -43,6 +43,8 @@ public class CustomSegmentTest {
     public PowerMockRule rule = new PowerMockRule();
 
     @Test
+    @Config(packageName = "com.abc", sdk = Build.VERSION_CODES.JELLY_BEAN_MR2, shadows = {ShadowConfiguration.class,
+            VWOPersistDataMock.class}, manifest = "AndroidManifest.xml")
     public void androidVersionEqualToTest() throws JSONException {
         VWO vwo = new VWOMock().getVWOMockObject();
 
@@ -67,6 +69,8 @@ public class CustomSegmentTest {
     }
 
     @Test
+    @Config(packageName = "com.abc", sdk = Build.VERSION_CODES.JELLY_BEAN_MR2, shadows = {ShadowConfiguration.class,
+            VWOPersistDataMock.class}, manifest = "AndroidManifest.xml")
     public void androidVersionNotEqualToTest() throws JSONException {
         VWO vwo = new VWOMock().getVWOMockObject();
 
@@ -91,6 +95,8 @@ public class CustomSegmentTest {
 
 
     @Test
+    @Config(packageName = "com.abc", sdk = Build.VERSION_CODES.JELLY_BEAN_MR2, shadows = {ShadowConfiguration.class,
+            VWOPersistDataMock.class}, manifest = "AndroidManifest.xml")
     public void androidVersionGreaterThanTest() throws JSONException {
         VWO vwo = new VWOMock().getVWOMockObject();
 
@@ -114,6 +120,8 @@ public class CustomSegmentTest {
     }
 
     @Test
+    @Config(sdk = Build.VERSION_CODES.JELLY_BEAN_MR2, shadows = {ShadowConfiguration.class,
+            VWOPersistDataMock.class})
     public void androidVersionLessThanTest() throws JSONException {
         VWO vwo = new VWOMock().getVWOMockObject();
 
@@ -662,7 +670,7 @@ public class CustomSegmentTest {
     }
 
 
-    public void andOperatorTest() throws JSONException {
+    public void andOperatorTest() {
 
     }
 }

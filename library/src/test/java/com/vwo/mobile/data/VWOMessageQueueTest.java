@@ -24,7 +24,7 @@ import java.io.IOException;
  * Created by aman on Thu 14/12/17 11:09.
  */
 @RunWith(RobolectricTestRunner.class)
-@Config(sdk = 16)
+@Config(sdk = Config.ALL_SDKS)
 @PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "android.*"})
 @PrepareForTest({VWOMessageQueue.class})
 public class VWOMessageQueueTest {
@@ -49,6 +49,7 @@ public class VWOMessageQueueTest {
         GoalEntry goalEntry = new GoalEntry("http://www.abc.com", 1, 2, 3);
 
         vwoMessageQueue.add(goalEntry);
+        System.out.println("Added: " + goalEntry.getUrl());
 
         synchronized (lock) {
             lock.wait(1000);
@@ -57,6 +58,7 @@ public class VWOMessageQueueTest {
         Entry entry = vwoMessageQueue.poll();
         Assert.assertNotNull(entry);
         Assert.assertEquals(entry.getUrl(), goalEntry.getUrl());
+        System.out.println("Verified: " + goalEntry.getUrl());
 
         Assert.assertNull(vwoMessageQueue.peek());
     }
@@ -67,9 +69,9 @@ public class VWOMessageQueueTest {
         for(int i = 0; i < count; i++) {
             GoalEntry goalEntry = new GoalEntry("http://www.abc" + i + ".com", 1, 2, 3);
             vwoMessageQueue.add(goalEntry);
+            System.out.println("Added: " + goalEntry.getUrl());
         }
         GoalEntry goalEntry2 = new GoalEntry("https://www.abcFinal.com", 11, 21, 31);
-        final Object object = new Object();
 
         vwoMessageQueue.add(goalEntry2);
 
@@ -84,6 +86,7 @@ public class VWOMessageQueueTest {
             Entry entry = vwoMessageQueue.poll();
             Assert.assertNotNull(entry);
             Assert.assertEquals(entry.getUrl(), "http://www.abc" + i + ".com");
+            System.out.println("Verified: " + entry.getUrl());
         }
 
         Entry entry = vwoMessageQueue.poll();
@@ -97,6 +100,7 @@ public class VWOMessageQueueTest {
         for(int i = 0; i < count; i++) {
             GoalEntry goalEntry = new GoalEntry("http://www.abc" + i + ".com", 1, 2, 3);
             vwoMessageQueue.add(goalEntry);
+            System.out.println("Added: " + goalEntry.getUrl());
             if(i % 20 == 0) {
                 Thread.sleep(100);
             }
@@ -117,6 +121,7 @@ public class VWOMessageQueueTest {
             Entry entry = vwoMessageQueue.poll();
             Assert.assertNotNull(entry);
             Assert.assertEquals(entry.getUrl(), "http://www.abc" + i + ".com");
+            System.out.println("Verified: " + entry.getUrl());
         }
 
         Entry entry = vwoMessageQueue.poll();
@@ -130,6 +135,7 @@ public class VWOMessageQueueTest {
         for(int i = 0; i < count; i++) {
             GoalEntry goalEntry = new GoalEntry("http://www.abc" + i + ".com", 1, 2, 3);
             vwoMessageQueue.add(goalEntry);
+            System.out.println("Added: " + goalEntry.getUrl());
         }
 
         GoalEntry goalEntry2 = new GoalEntry("https://www.abcFinal.com", 11, 21, 31);
@@ -144,6 +150,7 @@ public class VWOMessageQueueTest {
             Entry entry = vwoMessageQueue.poll();
             Assert.assertNotNull(entry);
             Assert.assertEquals(entry.getUrl(), "http://www.abc" + i + ".com");
+            System.out.println("Verified: " + entry.getUrl());
         }
 
         Entry entry = vwoMessageQueue.poll();
@@ -257,6 +264,7 @@ public class VWOMessageQueueTest {
         vwoMessageQueue.add(goalEntry);
 
         vwoMessageQueue.add(goalEntry);
+        System.out.println("Added: " + goalEntry.getUrl());
 
         synchronized (lock) {
             lock.wait(2000);
@@ -265,5 +273,7 @@ public class VWOMessageQueueTest {
         Entry entry = vwoMessageQueue.peek();
         Assert.assertNotNull(entry);
         Assert.assertEquals(entry.getUrl(), goalEntry.getUrl());
+        System.out.println("Verified: " + entry.getUrl());
+
     }
 }

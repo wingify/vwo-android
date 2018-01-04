@@ -77,7 +77,7 @@ public class NetworkUtils {
         public static final String HEADER_CACHE_CONTROL = "Cache-Control";
         public static final String CACHE_NO = "no-cache";
 
-        public static String parseCharset(Map<String, String> headers, String defaultCharset) {
+        private static String parseCharset(Map<String, String> headers, String defaultCharset) {
             String contentType = headers.get(HEADER_CONTENT_TYPE);
             if (contentType != null) {
                 String[] params = contentType.split(";");

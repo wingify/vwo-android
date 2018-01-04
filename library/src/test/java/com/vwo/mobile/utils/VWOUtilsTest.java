@@ -1,16 +1,20 @@
 package com.vwo.mobile.utils;
 
+import com.vwo.mobile.BuildConfig;
+
 import junit.framework.Assert;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.Config;
 
 /**
  * Created by aman on Sat 14/10/17 22:11.
  */
 
 @RunWith(RobolectricTestRunner.class)
+@Config(constants = BuildConfig.class, sdk = Config.ALL_SDKS)
 public class VWOUtilsTest {
 
     @Test
