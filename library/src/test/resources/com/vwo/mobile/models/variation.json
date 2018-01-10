@@ -1,0 +1,9 @@
+{
+  "changes": {
+    "layout": "grid",
+    "socialMedia": true
+  },
+  "id": "2",
+  "name": "Variation-1",
+  "weight": 100
+}

@@ -1,6 +1,7 @@
 package com.vwo.mobile.models;
 
 import com.vwo.mobile.BuildConfig;
+import com.vwo.mobile.TestUtils;
 
 import junit.framework.Assert;
 
@@ -11,6 +12,8 @@ import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
+import java.io.IOException;
+
 /**
  * Created by aman on Thu 04/01/18 13:06.
  */
@@ -19,16 +22,8 @@ import org.robolectric.annotation.Config;
 public class VariationTest {
 
     @Test
-    public void variationTest() throws JSONException {
-        String variationData = "{\n" +
-                "      \"changes\": {\n" +
-                "        \"layout\": \"grid\",\n" +
-                "        \"socialMedia\": true\n" +
-                "      },\n" +
-                "      \"id\": \"2\",\n" +
-                "      \"name\": \"Variation-1\",\n" +
-                "      \"weight\": 100\n" +
-                "    }";
+    public void variationTest() throws JSONException, IOException {
+        String variationData = TestUtils.readJsonFile(getClass(), "com/vwo/mobile/models/variation.json");
         Variation variation = new Variation(new JSONObject(variationData));
 
         Assert.assertEquals(variation.getId(), 2);
