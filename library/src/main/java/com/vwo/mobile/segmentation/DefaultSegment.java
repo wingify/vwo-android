@@ -5,11 +5,14 @@ import com.vwo.mobile.VWO;
 /**
  * Created by abhishek on 09/10/15 at 5:42 PM.
  */
-public class DefaultSegment implements Segment {
+public class DefaultSegment extends Segment {
 
+    public DefaultSegment(VWO vwo) {
+        super(vwo);
+    }
 
     @Override
-    public boolean evaluate(VWO vwp) {
+    public boolean evaluate() {
         return true;
     }
 

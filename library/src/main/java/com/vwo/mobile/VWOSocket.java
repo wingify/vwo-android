@@ -1,7 +1,7 @@
 package com.vwo.mobile;
 
-import com.vwo.mobile.utils.TestUtils;
 import com.vwo.mobile.utils.VWOLog;
+import com.vwo.mobile.utils.VWOUtils;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -97,7 +97,7 @@ public class VWOSocket {
     private void registerDevice() {
         JSONObject deviceData = new JSONObject();
         try {
-            deviceData.put(JSON_KEY_DEVICE_NAME, TestUtils.getDeviceName());
+            deviceData.put(JSON_KEY_DEVICE_NAME, VWOUtils.getDeviceName());
             deviceData.put(JSON_KEY_DEVICE_TYPE, DEVICE_TYPE);
             deviceData.put(JSON_KEY_APP_KEY, mAppKey);
             VWOLog.v(VWOLog.SOCKET_LOGS, "Device registered to socket");

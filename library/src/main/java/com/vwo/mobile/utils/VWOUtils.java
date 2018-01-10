@@ -46,7 +46,7 @@ public class VWOUtils {
     }
 
     public static boolean isValidVwoAppKey(String appKey) {
-        String regex = "[\\w]{32}-[0-9]*";
+        String regex = "[\\w]{32}-[0-9]+";
         Pattern pattern = Pattern.compile(regex);
         return !TextUtils.isEmpty(appKey) && pattern.matcher(appKey).matches();
     }
@@ -216,5 +216,38 @@ public class VWOUtils {
             return false;
         }
         return true;
+    }
+
+    public static String getDeviceName() {
+        String manufacturer = Build.MANUFACTURER;
+        String model = Build.MODEL;
+        if (model.startsWith(manufacturer)) {
+            return capitalize(model);
+        }
+        if (manufacturer.equalsIgnoreCase("HTC")) {
+            // make sure "HTC" is fully capitalized.
+            return "HTC " + model;
+        }
+        return capitalize(manufacturer) + " " + model;
+    }
+
+    private static String capitalize(String str) {
+        if (TextUtils.isEmpty(str)) {
+            return str;
+        }
+        char[] arr = str.toCharArray();
+        boolean capitalizeNext = true;
+        StringBuilder phrase = new StringBuilder();
+        for (char c : arr) {
+            if (capitalizeNext && Character.isLetter(c)) {
+                phrase.append(Character.toUpperCase(c));
+                capitalizeNext = false;
+                continue;
+            } else if (Character.isWhitespace(c)) {
+                capitalizeNext = true;
+            }
+            phrase.append(c);
+        }
+        return phrase.toString();
     }
 }

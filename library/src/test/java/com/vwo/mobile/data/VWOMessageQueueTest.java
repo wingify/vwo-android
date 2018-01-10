@@ -24,7 +24,7 @@ import java.io.IOException;
  * Created by aman on Thu 14/12/17 11:09.
  */
 @RunWith(RobolectricTestRunner.class)
-@Config(sdk = Config.ALL_SDKS)
+@Config(sdk = 22)
 @PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "android.*"})
 @PrepareForTest({VWOMessageQueue.class})
 public class VWOMessageQueueTest {

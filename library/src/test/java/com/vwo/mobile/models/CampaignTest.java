@@ -1,6 +1,8 @@
 package com.vwo.mobile.models;
 
 import com.vwo.mobile.BuildConfig;
+import com.vwo.mobile.VWO;
+import com.vwo.mobile.mock.VWOMock;
 
 import junit.framework.Assert;
 
@@ -19,11 +21,12 @@ import java.util.Set;
  */
 
 @RunWith(RobolectricTestRunner.class)
-@Config(constants = BuildConfig.class, sdk = Config.ALL_SDKS)
+@Config(constants = BuildConfig.class, sdk = 22)
 public class CampaignTest {
 
     @Test
     public void testCampaignData() throws JSONException {
+        VWO vwo = new VWOMock().getVWOMockObject();
         String campaignJson = "{\n" +
                 "    \"clickmap\": 1,\n" +
                 "    \"count_goal_once\": 1,\n" +
@@ -87,8 +90,8 @@ public class CampaignTest {
                 "  }";
 
         JSONObject object = new JSONObject(campaignJson);
-        Campaign campaign = new Campaign(object);
-        Campaign campaign2 = new Campaign(object);
+        Campaign campaign = new Campaign(vwo, object);
+        Campaign campaign2 = new Campaign(vwo, object);
 
         Assert.assertEquals(campaign.getId(), 14L);
         Assert.assertEquals(campaign.getGoals().size(), 1);

@@ -17,7 +17,6 @@ import org.json.JSONException;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
@@ -29,12 +28,15 @@ import org.robolectric.annotation.Config;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+
 /**
  * Created by aman on Thu 21/12/17 14:53.
  */
 
 @RunWith(RobolectricTestRunner.class)
-@Config(packageName = "com.abc", sdk = Config.ALL_SDKS, shadows = {VWOPersistDataMock.class},
+@Config(packageName = "com.abc", sdk = 22, shadows = {VWOPersistDataMock.class},
         manifest = "AndroidManifest.xml")
 @PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "android.*", "org.json.*"})
 @PrepareForTest({VWOUtils.class, CustomSegmentEvaluateEnum.class})
@@ -104,7 +106,7 @@ public class CustomSegmentEnumTest {
         VWO vwo = new VWOMock().getVWOMockObject();
 
         PowerMockito.mockStatic(VWOUtils.class);
-        PowerMockito.when(VWOUtils.applicationVersion(ArgumentMatchers.any(Context.class))).thenReturn(20);
+        PowerMockito.when(VWOUtils.applicationVersion(any(Context.class))).thenReturn(20);
 
         CustomSegmentEvaluateEnum.EvaluateSegment evaluator =
                 CustomSegmentEvaluateEnum.getEvaluator(AppConstants.APP_VERSION, AppConstants.EQUAL_TO);
@@ -121,7 +123,7 @@ public class CustomSegmentEnumTest {
         VWO vwo = new VWOMock().getVWOMockObject();
 
         PowerMockito.mockStatic(VWOUtils.class);
-        PowerMockito.when(VWOUtils.applicationVersion(ArgumentMatchers.any(Context.class))).thenReturn(20);
+        PowerMockito.when(VWOUtils.applicationVersion(any(Context.class))).thenReturn(20);
 
         CustomSegmentEvaluateEnum.EvaluateSegment evaluator =
                 CustomSegmentEvaluateEnum.getEvaluator(AppConstants.APP_VERSION, AppConstants.NOT_EQUAL_TO);
@@ -138,7 +140,7 @@ public class CustomSegmentEnumTest {
         VWO vwo = new VWOMock().getVWOMockObject();
 
         PowerMockito.mockStatic(VWOUtils.class);
-        PowerMockito.when(VWOUtils.applicationVersion(ArgumentMatchers.any(Context.class))).thenReturn(20);
+        PowerMockito.when(VWOUtils.applicationVersion(any(Context.class))).thenReturn(20);
 
         CustomSegmentEvaluateEnum.EvaluateSegment evaluator =
                 CustomSegmentEvaluateEnum.getEvaluator(AppConstants.APP_VERSION, AppConstants.CONTAINS);
@@ -155,7 +157,7 @@ public class CustomSegmentEnumTest {
         VWO vwo = new VWOMock().getVWOMockObject();
 
         PowerMockito.mockStatic(VWOUtils.class);
-        PowerMockito.when(VWOUtils.applicationVersion(ArgumentMatchers.any(Context.class))).thenReturn(20);
+        PowerMockito.when(VWOUtils.applicationVersion(any(Context.class))).thenReturn(20);
 
         CustomSegmentEvaluateEnum.EvaluateSegment evaluator =
                 CustomSegmentEvaluateEnum.getEvaluator(AppConstants.APP_VERSION, AppConstants.STARTS_WITH);
@@ -172,7 +174,7 @@ public class CustomSegmentEnumTest {
         VWO vwo = new VWOMock().getVWOMockObject();
 
         PowerMockito.mockStatic(VWOUtils.class);
-        PowerMockito.when(VWOUtils.applicationVersion(ArgumentMatchers.any(Context.class))).thenReturn(20);
+        PowerMockito.when(VWOUtils.applicationVersion(any(Context.class))).thenReturn(20);
 
         CustomSegmentEvaluateEnum.EvaluateSegment evaluator =
                 CustomSegmentEvaluateEnum.getEvaluator(AppConstants.APP_VERSION, AppConstants.MATCHES_REGEX);
@@ -257,25 +259,25 @@ public class CustomSegmentEnumTest {
         PowerMockito.mockStatic(VWOUtils.class);
         PowerMockito.when(VWOUtils.getCalendar()).thenReturn(calendar);
 
-        Mockito.when(calendar.get(ArgumentMatchers.anyInt())).thenReturn(1);
+        Mockito.when(calendar.get(anyInt())).thenReturn(1);
         Assert.assertTrue(evaluator.evaluate(vwo, new JSONArray("[0, 1, 2]")));
 
-        Mockito.when(calendar.get(ArgumentMatchers.anyInt())).thenReturn(2);
+        Mockito.when(calendar.get(anyInt())).thenReturn(2);
         Assert.assertTrue(evaluator.evaluate(vwo, new JSONArray("[0, 1, 2]")));
 
-        Mockito.when(calendar.get(ArgumentMatchers.anyInt())).thenReturn(3);
+        Mockito.when(calendar.get(anyInt())).thenReturn(3);
         Assert.assertTrue(evaluator.evaluate(vwo, new JSONArray("[0, 1, 2]")));
 
-        Mockito.when(calendar.get(ArgumentMatchers.anyInt())).thenReturn(4);
+        Mockito.when(calendar.get(anyInt())).thenReturn(4);
         Assert.assertFalse(evaluator.evaluate(vwo, new JSONArray("[0, 1, 2]")));
 
-        Mockito.when(calendar.get(ArgumentMatchers.anyInt())).thenReturn(5);
+        Mockito.when(calendar.get(anyInt())).thenReturn(5);
         Assert.assertFalse(evaluator.evaluate(vwo, new JSONArray("[0, 1, 2]")));
 
-        Mockito.when(calendar.get(ArgumentMatchers.anyInt())).thenReturn(6);
+        Mockito.when(calendar.get(anyInt())).thenReturn(6);
         Assert.assertFalse(evaluator.evaluate(vwo, new JSONArray("[0, 1, 2]")));
 
-        Mockito.when(calendar.get(ArgumentMatchers.anyInt())).thenReturn(7);
+        Mockito.when(calendar.get(anyInt())).thenReturn(7);
         Assert.assertFalse(evaluator.evaluate(vwo, new JSONArray("[0, 1, 2]")));
     }
 
@@ -292,25 +294,25 @@ public class CustomSegmentEnumTest {
         PowerMockito.mockStatic(VWOUtils.class);
         PowerMockito.when(VWOUtils.getCalendar()).thenReturn(calendar);
 
-        Mockito.when(calendar.get(ArgumentMatchers.any(Integer.class))).thenReturn(1);
+        Mockito.when(calendar.get(any(Integer.class))).thenReturn(1);
         Assert.assertFalse(evaluator.evaluate(vwo, new JSONArray("[0, 1, 2]")));
 
-        Mockito.when(calendar.get(ArgumentMatchers.anyInt())).thenReturn(2);
+        Mockito.when(calendar.get(anyInt())).thenReturn(2);
         Assert.assertFalse(evaluator.evaluate(vwo, new JSONArray("[0, 1, 2]")));
 
-        Mockito.when(calendar.get(ArgumentMatchers.anyInt())).thenReturn(3);
+        Mockito.when(calendar.get(anyInt())).thenReturn(3);
         Assert.assertFalse(evaluator.evaluate(vwo, new JSONArray("[0, 1, 2]")));
 
-        Mockito.when(calendar.get(ArgumentMatchers.anyInt())).thenReturn(4);
+        Mockito.when(calendar.get(anyInt())).thenReturn(4);
         Assert.assertTrue(evaluator.evaluate(vwo, new JSONArray("[0, 1, 2]")));
 
-        Mockito.when(calendar.get(ArgumentMatchers.anyInt())).thenReturn(5);
+        Mockito.when(calendar.get(anyInt())).thenReturn(5);
         Assert.assertTrue(evaluator.evaluate(vwo, new JSONArray("[0, 1, 2]")));
 
-        Mockito.when(calendar.get(ArgumentMatchers.anyInt())).thenReturn(6);
+        Mockito.when(calendar.get(anyInt())).thenReturn(6);
         Assert.assertTrue(evaluator.evaluate(vwo, new JSONArray("[0, 1, 2]")));
 
-        Mockito.when(calendar.get(ArgumentMatchers.anyInt())).thenReturn(7);
+        Mockito.when(calendar.get(anyInt())).thenReturn(7);
         Assert.assertTrue(evaluator.evaluate(vwo, new JSONArray("[0, 1, 2]")));
     }
 
@@ -326,25 +328,25 @@ public class CustomSegmentEnumTest {
         PowerMockito.mockStatic(VWOUtils.class);
         PowerMockito.when(VWOUtils.getCalendar()).thenReturn(calendar);
 
-        Mockito.when(calendar.get(ArgumentMatchers.anyInt())).thenReturn(0);
+        Mockito.when(calendar.get(anyInt())).thenReturn(0);
         Assert.assertTrue(evaluator.evaluate(vwo, new JSONArray("[0, 3, 7]")));
 
-        Mockito.when(calendar.get(ArgumentMatchers.anyInt())).thenReturn(2);
+        Mockito.when(calendar.get(anyInt())).thenReturn(2);
         Assert.assertFalse(evaluator.evaluate(vwo, new JSONArray("[0, 3, 7]")));
 
-        Mockito.when(calendar.get(ArgumentMatchers.anyInt())).thenReturn(3);
+        Mockito.when(calendar.get(anyInt())).thenReturn(3);
         Assert.assertTrue(evaluator.evaluate(vwo, new JSONArray("[0, 3, 7]")));
 
-        Mockito.when(calendar.get(ArgumentMatchers.anyInt())).thenReturn(25);
+        Mockito.when(calendar.get(anyInt())).thenReturn(25);
         Assert.assertFalse(evaluator.evaluate(vwo, new JSONArray("[0, 3, 7]")));
 
-        Mockito.when(calendar.get(ArgumentMatchers.anyInt())).thenReturn(5);
+        Mockito.when(calendar.get(anyInt())).thenReturn(5);
         Assert.assertFalse(evaluator.evaluate(vwo, new JSONArray("[0, 3, 7]")));
 
-        Mockito.when(calendar.get(ArgumentMatchers.anyInt())).thenReturn(6);
+        Mockito.when(calendar.get(anyInt())).thenReturn(6);
         Assert.assertFalse(evaluator.evaluate(vwo, new JSONArray("[0, 3, 7]")));
 
-        Mockito.when(calendar.get(ArgumentMatchers.anyInt())).thenReturn(7);
+        Mockito.when(calendar.get(anyInt())).thenReturn(7);
         Assert.assertTrue(evaluator.evaluate(vwo, new JSONArray("[0, 3, 7]")));
     }
 
@@ -360,25 +362,25 @@ public class CustomSegmentEnumTest {
         PowerMockito.mockStatic(VWOUtils.class);
         PowerMockito.when(VWOUtils.getCalendar()).thenReturn(calendar);
 
-        Mockito.when(calendar.get(ArgumentMatchers.anyInt())).thenReturn(0);
+        Mockito.when(calendar.get(anyInt())).thenReturn(0);
         Assert.assertFalse(evaluator.evaluate(vwo, new JSONArray("[0, 3, 7]")));
 
-        Mockito.when(calendar.get(ArgumentMatchers.anyInt())).thenReturn(2);
+        Mockito.when(calendar.get(anyInt())).thenReturn(2);
         Assert.assertTrue(evaluator.evaluate(vwo, new JSONArray("[0, 3, 7]")));
 
-        Mockito.when(calendar.get(ArgumentMatchers.anyInt())).thenReturn(3);
+        Mockito.when(calendar.get(anyInt())).thenReturn(3);
         Assert.assertFalse(evaluator.evaluate(vwo, new JSONArray("[0, 3, 7]")));
 
-        Mockito.when(calendar.get(ArgumentMatchers.anyInt())).thenReturn(24);
+        Mockito.when(calendar.get(anyInt())).thenReturn(24);
         Assert.assertTrue(evaluator.evaluate(vwo, new JSONArray("[0, 3, 7]")));
 
-        Mockito.when(calendar.get(ArgumentMatchers.anyInt())).thenReturn(5);
+        Mockito.when(calendar.get(anyInt())).thenReturn(5);
         Assert.assertTrue(evaluator.evaluate(vwo, new JSONArray("[0, 3, 7]")));
 
-        Mockito.when(calendar.get(ArgumentMatchers.anyInt())).thenReturn(6);
+        Mockito.when(calendar.get(anyInt())).thenReturn(6);
         Assert.assertTrue(evaluator.evaluate(vwo, new JSONArray("[0, 3, 7]")));
 
-        Mockito.when(calendar.get(ArgumentMatchers.anyInt())).thenReturn(7);
+        Mockito.when(calendar.get(anyInt())).thenReturn(7);
         Assert.assertFalse(evaluator.evaluate(vwo, new JSONArray("[0, 3, 7]")));
     }
 

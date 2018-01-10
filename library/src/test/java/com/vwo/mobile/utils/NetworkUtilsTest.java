@@ -17,7 +17,7 @@ import java.util.Map;
  */
 
 @RunWith(RobolectricTestRunner.class)
-@Config(constants = BuildConfig.class, sdk = Config.ALL_SDKS)
+@Config(constants = BuildConfig.class, sdk = 22)
 public class NetworkUtilsTest {
     @Test
     public void headersTest() {

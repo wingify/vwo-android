@@ -1,0 +1,10 @@
+{
+  "segment_code": {
+    "returning_visitor": false
+  },
+  "id": "103",
+  "type": "predefined",
+  "platform": "mobile-app",
+  "name": "New Users",
+  "description": "Segment for new users only"
+}

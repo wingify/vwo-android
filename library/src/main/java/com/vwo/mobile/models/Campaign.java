@@ -1,6 +1,7 @@
 package com.vwo.mobile.models;
 
 
+import com.vwo.mobile.VWO;
 import com.vwo.mobile.segmentation.CustomSegment;
 import com.vwo.mobile.segmentation.DefaultSegment;
 import com.vwo.mobile.segmentation.PredefinedSegment;
@@ -49,7 +50,7 @@ public class Campaign {
     private String name;
     private ArrayList<Segment> mSegments;
 
-    public Campaign(JSONObject campaignData) {
+    public Campaign(VWO vwo, JSONObject campaignData) {
         try {
             VWOLog.v(VWOLog.CAMPAIGN_LOGS, campaignData.toString());
 
@@ -91,28 +92,32 @@ public class Campaign {
 
                 JSONObject segmentCode = campaignData.getJSONObject(SEGMENT_CODE);
                 // Check if segmentation is CUSTOM OR PREDEFINED
-                if (segmentCode.getString(SEGMENT_TYPE).equals(SEGMENT_CUSTOM)) {
-                    mSegmentType = SEGMENT_CUSTOM;
-                    mSegments = new ArrayList<>();
-                    JSONArray partialSegments = segmentCode.getJSONArray(PARTIAL_SEGMENTS);
-                    for (int i = 0; i < partialSegments.length(); i++) {
-                        mSegments.add(new CustomSegment(partialSegments.getJSONObject(i)));
-                    }
+                switch (segmentCode.getString(SEGMENT_TYPE)) {
+                    case SEGMENT_CUSTOM:
+                        mSegmentType = SEGMENT_CUSTOM;
+                        mSegments = new ArrayList<>();
+                        JSONArray partialSegments = segmentCode.getJSONArray(PARTIAL_SEGMENTS);
+                        for (int i = 0; i < partialSegments.length(); i++) {
+                            mSegments.add(new CustomSegment(vwo, partialSegments.getJSONObject(i)));
+                        }
 
-                } else if (segmentCode.getString(SEGMENT_TYPE).equals(SEGMENT_PREDEFINED)) {
-                    mSegments = new ArrayList<>();
-                    mSegments.add(new PredefinedSegment(segmentCode));
-                    mSegmentType = SEGMENT_PREDEFINED;
-                } else {
-                    mSegments = new ArrayList<>();
-                    mSegments.add(new DefaultSegment());
-                    mSegmentType = SEGMENT_DEFAULT;
+                        break;
+                    case SEGMENT_PREDEFINED:
+                        mSegments = new ArrayList<>();
+                        mSegments.add(new PredefinedSegment(vwo, segmentCode));
+                        mSegmentType = SEGMENT_PREDEFINED;
+                        break;
+                    default:
+                        mSegments = new ArrayList<>();
+                        mSegments.add(new DefaultSegment(vwo));
+                        mSegmentType = SEGMENT_DEFAULT;
+                        break;
                 }
 
 
             } else {
                 mSegments = new ArrayList<>();
-                mSegments.add(new DefaultSegment());
+                mSegments.add(new DefaultSegment(vwo));
                 mSegmentType = SEGMENT_DEFAULT;
             }
         } catch (JSONException e) {

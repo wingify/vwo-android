@@ -15,7 +15,7 @@ import org.robolectric.annotation.Config;
  * Created by aman on Thu 04/01/18 12:32.
  */
 @RunWith(RobolectricTestRunner.class)
-@Config(constants = BuildConfig.class, sdk = Config.ALL_SDKS)
+@Config(constants = BuildConfig.class, sdk = 22)
 public class GoalTest {
 
     @Test

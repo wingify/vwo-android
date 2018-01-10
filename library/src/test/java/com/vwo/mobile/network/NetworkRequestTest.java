@@ -25,7 +25,7 @@ import okhttp3.mockwebserver.MockWebServer;
  */
 
 @RunWith(RobolectricTestRunner.class)
-@Config(constants = BuildConfig.class, sdk = Config.ALL_SDKS,
+@Config(constants = BuildConfig.class, sdk = 22,
         shadows = {ShadowNetworkRequest.class})
 @PrepareForTest(NetworkRequest.class)
 @PowerMockIgnore({"javax.net.ssl.*", "java.net.*"})
