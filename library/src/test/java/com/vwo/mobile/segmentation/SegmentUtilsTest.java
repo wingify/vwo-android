@@ -5,7 +5,7 @@ import android.content.Context;
 import com.vwo.mobile.TestUtils;
 import com.vwo.mobile.VWO;
 import com.vwo.mobile.mock.VWOMock;
-import com.vwo.mobile.mock.VWOPersistDataMock;
+import com.vwo.mobile.mock.VWOPersistDataShadow;
 import com.vwo.mobile.models.Campaign;
 import com.vwo.mobile.utils.VWOUtils;
 
@@ -32,7 +32,7 @@ import static org.mockito.ArgumentMatchers.any;
  */
 
 @RunWith(RobolectricTestRunner.class)
-@Config(sdk = 21, shadows = {VWOPersistDataMock.class})
+@Config(sdk = 21, shadows = {VWOPersistDataShadow.class})
 @PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "android.*", "org.json.*"})
 @PrepareForTest({VWOUtils.class})
 public class SegmentUtilsTest {

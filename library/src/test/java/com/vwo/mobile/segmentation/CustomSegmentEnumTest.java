@@ -7,7 +7,7 @@ import com.vwo.mobile.VWO;
 import com.vwo.mobile.constants.AppConstants;
 import com.vwo.mobile.mock.ShadowConfiguration;
 import com.vwo.mobile.mock.VWOMock;
-import com.vwo.mobile.mock.VWOPersistDataMock;
+import com.vwo.mobile.mock.VWOPersistDataShadow;
 import com.vwo.mobile.utils.VWOUtils;
 
 import junit.framework.Assert;
@@ -36,7 +36,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
  */
 
 @RunWith(RobolectricTestRunner.class)
-@Config(packageName = "com.abc", sdk = 22, shadows = {VWOPersistDataMock.class},
+@Config(packageName = "com.abc", sdk = 22, shadows = {VWOPersistDataShadow.class},
         manifest = "AndroidManifest.xml")
 @PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "android.*", "org.json.*"})
 @PrepareForTest({VWOUtils.class, CustomSegmentEvaluateEnum.class})
@@ -46,7 +46,7 @@ public class CustomSegmentEnumTest {
 
     @Test
     @Config(packageName = "com.abc", sdk = Build.VERSION_CODES.JELLY_BEAN_MR2, shadows = {ShadowConfiguration.class,
-            VWOPersistDataMock.class}, manifest = "AndroidManifest.xml")
+            VWOPersistDataShadow.class}, manifest = "AndroidManifest.xml")
     public void androidVersionEqualToTest() throws JSONException {
         VWO vwo = new VWOMock().getVWOMockObject();
 
@@ -60,7 +60,7 @@ public class CustomSegmentEnumTest {
 
     @Test
     @Config(packageName = "com.abc", sdk = Build.VERSION_CODES.JELLY_BEAN_MR2, shadows = {ShadowConfiguration.class,
-            VWOPersistDataMock.class}, manifest = "AndroidManifest.xml")
+            VWOPersistDataShadow.class}, manifest = "AndroidManifest.xml")
     public void androidVersionNotEqualToTest() throws JSONException {
         VWO vwo = new VWOMock().getVWOMockObject();
 
@@ -75,7 +75,7 @@ public class CustomSegmentEnumTest {
 
     @Test
     @Config(packageName = "com.abc", sdk = Build.VERSION_CODES.JELLY_BEAN_MR2, shadows = {ShadowConfiguration.class,
-            VWOPersistDataMock.class}, manifest = "AndroidManifest.xml")
+            VWOPersistDataShadow.class}, manifest = "AndroidManifest.xml")
     public void androidVersionGreaterThanTest() throws JSONException {
         VWO vwo = new VWOMock().getVWOMockObject();
 
@@ -89,7 +89,7 @@ public class CustomSegmentEnumTest {
 
     @Test
     @Config(packageName = "com.abc", sdk = Build.VERSION_CODES.JELLY_BEAN_MR2, shadows = {ShadowConfiguration.class,
-            VWOPersistDataMock.class}, manifest = "AndroidManifest.xml")
+            VWOPersistDataShadow.class}, manifest = "AndroidManifest.xml")
     public void androidVersionLessThanTest() throws JSONException {
         VWO vwo = new VWOMock().getVWOMockObject();
 

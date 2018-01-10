@@ -22,9 +22,9 @@ public class Mobile extends Item {
      * @param imageId the image id
      * @param vendor  the vendor
      */
-    public Mobile(String name, String price, boolean inStock, boolean codAvailable, int imageId,
+    public Mobile(String name, int price, String units, boolean inStock, boolean codAvailable, int imageId,
                   String vendor, String variantDetails, @IntRange(from=0, to=5) int rating) {
-        super(name, price, inStock, codAvailable);
+        super(name, price, units, inStock, codAvailable);
         this.imageId = imageId;
         this.vendor = vendor;
         this.variantDetails = variantDetails;

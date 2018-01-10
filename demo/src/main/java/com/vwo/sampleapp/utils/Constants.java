@@ -17,5 +17,6 @@ public class Constants {
 
         public static final String GOAL_PRODUCT_VIEWED = "productView";
         public static final String GOAL_LANDING_PAGE = "landingPage";
+        public static final String GOAL_PRODUCT_PURCHASED = "productPurchased";
     }
 }

@@ -53,7 +53,7 @@ public class AdapterSortingList extends RecyclerView.Adapter<RecyclerView.ViewHo
 
             holder.itemName.setText(mobiles.get(position).getName());
             holder.itemImage.setImageResource(mobiles.get(position).getImageId());
-            holder.itemPrice.setText(mobiles.get(position).getPrice());
+            holder.itemPrice.setText(String.format(mContext.getString(R.string.price_format), mobiles.get(position).getUnits(), mobiles.get(position).getPrice()));
             holder.itemVendor.setText(mContext.getResources().getString(R.string.vendor_name, mobiles.get(position).getVendor()));
 
         } else if(viewHolder instanceof ViewHolderGrid) {
@@ -62,7 +62,7 @@ public class AdapterSortingList extends RecyclerView.Adapter<RecyclerView.ViewHo
 
             holder.itemName.setText(mobiles.get(position).getName());
             holder.itemImage.setImageResource(mobiles.get(position).getImageId());
-            holder.itemPrice.setText(mobiles.get(position).getPrice());
+            holder.itemPrice.setText(String.format(mContext.getString(R.string.price_format), mobiles.get(position).getUnits(), mobiles.get(position).getPrice()));
             holder.itemVendor.setText(mContext.getResources().getString(R.string.vendor_name, mobiles.get(position).getVendor()));
         }
     }

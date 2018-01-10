@@ -6,7 +6,7 @@ import com.vwo.mobile.VWO;
 import com.vwo.mobile.data.VWOPersistData;
 import com.vwo.mobile.mock.ShadowConfiguration;
 import com.vwo.mobile.mock.VWOMock;
-import com.vwo.mobile.mock.VWOPersistDataMock;
+import com.vwo.mobile.mock.VWOPersistDataShadow;
 
 import junit.framework.Assert;
 
@@ -31,7 +31,7 @@ import java.io.IOException;
 
 @RunWith(RobolectricTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 22, shadows = {
-        VWOPersistDataMock.class}, manifest = "AndroidManifest.xml")
+        VWOPersistDataShadow.class}, manifest = "AndroidManifest.xml")
 @PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "android.*", "org.json.*"})
 @PrepareForTest(VWOPersistData.class)
 public class PredefinedSegmentationTest {
@@ -54,7 +54,7 @@ public class PredefinedSegmentationTest {
 
     @Test
     @Config(shadows = {ShadowConfiguration.class,
-            VWOPersistDataMock.class})
+            VWOPersistDataShadow.class})
     public void tabletUserTest() throws JSONException, IOException {
         VWO vwo = new VWOMock().getVWOMockObject();
         String tabletUser = TestUtils.readJsonFile(getClass(), "com/vwo/mobile/segmentation/tablet_user.json");

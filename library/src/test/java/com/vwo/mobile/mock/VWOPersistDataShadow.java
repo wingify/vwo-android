@@ -2,6 +2,7 @@ package com.vwo.mobile.mock;
 
 import com.vwo.mobile.VWO;
 import com.vwo.mobile.data.VWOPersistData;
+import com.vwo.mobile.utils.VWOPreference;
 
 import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
@@ -11,10 +12,15 @@ import org.robolectric.annotation.Implements;
  */
 
 @Implements(value = VWOPersistData.class, inheritImplementationMethods = true)
-public class VWOPersistDataMock {
+public class VWOPersistDataShadow {
 
     @Implementation
     public static boolean isReturningUser(VWO vwo) {
         return true;
+    }
+
+    @Implementation
+    void saveCampaign(VWOPreference sharedPreference) {
+
     }
 }

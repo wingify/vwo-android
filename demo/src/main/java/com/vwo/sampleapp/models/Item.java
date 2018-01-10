@@ -8,13 +8,15 @@ import android.os.Parcelable;
  */
 public class Item implements Parcelable {
     private String name;
-    private String price;
+    private int price;
+    private String units;
     private boolean inStock;
     private boolean codAvailable;
 
-    public Item(String name, String price, boolean inStock, boolean codAvailable) {
+    public Item(String name, int price, String units, boolean inStock, boolean codAvailable) {
         this.name = name;
         this.price = price;
+        this.units = units;
         this.inStock = inStock;
         this.codAvailable = codAvailable;
     }
@@ -37,12 +39,20 @@ public class Item implements Parcelable {
         this.name = name;
     }
 
+    protected Item(Parcel in) {
+        this.name = in.readString();
+        this.price = in.readInt();
+        this.units = in.readString();
+        this.inStock = in.readByte() != 0;
+        this.codAvailable = in.readByte() != 0;
+    }
+
     /**
      * Gets price.
      *
      * @return the price
      */
-    public String getPrice() {
+    public int getPrice() {
         return price;
     }
 
@@ -51,8 +61,12 @@ public class Item implements Parcelable {
      *
      * @param price the price
      */
-    public void setPrice(String price) {
+    public void setPrice(int price) {
         this.price = price;
+    }
+
+    public String getUnits() {
+        return units;
     }
 
     public boolean isInStock() {
@@ -82,19 +96,17 @@ public class Item implements Parcelable {
         return 0;
     }
 
+    public void setUnits(String units) {
+        this.units = units;
+    }
+
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(this.name);
-        dest.writeString(this.price);
+        dest.writeInt(this.price);
+        dest.writeString(this.units);
         dest.writeByte(this.inStock ? (byte) 1 : (byte) 0);
         dest.writeByte(this.codAvailable ? (byte) 1 : (byte) 0);
-    }
-
-    protected Item(Parcel in) {
-        this.name = in.readString();
-        this.price = in.readString();
-        this.inStock = in.readByte() != 0;
-        this.codAvailable = in.readByte() != 0;
     }
 
     public static final Creator<Item> CREATOR = new Creator<Item>() {

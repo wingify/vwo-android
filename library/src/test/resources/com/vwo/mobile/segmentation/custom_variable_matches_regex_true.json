@@ -1,0 +1,6 @@
+{
+  "type": "7",
+  "operator": 5,
+  "lOperandValue": "userType",
+  "rOperandValue": "[a-p]*"
+}
