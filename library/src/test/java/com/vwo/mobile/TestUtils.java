@@ -11,7 +11,6 @@ import java.io.InputStreamReader;
 public class TestUtils {
 
     public static String readJsonFile(Class clazz, String name) throws IOException {
-
         BufferedReader br = new BufferedReader(new InputStreamReader(clazz.getClassLoader().getResourceAsStream(name)));
         StringBuilder sb = new StringBuilder();
         String line = br.readLine();
