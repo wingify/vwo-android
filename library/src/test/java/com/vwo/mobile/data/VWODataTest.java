@@ -38,6 +38,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyFloat;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 
 /**
  * Created by aman on Wed 10/01/18 13:34.
@@ -48,6 +49,8 @@ import static org.mockito.ArgumentMatchers.anyLong;
 @PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "android.*", "org.json.*"})
 @PrepareForTest({VWOUtils.class, VWOPersistData.class, VWOMessageQueue.class})
 public class VWODataTest {
+
+    private final Object lock = new Object();
 
     @Rule
     public TemporaryFolder temporaryFolder = new TemporaryFolder();
@@ -62,10 +65,6 @@ public class VWODataTest {
     public void setup() throws IOException {
         vwo = new VWOMock().getVWOMockObject();
 
-        VWOMessageQueue vwoMessageQueue = VWOMessageQueue.getInstance(RuntimeEnvironment.application.getApplicationContext(), "queue.vwo");
-
-        Mockito.when(vwo.getMessageQueue()).thenReturn(vwoMessageQueue);
-
         PowerMockito.mockStatic(VWOUtils.class);
         PowerMockito.when(VWOUtils.applicationVersion(any(Context.class))).thenReturn(1);
         PowerMockito.when(VWOUtils.androidVersion()).thenReturn("21");
@@ -73,10 +72,25 @@ public class VWODataTest {
         PowerMockito.mockStatic(VWOPersistData.class);
         PowerMockito.when(VWOPersistData.isExistingCampaign(ArgumentMatchers.any(VWO.class), ArgumentMatchers.anyString())).thenReturn(false);
 
+        VWOMessageQueue vwoMessageQueue = VWOMessageQueue.getInstance(RuntimeEnvironment.application.getApplicationContext(), "queue.vwo");
+
+        Mockito.when(vwo.getMessageQueue()).thenReturn(vwoMessageQueue);
+
+        VWOUrlBuilder vwoUrlBuilder = Mockito.mock(VWOUrlBuilder.class);
+        Mockito.when(vwoUrlBuilder.getCampaignUrl(anyLong(), anyInt()))
+                .thenReturn("https://dacdn.visualwebsiteoptimizer.com/track-user?experiment_id=14&account_id=295087&combination=2&u=68fde50e3c26412c86c05c61f0d4917b&s=1&random=0.32&ed=%7B%22lt%22%3A1515580228%2C%22v%22%3A14%2C%22ai%22%3A%2290d22643c5c730732cf5c48ba2cdcf85%22%2C%22av%22%3A1%2C%22dt%22%3A%22android%22%2C%22os%22%3A%2226%22%7D");
+        Mockito.when(vwoUrlBuilder.getGoalUrl(anyLong(), anyInt(), anyInt()))
+                .thenReturn("https://dacdn.visualwebsiteoptimizer.com/track-goal?experiment_id=14&account_id=295087&combination=2&u=193e45b8608c4821868a0e7162e0938f&s=7&random=0.55&goal_id=351&ed=%7B%22lt%22%3A1515579976%2C%22v%22%3A14%2C%22ai%22%3A%2290d22643c5c730732cf5c48ba2cdcf85%22%2C%22av%22%3A1%2C%22dt%22%3A%22android%22%2C%22os%22%3A%2226%22%7D");
+        Mockito.when(vwoUrlBuilder.getGoalUrl(anyLong(), anyInt(), anyInt(), anyFloat()))
+                .thenReturn("http://dacdn.visualwebsiteoptimizer.com/track-goal?experiment_id=14&account_id=295087&combination=2&u=a2c7a1df793b43b08ff8e55cd5faf6e6&s=1&random=0.93&goal_id=2&ed=%7B%22lt%22%3A1515584290%2C%22v%22%3A14%2C%22ai%22%3A%2290d22643c5c730732cf5c48ba2cdcf85%22%2C%22av%22%3A1%2C%22dt%22%3A%22android%22%2C%22os%22%3A%2226%22%7D&r=399.0");
+
+        Mockito.when(vwo.getVwoUrlBuilder()).thenReturn(vwoUrlBuilder);
     }
 
     @Test
     public void variationForKeyTest() throws IOException, JSONException {
+        vwo.getMessageQueue().removeAll();
+
         final HashMap<String, String> savedCampaignMap = new HashMap<>();
 
         VWOPreference vwoPreference = Mockito.mock(VWOPreference.class);
@@ -103,18 +117,14 @@ public class VWODataTest {
     }
 
     @Test
-    public void saveGoalTest() throws IOException, JSONException {
+    public void saveGoalTest() throws IOException, JSONException, InterruptedException {
+        vwo.getMessageQueue().removeAll();
         final HashMap<String, String> savedCampaignMap = new HashMap<>();
-
-        VWOUrlBuilder vwoUrlBuilder = Mockito.mock(VWOUrlBuilder.class);
-        Mockito.when(vwoUrlBuilder.getCampaignUrl(anyLong(), anyInt()))
-                .thenReturn("https://dacdn.visualwebsiteoptimizer.com/track-user?experiment_id=14&account_id=295087&combination=2&u=68fde50e3c26412c86c05c61f0d4917b&s=1&random=0.32&ed=%7B%22lt%22%3A1515580228%2C%22v%22%3A14%2C%22ai%22%3A%2290d22643c5c730732cf5c48ba2cdcf85%22%2C%22av%22%3A1%2C%22dt%22%3A%22android%22%2C%22os%22%3A%2226%22%7D");
-        Mockito.when(vwoUrlBuilder.getGoalUrl(anyLong(), anyInt(), anyInt()))
-                .thenReturn("https://dacdn.visualwebsiteoptimizer.com/track-goal?experiment_id=14&account_id=295087&combination=2&u=193e45b8608c4821868a0e7162e0938f&s=7&random=0.55&goal_id=351&ed=%7B%22lt%22%3A1515579976%2C%22v%22%3A14%2C%22ai%22%3A%2290d22643c5c730732cf5c48ba2cdcf85%22%2C%22av%22%3A1%2C%22dt%22%3A%22android%22%2C%22os%22%3A%2226%22%7D");
 
         String campaignData = "{\"campaignId\":14,\"variationId\":2,\"goals\":[]}";
 
         VWOPreference vwoPreference = Mockito.mock(VWOPreference.class);
+        Mockito.when(vwoPreference.isPartOfCampaign(anyString())).thenReturn(true);
 
         Mockito.doAnswer(new Answer() {
             @Override
@@ -129,31 +139,30 @@ public class VWODataTest {
 
         Mockito.when(vwoPreference.getString(ArgumentMatchers.eq("campaign_14"))).thenReturn(campaignData);
         Mockito.when(vwo.getVwoPreference()).thenReturn(vwoPreference);
-        Mockito.when(vwo.getVwoUrlBuilder()).thenReturn(vwoUrlBuilder);
 
         String data = TestUtils.readJsonFile(getClass(), "com/vwo/mobile/data/campaigns.json");
         VWOData vwoData = new VWOData(vwo);
         vwoData.parseData(new JSONArray(data));
 
         vwoData.saveGoal("goal");
+
+        synchronized (lock) {
+            lock.wait(1000);
+        }
+
         Assert.assertEquals("{\"campaignId\":14,\"variationId\":2,\"goals\":[349]}", savedCampaignMap.get("campaign_14"));
-        Assert.assertEquals(vwo.getMessageQueue().peek().getUrl(), "https://dacdn.visualwebsiteoptimizer.com/track-user?experiment_id=14&account_id=295087&combination=2&u=68fde50e3c26412c86c05c61f0d4917b&s=1&random=0.32&ed=%7B%22lt%22%3A1515580228%2C%22v%22%3A14%2C%22ai%22%3A%2290d22643c5c730732cf5c48ba2cdcf85%22%2C%22av%22%3A1%2C%22dt%22%3A%22android%22%2C%22os%22%3A%2226%22%7D");
+        Assert.assertEquals("https://dacdn.visualwebsiteoptimizer.com/track-goal?experiment_id=14&account_id=295087&combination=2&u=193e45b8608c4821868a0e7162e0938f&s=7&random=0.55&goal_id=351&ed=%7B%22lt%22%3A1515579976%2C%22v%22%3A14%2C%22ai%22%3A%2290d22643c5c730732cf5c48ba2cdcf85%22%2C%22av%22%3A1%2C%22dt%22%3A%22android%22%2C%22os%22%3A%2226%22%7D", vwo.getMessageQueue().poll().getUrl());
     }
 
     @Test
-    public void saveRevenueGoalTest() throws IOException, JSONException {
+    public void saveRevenueGoalTest() throws IOException, JSONException, InterruptedException {
+        vwo.getMessageQueue().removeAll();
         final HashMap<String, String> savedCampaignMap = new HashMap<>();
 
-        VWOUrlBuilder vwoUrlBuilder = Mockito.mock(VWOUrlBuilder.class);
-        Mockito.when(vwoUrlBuilder.getCampaignUrl(anyLong(), anyInt()))
-                .thenReturn("https://dacdn.visualwebsiteoptimizer.com/track-user?experiment_id=14&account_id=295087&combination=2&u=68fde50e3c26412c86c05c61f0d4917b&s=1&random=0.32&ed=%7B%22lt%22%3A1515580228%2C%22v%22%3A14%2C%22ai%22%3A%2290d22643c5c730732cf5c48ba2cdcf85%22%2C%22av%22%3A1%2C%22dt%22%3A%22android%22%2C%22os%22%3A%2226%22%7D");
-        Mockito.when(vwoUrlBuilder.getGoalUrl(anyLong(), anyInt(), anyInt()))
-                .thenReturn("https://dacdn.visualwebsiteoptimizer.com/track-goal?experiment_id=14&account_id=295087&combination=2&u=193e45b8608c4821868a0e7162e0938f&s=7&random=0.55&goal_id=351&ed=%7B%22lt%22%3A1515579976%2C%22v%22%3A14%2C%22ai%22%3A%2290d22643c5c730732cf5c48ba2cdcf85%22%2C%22av%22%3A1%2C%22dt%22%3A%22android%22%2C%22os%22%3A%2226%22%7D");
-        Mockito.when(vwoUrlBuilder.getGoalUrl(anyLong(), anyInt(), anyInt(), anyFloat()))
-                .thenReturn("http://dacdn.visualwebsiteoptimizer.com/track-goal?experiment_id=14&account_id=295087&combination=2&u=a2c7a1df793b43b08ff8e55cd5faf6e6&s=1&random=0.93&goal_id=2&ed=%7B%22lt%22%3A1515584290%2C%22v%22%3A14%2C%22ai%22%3A%2290d22643c5c730732cf5c48ba2cdcf85%22%2C%22av%22%3A1%2C%22dt%22%3A%22android%22%2C%22os%22%3A%2226%22%7D&r=399.0");
         String campaignData = "{\"campaignId\":14,\"variationId\":2,\"goals\":[]}";
 
         VWOPreference vwoPreference = Mockito.mock(VWOPreference.class);
+        Mockito.when(vwoPreference.isPartOfCampaign(anyString())).thenReturn(true);
 
         Mockito.doAnswer(new Answer() {
             @Override
@@ -168,15 +177,20 @@ public class VWODataTest {
 
         Mockito.when(vwoPreference.getString(ArgumentMatchers.eq("campaign_14"))).thenReturn(campaignData);
         Mockito.when(vwo.getVwoPreference()).thenReturn(vwoPreference);
-        Mockito.when(vwo.getVwoUrlBuilder()).thenReturn(vwoUrlBuilder);
+
 
         String data = TestUtils.readJsonFile(getClass(), "com/vwo/mobile/data/campaigns.json");
         VWOData vwoData = new VWOData(vwo);
         vwoData.parseData(new JSONArray(data));
 
         vwoData.saveGoal("goal", 10);
+
+        synchronized (lock) {
+            lock.wait(1000);
+        }
+
         Assert.assertEquals("{\"campaignId\":14,\"variationId\":2,\"goals\":[349]}", savedCampaignMap.get("campaign_14"));
 
-        Assert.assertEquals(vwo.getMessageQueue().peek().getUrl(), "http://dacdn.visualwebsiteoptimizer.com/track-goal?experiment_id=14&account_id=295087&combination=2&u=a2c7a1df793b43b08ff8e55cd5faf6e6&s=1&random=0.93&goal_id=2&ed=%7B%22lt%22%3A1515584290%2C%22v%22%3A14%2C%22ai%22%3A%2290d22643c5c730732cf5c48ba2cdcf85%22%2C%22av%22%3A1%2C%22dt%22%3A%22android%22%2C%22os%22%3A%2226%22%7D&r=399.0");
+        Assert.assertEquals("http://dacdn.visualwebsiteoptimizer.com/track-goal?experiment_id=14&account_id=295087&combination=2&u=a2c7a1df793b43b08ff8e55cd5faf6e6&s=1&random=0.93&goal_id=2&ed=%7B%22lt%22%3A1515584290%2C%22v%22%3A14%2C%22ai%22%3A%2290d22643c5c730732cf5c48ba2cdcf85%22%2C%22av%22%3A1%2C%22dt%22%3A%22android%22%2C%22os%22%3A%2226%22%7D&r=399.0", vwo.getMessageQueue().poll().getUrl());
     }
 }
