@@ -1,21 +1,72 @@
 [
-  {"expression": "1", "result":true},
-  {"expression": "0", "result":false},
-  {"expression": "(1)", "result":true},
-  {"expression": "(0)", "result":false},
-  {"expression": "1|0", "result":true},
-  {"expression": "1&1", "result":true},
-  {"expression": "1&0", "result":false},
-  {"expression": "(1&0)", "result":false},
-  {"expression": "(1)&(0)", "result":false},
-  {"expression": "(1&0|1)", "result":true},
-  {"expression": "(1&1|0)", "result":true},
-  {"expression": "(1&1|0)&1", "result":true},
-  {"expression": "(1&1|0)&0", "result":false},
-  {"expression": "(1&1|0)&(0|1)", "result":true},
-  {"expression": "(1&1|0)&(1&1|0)", "result":true},
-  {"expression": "(1&1|0)&(1&1|0)&(1&1|0)", "result":true},
-  {"expression": "(1&(1|0))&(0|1)", "result":true}
+  {
+    "expression": "1",
+    "result": true
+  },
+  {
+    "expression": "0",
+    "result": false
+  },
+  {
+    "expression": "(1)",
+    "result": true
+  },
+  {
+    "expression": "(0)",
+    "result": false
+  },
+  {
+    "expression": "1|0",
+    "result": true
+  },
+  {
+    "expression": "1&1",
+    "result": true
+  },
+  {
+    "expression": "1&0",
+    "result": false
+  },
+  {
+    "expression": "(1&0)",
+    "result": false
+  },
+  {
+    "expression": "(1)&(0)",
+    "result": false
+  },
+  {
+    "expression": "(1&0|1)",
+    "result": true
+  },
+  {
+    "expression": "(1&1|0)",
+    "result": true
+  },
+  {
+    "expression": "(1&1|0)&1",
+    "result": true
+  },
+  {
+    "expression": "(1&1|0)&0",
+    "result": false
+  },
+  {
+    "expression": "(1&1|0)&(0|1)",
+    "result": true
+  },
+  {
+    "expression": "(1&1|0)&(1&1|0)",
+    "result": true
+  },
+  {
+    "expression": "(1&1|0)&(1&1|0)&(1&1|0)",
+    "result": true
+  },
+  {
+    "expression": "(1&(1|0))&(0|1)",
+    "result": true
+  }
 ]
 
 
