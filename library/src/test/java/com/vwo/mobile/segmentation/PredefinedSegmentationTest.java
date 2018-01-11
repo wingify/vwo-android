@@ -4,7 +4,6 @@ import com.vwo.mobile.BuildConfig;
 import com.vwo.mobile.TestUtils;
 import com.vwo.mobile.VWO;
 import com.vwo.mobile.data.VWOPersistData;
-import com.vwo.mobile.mock.ShadowConfiguration;
 import com.vwo.mobile.mock.VWOMock;
 import com.vwo.mobile.mock.VWOPersistDataShadow;
 
@@ -43,6 +42,7 @@ public class PredefinedSegmentationTest {
      * Unit tests for predefined segments
      */
     @Test
+    @Config(qualifiers = "en-rUS-w320dp-h240dp-xxxhdpi")
     public void phoneUserTest() throws JSONException, IOException {
         VWO vwo = new VWOMock().getVWOMockObject();
 
@@ -53,8 +53,7 @@ public class PredefinedSegmentationTest {
     }
 
     @Test
-    @Config(shadows = {ShadowConfiguration.class,
-            VWOPersistDataShadow.class})
+    @Config(shadows = {VWOPersistDataShadow.class}, qualifiers = "en-rUS-w480dp-h640dp-xxxhdpi")
     public void tabletUserTest() throws JSONException, IOException {
         VWO vwo = new VWOMock().getVWOMockObject();
         String tabletUser = TestUtils.readJsonFile(getClass(), "com/vwo/mobile/segmentation/tablet_user.json");

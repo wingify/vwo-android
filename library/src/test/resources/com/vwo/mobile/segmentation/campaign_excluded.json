@@ -1,0 +1,14 @@
+{
+  "track_user_on_launch": false,
+  "version": 2,
+  "id": 15,
+  "status": "EXCLUED",
+  "pc_traffic": 0,
+  "variations": {
+    "id": "0"
+  },
+  "type": "VISUAL_AB",
+  "clickmap": 1,
+  "name": "Campaign 15",
+  "count_goal_once": 1
+}

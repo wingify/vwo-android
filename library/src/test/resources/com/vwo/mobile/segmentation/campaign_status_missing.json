@@ -1,0 +1,32 @@
+{
+  "track_user_on_launch": true,
+  "version": 2,
+  "id": 15,
+  "pc_traffic": 100,
+  "goals": [
+    {
+      "type": "REVENUE_TRACKING",
+      "identifier": "landingPage",
+      "id": 1
+    },
+    {
+      "type": "CUSTOM_GOAL",
+      "identifier": "productView",
+      "id": 201
+    }
+  ],
+  "variations": {
+    "changes": {
+      "socialMedia": true,
+      "layout": "grid",
+      "skip": false
+    },
+    "weight": 100,
+    "name": "Variation-2",
+    "id": "3"
+  },
+  "type": "VISUAL_AB",
+  "clickmap": 1,
+  "name": "Campaign 15",
+  "count_goal_once": 1
+}

@@ -15,7 +15,7 @@ import java.util.regex.Pattern;
  */
 
 @Implements(value = VWOUtils.class, inheritImplementationMethods = true)
-public class VWOUtilsShadow {
+public class ShadowVWOUtils {
 
     @Implementation
     public static boolean isValidVwoAppKey(String appKey) {

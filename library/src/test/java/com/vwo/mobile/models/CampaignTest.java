@@ -31,7 +31,6 @@ public class CampaignTest {
         VWO vwo = new VWOMock().getVWOMockObject();
         String data = TestUtils.readJsonFile(getClass(), "com/vwo/mobile/models/campaign.json");
 
-
         JSONObject object = new JSONObject(data);
         Campaign campaign = new Campaign(vwo, object);
         Campaign campaign2 = new Campaign(vwo, object);

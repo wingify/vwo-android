@@ -5,7 +5,6 @@ import android.os.Build;
 
 import com.vwo.mobile.TestUtils;
 import com.vwo.mobile.VWO;
-import com.vwo.mobile.mock.ShadowConfiguration;
 import com.vwo.mobile.mock.VWOMock;
 import com.vwo.mobile.mock.VWOPersistDataShadow;
 import com.vwo.mobile.utils.VWOUtils;
@@ -53,7 +52,7 @@ public class CustomSegmentTest {
     public PowerMockRule rule = new PowerMockRule();
 
     @Test
-    @Config(packageName = "com.abc", sdk = Build.VERSION_CODES.JELLY_BEAN_MR2, shadows = {ShadowConfiguration.class,
+    @Config(packageName = "com.abc", sdk = Build.VERSION_CODES.JELLY_BEAN_MR2, shadows = {
             VWOPersistDataShadow.class}, manifest = "AndroidManifest.xml")
     public void androidVersionEqualToTest() throws JSONException, IOException {
         VWO vwo = new VWOMock().getVWOMockObject();
@@ -71,7 +70,7 @@ public class CustomSegmentTest {
     }
 
     @Test
-    @Config(packageName = "com.abc", sdk = Build.VERSION_CODES.JELLY_BEAN_MR2, shadows = {ShadowConfiguration.class,
+    @Config(packageName = "com.abc", sdk = Build.VERSION_CODES.JELLY_BEAN_MR2, shadows = {
             VWOPersistDataShadow.class}, manifest = "AndroidManifest.xml")
     public void androidVersionNotEqualToTest() throws JSONException, IOException {
         VWO vwo = new VWOMock().getVWOMockObject();
@@ -89,7 +88,7 @@ public class CustomSegmentTest {
 
 
     @Test
-    @Config(packageName = "com.abc", sdk = Build.VERSION_CODES.JELLY_BEAN_MR2, shadows = {ShadowConfiguration.class,
+    @Config(packageName = "com.abc", sdk = Build.VERSION_CODES.JELLY_BEAN_MR2, shadows = {
             VWOPersistDataShadow.class}, manifest = "AndroidManifest.xml")
     public void androidVersionGreaterThanTest() throws JSONException, IOException {
         VWO vwo = new VWOMock().getVWOMockObject();
@@ -106,7 +105,7 @@ public class CustomSegmentTest {
     }
 
     @Test
-    @Config(sdk = Build.VERSION_CODES.JELLY_BEAN_MR2, shadows = {ShadowConfiguration.class,
+    @Config(sdk = Build.VERSION_CODES.JELLY_BEAN_MR2, shadows = {
             VWOPersistDataShadow.class})
     public void androidVersionLessThanTest() throws JSONException, IOException {
         VWO vwo = new VWOMock().getVWOMockObject();

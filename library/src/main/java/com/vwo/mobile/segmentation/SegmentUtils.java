@@ -12,6 +12,9 @@ import java.util.List;
 public class SegmentUtils {
 
     public static boolean evaluateSegmentation(Campaign campaign) {
+        if (campaign.getSegmentType() == null) {
+            return false;
+        }
         if (campaign.getSegmentType().equals(Campaign.SEGMENT_CUSTOM)) {
             List<Object> expression = new ArrayList<>();
             for (Segment segment : campaign.getSegments()) {

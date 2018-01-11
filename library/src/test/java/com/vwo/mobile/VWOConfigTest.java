@@ -1,6 +1,6 @@
 package com.vwo.mobile;
 
-import com.vwo.mobile.mock.VWOUtilsShadow;
+import com.vwo.mobile.mock.ShadowVWOUtils;
 
 import junit.framework.Assert;
 
@@ -14,7 +14,7 @@ import org.robolectric.annotation.Config;
  */
 
 @RunWith(RobolectricTestRunner.class)
-@Config(sdk = 22, shadows = {VWOUtilsShadow.class}, manifest = "AndroidManifest.xml")
+@Config(sdk = 22, shadows = {ShadowVWOUtils.class}, manifest = "AndroidManifest.xml")
 public class VWOConfigTest {
 
     @Test
