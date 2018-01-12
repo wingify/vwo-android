@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.vwo.mobile.TestUtils;
 import com.vwo.mobile.VWO;
+import com.vwo.mobile.mock.ShadowVWOLog;
 import com.vwo.mobile.mock.VWOMock;
 import com.vwo.mobile.mock.VWOPersistDataShadow;
 import com.vwo.mobile.utils.VWOPreference;
@@ -45,8 +46,9 @@ import static org.mockito.ArgumentMatchers.anyString;
  */
 
 @RunWith(RobolectricTestRunner.class)
-@Config(sdk = 21, shadows = {VWOPersistDataShadow.class})
-@PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "android.*", "org.json.*"})
+@Config(sdk = 21, shadows = {VWOPersistDataShadow.class, ShadowVWOLog.class})
+@PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "android.*", "org.json.*",
+        "com.vwo.mobile.utils.VWOLog"})
 @PrepareForTest({VWOUtils.class, VWOPersistData.class, VWOMessageQueue.class})
 public class VWODataTest {
 
@@ -192,5 +194,43 @@ public class VWODataTest {
         Assert.assertEquals("{\"campaignId\":14,\"variationId\":2,\"goals\":[349]}", savedCampaignMap.get("campaign_14"));
 
         Assert.assertEquals("http://dacdn.visualwebsiteoptimizer.com/track-goal?experiment_id=14&account_id=295087&combination=2&u=a2c7a1df793b43b08ff8e55cd5faf6e6&s=1&random=0.93&goal_id=2&ed=%7B%22lt%22%3A1515584290%2C%22v%22%3A14%2C%22ai%22%3A%2290d22643c5c730732cf5c48ba2cdcf85%22%2C%22av%22%3A1%2C%22dt%22%3A%22android%22%2C%22os%22%3A%2226%22%7D&r=399.0", vwo.getMessageQueue().poll().getUrl());
+    }
+
+    @Test
+    public void trackUserManuallyTest() throws IOException, JSONException, InterruptedException {
+        vwo.getMessageQueue().removeAll();
+        final HashMap<String, String> savedCampaignMap = new HashMap<>();
+
+        String campaignData = "{\"campaignId\":14,\"variationId\":2,\"goals\":[]}";
+
+        VWOPreference vwoPreference = Mockito.mock(VWOPreference.class);
+        Mockito.when(vwoPreference.isPartOfCampaign(anyString())).thenReturn(false);
+
+        Mockito.doAnswer(new Answer() {
+            @Override
+            public Object answer(InvocationOnMock invocation) {
+                String argument1 = invocation.getArgument(0);
+                String argument2 = invocation.getArgument(1);
+                savedCampaignMap.put(argument1, argument2);
+                return null;
+            }
+        }).when(vwoPreference).putString(ArgumentMatchers.anyString(), ArgumentMatchers.anyString());
+
+
+        Mockito.when(vwoPreference.getString(ArgumentMatchers.eq("campaign_14"))).thenReturn(campaignData);
+        Mockito.when(vwo.getVwoPreference()).thenReturn(vwoPreference);
+        String data = TestUtils.readJsonFile(getClass(), "com/vwo/mobile/data/track_user_manually.json");
+        VWOData vwoData = new VWOData(vwo);
+        vwoData.parseData(new JSONArray(data));
+
+        Assert.assertEquals(vwo.getMessageQueue().size(), 0);
+
+        vwoData.getVariationForKey("layout");
+        synchronized (lock) {
+            lock.wait(3000);
+        }
+        Assert.assertEquals(vwo.getMessageQueue().size(), 1);
+        Assert.assertEquals(vwo.getMessageQueue().poll().getUrl(),
+                "https://dacdn.visualwebsiteoptimizer.com/track-user?experiment_id=14&account_id=295087&combination=2&u=68fde50e3c26412c86c05c61f0d4917b&s=1&random=0.32&ed=%7B%22lt%22%3A1515580228%2C%22v%22%3A14%2C%22ai%22%3A%2290d22643c5c730732cf5c48ba2cdcf85%22%2C%22av%22%3A1%2C%22dt%22%3A%22android%22%2C%22os%22%3A%2226%22%7D");
     }
 }

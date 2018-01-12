@@ -4,6 +4,7 @@ import com.vwo.mobile.TestUtils;
 import com.vwo.mobile.VWO;
 import com.vwo.mobile.network.VWODownloader;
 
+import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
 
 import java.io.IOException;
@@ -21,6 +22,7 @@ public class ShadowVWODownloader {
         this.vwo = vwo;
     }
 
+    @Implementation
     public void fetchFromServer(final VWODownloader.DownloadResult downloadResult) {
         String data = "";
         try {
