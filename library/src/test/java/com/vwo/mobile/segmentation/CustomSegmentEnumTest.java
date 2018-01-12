@@ -38,7 +38,6 @@ import static org.mockito.ArgumentMatchers.anyInt;
 @Config(packageName = "com.abc", sdk = 22, shadows = {VWOPersistDataShadow.class},
         manifest = "AndroidManifest.xml")
 @PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "android.*", "org.json.*"})
-@PrepareForTest({VWOUtils.class, CustomSegmentEvaluateEnum.class})
 public class CustomSegmentEnumTest {
     @Rule
     public PowerMockRule rule = new PowerMockRule();
@@ -101,6 +100,7 @@ public class CustomSegmentEnumTest {
     }
 
     @Test
+    @PrepareForTest({VWOUtils.class})
     public void appVersionEqualsTest() throws JSONException {
         VWO vwo = new VWOMock().getVWOMockObject();
 
@@ -118,6 +118,7 @@ public class CustomSegmentEnumTest {
     }
 
     @Test
+    @PrepareForTest({VWOUtils.class})
     public void appVersionNotEqualsTest() throws JSONException {
         VWO vwo = new VWOMock().getVWOMockObject();
 
@@ -135,6 +136,7 @@ public class CustomSegmentEnumTest {
     }
 
     @Test
+    @PrepareForTest({VWOUtils.class})
     public void appVersionContainsTest() throws JSONException {
         VWO vwo = new VWOMock().getVWOMockObject();
 
@@ -152,6 +154,7 @@ public class CustomSegmentEnumTest {
     }
 
     @Test
+    @PrepareForTest({VWOUtils.class})
     public void appVersionStartsWithTest() throws JSONException {
         VWO vwo = new VWOMock().getVWOMockObject();
 
@@ -169,6 +172,7 @@ public class CustomSegmentEnumTest {
     }
 
     @Test
+    @PrepareForTest({VWOUtils.class})
     public void appVersionMatchesRegexTest() throws JSONException {
         VWO vwo = new VWOMock().getVWOMockObject();
 
@@ -247,16 +251,17 @@ public class CustomSegmentEnumTest {
     }
 
     @Test
+    @PrepareForTest({VWOUtils.class, GregorianCalendar.class})
     public void dayOfWeekEqualsTest() throws JSONException {
         VWO vwo = new VWOMock().getVWOMockObject();
 
         CustomSegmentEvaluateEnum.EvaluateSegment evaluator =
                 CustomSegmentEvaluateEnum.getEvaluator(AppConstants.DAY_OF_WEEK, AppConstants.EQUAL_TO);
 
-        Calendar calendar = PowerMockito.mock(GregorianCalendar.class);
+        Calendar calendar = Mockito.mock(GregorianCalendar.class);
 
         PowerMockito.mockStatic(VWOUtils.class);
-        PowerMockito.when(VWOUtils.getCalendar()).thenReturn(calendar);
+        Mockito.when(VWOUtils.getCalendar()).thenReturn(calendar);
 
         Mockito.when(calendar.get(anyInt())).thenReturn(1, 2, 3, 4, 5, 6, 7);
         Assert.assertTrue(evaluator.evaluate(vwo, new JSONArray("[0, 1, 2]")));
@@ -276,16 +281,17 @@ public class CustomSegmentEnumTest {
 
 
     @Test
+    @PrepareForTest({VWOUtils.class, GregorianCalendar.class})
     public void dayOfWeekNotEqualsTest() throws JSONException {
         VWO vwo = new VWOMock().getVWOMockObject();
 
         CustomSegmentEvaluateEnum.EvaluateSegment evaluator =
                 CustomSegmentEvaluateEnum.getEvaluator(AppConstants.DAY_OF_WEEK, AppConstants.NOT_EQUAL_TO);
 
-        Calendar calendar = PowerMockito.mock(GregorianCalendar.class);
+        Calendar calendar = Mockito.mock(GregorianCalendar.class);
 
         PowerMockito.mockStatic(VWOUtils.class);
-        PowerMockito.when(VWOUtils.getCalendar()).thenReturn(calendar);
+        Mockito.when(VWOUtils.getCalendar()).thenReturn(calendar);
 
         Mockito.when(calendar.get(any(Integer.class))).thenReturn(1, 2, 3, 4, 5, 6, 7);
         Assert.assertFalse(evaluator.evaluate(vwo, new JSONArray("[0, 1, 2]")));
@@ -304,16 +310,17 @@ public class CustomSegmentEnumTest {
     }
 
     @Test
+    @PrepareForTest({VWOUtils.class, GregorianCalendar.class})
     public void hourOfDayEqualsTest() throws JSONException {
         VWO vwo = new VWOMock().getVWOMockObject();
 
         CustomSegmentEvaluateEnum.EvaluateSegment evaluator =
                 CustomSegmentEvaluateEnum.getEvaluator(AppConstants.HOUR_OF_DAY, AppConstants.EQUAL_TO);
 
-        Calendar calendar = PowerMockito.mock(GregorianCalendar.class);
+        Calendar calendar = Mockito.mock(GregorianCalendar.class);
 
         PowerMockito.mockStatic(VWOUtils.class);
-        PowerMockito.when(VWOUtils.getCalendar()).thenReturn(calendar);
+        Mockito.when(VWOUtils.getCalendar()).thenReturn(calendar);
 
         Mockito.when(calendar.get(anyInt())).thenReturn(0, 2, 3, 25, 5, 6, 7);
         Assert.assertTrue(evaluator.evaluate(vwo, new JSONArray("[0, 3, 7]")));
@@ -332,16 +339,17 @@ public class CustomSegmentEnumTest {
     }
 
     @Test
+    @PrepareForTest({VWOUtils.class, GregorianCalendar.class})
     public void hourOfDayNotEqualsTest() throws JSONException {
         VWO vwo = new VWOMock().getVWOMockObject();
 
         CustomSegmentEvaluateEnum.EvaluateSegment evaluator =
                 CustomSegmentEvaluateEnum.getEvaluator(AppConstants.HOUR_OF_DAY, AppConstants.NOT_EQUAL_TO);
 
-        Calendar calendar = PowerMockito.mock(GregorianCalendar.class);
+        Calendar calendar = Mockito.mock(GregorianCalendar.class);
 
         PowerMockito.mockStatic(VWOUtils.class);
-        PowerMockito.when(VWOUtils.getCalendar()).thenReturn(calendar);
+        Mockito.when(VWOUtils.getCalendar()).thenReturn(calendar);
 
         Mockito.when(calendar.get(anyInt())).thenReturn(0, 2, 3, 24, 5, 6, 7);
         Assert.assertFalse(evaluator.evaluate(vwo, new JSONArray("[0, 3, 7]")));

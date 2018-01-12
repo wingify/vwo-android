@@ -53,7 +53,7 @@ public class SegmentUtilsTest {
     }
 
     @Test
-    public void segmentUtilsTest() throws JSONException, IOException {
+    public void test1() throws JSONException, IOException {
         String data = TestUtils.readJsonFile(getClass(), "com/vwo/mobile/segmentation/campaign1.json");
         Campaign campaign = new Campaign(vwo, new JSONObject(data));
         Assert.assertTrue(SegmentUtils.evaluateSegmentation(campaign));

@@ -61,7 +61,7 @@ public class InitializerTest {
     @Test
     public void launchSyncTest() {
         Context context = RuntimeEnvironment.application.getApplicationContext();
-        VWO.with(context, "adbas-1234").launchSynchronously(3000);
+        VWO.with(context, "adbas-1234").launchSynchronously(5000);
         Assert.assertEquals(VWO.getVariationForKey("layout"), "grid");
     }
 }

@@ -140,16 +140,6 @@ public class VWOData {
         return variation;
     }
 
-    public Campaign getCampaignForKey(String key) {
-        if (mVariations == null) {
-            return null;
-        }
-        if (mVariations.containsKey(key)) {
-            return mVariations.get(key);
-        }
-        return null;
-    }
-
     private boolean evaluateAndMakeUserPartOfCampaign(Campaign campaign) {
         if (SegmentUtils.evaluateSegmentation(campaign)) {
             mCampaigns.add(campaign);

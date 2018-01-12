@@ -30,29 +30,21 @@ public class ShadowVWODownloader {
         }
 
         if (vwo.getConfig().getTimeout() != null && vwo.getConfig().getTimeout() != VWODownloader.NO_TIMEOUT) {
-            final String finalData = data;
-            Thread thread = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        Thread.sleep(vwo.getConfig().getTimeout());
-                        downloadResult.onDownloadSuccess(finalData);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
+            try {
+                Thread.sleep(vwo.getConfig().getTimeout());
+                downloadResult.onDownloadSuccess(data);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
 
-            thread.start();
         } else {
             final String finalData = data;
-            final Thread thread = new Thread(new Runnable() {
+            Thread thread = new Thread(new Runnable() {
                 @Override
                 public void run() {
                     downloadResult.onDownloadSuccess(finalData);
                 }
             });
-
             thread.start();
         }
     }

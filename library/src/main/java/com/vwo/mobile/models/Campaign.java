@@ -88,7 +88,7 @@ public class Campaign {
             this.mCountGoalOnce = (countGoalOnce != 0);
 
 
-            if (campaignData.has(SEGMENT_CODE)) {
+            if (campaignData.has(SEGMENT_CODE) && campaignData.getJSONObject(SEGMENT_CODE).has(SEGMENT_TYPE)) {
 
                 JSONObject segmentCode = campaignData.getJSONObject(SEGMENT_CODE);
                 // Check if segmentation is CUSTOM OR PREDEFINED
@@ -100,7 +100,6 @@ public class Campaign {
                         for (int i = 0; i < partialSegments.length(); i++) {
                             mSegments.add(new CustomSegment(vwo, partialSegments.getJSONObject(i)));
                         }
-
                         break;
                     case SEGMENT_PREDEFINED:
                         mSegments = new ArrayList<>();
@@ -113,8 +112,6 @@ public class Campaign {
                         mSegmentType = SEGMENT_DEFAULT;
                         break;
                 }
-
-
             } else {
                 mSegments = new ArrayList<>();
                 mSegments.add(new DefaultSegment(vwo));
@@ -155,28 +152,6 @@ public class Campaign {
 
     public ArrayList<Segment> getSegments() {
         return mSegments;
-    }
-
-    public JSONObject getCampaignAsJsonObject() throws JSONException {
-
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put(ID, mId);
-        jsonObject.put(VERSION, mVersion);
-        jsonObject.put(TRAFFIC, mTraffic);
-        jsonObject.put(TYPE, mType.getType());
-        jsonObject.put(VARIATION, mVariation.getVariationAsJsonObject());
-        jsonObject.put(COUNT_GOAL_ONCE, mCountGoalOnce);
-        jsonObject.put(CLICK_MAP, mIsClickMap);
-        jsonObject.put(CAMPAIGN_NAME, this.name);
-        jsonObject.put(TRACK_USER_AUTOMATICALLY, trackUserAutomatically);
-
-        JSONArray goalArray = new JSONArray();
-
-        for (Goal goal : mGoals) {
-            goalArray.put(goal.getGoalAsJsonObject());
-        }
-        jsonObject.put(GOALS, goalArray);
-        return jsonObject;
     }
 
     public String getSegmentType() {
