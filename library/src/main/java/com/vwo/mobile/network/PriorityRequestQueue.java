@@ -1,11 +1,5 @@
 package com.vwo.mobile.network;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-
-import com.vwo.mobile.utils.VWOLog;
-
-import java.util.HashSet;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
