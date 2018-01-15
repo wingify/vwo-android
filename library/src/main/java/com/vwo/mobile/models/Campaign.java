@@ -1,6 +1,7 @@
 package com.vwo.mobile.models;
 
 
+import com.vwo.mobile.VWO;
 import com.vwo.mobile.segmentation.CustomSegment;
 import com.vwo.mobile.segmentation.DefaultSegment;
 import com.vwo.mobile.segmentation.PredefinedSegment;
@@ -49,7 +50,7 @@ public class Campaign {
     private String name;
     private ArrayList<Segment> mSegments;
 
-    public Campaign(JSONObject campaignData) {
+    public Campaign(VWO vwo, JSONObject campaignData) {
         try {
             VWOLog.v(VWOLog.CAMPAIGN_LOGS, campaignData.toString());
 
@@ -87,32 +88,33 @@ public class Campaign {
             this.mCountGoalOnce = (countGoalOnce != 0);
 
 
-            if (campaignData.has(SEGMENT_CODE)) {
+            if (campaignData.has(SEGMENT_CODE) && campaignData.getJSONObject(SEGMENT_CODE).has(SEGMENT_TYPE)) {
 
                 JSONObject segmentCode = campaignData.getJSONObject(SEGMENT_CODE);
                 // Check if segmentation is CUSTOM OR PREDEFINED
-                if (segmentCode.getString(SEGMENT_TYPE).equals(SEGMENT_CUSTOM)) {
-                    mSegmentType = SEGMENT_CUSTOM;
-                    mSegments = new ArrayList<>();
-                    JSONArray partialSegments = segmentCode.getJSONArray(PARTIAL_SEGMENTS);
-                    for (int i = 0; i < partialSegments.length(); i++) {
-                        mSegments.add(new CustomSegment(partialSegments.getJSONObject(i)));
-                    }
-
-                } else if (segmentCode.getString(SEGMENT_TYPE).equals(SEGMENT_PREDEFINED)) {
-                    mSegments = new ArrayList<>();
-                    mSegments.add(new PredefinedSegment(segmentCode));
-                    mSegmentType = SEGMENT_PREDEFINED;
-                } else {
-                    mSegments = new ArrayList<>();
-                    mSegments.add(new DefaultSegment());
-                    mSegmentType = SEGMENT_DEFAULT;
+                switch (segmentCode.getString(SEGMENT_TYPE)) {
+                    case SEGMENT_CUSTOM:
+                        mSegmentType = SEGMENT_CUSTOM;
+                        mSegments = new ArrayList<>();
+                        JSONArray partialSegments = segmentCode.getJSONArray(PARTIAL_SEGMENTS);
+                        for (int i = 0; i < partialSegments.length(); i++) {
+                            mSegments.add(new CustomSegment(vwo, partialSegments.getJSONObject(i)));
+                        }
+                        break;
+                    case SEGMENT_PREDEFINED:
+                        mSegments = new ArrayList<>();
+                        mSegments.add(new PredefinedSegment(vwo, segmentCode));
+                        mSegmentType = SEGMENT_PREDEFINED;
+                        break;
+                    default:
+                        mSegments = new ArrayList<>();
+                        mSegments.add(new DefaultSegment(vwo));
+                        mSegmentType = SEGMENT_DEFAULT;
+                        break;
                 }
-
-
             } else {
                 mSegments = new ArrayList<>();
-                mSegments.add(new DefaultSegment());
+                mSegments.add(new DefaultSegment(vwo));
                 mSegmentType = SEGMENT_DEFAULT;
             }
         } catch (JSONException e) {
@@ -152,28 +154,6 @@ public class Campaign {
         return mSegments;
     }
 
-    public JSONObject getCampaignAsJsonObject() throws JSONException {
-
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put(ID, mId);
-        jsonObject.put(VERSION, mVersion);
-        jsonObject.put(TRAFFIC, mTraffic);
-        jsonObject.put(TYPE, mType.getType());
-        jsonObject.put(VARIATION, mVariation.getVariationAsJsonObject());
-        jsonObject.put(COUNT_GOAL_ONCE, mCountGoalOnce);
-        jsonObject.put(CLICK_MAP, mIsClickMap);
-        jsonObject.put(CAMPAIGN_NAME, this.name);
-        jsonObject.put(TRACK_USER_AUTOMATICALLY, trackUserAutomatically);
-
-        JSONArray goalArray = new JSONArray();
-
-        for (Goal goal : mGoals) {
-            goalArray.put(goal.getGoalAsJsonObject());
-        }
-        jsonObject.put(GOALS, goalArray);
-        return jsonObject;
-    }
-
     public String getSegmentType() {
         return mSegmentType;
     }
@@ -181,5 +161,10 @@ public class Campaign {
     @Override
     public boolean equals(Object obj) {
         return obj instanceof Campaign && ((Campaign) obj).getId() == this.mId || super.equals(obj);
+    }
+
+    @Override
+    public int hashCode() {
+        return (int) mId;
     }
 }

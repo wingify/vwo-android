@@ -23,6 +23,7 @@
     <string name="title_social">(Social Media)</string>
     <string name="title_skip">(Skip)</string>
     <string name="str_skip_and_continue">Skip and Continue</string>
+    <string name="price_format" formatted="false">%s%d</string>
 
 
     <string name="text_in_stock">\u2022 In Stock</string>

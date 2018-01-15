@@ -8,6 +8,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.res.ResourcesCompat;
+import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.AppCompatImageView;
 import android.support.v7.widget.AppCompatTextView;
 import android.view.LayoutInflater;
@@ -39,6 +40,20 @@ public class FragmentItemDetails extends Fragment {
         FragmentItemDetailsBinding binding = DataBindingUtil.inflate(inflater, R.layout.fragment_item_details, container, false);
         View view = binding.getRoot();
         closeButton = view.findViewById(R.id.button_close);
+        AppCompatButton addToCart = view.findViewById(R.id.button_add_to_cart);
+        AppCompatButton buyNow = view.findViewById(R.id.button_buy);
+        addToCart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                VWO.trackConversion("AddToCard");
+            }
+        });
+        buyNow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                VWO.trackConversion("Bought", mobile.getPrice());
+            }
+        });
         closeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -63,7 +78,7 @@ public class FragmentItemDetails extends Fragment {
 
         binding.setMobile(mobile);
         VWO.trackConversion(Constants.VWOKeys.GOAL_PRODUCT_VIEWED);
-
+        VWO.trackConversion(Constants.VWOKeys.GOAL_PRODUCT_PURCHASED, mobile.getPrice());
         return view;
     }
 

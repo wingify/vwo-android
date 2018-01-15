@@ -1,0 +1,52 @@
+{
+  "track_user_on_launch": true,
+  "version": 2,
+  "segment_object": {
+    "type": "custom",
+    "partialSegments": [
+      {
+        "lBracket": true,
+        "prevLogicalOperator": "AND",
+        "type": "6",
+        "operator": 5,
+        "rOperandValue": "1"
+      },
+      {
+        "prevLogicalOperator": "AND",
+        "type": "1",
+        "operator": 16,
+        "rOperandValue": "26",
+        "rBracket": true
+      },
+      {
+        "type": "1",
+        "operator": 15,
+        "rOperandValue": "14",
+        "prevLogicalOperator": "AND"
+      }
+    ]
+  },
+  "status": "RUNNING",
+  "pc_traffic": 100,
+  "id": 14,
+  "goals": [
+    {
+      "type": "REVENUE_TRACKING",
+      "identifier": "goal",
+      "id": 349
+    }
+  ],
+  "variations": {
+    "changes": {
+      "layout": "grid",
+      "socialMedia": true
+    },
+    "weight": 100,
+    "name": "Variation-1",
+    "id": "2"
+  },
+  "type": "VISUAL_AB",
+  "name": "Campaign 14",
+  "count_goal_once": 1,
+  "clickmap": 1
+}

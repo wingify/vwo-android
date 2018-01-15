@@ -11,10 +11,13 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by abhishek on 18/09/15 at 1:37 PM.
  */
-public class CustomSegment implements Segment {
+public class CustomSegment extends Segment {
 
     private static final String PREVIOUS_LOGICAL_OPERATOR = "prevLogicalOperator";
     private static final String TYPE = "type";
@@ -24,26 +27,24 @@ public class CustomSegment implements Segment {
     private static final String LEFT_BRACKET = "lBracket";
     private static final String RIGHT_BRACKET = "rBracket";
 
-    private boolean mLeftBracket;
-    private boolean mRightBracket;
     private JSONArray mOperandValue;
     @Nullable
     private String lOperandValue;
-    private LogicalOperator mPreviousLogicalOperator;
+    private Operator mPreviousLogicalOperator;
     private int mSegmentOperator;
     @Nullable
     private String mType;
 
-    public CustomSegment(JSONObject segment) {
+    public CustomSegment(VWO vwo, JSONObject segment) {
+        super(vwo);
 
         try {
-            mLeftBracket = segment.has(LEFT_BRACKET) && segment.getBoolean(LEFT_BRACKET);
+            setLeftBracket(segment.has(LEFT_BRACKET) && segment.getBoolean(LEFT_BRACKET));
 
-            mRightBracket = segment.has(RIGHT_BRACKET) && segment.getBoolean(RIGHT_BRACKET);
+            setRightBracket(segment.has(RIGHT_BRACKET) && segment.getBoolean(RIGHT_BRACKET));
 
             if (segment.has(PREVIOUS_LOGICAL_OPERATOR)) {
-                mPreviousLogicalOperator = LogicalOperator.fromString(segment.getString(PREVIOUS_LOGICAL_OPERATOR));
-
+                mPreviousLogicalOperator = Operator.fromString(segment.getString(PREVIOUS_LOGICAL_OPERATOR));
             }
 
             JSONArray operandValue = segment.optJSONArray(OPERAND_VALUE);
@@ -69,15 +70,8 @@ public class CustomSegment implements Segment {
         }
     }
 
-    public boolean isLeftBracket() {
-        return mLeftBracket;
-    }
-
-    public boolean isRightBracket() {
-        return mRightBracket;
-    }
-
-    public LogicalOperator getPreviousLogicalOperator() {
+    @Nullable
+    public Operator getPreviousLogicalOperator() {
         return mPreviousLogicalOperator;
     }
 
@@ -87,7 +81,7 @@ public class CustomSegment implements Segment {
     }
 
     @Override
-    public boolean evaluate(VWO vwo) {
+    public boolean evaluate() {
         if (!TextUtils.isEmpty(mType) && mType.equals(AppConstants.CUSTOM_SEGMENT)) {
             return CustomSegmentEvaluateEnum.getEvaluator(mType, mSegmentOperator).evaluate(vwo, mOperandValue, lOperandValue);
         }
@@ -97,5 +91,21 @@ public class CustomSegment implements Segment {
     @Override
     public boolean isCustomSegment() {
         return true;
+    }
+
+    public List<Object> toInfix() {
+        List<Object> list = new ArrayList<>();
+        if (getPreviousLogicalOperator() != null) {
+            list.add(getPreviousLogicalOperator());
+        }
+        if (hasLeftBracket()) {
+            list.add(Operator.OPEN_PARENTHESES);
+        }
+        list.add(evaluate());
+        if (hasRightBracket()) {
+            list.add(Operator.CLOSE_PARENTHESES);
+        }
+
+        return list;
     }
 }

@@ -2,12 +2,12 @@ apply plugin: 'com.android.library'
 
 android {
     compileSdkVersion 27
-    buildToolsVersion '27.0.2'
+    buildToolsVersion '27.0.3'
     defaultConfig {
-        versionCode 14
+        versionCode 15
         minSdkVersion 14
         targetSdkVersion 27
-        versionName "2.0.1"
+        versionName "2.0.2"
     }
     signingConfigs {
         config {
@@ -68,7 +68,7 @@ dependencies {
     testImplementation 'org.powermock:powermock-module-junit4:2.0.0-beta.5'
     testImplementation "org.powermock:powermock-module-junit4-rule:2.0.0-beta.5"
     testImplementation "org.powermock:powermock-classloading-xstream:2.0.0-beta.5"
-    testImplementation 'org.robolectric:robolectric:3.6'
+    testImplementation 'org.robolectric:robolectric:3.6.1'
     testImplementation 'com.squareup.okhttp3:mockwebserver:3.9.1'
     implementation('io.socket:socket.io-client:1.0.0') {
         exclude group: 'org.json', module: 'json'

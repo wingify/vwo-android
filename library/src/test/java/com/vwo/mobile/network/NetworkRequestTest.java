@@ -1,8 +1,5 @@
 package com.vwo.mobile.network;
 
-import android.os.Build;
-import android.util.Log;
-
 import com.vwo.mobile.BuildConfig;
 import com.vwo.mobile.mock.ShadowNetworkRequest;
 
@@ -28,7 +25,7 @@ import okhttp3.mockwebserver.MockWebServer;
  */
 
 @RunWith(RobolectricTestRunner.class)
-@Config(constants = BuildConfig.class, sdk = Build.VERSION_CODES.JELLY_BEAN,
+@Config(constants = BuildConfig.class, sdk = 22,
         shadows = {ShadowNetworkRequest.class})
 @PrepareForTest(NetworkRequest.class)
 @PowerMockIgnore({"javax.net.ssl.*", "java.net.*"})
@@ -49,23 +46,13 @@ public class NetworkRequestTest {
         mockResponse.setBody("Test");
         mockWebServer.enqueue(mockResponse);
 
-//        URL ur = PowerMockito.mock(URL.class);
-//        PowerMockito.when(ur.toString()).thenReturn("http://www.abc.com");
-//        PowerMockito.whenNew(URL.class).withArguments(ArgumentMatchers.anyString()).thenReturn(ur);
-//        HttpURLConnection huc = PowerMockito.mock(HttpURLConnection.class);
-//        PowerMockito.when(huc.getResponseCode()).thenReturn(200);
-
-        String url = mockWebServer.url("/").toString();
         FutureNetworkRequest<String> futureNetworkRequest = FutureNetworkRequest.getInstance();
         NetworkStringRequest networkStringRequest = new NetworkStringRequest("http://abc.com", NetworkRequest.GET, futureNetworkRequest, futureNetworkRequest);
-//        Uri ur = Uri.parse(networkStringRequest.getUrl());
-//        ur.buildUpon().scheme("http").scheme(Uri.parse(url).getScheme());
-//        networkStringRequest.setUrl(ur.toString());
 
         PriorityRequestQueue.getInstance().addToQueue(networkStringRequest);
         String data = futureNetworkRequest.get();
         Assert.assertEquals("Test", data);
-        Log.d("Response", data);
+        System.out.println(data);
 
     }
 

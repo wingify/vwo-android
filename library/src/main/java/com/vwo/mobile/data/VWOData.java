@@ -11,9 +11,7 @@ import com.vwo.mobile.models.Campaign;
 import com.vwo.mobile.models.CampaignEntry;
 import com.vwo.mobile.models.Goal;
 import com.vwo.mobile.models.GoalEntry;
-import com.vwo.mobile.segmentation.CustomSegment;
-import com.vwo.mobile.segmentation.LogicalOperator;
-import com.vwo.mobile.segmentation.Segment;
+import com.vwo.mobile.segmentation.SegmentUtils;
 import com.vwo.mobile.utils.VWOLog;
 import com.vwo.mobile.utils.VWOUtils;
 
@@ -26,7 +24,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Stack;
 
 /**
  * Created by Aman on Fri 16:06.
@@ -46,84 +43,46 @@ public class VWOData {
         mUntrackedCampaigns = new ArrayList<>();
     }
 
-    private static boolean evaluateSegmentation(VWO vwo, Campaign campaign) {
-
-        if (campaign.getSegmentType().equals(Campaign.SEGMENT_CUSTOM)) {
-
-            Stack<Object> stack = new Stack<>();
-            for (Segment segment : campaign.getSegments()) {
-
-                CustomSegment customSegment = (CustomSegment) segment;
-
-                boolean currentValue = segment.evaluate(vwo);
-
-                if (customSegment.getPreviousLogicalOperator() != null && customSegment.isLeftBracket()) {
-                    stack.push(customSegment.getPreviousLogicalOperator());
-                } else if (customSegment.getPreviousLogicalOperator() != null) {
-                    boolean leftVariable = (boolean) stack.pop();
-                    currentValue = customSegment.getPreviousLogicalOperator().evaluate(leftVariable, currentValue);
-                }
-
-                if (customSegment.isLeftBracket()) {
-                    stack.push("(");
-                }
-
-                if (customSegment.isRightBracket()) {
-                    stack.pop();
-                    while ((stack.size() > 0) && !(stack.peek()).equals("(")) {
-                        String random = stack.peek().toString();
-                        LogicalOperator logicalOperator = LogicalOperator.fromString(random);
-                        stack.pop();
-                        boolean leftVariable = (Boolean) stack.pop();
-                        currentValue = (logicalOperator != null) && logicalOperator.evaluate(leftVariable, currentValue);
-                    }
-                }
-
-                stack.push(currentValue);
-            }
-            return (boolean) stack.pop();
-        } else {
-            return campaign.getSegments().get(0).evaluate(vwo);
-        }
-    }
-
     public void parseData(JSONArray data) {
-
         for (int i = 0; i < data.length(); i++) {
             try {
-                if (data.getJSONObject(i).getString(Campaign.STATUS).equals(CAMPAIGN_RUNNING)) {
+                switch (data.getJSONObject(i).getString(Campaign.STATUS)) {
+                    case CAMPAIGN_RUNNING:
 
-                    // Only saving campaign if it has a variation object
-                    if (data.getJSONObject(i).has(Campaign.VARIATION)) {
+                        // Only saving campaign if it has a variation object
+                        if (data.getJSONObject(i).has(Campaign.VARIATION)) {
 
-                        Campaign tempCampaign = new Campaign(data.getJSONObject(i));
+                            Campaign tempCampaign = new Campaign(mVWO, data.getJSONObject(i));
 
-                        if (VWOPersistData.isExistingCampaign(mVWO, VWOPersistData.CAMPAIGN_KEY + tempCampaign.getId())) {
-                            // Already part of campaign. Just add to campaigns list
-                            mCampaigns.add(tempCampaign);
-                            VWOLog.w(VWOLog.CAMPAIGN_LOGS, "User already part of campaign \""
-                                    + tempCampaign.getName() + "\"\nAnd variation \"" + tempCampaign.getVariation().getName() +"\"",
-                                    true);
-                        } else {
-                            if (tempCampaign.shouldTrackUserAutomatically()) {
-                                evaluateAndMakeUserPartOfCampaign(tempCampaign);
+                            if (VWOPersistData.isExistingCampaign(mVWO, VWOPersistData.CAMPAIGN_KEY + tempCampaign.getId())) {
+                                // Already part of campaign. Just add to campaigns list
+                                mCampaigns.add(tempCampaign);
+                                VWOLog.w(VWOLog.CAMPAIGN_LOGS, "User already part of campaign \""
+                                                + tempCampaign.getName() + "\"\nAnd variation \"" + tempCampaign.getVariation().getName() + "\"",
+                                        true);
                             } else {
-                                mUntrackedCampaigns.add(tempCampaign);
+                                if (tempCampaign.shouldTrackUserAutomatically()) {
+                                    evaluateAndMakeUserPartOfCampaign(tempCampaign);
+                                } else {
+                                    mUntrackedCampaigns.add(tempCampaign);
+                                }
                             }
                         }
-                    }
-                } else if (data.getJSONObject(i).getString(Campaign.STATUS).equals(CAMPAIGN_EXCLUDED)) {
-                    int campaignId = data.getJSONObject(i).getInt("id");
-                    VWOPersistData vwoPersistData = new VWOPersistData(campaignId, 0);
-                    vwoPersistData.saveCampaign(mVWO.getVwoPreference());
-                } else {
-                    String campaignName;
-                    if(data.getJSONObject(i).has(Campaign.CAMPAIGN_NAME)) {
-                        campaignName = data.getJSONObject(i).getString(Campaign.CAMPAIGN_NAME);
-                    } else {
-                        campaignName = data.getJSONObject(i).getString(Campaign.ID);
-                    }
-                    VWOLog.i(VWOLog.CAMPAIGN_LOGS, "Discarding Campaign \"" + campaignName + "\", because it is not running", true);
+                        break;
+                    case CAMPAIGN_EXCLUDED:
+                        int campaignId = data.getJSONObject(i).getInt("id");
+                        VWOPersistData vwoPersistData = new VWOPersistData(campaignId, 0);
+                        vwoPersistData.saveCampaign(mVWO.getVwoPreference());
+                        break;
+                    default:
+                        String campaignName;
+                        if (data.getJSONObject(i).has(Campaign.CAMPAIGN_NAME)) {
+                            campaignName = data.getJSONObject(i).getString(Campaign.CAMPAIGN_NAME);
+                        } else {
+                            campaignName = data.getJSONObject(i).getString(Campaign.ID);
+                        }
+                        VWOLog.i(VWOLog.CAMPAIGN_LOGS, "Discarding Campaign \"" + campaignName + "\", because it is not running", true);
+                        break;
                 }
 
             } catch (JSONException exception) {
@@ -181,18 +140,8 @@ public class VWOData {
         return variation;
     }
 
-    public Campaign getCampaignForKey(String key) {
-        if (mVariations == null) {
-            return null;
-        }
-        if (mVariations.containsKey(key)) {
-            return mVariations.get(key);
-        }
-        return null;
-    }
-
     private boolean evaluateAndMakeUserPartOfCampaign(Campaign campaign) {
-        if (evaluateSegmentation(mVWO, campaign)) {
+        if (SegmentUtils.evaluateSegmentation(campaign)) {
             mCampaigns.add(campaign);
 
             String campaignRecordUrl = mVWO.getVwoUrlBuilder().getCampaignUrl(campaign.getId(), campaign.getVariation().getId());

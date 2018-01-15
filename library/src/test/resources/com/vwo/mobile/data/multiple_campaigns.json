@@ -1,0 +1,80 @@
+[
+  {
+    "track_user_on_launch": true,
+    "version": 2,
+    "id": 13,
+    "status": "RUNNING",
+    "pc_traffic": 100,
+    "goals": [
+      {
+        "type": "CUSTOM_GOAL",
+        "identifier": "1",
+        "id": 348
+      }
+    ],
+    "variations": {
+      "changes": {
+        "layout": "grid"
+      },
+      "weight": 100,
+      "name": "Variation-1",
+      "id": "2"
+    },
+    "type": "VISUAL_AB",
+    "clickmap": 1,
+    "name": "Campaign 13",
+    "count_goal_once": 1
+  },
+  {
+    "track_user_on_launch": false,
+    "version": 2,
+    "segment_object": {
+      "segment_code": {
+        "device": "Phone"
+      },
+      "id": "97",
+      "type": "predefined",
+      "platform": "mobile-app",
+      "name": "Phone Users",
+      "description": "Segment for Phone users only"
+    },
+    "status": "RUNNING",
+    "pc_traffic": 100,
+    "id": 14,
+    "goals": [
+      {
+        "type": "REVENUE_TRACKING",
+        "identifier": "addToCart",
+        "id": 1
+      },
+      {
+        "type": "REVENUE_TRACKING",
+        "identifier": "productPurchased",
+        "id": 2
+      },
+      {
+        "type": "REVENUE_TRACKING",
+        "identifier": "goal",
+        "id": 349
+      },
+      {
+        "type": "CUSTOM_GOAL",
+        "identifier": "productView",
+        "id": 351
+      }
+    ],
+    "variations": {
+      "changes": {
+        "layout": "grid",
+        "socialMedia": true
+      },
+      "weight": 100,
+      "name": "Variation-1",
+      "id": "2"
+    },
+    "type": "VISUAL_AB",
+    "name": "Campaign 14",
+    "count_goal_once": 1,
+    "clickmap": 1
+  }
+]

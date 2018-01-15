@@ -1,0 +1,10 @@
+{
+  "segment_code": {
+    "returning_visitor": true
+  },
+  "id": "106",
+  "type": "predefined",
+  "platform": "mobile-app",
+  "name": "Returning Users",
+  "description": "Segment for returning users only"
+}

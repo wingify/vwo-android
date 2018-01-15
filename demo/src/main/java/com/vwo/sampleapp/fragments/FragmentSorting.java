@@ -1,6 +1,7 @@
 package com.vwo.sampleapp.fragments;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
@@ -37,19 +38,19 @@ public class FragmentSorting extends Fragment implements ItemClickListener {
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_sorting, container, false);
 
         recyclerView = view.findViewById(R.id.sorting_recycler_view);
 
         mobiles = new ArrayList<>();
-        Mobile apple = new Mobile("iPhone 6 (16GB, Black)", "$399", true,
+        Mobile apple = new Mobile("iPhone 6 (16GB, Black)", 399, "$", true,
                 true, R.drawable.iphone, "Apple", "Also Available in Space Grey and Rose Gold", 4);
-        Mobile samsung = new Mobile("Samsung Galaxy S8 (64GB, Midnight Black)", "$799",
+        Mobile samsung = new Mobile("Samsung Galaxy S8 (64GB, Midnight Black)", 799, "$",
                 true, false, R.drawable.s8, "Samsung", "Also available in Maple Gold and Orchid Grey", 4);
-        Mobile pixel = new Mobile("Google Pixel (32GB, Very Silver)", "$699", false,
+        Mobile pixel = new Mobile("Google Pixel (32GB, Very Silver)", 699, "$", false,
                 false, R.drawable.pixel, "Google", "Also Available in Quite black", 5);
-        Mobile ZTE = new Mobile("ZTE Max XL (16GB)", "$699", true, false,
+        Mobile ZTE = new Mobile("ZTE Max XL (16GB)", 699, "$", true, false,
                 R.drawable.zte, "ZTE", "Available in 16GB", 3);
 
         mobiles.add(apple);
@@ -89,7 +90,7 @@ public class FragmentSorting extends Fragment implements ItemClickListener {
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt(ARG_FRAGMENT_TYPE, type);
     }

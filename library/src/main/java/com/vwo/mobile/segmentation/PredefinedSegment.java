@@ -10,7 +10,7 @@ import java.util.Iterator;
 /**
  * Created by abhishek on 09/10/15 at 4:20 PM.
  */
-public class PredefinedSegment implements Segment {
+public class PredefinedSegment extends Segment {
 
     private static final String ID = "id";
     private static final String SEGMENT_CODE = "segment_code";
@@ -21,8 +21,8 @@ public class PredefinedSegment implements Segment {
     private static final String TYPE = "predefined";
 
 
-    public PredefinedSegment(JSONObject segment) {
-
+    public PredefinedSegment(VWO vwo, JSONObject segment) {
+        super(vwo);
         try {
             mId = segment.getString(ID);
             JSONObject data = segment.getJSONObject(SEGMENT_CODE);
@@ -37,7 +37,7 @@ public class PredefinedSegment implements Segment {
     }
 
     @Override
-    public boolean evaluate(VWO vwo) {
+    public boolean evaluate() {
         return PredefinedSegmentEnum.getEvaluator(mSegmentKey).evaluate(vwo, mSegmentValue);
     }
 

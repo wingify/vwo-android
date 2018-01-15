@@ -483,7 +483,7 @@ public class VWO implements VWODownloader.DownloadResult {
     private void onLoadFailure(final String reason) {
         this.mVWOStartState = STATE_FAILED;
         if (mStatusListener != null) {
-            new Handler(mContext.getMainLooper()).post(new Runnable() {
+            new Handler(getCurrentContext().getMainLooper()).post(new Runnable() {
                 @Override
                 public void run() {
                     mStatusListener.onVWOLoadFailure(reason);
@@ -494,7 +494,7 @@ public class VWO implements VWODownloader.DownloadResult {
 
     private void onLoadSuccess() {
         if (mStatusListener != null) {
-            new Handler(mContext.getMainLooper()).post(new Runnable() {
+            new Handler(getCurrentContext().getMainLooper()).post(new Runnable() {
                 @Override
                 public void run() {
                     mStatusListener.onVWOLoaded();

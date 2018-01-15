@@ -57,7 +57,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:textColor="@color/red"
-                android:text="@{mobile.price}"
+                android:text="@{String.format(@string/price_format, mobile.units, mobile.price)}"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/details_item_name"

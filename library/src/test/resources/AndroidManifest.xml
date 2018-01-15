@@ -2,8 +2,4 @@
     package="com.abc.mobile"
     android:versionCode="20">
 
-    <application>
-
-    </application>
-
 </manifest>

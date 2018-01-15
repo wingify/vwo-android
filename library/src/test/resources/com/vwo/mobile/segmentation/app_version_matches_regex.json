@@ -1,0 +1,5 @@
+{
+  "type": "6",
+  "operator": 5,
+  "rOperandValue": "[0-3]*"
+}
