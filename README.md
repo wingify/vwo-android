@@ -268,6 +268,7 @@ if you are using proguard. Add the following rules to your proguard file
     -keepattributes LineNumberTable,SourceFile
     -dontwarn org.slf4j.**
     -dontwarn javax.**
+    -dontwarn io.sentry.**
     
     # Support libraries
     -keep class android.support.v4.content.LocalBroadcastManager
@@ -278,8 +279,9 @@ if you are using proguard. Add the following rules to your proguard file
     -keepclassmembers class * extends com.vwo.mobile.models.Entry{
      public <init>(android.os.Parcel);
     }
+    
+    # Socket.io
     -dontwarn io.socket.**
-    -dontwarn io.sentry.**
 ```
 
 
