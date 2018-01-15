@@ -278,6 +278,8 @@ if you are using proguard. Add the following rules to your proguard file
     -keepclassmembers class * extends com.vwo.mobile.models.Entry{
      public <init>(android.os.Parcel);
     }
+    -dontwarn io.socket.**
+    -dontwarn io.sentry.**
 ```
 
 

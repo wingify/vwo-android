@@ -84,3 +84,8 @@
 -keep public class * {
     public protected *;
 }
+
+-dontwarn io.socket.**
+-dontwarn io.sentry.**
+-dontnote org.apache.http.**
+-dontnote android.net.http.**
