@@ -35,11 +35,6 @@
 -renamesourcefileattribute SourceFile
 -keepattributes Exceptions,InnerClasses,Signature,Deprecated,SourceFile,LineNumberTable,*Annotation*,EnclosingMethod
 
-#Sentry
--keepattributes LineNumberTable,SourceFile
--dontwarn org.slf4j.**
--dontwarn javax.**
-
 # Support libraries
 -keep class android.support.v4.content.LocalBroadcastManager
 

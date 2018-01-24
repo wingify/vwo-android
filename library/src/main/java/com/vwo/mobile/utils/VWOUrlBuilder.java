@@ -22,6 +22,7 @@ public class VWOUrlBuilder {
     private static final String PATH_DACDN_GOAL = "track-goal";
 //    private static final String PATH_DACDN_CAMPAIGN = "l.gif";
     private static final String PATH_DACDN_CAMPAIGN = "track-user";
+    private static final String PATH_LOG_ERROR = "log-error";
 
     private static final String VALUE_DEVICE_TYPE = "android";
 
@@ -149,6 +150,13 @@ public class VWOUrlBuilder {
                 .appendQueryParameter(REVENUE, String.valueOf(revenue))
                 .build()
                 .toString();
+    }
+
+    public String getLoggingUrl() {
+        Uri.Builder uriBuilder = new Uri.Builder().scheme(DACDN_URL_SCHEME)
+                .authority(DACDN_URL)
+                .appendEncodedPath(PATH_LOG_ERROR);
+        return uriBuilder.build().toString();
     }
 
     private String getExtraData() {
