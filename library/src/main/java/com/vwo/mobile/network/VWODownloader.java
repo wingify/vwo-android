@@ -161,7 +161,7 @@ public class VWODownloader {
                         messageQueue.remove();
                         entry = messageQueue.peek();
                     } catch (InterruptedException exception) {
-                        VWOLog.e(VWOLog.UPLOAD_LOGS, exception, true, true);
+                        VWOLog.e(VWOLog.UPLOAD_LOGS, exception, true, false);
                         entry.incrementRetryCount();
                         messageQueue.remove();
                         if (entry.getRetryCount() < WARN_THRESHOLD) {
@@ -284,7 +284,7 @@ public class VWODownloader {
             failureQueue.add(entry);
         } else {
             VWOLog.e(VWOLog.UPLOAD_LOGS, "discarding entry : " + entry.toString(),
-                    true, true);
+                    true, false);
         }
     }
 
@@ -311,17 +311,18 @@ public class VWODownloader {
                                 futureNetworkRequest, futureNetworkRequest);
                         request.setGzipEnabled(true);
                         PriorityRequestQueue.getInstance().addToQueue(request);
-                        futureNetworkRequest.get();
-                        VWOLog.v(VWOLog.UPLOAD_LOGS, String.format("Logging error completed Request with data : %s", error.getErrorAsJSON().toString()));
+                        String response = futureNetworkRequest.get();
+                        VWOLog.v(VWOLog.UPLOAD_LOGS, String.format("Logging error completed Request with data : %s \nand Response: %s",
+                                error.getErrorAsJSON().toString(), response));
                         loggingQueue.remove();
                         entry = loggingQueue.peek();
                     } catch (MalformedURLException exception) {
                         VWOLog.e(VWOLog.UPLOAD_LOGS, "Malformed url: " + entry.getUrl(),
-                                exception, true, true);
+                                exception, true, false);
                         loggingQueue.remove();
                         entry = loggingQueue.peek();
                     } catch (InterruptedException exception) {
-                        VWOLog.e(VWOLog.UPLOAD_LOGS, exception, true, true);
+                        VWOLog.e(VWOLog.UPLOAD_LOGS, exception, true, false);
                         entry.incrementRetryCount();
                         break;
                     } catch (ExecutionException exception) {
@@ -333,12 +334,12 @@ public class VWODownloader {
                                         exception, true, false);
                                 break;
                             } else {
-                                VWOLog.e(VWOLog.UPLOAD_LOGS, exception, true, true);
+                                VWOLog.e(VWOLog.UPLOAD_LOGS, exception, true, false);
                                 checkLoggingQueueEntryStatus(entry, loggingQueue);
                                 entry = loggingQueue.peek();
                             }
                         } else {
-                            VWOLog.e(VWOLog.UPLOAD_LOGS, exception, true, true);
+                            VWOLog.e(VWOLog.UPLOAD_LOGS, exception, true, false);
                             checkLoggingQueueEntryStatus(entry, loggingQueue);
                             entry = loggingQueue.peek();
                         }
@@ -370,7 +371,7 @@ public class VWODownloader {
             loggingQueue.add(entry);
         } else {
             VWOLog.e(VWOLog.UPLOAD_LOGS, "discarding entry : " + entry.toString(),
-                    true, true);
+                    true, false);
         }
     }
 

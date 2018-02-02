@@ -73,7 +73,6 @@ public class VWO implements VWODownloader.DownloadResult {
     @interface VWOState {
     }
 
-
     @SuppressLint("StaticFieldLeak")
     private static VWO sSharedInstance;
     @NonNull
