@@ -1,17 +1,26 @@
 package com.vwo.mobile.models;
 
 import android.content.Context;
+import android.os.Build;
+import android.os.Environment;
 import android.os.Parcel;
+import android.os.StatFs;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.vwo.mobile.logging.LogUtils;
 import com.vwo.mobile.utils.Parceler;
+import com.vwo.mobile.utils.VWOLog;
 import com.vwo.mobile.utils.VWOUtils;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 
@@ -22,13 +31,19 @@ import java.util.UUID;
 public class VWOError extends Entry {
     private static final String ID = "id";
     private static final String EXTRAS = "extras";
-    private static final String PACKAGE_NAME = "package_name";
     private static final String STACKTRACE = "stacktrace";
     private static final String VERSION = "version";
     private static final String VERSION_CODE = "version_code";
     private static final String MESSAGE = "message";
     private static final String TIMESTAMP = "timestamp";
     private static final String ANDROID_VERSION = "android_version";
+    public static final String PACKAGE_NAME = "package_name";
+    public static final String MANUFACTURER = "manufacturer";
+    public static final String BRAND = "brand";
+    public static final String MODEL = "model";
+    public static final String VWO_SDK_VERSION = "sdk_version";
+    public static final String VWO_SDK_VERSION_CODE = "sdk_version_code";
+
 
     private Builder builder;
 
@@ -40,7 +55,6 @@ public class VWOError extends Entry {
     public JSONObject getErrorAsJSON() throws JSONException {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put(ID, builder.id);
-        jsonObject.put(PACKAGE_NAME, builder.packageName);
         jsonObject.put(STACKTRACE, builder.stackTrace);
         jsonObject.put(VERSION, builder.versionName);
         jsonObject.put(VERSION_CODE, builder.versionCode);
@@ -75,7 +89,6 @@ public class VWOError extends Entry {
     }
 
     public static class Builder implements android.os.Parcelable {
-        private String packageName;
         private String stackTrace;
         private String versionName;
         private int versionCode;
@@ -87,8 +100,7 @@ public class VWOError extends Entry {
         private String id;
 
 
-        public Builder(@NonNull Context context, @Nullable String url, long timeStamp) {
-            this.packageName = context.getPackageName();
+        public Builder(@Nullable String url, long timeStamp) {
             this.url = url;
             this.timestamp = timeStamp;
             this.androidVersion = VWOUtils.androidVersion();
@@ -131,7 +143,6 @@ public class VWOError extends Entry {
 
         @Override
         public void writeToParcel(Parcel dest, int flags) {
-            dest.writeString(this.packageName);
             dest.writeString(this.stackTrace);
             dest.writeString(this.versionName);
             dest.writeInt(this.versionCode);
@@ -144,7 +155,6 @@ public class VWOError extends Entry {
         }
 
         protected Builder(Parcel in) {
-            this.packageName = in.readString();
             this.stackTrace = in.readString();
             this.versionName = in.readString();
             this.versionCode = in.readInt();

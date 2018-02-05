@@ -19,6 +19,7 @@ import com.vwo.mobile.events.VWOStatusListener;
 import com.vwo.mobile.listeners.VWOActivityLifeCycle;
 import com.vwo.mobile.logging.VWOLoggingClient;
 import com.vwo.mobile.models.Campaign;
+import com.vwo.mobile.models.VWOError;
 import com.vwo.mobile.network.ErrorResponse;
 import com.vwo.mobile.network.VWODownloader;
 import com.vwo.mobile.utils.VWOLog;
@@ -441,9 +442,12 @@ public class VWO implements VWODownloader.DownloadResult {
 
     private void initializeServerLogging() {
         Map<String, String> extras = new HashMap<>();
-        extras.put("VWO-SDK-Version", version());
-        extras.put("VWO-SDK-Version-Code", String.valueOf(versionCode()));
-        extras.put("Package-Name", mContext.getPackageName());
+        extras.put(VWOError.VWO_SDK_VERSION, version());
+        extras.put(VWOError.VWO_SDK_VERSION_CODE, String.valueOf(versionCode()));
+        extras.put(VWOError.PACKAGE_NAME, mContext.getPackageName());
+        extras.put(VWOError.MANUFACTURER, Build.MANUFACTURER);
+        extras.put(VWOError.BRAND, Build.BRAND);
+        extras.put(VWOError.MODEL, Build.MODEL);
         VWOLoggingClient.getInstance().init(sSharedInstance, extras);
     }
 

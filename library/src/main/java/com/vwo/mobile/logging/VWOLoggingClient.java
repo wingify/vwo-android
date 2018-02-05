@@ -68,7 +68,7 @@ public class VWOLoggingClient {
 
         VWOUrlBuilder vwoUrlBuilder = new VWOUrlBuilder(vwoClient.mVWO);
         String url = vwoUrlBuilder.getLoggingUrl();
-        VWOError.Builder builder = new VWOError.Builder(vwoClient.mVWO.getCurrentContext(), url,
+        VWOError.Builder builder = new VWOError.Builder(url,
                 System.currentTimeMillis());
         builder.exception(throwable);
         vwoClient.sendData(builder);
@@ -82,7 +82,7 @@ public class VWOLoggingClient {
         VWOUrlBuilder vwoUrlBuilder = new VWOUrlBuilder(vwoClient.mVWO);
         String url = vwoUrlBuilder.getLoggingUrl();
 
-        VWOError.Builder builder = new VWOError.Builder(vwoClient.mVWO.getCurrentContext(), url,
+        VWOError.Builder builder = new VWOError.Builder(url,
                 System.currentTimeMillis());
         builder.message(message);
 

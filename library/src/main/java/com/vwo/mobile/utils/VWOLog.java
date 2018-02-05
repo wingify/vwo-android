@@ -50,10 +50,6 @@ public class VWOLog {
      */
     public static final String URL_LOGS = "url";
     /**
-     * The constant TEST_LOGS.
-     */
-    public static final String TEST_LOGS = "test";
-    /**
      * The constant SEGMENTATION_LOGS.
      */
     public static final String SEGMENTATION_LOGS = "segmentation";
@@ -70,7 +66,6 @@ public class VWOLog {
 
     public static final String QUEUE = "queue";
 
-    public static final String ANALYTICS = "analytics";
     /**
      * OFF is a special level that can be used to turn off logging.
      * This level is initialized to <CODE>Integer.MAX_VALUE</CODE>.
@@ -144,10 +139,6 @@ public class VWOLog {
             }
         }
     }
-
-    /**
-     * Always check if loggable
-     */
 
     /**
      * V.
