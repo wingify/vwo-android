@@ -21,8 +21,7 @@ public class VWOErrorTest {
 
     @Test
     public void test() throws JSONException {
-        VWOError.Builder builder = new VWOError.Builder(RuntimeEnvironment.application.getApplicationContext(),
-                "http://www.abc.com", System.currentTimeMillis());
+        VWOError.Builder builder = new VWOError.Builder("http://www.abc.com", System.currentTimeMillis());
 
         builder.exception(new Exception("This is a test exception"));
         VWOError inData = builder.build();
