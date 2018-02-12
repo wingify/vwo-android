@@ -1,26 +1,16 @@
 package com.vwo.mobile.models;
 
-import android.content.Context;
-import android.os.Build;
-import android.os.Environment;
 import android.os.Parcel;
-import android.os.StatFs;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.vwo.mobile.logging.LogUtils;
 import com.vwo.mobile.utils.Parceler;
-import com.vwo.mobile.utils.VWOLog;
 import com.vwo.mobile.utils.VWOUtils;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.File;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 
@@ -31,18 +21,30 @@ import java.util.UUID;
 public class VWOError extends Entry {
     private static final String ID = "id";
     private static final String EXTRAS = "extras";
+    private static final String DEVICE_INFO_EXTRAS = "device_info_extras";
     private static final String STACKTRACE = "stacktrace";
     private static final String VERSION = "version";
     private static final String VERSION_CODE = "version_code";
     private static final String MESSAGE = "message";
     private static final String TIMESTAMP = "timestamp";
     private static final String ANDROID_VERSION = "android_version";
-    public static final String PACKAGE_NAME = "package_name";
+
     public static final String MANUFACTURER = "manufacturer";
     public static final String BRAND = "brand";
     public static final String MODEL = "model";
+
+    public static final String PACKAGE_NAME = "package_name";
     public static final String VWO_SDK_VERSION = "sdk_version";
     public static final String VWO_SDK_VERSION_CODE = "sdk_version_code";
+
+    public static final String EXTERNAL_STORAGE_SIZE = "total_external_storage";
+    public static final String INTERNAL_STORAGE_SIZE = "total_internal_storage";
+    public static final String AVAILABLE_EXTERNAL_STORAGE = "available_external_storage";
+    public static final String AVAILABLE_INTERNAL_STORAGE = "available_internal_storage";
+
+    public static final String AVAILABLE_MEMORY = "available_memory";
+    public static final String TOTAL_MEMORY = "total_memory";
+    public static final String IS_MEMORY_LOW = "is_memory_low";
 
 
     private Builder builder;
@@ -61,8 +63,11 @@ public class VWOError extends Entry {
         jsonObject.put(MESSAGE, builder.message);
         jsonObject.put(TIMESTAMP, builder.timestamp);
         jsonObject.put(ANDROID_VERSION, builder.androidVersion);
-        if(builder.extras != null && builder.extras.size() != 0) {
-            jsonObject.put(EXTRAS, new JSONObject(builder.extras));
+        if (builder.extras != null && builder.extras.size() != 0) {
+            jsonObject.put(EXTRAS, LogUtils.getJsonFromStringMap(builder.extras));
+        }
+        if (builder.deviceInfoExtras != null && builder.deviceInfoExtras.size() != 0) {
+            jsonObject.put(DEVICE_INFO_EXTRAS, LogUtils.getJsonFromStringMap(builder.deviceInfoExtras));
         }
         return jsonObject;
     }
@@ -98,6 +103,7 @@ public class VWOError extends Entry {
         private String androidVersion;
         private Map<String, String> extras;
         private String id;
+        private Map<String, String> deviceInfoExtras;
 
 
         public Builder(@Nullable String url, long timeStamp) {
@@ -132,6 +138,11 @@ public class VWOError extends Entry {
             return this;
         }
 
+        public Builder deviceInfoExtras(Map<String, String> extras) {
+            this.deviceInfoExtras = extras;
+            return this;
+        }
+
         public VWOError build() {
             return new VWOError(url, this);
         }
@@ -151,6 +162,7 @@ public class VWOError extends Entry {
             dest.writeLong(this.timestamp);
             dest.writeString(this.androidVersion);
             Parceler.writeStringMapToParcel(extras, dest);
+            Parceler.writeStringMapToParcel(deviceInfoExtras, dest);
             dest.writeString(this.id);
         }
 
@@ -163,6 +175,7 @@ public class VWOError extends Entry {
             this.timestamp = in.readLong();
             this.androidVersion = in.readString();
             this.extras = Parceler.readStringMapFromParcel(in);
+            this.deviceInfoExtras = Parceler.readStringMapFromParcel(in);
             this.id = in.readString();
         }
 

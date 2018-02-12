@@ -281,10 +281,10 @@ public class VWOLog {
             } else {
                 ex.printStackTrace();
             }
+        }
 
-            if(sendToServer) {
-                VWOLoggingClient.log(ex);
-            }
+        if(sendToServer) {
+            VWOLoggingClient.log(ex);
         }
     }
 
@@ -308,10 +308,10 @@ public class VWOLog {
             } else {
                 Log.e(tag, msg);
             }
+        }
 
-            if(sendToServer) {
-                VWOLoggingClient.log(new Exception(tag + ": " + msg));
-            }
+        if(sendToServer) {
+            VWOLoggingClient.log(new Exception(tag + ": " + msg));
         }
     }
 
@@ -342,10 +342,9 @@ public class VWOLog {
                     Log.e(tag, "", exception);
                 }
             }
-
-            if(sendToServer) {
-                VWOLoggingClient.log(tag + ": " + msg);
-            }
+        }
+        if(sendToServer) {
+            VWOLoggingClient.log(tag + ": " + msg);
         }
     }
 
@@ -420,6 +419,7 @@ public class VWOLog {
                 Log.wtf(tag, msg);
             }
         }
+        VWOLoggingClient.log(msg);
     }
 
     /**
@@ -436,8 +436,8 @@ public class VWOLog {
             } else {
                 Log.wtf(tag, exception);
             }
-            VWOLoggingClient.log(exception);
         }
+        VWOLoggingClient.log(exception);
     }
 
     /**
@@ -464,9 +464,9 @@ public class VWOLog {
                     Log.wtf(tag, exception);
                 }
             }
-            if (!TextUtils.isEmpty(msg)) {
-                VWOLoggingClient.log(msg);
-            }
+        }
+        if (!TextUtils.isEmpty(msg)) {
+            VWOLoggingClient.log(msg);
         }
     }
 

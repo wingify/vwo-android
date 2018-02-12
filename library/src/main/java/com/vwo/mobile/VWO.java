@@ -351,7 +351,8 @@ public class VWO implements VWODownloader.DownloadResult {
             try {
                 this.initializeComponents();
             } catch (IOException exception) {
-                String message = "Unable to initialize vwo message queue";
+                String message = "Error initalizing SDK components";
+                VWOLog.wtf(VWOLog.INITIALIZATION_LOGS, message, exception, true);
                 onLoadFailure(message);
                 return false;
             }
@@ -445,9 +446,6 @@ public class VWO implements VWODownloader.DownloadResult {
         extras.put(VWOError.VWO_SDK_VERSION, version());
         extras.put(VWOError.VWO_SDK_VERSION_CODE, String.valueOf(versionCode()));
         extras.put(VWOError.PACKAGE_NAME, mContext.getPackageName());
-        extras.put(VWOError.MANUFACTURER, Build.MANUFACTURER);
-        extras.put(VWOError.BRAND, Build.BRAND);
-        extras.put(VWOError.MODEL, Build.MODEL);
         VWOLoggingClient.getInstance().init(sSharedInstance, extras);
     }
 

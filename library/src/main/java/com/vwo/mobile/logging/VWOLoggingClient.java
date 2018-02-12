@@ -1,10 +1,10 @@
 package com.vwo.mobile.logging;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
+import android.app.ActivityManager;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.text.TextUtils;
 
 import com.vwo.mobile.VWO;
 import com.vwo.mobile.data.VWOMessageQueue;
@@ -13,6 +13,7 @@ import com.vwo.mobile.network.VWODownloader;
 import com.vwo.mobile.utils.VWOUrlBuilder;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -24,11 +25,11 @@ public class VWOLoggingClient {
     private static VWOLoggingClient vwoClient;
     private VWO mVWO;
 
-    @Nullable
     private Map<String, String> extraData;
     private VWOMessageQueue vwoLoggingQueue;
 
     private VWOLoggingClient() {
+        this.extraData = new HashMap<>();
     }
 
     public static VWOLoggingClient getInstance() {
@@ -55,7 +56,12 @@ public class VWOLoggingClient {
 
     public void init(@NonNull VWO vwo, @Nullable Map<String, String> extras) {
         this.mVWO = vwo;
-        this.extraData = extras;
+        if(extras != null) {
+            this.extraData.putAll(extras);
+        }
+        this.extraData.put(VWOError.MANUFACTURER, Build.MANUFACTURER);
+        this.extraData.put(VWOError.BRAND, Build.BRAND);
+        this.extraData.put(VWOError.MODEL, Build.MODEL);
         setUncaughtExceptionHandler();
         initializeLoggingQueue();
         VWODownloader.scheduleLoggingQueue(mVWO, vwoLoggingQueue);
@@ -90,9 +96,25 @@ public class VWOLoggingClient {
     }
 
     private void sendData(VWOError.Builder builder) {
+        Map<String, String> deviceInfoExtra = new HashMap<>();
+
+        deviceInfoExtra.put(VWOError.EXTERNAL_STORAGE_SIZE, String.valueOf(LogUtils.getExternalStorageSize()));
+        deviceInfoExtra.put(VWOError.AVAILABLE_EXTERNAL_STORAGE, String.valueOf(LogUtils.getUnusedExternalStorageSize()));
+        deviceInfoExtra.put(VWOError.INTERNAL_STORAGE_SIZE, String.valueOf(LogUtils.getInternalStorageSize()));
+        deviceInfoExtra.put(VWOError.AVAILABLE_INTERNAL_STORAGE, String.valueOf(LogUtils.getUnusedInternalStorageSize()));
+
+        ActivityManager.MemoryInfo memoryInfo = LogUtils.getAppMemoryInfo(mVWO.getCurrentContext());
+        if(memoryInfo != null) {
+            deviceInfoExtra.put(VWOError.AVAILABLE_MEMORY, String.valueOf(memoryInfo.availMem));
+            deviceInfoExtra.put(VWOError.IS_MEMORY_LOW, String.valueOf(memoryInfo.lowMemory));
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                deviceInfoExtra.put(VWOError.TOTAL_MEMORY, String.valueOf(memoryInfo.totalMem));
+            }
+        }
         builder.version(VWO.version())
                 .versionCode(VWO.versionCode())
-                .extras(extraData);
+                .extras(extraData)
+                .deviceInfoExtras(deviceInfoExtra);
 
         VWOError vwoError = builder.build();
 
