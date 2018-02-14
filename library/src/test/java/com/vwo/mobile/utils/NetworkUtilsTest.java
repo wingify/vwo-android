@@ -27,9 +27,9 @@ public class NetworkUtilsTest {
         headers.put("Connection", "keep-alive");
         headers.put("server", "sjc1");
 
-        Assert.assertEquals(NetworkUtils.Headers.parseCharset(headers), "utf-8");
+        Assert.assertEquals("UTF-8", NetworkUtils.Headers.parseCharset(headers));
 
         headers.remove("Content-Type");
-        Assert.assertEquals(NetworkUtils.Headers.parseCharset(headers), "utf-8");
+        Assert.assertEquals("UTF-8", NetworkUtils.Headers.parseCharset(headers) );
     }
 }

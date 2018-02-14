@@ -66,7 +66,7 @@ public class LogUtils {
      * @return the unused amount of internal storage, in bytes
      */
     @Nullable
-    static Long getUnusedInternalStorageSize() {
+    public static Long getUnusedInternalStorageSize() {
         try {
             File path = Environment.getDataDirectory();
             StatFs statFs = new StatFs(path.getPath());
@@ -92,7 +92,7 @@ public class LogUtils {
      * @return the total amount of internal storage, in bytes
      */
     @Nullable
-    static Long getInternalStorageSize() {
+    public static Long getInternalStorageSize() {
         try {
             File path = Environment.getDataDirectory();
             StatFs statFs = new StatFs(path.getPath());
@@ -121,7 +121,7 @@ public class LogUtils {
      * is mounted
      */
     @Nullable
-    static Long getUnusedExternalStorageSize() {
+    public static Long getUnusedExternalStorageSize() {
         try {
             if (isExternalStorageMounted()) {
                 File path = Environment.getExternalStorageDirectory();
@@ -153,7 +153,7 @@ public class LogUtils {
      * is mounted
      */
     @Nullable
-    static Long getExternalStorageSize() {
+    public static Long getExternalStorageSize() {
         try {
             if (isExternalStorageMounted()) {
                 File path = Environment.getExternalStorageDirectory();
@@ -183,7 +183,7 @@ public class LogUtils {
      * @return {@link ActivityManager.MemoryInfo} instance
      */
     @Nullable
-    static ActivityManager.MemoryInfo getAppMemoryInfo(Context context) {
+    public static ActivityManager.MemoryInfo getAppMemoryInfo(Context context) {
         try {
             ActivityManager.MemoryInfo memoryInfo = new ActivityManager.MemoryInfo();
             ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);

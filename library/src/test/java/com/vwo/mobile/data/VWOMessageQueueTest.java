@@ -1,5 +1,6 @@
 package com.vwo.mobile.data;
 
+import com.vwo.mobile.mock.ShadowVWOLog;
 import com.vwo.mobile.models.Entry;
 import com.vwo.mobile.models.GoalEntry;
 
@@ -24,8 +25,8 @@ import java.io.IOException;
  * Created by aman on Thu 14/12/17 11:09.
  */
 @RunWith(RobolectricTestRunner.class)
-@Config(sdk = 22)
-@PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "android.*"})
+@Config(sdk = 22, shadows = {ShadowVWOLog.class})
+@PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "android.*", "com.vwo.mobile.utils.VWOLog"})
 @PrepareForTest({VWOMessageQueue.class})
 public class VWOMessageQueueTest {
     private VWOMessageQueue vwoMessageQueue;

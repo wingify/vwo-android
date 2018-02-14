@@ -29,11 +29,11 @@ public class ParcelerTest {
         map.put("null", null);
 
         Parcel parcel = Parcel.obtain();
-        parcel.recycle();
         Parceler.writeStringMapToParcel(map, parcel);
         parcel.setDataPosition(0);
 
         Map<String, String> unparceledData = Parceler.readStringMapFromParcel(parcel);
+        parcel.recycle();
 
         Assert.assertEquals(map.size(), unparceledData.size());
         Assert.assertEquals(unparceledData.get("uvw"), "xyz");

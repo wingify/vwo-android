@@ -5,6 +5,7 @@ import android.os.Build;
 
 import com.vwo.mobile.TestUtils;
 import com.vwo.mobile.VWO;
+import com.vwo.mobile.mock.ShadowVWOLog;
 import com.vwo.mobile.mock.VWOMock;
 import com.vwo.mobile.mock.VWOPersistDataShadow;
 import com.vwo.mobile.utils.VWOUtils;
@@ -42,9 +43,9 @@ import static org.mockito.ArgumentMatchers.anyInt;
  */
 
 @RunWith(RobolectricTestRunner.class)
-@Config(packageName = "com.abc", sdk = 17, shadows = {VWOPersistDataShadow.class},
+@Config(packageName = "com.abc", sdk = 17, shadows = {VWOPersistDataShadow.class, ShadowVWOLog.class},
         manifest = "AndroidManifest.xml")
-@PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "android.*", "org.json.*"})
+@PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "android.*", "org.json.*", "com.vwo.mobile.utils.VWOLog"})
 @PrepareForTest({VWOUtils.class, CustomSegmentEvaluateEnum.class})
 public class CustomSegmentTest {
 

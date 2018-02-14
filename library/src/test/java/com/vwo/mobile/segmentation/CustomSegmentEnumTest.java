@@ -23,6 +23,7 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.rule.PowerMockRule;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowLog;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -35,9 +36,9 @@ import static org.mockito.ArgumentMatchers.anyInt;
  */
 
 @RunWith(RobolectricTestRunner.class)
-@Config(packageName = "com.abc", sdk = 22, shadows = {VWOPersistDataShadow.class},
+@Config(packageName = "com.abc", sdk = 22, shadows = {VWOPersistDataShadow.class, ShadowLog.class},
         manifest = "AndroidManifest.xml")
-@PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "android.*", "org.json.*"})
+@PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "android.*", "org.json.*", "com.vwo.mobile.utils.VWOLog"})
 public class CustomSegmentEnumTest {
     @Rule
     public PowerMockRule rule = new PowerMockRule();

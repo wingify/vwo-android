@@ -64,35 +64,35 @@ public class VWOLoggingClient {
         this.extraData.put(VWOError.MODEL, Build.MODEL);
         setUncaughtExceptionHandler();
         initializeLoggingQueue();
-        VWODownloader.scheduleLoggingQueue(mVWO, vwoLoggingQueue);
+        VWODownloader.scheduleLoggingQueue(mVWO, getLoggingQueue());
     }
 
     public static void log(@NonNull Throwable throwable) {
-        if(vwoClient == null) {
+        if(getInstance() == null) {
             throw new NullPointerException("Client not initialised");
         }
 
-        VWOUrlBuilder vwoUrlBuilder = new VWOUrlBuilder(vwoClient.mVWO);
+        VWOUrlBuilder vwoUrlBuilder = new VWOUrlBuilder(getInstance().mVWO);
         String url = vwoUrlBuilder.getLoggingUrl();
         VWOError.Builder builder = new VWOError.Builder(url,
                 System.currentTimeMillis());
         builder.exception(throwable);
-        vwoClient.sendData(builder);
+        getInstance().sendData(builder);
     }
 
     public static void log(@NonNull String message) {
-        if(vwoClient == null) {
+        if(getInstance() == null) {
             throw new NullPointerException("Client not initialized");
         }
 
-        VWOUrlBuilder vwoUrlBuilder = new VWOUrlBuilder(vwoClient.mVWO);
+        VWOUrlBuilder vwoUrlBuilder = new VWOUrlBuilder(getInstance().mVWO);
         String url = vwoUrlBuilder.getLoggingUrl();
 
         VWOError.Builder builder = new VWOError.Builder(url,
                 System.currentTimeMillis());
         builder.message(message);
 
-        vwoClient.sendData(builder);
+        getInstance().sendData(builder);
     }
 
     private void sendData(VWOError.Builder builder) {
@@ -132,7 +132,7 @@ public class VWOLoggingClient {
     }
 
     @Nullable
-    private VWOMessageQueue getLoggingQueue() {
+    public VWOMessageQueue getLoggingQueue() {
         return this.vwoLoggingQueue;
     }
 }
