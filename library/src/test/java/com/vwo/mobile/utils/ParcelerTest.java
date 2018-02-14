@@ -26,6 +26,7 @@ public class ParcelerTest {
         map.put("abc", "def");
         map.put("ghi", "jkl");
         map.put("uvw", "xyz");
+        map.put("null", null);
 
         Parcel parcel = Parcel.obtain();
         parcel.recycle();
@@ -36,5 +37,6 @@ public class ParcelerTest {
 
         Assert.assertEquals(map.size(), unparceledData.size());
         Assert.assertEquals(unparceledData.get("uvw"), "xyz");
+        Assert.assertNull(unparceledData.get("null"));
     }
 }
