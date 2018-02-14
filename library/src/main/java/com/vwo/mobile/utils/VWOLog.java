@@ -6,11 +6,10 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.vwo.mobile.BuildConfig;
+import com.vwo.mobile.logging.VWOLoggingClient;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-
-import io.sentry.Sentry;
 
 public class VWOLog {
 
@@ -51,10 +50,6 @@ public class VWOLog {
      */
     public static final String URL_LOGS = "url";
     /**
-     * The constant TEST_LOGS.
-     */
-    public static final String TEST_LOGS = "test";
-    /**
      * The constant SEGMENTATION_LOGS.
      */
     public static final String SEGMENTATION_LOGS = "segmentation";
@@ -71,7 +66,6 @@ public class VWOLog {
 
     public static final String QUEUE = "queue";
 
-    public static final String ANALYTICS = "analytics";
     /**
      * OFF is a special level that can be used to turn off logging.
      * This level is initialized to <CODE>Integer.MAX_VALUE</CODE>.
@@ -118,6 +112,8 @@ public class VWOLog {
     @LogLevel
     private static int LEVEL = BuildConfig.DEBUG ? SEVERE : OFF;
 
+    private VWOLog() {}
+
     /**
      * Sets log level.
      *
@@ -143,10 +139,6 @@ public class VWOLog {
             }
         }
     }
-
-    /**
-     * Always check if loggable
-     */
 
     /**
      * V.
@@ -289,10 +281,10 @@ public class VWOLog {
             } else {
                 ex.printStackTrace();
             }
+        }
 
-            if (sendToServer && VWOUtils.checkIfClassExists("io.sentry.Sentry")) {
-                Sentry.capture(ex);
-            }
+        if(sendToServer) {
+            VWOLoggingClient.log(ex);
         }
     }
 
@@ -316,10 +308,10 @@ public class VWOLog {
             } else {
                 Log.e(tag, msg);
             }
+        }
 
-            if (sendToServer && VWOUtils.checkIfClassExists("io.sentry.Sentry")) {
-                Sentry.capture(new Exception(tag + ": " + msg));
-            }
+        if(sendToServer) {
+            VWOLoggingClient.log(new Exception(tag + ": " + msg));
         }
     }
 
@@ -350,10 +342,9 @@ public class VWOLog {
                     Log.e(tag, "", exception);
                 }
             }
-
-            if (!TextUtils.isEmpty(msg) && sendToServer && VWOUtils.checkIfClassExists("io.sentry.Sentry")) {
-                Sentry.capture(tag + ": " + msg);
-            }
+        }
+        if(sendToServer) {
+            VWOLoggingClient.log(tag + ": " + msg);
         }
     }
 
@@ -428,6 +419,7 @@ public class VWOLog {
                 Log.wtf(tag, msg);
             }
         }
+        VWOLoggingClient.log(msg);
     }
 
     /**
@@ -444,10 +436,8 @@ public class VWOLog {
             } else {
                 Log.wtf(tag, exception);
             }
-            if (VWOUtils.checkIfClassExists("io.sentry.Sentry")) {
-                Sentry.capture(exception);
-            }
         }
+        VWOLoggingClient.log(exception);
     }
 
     /**
@@ -474,12 +464,9 @@ public class VWOLog {
                     Log.wtf(tag, exception);
                 }
             }
-            if (VWOUtils.checkIfClassExists("io.sentry.Sentry")) {
-                if (!TextUtils.isEmpty(msg)) {
-                    Sentry.capture(msg);
-                }
-                Sentry.capture(exception);
-            }
+        }
+        if (!TextUtils.isEmpty(msg)) {
+            VWOLoggingClient.log(msg);
         }
     }
 

@@ -48,14 +48,14 @@ public class NetworkUtils {
         return (res == PackageManager.PERMISSION_GRANTED);
     }
 
-    public static boolean shouldAttemptNetworkCall(VWO vwo) {
-        PackageManager pm = vwo.getCurrentContext().getPackageManager();
-        int hasPerm = pm.checkPermission(android.Manifest.permission.ACCESS_NETWORK_STATE, vwo.getCurrentContext().getPackageName());
+    public static boolean shouldAttemptNetworkCall(Context context) {
+        PackageManager pm = context.getPackageManager();
+        int hasPerm = pm.checkPermission(android.Manifest.permission.ACCESS_NETWORK_STATE, context.getPackageName());
         if (hasPerm == PackageManager.PERMISSION_DENIED) {
             return true;
         }
 
-        ConnectivityManager connectivityManager = (ConnectivityManager) vwo.getCurrentContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         @SuppressLint("MissingPermission") NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
@@ -63,12 +63,18 @@ public class NetworkUtils {
     public static class Headers {
         public static final String HEADER_CONTENT_TYPE = "Content-type";
         public static final String ACCEPT_CONTENT_TYPE = "Accept";
-        public static final String CONTENT_TYPE_JSON = "application/json";
+        public static final String CONTENT_TYPE_JSON = "application/json; charset=utf-8";
         public static final String CONTENT_TYPE_PLAIN = "text/plain";
         public static final String CONTENT_TYPE_FORM_URL_ENCODED = "application/x-www-form-urlencoded";
 
+        public static final String HEADER_ACCOUNT_ID = "Account-ID";
+        public static final String HEADER_APP_KEY = "App-Key";
+        public static final String HEADER_DEVICE_TYPE = "Device-Type";
+
+        public static final String DEVICE_TYPE_VALUE = "Android";
+
         public static final String HEADER_CHARSET = "charset";
-        public static final String CHARSET_DEFAULT = "utf-8";
+        public static final String CHARSET_DEFAULT = "UTF-8";
 
         public static final String HEADER_CONTENT_ENCODING = "Content-Encoding";
         public static final String HEADER_ACCEPT_ENCODING = "Accept-Encoding";
@@ -102,6 +108,14 @@ public class NetworkUtils {
             Map<String, String> headers = new HashMap<>();
             headers.put(HEADER_CONTENT_TYPE, CONTENT_TYPE_JSON);
             headers.put(ACCEPT_CONTENT_TYPE, CONTENT_TYPE_JSON);
+            headers.put(HEADER_DEVICE_TYPE, DEVICE_TYPE_VALUE);
+            return headers;
+        }
+
+        public static Map<String, String> getAuthHeaders(String accountID, String appKey) {
+            Map<String, String> headers = getBasicHeaders();
+            headers.put(HEADER_ACCOUNT_ID, accountID);
+            headers.put(HEADER_APP_KEY, appKey);
             return headers;
         }
     }

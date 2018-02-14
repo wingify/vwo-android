@@ -48,7 +48,6 @@ public class VWOData {
             try {
                 switch (data.getJSONObject(i).getString(Campaign.STATUS)) {
                     case CAMPAIGN_RUNNING:
-
                         // Only saving campaign if it has a variation object
                         if (data.getJSONObject(i).has(Campaign.VARIATION)) {
 
@@ -67,6 +66,8 @@ public class VWOData {
                                     mUntrackedCampaigns.add(tempCampaign);
                                 }
                             }
+                        } else {
+                            VWOLog.wtf(VWOLog.CAMPAIGN_LOGS, "Variation object missing: \n" + data.toString(), true);
                         }
                         break;
                     case CAMPAIGN_EXCLUDED:

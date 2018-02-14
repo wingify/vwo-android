@@ -16,17 +16,11 @@ import java.io.IOException;
 @Implements(value = VWODownloader.class, inheritImplementationMethods = true)
 public class ShadowVWODownloader {
 
-    private VWO vwo;
-
-    public void __constructor__(VWO vwo) {
-        this.vwo = vwo;
-    }
-
     @Implementation
-    public void fetchFromServer(final VWODownloader.DownloadResult downloadResult) {
+    public static void fetchFromServer(VWO vwo, final VWODownloader.DownloadResult downloadResult) {
         String data = "";
         try {
-            data = TestUtils.readJsonFile(getClass(), "com/vwo/mobile/mock/campaigns.json");
+            data = TestUtils.readJsonFile(vwo.getCurrentContext().getClass(), "com/vwo/mobile/mock/campaigns.json");
         } catch (IOException e) {
             e.printStackTrace();
         }

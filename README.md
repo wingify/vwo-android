@@ -50,12 +50,11 @@ Add dependencies to app/build.gradle file
 
 	dependencies {
 	    ...
-	    compile 'com.vwo:mobile:2.0.2@aar'
+	    compile 'com.vwo:mobile:2.1.0@aar'
         debugCompile ('io.socket:socket.io-client:1.0.0') {
             // excluding org.json which is provided by Android
             exclude group: 'org.json', module: 'json'
         }
-        compile 'io.sentry:sentry-android:1.4.0'
         
         // Skip this if you are already including support library in your app.
         compile 'com.android.support:support-core-utils:27.0.2'
@@ -264,12 +263,6 @@ Use Following code to opt-out a user from SDK:
 if you are using proguard. Add the following rules to your proguard file
 
 ```proguard
-    # Sentry
-    -keepattributes LineNumberTable,SourceFile
-    -dontwarn org.slf4j.**
-    -dontwarn javax.**
-    -dontwarn io.sentry.**
-    
     # Support libraries
     -keep class android.support.v4.content.LocalBroadcastManager
     

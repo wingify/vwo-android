@@ -20,6 +20,7 @@ import com.vwo.mobile.listeners.ActivityLifecycleListener;
 import com.vwo.mobile.listeners.VWOActivityLifeCycle;
 import com.vwo.mobile.logging.VWOLoggingClient;
 import com.vwo.mobile.models.Campaign;
+import com.vwo.mobile.models.VWOError;
 import com.vwo.mobile.network.ErrorResponse;
 import com.vwo.mobile.network.VWODownloader;
 import com.vwo.mobile.utils.VWOLog;
@@ -35,10 +36,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.HashMap;
 import java.util.Map;
-
-import io.sentry.Sentry;
-import io.sentry.SentryClient;
-import io.sentry.android.AndroidSentryClientFactory;
 
 /**
  * Created by Aman on Wed 27/09/17 at 14:55.
@@ -78,13 +75,11 @@ public class VWO implements VWODownloader.DownloadResult {
     @interface VWOState {
     }
 
-
     @SuppressLint("StaticFieldLeak")
     private static VWO sSharedInstance;
     @NonNull
     private final Context mContext;
     private boolean mIsEditMode;
-    private VWODownloader mVWODownloader;
     private VWOUrlBuilder mVWOUrlBuilder;
     private VWOUtils mVWOUtils;
     private VWOPreference mVWOPreference;
@@ -341,9 +336,14 @@ public class VWO implements VWODownloader.DownloadResult {
                     false, false);
             onLoadFailure("Invalid API Key.");
             return false;
-        } else if (this.mVWOStartState >= STATE_STARTING) {
+        } else if (this.mVWOStartState == STATE_STARTING) {
+            VWOLog.w(VWOLog.INITIALIZATION_LOGS, "VWO is already initializing.",
+                    true);
+            return true;
+        } else if(this.mVWOStartState >= STATE_STARTED) {
             VWOLog.w(VWOLog.INITIALIZATION_LOGS, "VWO is already initialized.",
                     true);
+            onLoadSuccess();
             return true;
         } else {
             // Everything is good so far
@@ -353,7 +353,8 @@ public class VWO implements VWODownloader.DownloadResult {
             }            try {
                 this.initializeComponents();
             } catch (IOException exception) {
-                String message = "Unable to initialize vwo message queue";
+                String message = "Error initalizing SDK components";
+                VWOLog.wtf(VWOLog.INITIALIZATION_LOGS, message, exception, true);
                 onLoadFailure(message);
                 return false;
             }
@@ -361,7 +362,7 @@ public class VWO implements VWODownloader.DownloadResult {
             int vwoSession = this.mVWOPreference.getInt(AppConstants.DEVICE_SESSION, 0) + 1;
             this.mVWOPreference.putInt(AppConstants.DEVICE_SESSION, vwoSession);
 
-            this.mVWODownloader.fetchFromServer(this);
+            VWODownloader.fetchFromServer(sSharedInstance,this);
 
             return true;
         }
@@ -442,30 +443,18 @@ public class VWO implements VWODownloader.DownloadResult {
         }
     }
 
-    private void initializeSentry() {
-        VWOLoggingClient.getInstance().init();
-
-        if (VWOUtils.checkIfClassExists("io.sentry.Sentry")) {
-            Map<String, String> extras = new HashMap<>();
-            extras.put("VWO-SDK-Version", version());
-            extras.put("VWO-SDK-Version-Code", String.valueOf(versionCode()));
-            extras.put("VWO-Account-ID", vwoConfig.getAccountId());
-            extras.put("Package-name", mContext.getPackageName());
-            SentryClient sentryClient = Sentry.init(BuildConfig.SENTRY,
-                    new AndroidSentryClientFactory(mContext));
-            sentryClient.setTags(extras);
-        } else {
-            VWOLog.e(VWOLog.INITIALIZATION_LOGS, "you need to add following dependency " +
-                    "\"compile 'io.sentry:sentry-android:1.4.0'\"" +
-                    " to your build.gradle file", false, false);
-        }
+    private void initializeServerLogging() {
+        Map<String, String> extras = new HashMap<>();
+        extras.put(VWOError.VWO_SDK_VERSION, version());
+        extras.put(VWOError.VWO_SDK_VERSION_CODE, String.valueOf(versionCode()));
+        extras.put(VWOError.PACKAGE_NAME, mContext.getPackageName());
+        VWOLoggingClient.getInstance().init(sSharedInstance, extras);
     }
 
     private void initializeComponents() throws IOException {
-        initializeSentry();
+        initializeServerLogging();
         this.mVWOLocalData = new VWOLocalData(sSharedInstance);
         this.mVWOUtils = new VWOUtils(sSharedInstance);
-        this.mVWODownloader = new VWODownloader(sSharedInstance);
         this.mVWOUrlBuilder = new VWOUrlBuilder(sSharedInstance);
         this.mVWOData = new VWOData(sSharedInstance);
         this.mVWOPreference = new VWOPreference(sSharedInstance);
@@ -474,8 +463,8 @@ public class VWO implements VWODownloader.DownloadResult {
         this.messageQueue = VWOMessageQueue.getInstance(getCurrentContext(), MESSAGE_QUEUE_NAME);
         this.failureQueue = VWOMessageQueue.getInstance(getCurrentContext(), FAILURE_QUEUE_NAME);
 
-        mVWODownloader.initializeMessageQueue();
-        mVWODownloader.initializeFailureQueue();
+        VWODownloader.initializeMessageQueue(sSharedInstance);
+        VWODownloader.initializeFailureQueue(sSharedInstance);
 
         initializeSocket();
     }

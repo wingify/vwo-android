@@ -4,10 +4,10 @@ android {
     compileSdkVersion 27
     buildToolsVersion '27.0.3'
     defaultConfig {
-        versionCode 15
+        versionCode 16
         minSdkVersion 14
         targetSdkVersion 27
-        versionName "2.0.2"
+        versionName "2.1.0"
     }
     signingConfigs {
         config {
@@ -20,7 +20,6 @@ android {
     def URL_SCHEME_HTTP = '"http"'
     def URL_SCHEME_HTTPS = '"https"'
     def DACDN_URL = '"dacdn.visualwebsiteoptimizer.com"'
-    def SENTRY_URL = '"https://1211a276aa6c4fc5b3a1bca2c3f1f4ea:045cca541af146da8b1efc7735a4c4ac@app.getsentry.com/47376?uncaught.handler.enabled=false"'
     def SOCKET_URL = '"https://mobilepreview.vwo.com:443/"'
     buildTypes {
         release {
@@ -49,7 +48,6 @@ android {
     }
     buildTypes.each {
         it.buildConfigField 'String', 'DACDN_URL', DACDN_URL
-        it.buildConfigField 'String', 'SENTRY', SENTRY_URL
         it.buildConfigField 'String', 'SOCKET_URL', SOCKET_URL
     }
     testOptions {
@@ -73,7 +71,6 @@ dependencies {
     implementation('io.socket:socket.io-client:1.0.0') {
         exclude group: 'org.json', module: 'json'
     }
-    implementation 'io.sentry:sentry-android:1.4.0'
     implementation 'com.android.support:support-annotations:27.0.2'
     implementation 'com.android.support:support-core-utils:27.0.2'
 }

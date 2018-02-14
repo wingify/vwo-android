@@ -7,8 +7,11 @@ import com.vwo.mobile.VWO;
 import com.vwo.mobile.data.VWOMessageQueue;
 import com.vwo.mobile.listeners.VWOActivityLifeCycle;
 import com.vwo.mobile.models.Entry;
+import com.vwo.mobile.models.VWOError;
 import com.vwo.mobile.utils.NetworkUtils;
 import com.vwo.mobile.utils.VWOLog;
+
+import org.json.JSONException;
 
 import java.io.IOException;
 import java.net.ConnectException;
@@ -22,25 +25,24 @@ import java.util.concurrent.TimeoutException;
  * Created by abhishek on 17/09/15 at 11:39 PM.
  */
 public class VWODownloader {
-    private final VWO mVWO;
 
     private static final int WARN_THRESHOLD = 3;
-    private static final int DISCARD_THRESHOLD = 20;
+    private static final int DISCARD_THRESHOLD = 10;
+    private static final int LOGGING_DISCARD_THRESHOLD = 5;
 
     public static final long NO_TIMEOUT = -1;
 
-    public VWODownloader(VWO vwo) {
-        mVWO = vwo;
+    private VWODownloader() {
     }
 
-    public void fetchFromServer(final DownloadResult downloadResult) {
+    public static void fetchFromServer(VWO vwo, final DownloadResult downloadResult) {
 
-        String url = mVWO.getVwoUrlBuilder().getDownloadUrl();
+        String url = vwo.getVwoUrlBuilder().getDownloadUrl();
         VWOLog.i(VWOLog.URL_LOGS, "Fetching data from: " + url, true);
 
-        if (mVWO.getConfig().getTimeout() != null) {
+        if (vwo.getConfig().getTimeout() != null) {
             try {
-                downloadResult.onDownloadSuccess(downloadDataSynchronous(url, downloadResult, mVWO));
+                downloadResult.onDownloadSuccess(downloadDataSynchronous(url, downloadResult, vwo));
             } catch (InterruptedException exception) {
                 String message = "Request timed out";
                 downloadResult.onDownloadError(exception, message);
@@ -72,13 +74,13 @@ public class VWODownloader {
                 downloadResult.onDownloadError(exception, "Invalid download url");
             }
         } else {
-            downloadData(url, downloadResult, mVWO);
+            downloadData(url, downloadResult, vwo);
         }
     }
 
-    private String downloadDataSynchronous(String url, final DownloadResult downloadResult, VWO vwo)
+    private static String downloadDataSynchronous(String url, final DownloadResult downloadResult, VWO vwo)
             throws MalformedURLException, InterruptedException, ExecutionException, TimeoutException {
-        if (!NetworkUtils.shouldAttemptNetworkCall(vwo)) {
+        if (!NetworkUtils.shouldAttemptNetworkCall(vwo.getCurrentContext())) {
             downloadResult.onDownloadError(new ConnectException("No internet connectivity"), "No Internet Connectivity");
             return null;
         }
@@ -92,8 +94,8 @@ public class VWODownloader {
         return futureNetworkRequest.get(vwo.getConfig().getTimeout(), TimeUnit.MILLISECONDS);
     }
 
-    private void downloadData(String url, final DownloadResult downloadResult, VWO vwo) {
-        if (!NetworkUtils.shouldAttemptNetworkCall(vwo)) {
+    private static void downloadData(String url, final DownloadResult downloadResult, VWO vwo) {
+        if (!NetworkUtils.shouldAttemptNetworkCall(vwo.getCurrentContext())) {
             downloadResult.onDownloadError(new ConnectException("No internet connectivity"), "No Internet Connectivity");
             return;
         }
@@ -129,17 +131,17 @@ public class VWODownloader {
         }
     }
 
-    public void initializeMessageQueue() {
+    public static void initializeMessageQueue(final VWO vwo) {
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                final VWOMessageQueue messageQueue = mVWO.getMessageQueue();
-                final VWOMessageQueue failureQueue = mVWO.getFailureQueue();
+                final VWOMessageQueue messageQueue = vwo.getMessageQueue();
+                final VWOMessageQueue failureQueue = vwo.getFailureQueue();
                 Entry entry = messageQueue.peek();
 
                 while (entry != null) {
                     try {
-                        if (((mVWO.getConfig().getActivityLifecycleListener() == null && !VWOActivityLifeCycle.isApplicationInForeground())) || !NetworkUtils.shouldAttemptNetworkCall(mVWO)) {
+                        if (((vwo.getConfig().getActivityLifecycleListener() == null && !VWOActivityLifeCycle.isApplicationInForeground())) || !NetworkUtils.shouldAttemptNetworkCall(vwo.getCurrentContext())) {
                             VWOLog.e(VWOLog.UPLOAD_LOGS, "Either no network, or application is not in foreground", true, false);
                             break;
                         }
@@ -159,7 +161,7 @@ public class VWODownloader {
                         messageQueue.remove();
                         entry = messageQueue.peek();
                     } catch (InterruptedException exception) {
-                        VWOLog.e(VWOLog.UPLOAD_LOGS, exception, true, true);
+                        VWOLog.e(VWOLog.UPLOAD_LOGS, exception, true, false);
                         entry.incrementRetryCount();
                         messageQueue.remove();
                         if (entry.getRetryCount() < WARN_THRESHOLD) {
@@ -194,7 +196,7 @@ public class VWODownloader {
         ScheduledRequestQueue scheduledRequestQueue = ScheduledRequestQueue.getInstance("message queue");
         if (!scheduledRequestQueue.isRunning()) {
             VWOLog.w(VWOLog.UPLOAD_LOGS, "Starting new Scheduler", true);
-            scheduledRequestQueue.scheduleWithFixedDelay(runnable, 15,
+            scheduledRequestQueue.scheduleWithFixedDelay(runnable, 5,
                     15, TimeUnit.SECONDS);
             scheduledRequestQueue.setRunning(true);
         } else {
@@ -202,7 +204,7 @@ public class VWODownloader {
         }
     }
 
-    private void checkMessageQueueEntryStatus(Entry entry, VWOMessageQueue messageQueue, VWOMessageQueue failureQueue) {
+    private static void checkMessageQueueEntryStatus(Entry entry, VWOMessageQueue messageQueue, VWOMessageQueue failureQueue) {
         entry.incrementRetryCount();
         messageQueue.remove();
         if (entry.getRetryCount() < WARN_THRESHOLD) {
@@ -212,11 +214,11 @@ public class VWODownloader {
         }
     }
 
-    public void initializeFailureQueue() {
+    public static void initializeFailureQueue(final VWO vwo) {
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                final VWOMessageQueue failureQueue = mVWO.getFailureQueue();
+                final VWOMessageQueue failureQueue = vwo.getFailureQueue();
                 int taskCount = failureQueue.size();
                 VWOLog.i(VWOLog.UPLOAD_LOGS, "Flushing failure message queue of size : " + taskCount, true);
                 for (int i = 0; i < taskCount; i++) {
@@ -225,7 +227,7 @@ public class VWODownloader {
                         break;
                     }
                     try {
-                        if (!NetworkUtils.shouldAttemptNetworkCall(mVWO)) {
+                        if (!NetworkUtils.shouldAttemptNetworkCall(vwo.getCurrentContext())) {
                             VWOLog.e(VWOLog.UPLOAD_LOGS, "No internet connectivity", true, false);
                             break;
                         }
@@ -267,22 +269,109 @@ public class VWODownloader {
 
         if (!scheduledRequestQueue.isRunning()) {
             VWOLog.v(VWOLog.UPLOAD_LOGS, "Starting failed message queue scheduler");
-            scheduledRequestQueue.scheduleWithFixedDelay(runnable, 30,
-                    300, TimeUnit.SECONDS);
+            scheduledRequestQueue.scheduleWithFixedDelay(runnable, 5,
+                    60, TimeUnit.SECONDS);
             scheduledRequestQueue.setRunning(true);
         } else {
             VWOLog.v(VWOLog.UPLOAD_LOGS, "Failed message queue scheduler already running");
         }
     }
 
-    private void checkFailureQueueEntryStatus(Entry entry, VWOMessageQueue failureQueue) {
+    private static void checkFailureQueueEntryStatus(Entry entry, VWOMessageQueue failureQueue) {
         entry.incrementRetryCount();
         failureQueue.remove();
         if (entry.getRetryCount() < DISCARD_THRESHOLD) {
             failureQueue.add(entry);
         } else {
             VWOLog.e(VWOLog.UPLOAD_LOGS, "discarding entry : " + entry.toString(),
-                    true, true);
+                    true, false);
+        }
+    }
+
+    public static void scheduleLoggingQueue(final VWO vwo, final VWOMessageQueue loggingQueue) {
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                int taskCount = loggingQueue.size();
+                VWOLog.i(VWOLog.UPLOAD_LOGS, "Flushing logging queue of size : " + taskCount, true);
+                Entry entry = loggingQueue.peek();
+
+                while (entry != null) {
+                    try {
+                        if (!VWOActivityLifeCycle.isApplicationInForeground() || !NetworkUtils.shouldAttemptNetworkCall(vwo.getCurrentContext())) {
+                            VWOLog.e(VWOLog.UPLOAD_LOGS, "Either no network, or application is not in foreground", true, false);
+                            break;
+                        }
+
+                        VWOError error = (VWOError) entry;
+                        FutureNetworkRequest<String> futureNetworkRequest = FutureNetworkRequest.getInstance();
+                        NetworkStringRequest request = new NetworkStringRequest(error.getUrl(),
+                                NetworkRequest.POST, NetworkUtils.Headers.getAuthHeaders(vwo.getConfig().getAccountId(),
+                                vwo.getConfig().getAppKey()), error.getErrorAsJSON().toString(),
+                                futureNetworkRequest, futureNetworkRequest);
+                        request.setGzipEnabled(true);
+                        PriorityRequestQueue.getInstance().addToQueue(request);
+                        String response = futureNetworkRequest.get();
+                        VWOLog.v(VWOLog.UPLOAD_LOGS, String.format("Logging error completed Request with data : %s \nand Response: %s",
+                                error.getErrorAsJSON().toString(), response));
+                        loggingQueue.remove();
+                        entry = loggingQueue.peek();
+                    } catch (MalformedURLException exception) {
+                        VWOLog.e(VWOLog.UPLOAD_LOGS, "Malformed url: " + entry.getUrl(),
+                                exception, true, false);
+                        loggingQueue.remove();
+                        entry = loggingQueue.peek();
+                    } catch (InterruptedException exception) {
+                        VWOLog.e(VWOLog.UPLOAD_LOGS, exception, true, false);
+                        entry.incrementRetryCount();
+                        break;
+                    } catch (ExecutionException exception) {
+                        if (exception.getCause() != null && exception.getCause() instanceof ErrorResponse) {
+                            ErrorResponse errorResponse = (ErrorResponse) exception.getCause();
+                            if (errorResponse.getCause() != null && (errorResponse.getCause() instanceof IOException ||
+                                    errorResponse.getCause() instanceof ConnectException)) {
+                                VWOLog.e(VWOLog.UPLOAD_LOGS, "Either no internet connectivity or internet is very slow",
+                                        exception, true, false);
+                                break;
+                            } else {
+                                VWOLog.e(VWOLog.UPLOAD_LOGS, exception, true, false);
+                                checkLoggingQueueEntryStatus(entry, loggingQueue);
+                                entry = loggingQueue.peek();
+                            }
+                        } else {
+                            VWOLog.e(VWOLog.UPLOAD_LOGS, exception, true, false);
+                            checkLoggingQueueEntryStatus(entry, loggingQueue);
+                            entry = loggingQueue.peek();
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        loggingQueue.remove();
+                        entry = loggingQueue.peek();
+                    }
+                }
+            }
+        };
+
+        ScheduledRequestQueue scheduledRequestQueue = ScheduledRequestQueue.getInstance("Logging queue");
+
+        if (!scheduledRequestQueue.isRunning()) {
+            VWOLog.v(VWOLog.UPLOAD_LOGS, "Starting Logging message queue scheduler");
+            scheduledRequestQueue.scheduleWithFixedDelay(runnable, 5,
+                    60, TimeUnit.SECONDS);
+            scheduledRequestQueue.setRunning(true);
+        } else {
+            VWOLog.v(VWOLog.UPLOAD_LOGS, "Logging message queue scheduler already running");
+        }
+    }
+
+    private static void checkLoggingQueueEntryStatus(Entry entry, VWOMessageQueue loggingQueue) {
+        entry.incrementRetryCount();
+        loggingQueue.remove();
+        if (entry.getRetryCount() < LOGGING_DISCARD_THRESHOLD) {
+            loggingQueue.add(entry);
+        } else {
+            VWOLog.e(VWOLog.UPLOAD_LOGS, "discarding entry : " + entry.toString(),
+                    true, false);
         }
     }
 
