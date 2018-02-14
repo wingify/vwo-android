@@ -59,11 +59,6 @@
 -keep public class android.support.design.R$* { *; }
 
 
-#Sentry
--keepattributes LineNumberTable,SourceFile
--dontwarn org.slf4j.**
--dontwarn javax.**
-
 # Support libraries
 -keep class android.support.v4.content.LocalBroadcastManager
 
@@ -86,6 +81,5 @@
 }
 
 -dontwarn io.socket.**
--dontwarn io.sentry.**
 -dontnote org.apache.http.**
 -dontnote android.net.http.**
