@@ -253,7 +253,8 @@ public class MainActivity extends AppCompatActivity {
     }
 }
 ```
-###Opt-Out
+
+### Opt-Out
 Use Following code to opt-out a user from SDK:
     
     VWO.setOptOut(true);
