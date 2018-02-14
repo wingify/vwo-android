@@ -198,18 +198,4 @@ public class LogUtils {
 
         return null;
     }
-
-    public static JSONObject getJsonFromStringMap(Map<String, String> map) throws JSONException {
-        JSONObject jsonObject = new JSONObject();
-        Set<String> keys = map.keySet();
-        String data;
-        for(String key : keys) {
-            data = map.get(key);
-            if(data != null) {
-                jsonObject.put(key, map.get(key));
-            }
-        }
-
-        return jsonObject;
-    }
 }

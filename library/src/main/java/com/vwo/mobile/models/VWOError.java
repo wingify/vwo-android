@@ -64,10 +64,10 @@ public class VWOError extends Entry {
         jsonObject.put(TIMESTAMP, builder.timestamp);
         jsonObject.put(ANDROID_VERSION, builder.androidVersion);
         if (builder.extras != null && builder.extras.size() != 0) {
-            jsonObject.put(EXTRAS, LogUtils.getJsonFromStringMap(builder.extras));
+            jsonObject.put(EXTRAS, new JSONObject(builder.extras));
         }
         if (builder.deviceInfoExtras != null && builder.deviceInfoExtras.size() != 0) {
-            jsonObject.put(DEVICE_INFO_EXTRAS, LogUtils.getJsonFromStringMap(builder.deviceInfoExtras));
+            jsonObject.put(DEVICE_INFO_EXTRAS, new JSONObject(builder.deviceInfoExtras));
         }
         return jsonObject;
     }
