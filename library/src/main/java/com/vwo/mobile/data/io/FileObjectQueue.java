@@ -91,14 +91,11 @@ public class FileObjectQueue<T> implements ObjectQueue<T> {
     public void setListener(final Listener<T> listener) {
         if (listener != null) {
             try {
-                queueFile.forEach(new QueueFile.ElementReader() {
-                    @Override
-                    public void read(InputStream in, int length) throws IOException {
-                        byte[] data = new byte[length];
-                        in.read(data, 0, length);
+                queueFile.forEach((in, length) -> {
+                    byte[] data = new byte[length];
+                    in.read(data, 0, length);
 
-                        listener.onAdd(FileObjectQueue.this, converter.from(data));
-                    }
+                    listener.onAdd(FileObjectQueue.this, converter.from(data));
                 });
             } catch (IOException e) {
                 throw new FileException("Unable to iterate over QueueFile contents.", e, file);

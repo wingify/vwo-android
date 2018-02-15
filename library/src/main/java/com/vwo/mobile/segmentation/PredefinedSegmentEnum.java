@@ -11,37 +11,17 @@ import com.vwo.mobile.utils.VWOUtils;
 public enum PredefinedSegmentEnum {
 
 
-    DEVICE(AppConstants.DEVICE, new EvaluateSegment() {
-        @Override
-        public boolean evaluate(VWO vwo, Object value) {
-            String deviceType = value.toString();
+    DEVICE(AppConstants.DEVICE, (vwo, value) -> {
+        String deviceType = value.toString();
 
-            if (VWOUtils.isTablet(vwo.getCurrentContext()) && deviceType.equalsIgnoreCase("Tablet")) {
-                return true;
-            } else if (!VWOUtils.isTablet(vwo.getCurrentContext()) && deviceType.equalsIgnoreCase("phone")) {
-                return true;
-            }
-            return false;
-        }
+        return VWOUtils.isTablet(vwo.getCurrentContext()) && deviceType.equalsIgnoreCase("Tablet") ||
+                !VWOUtils.isTablet(vwo.getCurrentContext()) && deviceType.equalsIgnoreCase("phone");
     }),
-    RETURNING_USER(AppConstants.RETURNING_USER, new EvaluateSegment() {
-        @Override
-        public boolean evaluate(VWO vwo, Object value) {
-            boolean isReturningUser = (boolean) value;
-            if (VWOPersistData.isReturningUser(vwo) && isReturningUser) {
-                return true;
-            } else if (!VWOPersistData.isReturningUser(vwo) && !isReturningUser) {
-                return true;
-            }
-            return false;
-        }
+    RETURNING_USER(AppConstants.RETURNING_USER, (vwo, value) -> {
+        boolean isReturningUser = (boolean) value;
+        return VWOPersistData.isReturningUser(vwo) && isReturningUser || !VWOPersistData.isReturningUser(vwo) && !isReturningUser;
     }),
-    DEFAULT("", new EvaluateSegment() {
-        @Override
-        public boolean evaluate(VWO vwo, Object value) {
-            return true;
-        }
-    });
+    DEFAULT("", (vwo, value) -> true);
 
     private String mType;
 

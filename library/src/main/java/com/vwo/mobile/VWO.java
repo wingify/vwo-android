@@ -470,23 +470,13 @@ public class VWO implements VWODownloader.DownloadResult {
     private void onLoadFailure(final String reason) {
         this.mVWOStartState = STATE_FAILED;
         if (mStatusListener != null) {
-            new Handler(getCurrentContext().getMainLooper()).post(new Runnable() {
-                @Override
-                public void run() {
-                    mStatusListener.onVWOLoadFailure(reason);
-                }
-            });
+            new Handler(getCurrentContext().getMainLooper()).post(() -> mStatusListener.onVWOLoadFailure(reason));
         }
     }
 
     private void onLoadSuccess() {
         if (mStatusListener != null) {
-            new Handler(getCurrentContext().getMainLooper()).post(new Runnable() {
-                @Override
-                public void run() {
-                    mStatusListener.onVWOLoaded();
-                }
-            });
+            new Handler(getCurrentContext().getMainLooper()).post(mStatusListener::onVWOLoaded);
         }
     }
 
