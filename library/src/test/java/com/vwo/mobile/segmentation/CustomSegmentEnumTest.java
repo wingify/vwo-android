@@ -448,7 +448,7 @@ public class CustomSegmentEnumTest {
 
     @Test
     @PrepareForTest(VWOPersistData.class)
-    public void returningUserEqualsTest() throws JSONException, IOException {
+    public void returningUserEqualsTest() throws JSONException {
         VWO vwo = new VWOMock().getVWOMockObject();
 
         PowerMockito.mockStatic(VWOPersistData.class);
