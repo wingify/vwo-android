@@ -30,6 +30,8 @@ public class AppConstants {
     public static final String LOCATION = "5";
     public static final String APP_VERSION = "6";
     public static final String CUSTOM_SEGMENT = "7";
+    public static final String USER_TYPE = "8";
+    public static final String DEVICE_TYPE = "9";
 
     public static final int EQUAL_TO = 11;
     public static final int NOT_EQUAL_TO = 12;
@@ -41,4 +43,13 @@ public class AppConstants {
 
     public static final String DEVICE = "device";
     public static final String RETURNING_USER = "returning_visitor";
+
+    public static final String USER_TYPE_NEW = "new";
+    public static final String USER_TYPE_RETURNING = "ret";
+
+    public static final String DEVICE_TYPE_PHONE = "Phone";
+    public static final String DEVICE_TYPE_TABLET = "Tablet";
+
+
+
 }

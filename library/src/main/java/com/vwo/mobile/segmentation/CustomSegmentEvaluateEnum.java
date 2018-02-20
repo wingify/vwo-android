@@ -5,6 +5,7 @@ import android.util.Log;
 
 import com.vwo.mobile.VWO;
 import com.vwo.mobile.constants.AppConstants;
+import com.vwo.mobile.data.VWOPersistData;
 import com.vwo.mobile.utils.VWOLog;
 import com.vwo.mobile.utils.VWOUtils;
 
@@ -420,6 +421,76 @@ public enum CustomSegmentEvaluateEnum {
                     if (customVariable.startsWith(customVar)) {
                         return true;
                     }
+                } catch (JSONException exception) {
+                    VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse custom segment", exception,
+                            false, false);
+                }
+            }
+            return false;
+        }
+    }),
+
+    CUSTOM_SEGMENT_USER_TYPE_EQUALS(AppConstants.USER_TYPE, AppConstants.EQUAL_TO, new EvaluateSegment() {
+        @Override
+        public boolean evaluate(VWO vwo, JSONArray data) {
+            boolean isReturning = VWOPersistData.isReturningUser(vwo);
+            for (int i = 0; i < data.length(); i++) {
+                try {
+                    String type = data.getString(i);
+                    return isReturning && type.equalsIgnoreCase(AppConstants.USER_TYPE_RETURNING) ||
+                            !isReturning && type.equalsIgnoreCase(AppConstants.USER_TYPE_NEW);
+                } catch (JSONException exception) {
+                    VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse custom segment", exception,
+                            false, false);
+                }
+            }
+            return false;
+        }
+    }),
+    CUSTOM_SEGMENT_USER_TYPE_NOT_EQUALS(AppConstants.USER_TYPE, AppConstants.NOT_EQUAL_TO, new EvaluateSegment() {
+        @Override
+        public boolean evaluate(VWO vwo, JSONArray data) {
+            boolean isReturning = VWOPersistData.isReturningUser(vwo);
+            for (int i = 0; i < data.length(); i++) {
+                try {
+                    String type = data.getString(i);
+                    return !isReturning && type.equalsIgnoreCase(AppConstants.USER_TYPE_RETURNING) ||
+                            isReturning && type.equalsIgnoreCase(AppConstants.USER_TYPE_NEW);
+                } catch (JSONException exception) {
+                    VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse custom segment", exception,
+                            false, false);
+                }
+            }
+            return false;
+        }
+    }),
+    CUSTOM_SEGMENT_DEVICE_TYPE_EQUALS(AppConstants.DEVICE_TYPE, AppConstants.EQUAL_TO, new EvaluateSegment() {
+        @Override
+        public boolean evaluate(VWO vwo, JSONArray data) {
+            boolean isTablet = VWOUtils.isTablet(vwo.getCurrentContext());
+            for (int i = 0; i < data.length(); i++) {
+                try {
+                    String type = data.getString(i);
+                    return isTablet && type.equalsIgnoreCase(AppConstants.DEVICE_TYPE_TABLET) ||
+                            !isTablet && type.equalsIgnoreCase(AppConstants.DEVICE_TYPE_PHONE);
+                } catch (JSONException exception) {
+                    VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse custom segment", exception,
+                            false, false);
+                }
+            }
+            return false;
+        }
+    }),
+
+    CUSTOM_SEGMENT_DEVICE_TYPE_NOT_EQUALS(AppConstants.DEVICE_TYPE, AppConstants.NOT_EQUAL_TO, new EvaluateSegment() {
+        @Override
+        public boolean evaluate(VWO vwo, JSONArray data) {
+            boolean isTablet = VWOUtils.isTablet(vwo.getCurrentContext());
+            for (int i = 0; i < data.length(); i++) {
+                try {
+                    String type = data.getString(i);
+                    return !isTablet && type.equalsIgnoreCase(AppConstants.DEVICE_TYPE_TABLET) ||
+                            isTablet && type.equalsIgnoreCase(AppConstants.DEVICE_TYPE_PHONE);
                 } catch (JSONException exception) {
                     VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse custom segment", exception,
                             false, false);

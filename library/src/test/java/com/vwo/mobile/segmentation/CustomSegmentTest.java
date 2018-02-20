@@ -5,6 +5,7 @@ import android.os.Build;
 
 import com.vwo.mobile.TestUtils;
 import com.vwo.mobile.VWO;
+import com.vwo.mobile.data.VWOPersistData;
 import com.vwo.mobile.mock.ShadowVWOLog;
 import com.vwo.mobile.mock.VWOMock;
 import com.vwo.mobile.mock.VWOPersistDataShadow;
@@ -17,6 +18,7 @@ import org.json.JSONObject;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
@@ -465,6 +467,108 @@ public class CustomSegmentTest {
 
         Mockito.when(calendar.get(anyInt())).thenReturn(7);
         Assert.assertFalse(customSegment.evaluate());
+    }
+
+
+    @Test
+    @Config(qualifiers = "en-rUS-w320dp-h240dp-xxxhdpi")
+    public void phoneUserEqualsTest() throws JSONException, IOException {
+        VWO vwo = new VWOMock().getVWOMockObject();
+
+        String phoneUserEquals = TestUtils.readJsonFile(getClass(), "com/vwo/mobile/segmentation/phone_user_equals.json");
+
+        CustomSegment segmentPhoneUserEquals = new CustomSegment(vwo, new JSONObject(phoneUserEquals));
+        Assert.assertTrue(segmentPhoneUserEquals.evaluate());
+    }
+
+    @Test
+    @Config(qualifiers = "en-rUS-w480dp-h640dp-xxxhdpi")
+    public void phoneUserNotEqualsTest() throws JSONException, IOException {
+        VWO vwo = new VWOMock().getVWOMockObject();
+
+        String phoneUserNotEquals = TestUtils.readJsonFile(getClass(), "com/vwo/mobile/segmentation/phone_user_not_equals.json");
+
+        CustomSegment segmentPhoneUserNotEquals = new CustomSegment(vwo, new JSONObject(phoneUserNotEquals));
+
+        Assert.assertTrue(segmentPhoneUserNotEquals.evaluate());
+    }
+
+    @Test
+    @Config(qualifiers = "en-rUS-w480dp-h640dp-xxxhdpi")
+    public void tabletUserEqualsTest() throws JSONException, IOException {
+        VWO vwo = new VWOMock().getVWOMockObject();
+        String tabletUser = TestUtils.readJsonFile(getClass(), "com/vwo/mobile/segmentation/tablet_user_equals.json");
+
+        CustomSegment segmentTabletUser = new CustomSegment(vwo, new JSONObject(tabletUser));
+        Assert.assertTrue(segmentTabletUser.evaluate());
+    }
+
+    @Test
+    @Config(qualifiers = "en-rUS-w320dp-h240dp-xxxhdpi")
+    public void tabletUserNotEqualsTest() throws JSONException, IOException {
+        VWO vwo = new VWOMock().getVWOMockObject();
+        String tabletUser = TestUtils.readJsonFile(getClass(), "com/vwo/mobile/segmentation/tablet_user_not_equals.json");
+
+        CustomSegment segmentTabletUser = new CustomSegment(vwo, new JSONObject(tabletUser));
+        Assert.assertTrue(segmentTabletUser.evaluate());
+    }
+
+    @Test
+    @PrepareForTest(VWOPersistData.class)
+    public void newUserEqualsTest() throws JSONException, IOException {
+        VWO vwo = new VWOMock().getVWOMockObject();
+
+        PowerMockito.mockStatic(VWOPersistData.class);
+        PowerMockito.when(VWOPersistData.isReturningUser(ArgumentMatchers.any(VWO.class))).thenReturn(false);
+
+        String newUser = TestUtils.readJsonFile(getClass(), "com/vwo/mobile/segmentation/new_user_equals.json");
+
+        CustomSegment segmentNewUser = new CustomSegment(vwo, new JSONObject(newUser));
+        Assert.assertTrue(segmentNewUser.evaluate());
+    }
+
+    @Test
+    @PrepareForTest(VWOPersistData.class)
+    public void newUserNotEqualsTest() throws JSONException, IOException {
+        VWO vwo = new VWOMock().getVWOMockObject();
+
+        PowerMockito.mockStatic(VWOPersistData.class);
+        PowerMockito.when(VWOPersistData.isReturningUser(ArgumentMatchers.any(VWO.class))).thenReturn(true);
+
+        String newUser = TestUtils.readJsonFile(getClass(), "com/vwo/mobile/segmentation/new_user_not_equals.json");
+
+        CustomSegment segmentNewUser = new CustomSegment(vwo, new JSONObject(newUser));
+        Assert.assertTrue(segmentNewUser.evaluate());
+    }
+
+    @Test
+    @PrepareForTest(VWOPersistData.class)
+    public void returningUserEqualsTest() throws JSONException, IOException {
+        VWO vwo = new VWOMock().getVWOMockObject();
+
+        PowerMockito.mockStatic(VWOPersistData.class);
+        PowerMockito.when(VWOPersistData.isReturningUser(ArgumentMatchers.any(VWO.class))).thenReturn(true);
+
+        String returningUser = TestUtils.readJsonFile(getClass(), "com/vwo/mobile/segmentation/returning_user_equals.json");
+
+
+        CustomSegment segmentReturningUser = new CustomSegment(vwo, new JSONObject(returningUser));
+        Assert.assertEquals(segmentReturningUser.evaluate(), true);
+    }
+
+    @Test
+    @PrepareForTest(VWOPersistData.class)
+    public void returningUserNotEqualsTest() throws JSONException, IOException {
+        VWO vwo = new VWOMock().getVWOMockObject();
+
+        PowerMockito.mockStatic(VWOPersistData.class);
+        PowerMockito.when(VWOPersistData.isReturningUser(ArgumentMatchers.any(VWO.class))).thenReturn(false);
+
+        String returningUser = TestUtils.readJsonFile(getClass(), "com/vwo/mobile/segmentation/returning_user_not_equals.json");
+
+
+        CustomSegment segmentReturningUser = new CustomSegment(vwo, new JSONObject(returningUser));
+        Assert.assertEquals(segmentReturningUser.evaluate(), true);
     }
 
     @Test
