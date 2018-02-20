@@ -14,9 +14,6 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by abhishek on 18/09/15 at 1:37 PM.
- */
 public class CustomSegment extends Segment {
 
     private static final String PREVIOUS_LOGICAL_OPERATOR = "prevLogicalOperator";

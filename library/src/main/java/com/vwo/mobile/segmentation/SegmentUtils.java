@@ -8,7 +8,6 @@ import java.util.List;
 /**
  * Created by aman on Fri 05/01/18 18:04.
  */
-
 public class SegmentUtils {
 
     public static boolean evaluateSegmentation(Campaign campaign) {

@@ -5,9 +5,6 @@ import com.vwo.mobile.constants.AppConstants;
 import com.vwo.mobile.data.VWOPersistData;
 import com.vwo.mobile.utils.VWOUtils;
 
-/**
- * Created by abhishek on 09/10/15 at 4:24 PM.
- */
 public enum PredefinedSegmentEnum {
 
 
@@ -21,7 +18,7 @@ public enum PredefinedSegmentEnum {
         boolean isReturningUser = (boolean) value;
         return VWOPersistData.isReturningUser(vwo) && isReturningUser || !VWOPersistData.isReturningUser(vwo) && !isReturningUser;
     }),
-    DEFAULT("", (vwo, value) -> true);
+    DEFAULT("", (vwo, value) -> false);
 
     private String mType;
 

@@ -4,7 +4,6 @@ package com.vwo.mobile.segmentation;
 import android.support.annotation.NonNull;
 
 public class Operator implements Comparable<Operator> {
-
     private static final String STRING_OR = "OR";
     public static final Operator OR = new Operator(STRING_OR, 8);
     private static final String STRING_AND = "AND";
