@@ -31,10 +31,6 @@ public class FragmentOnBoarding extends Fragment implements View.OnClickListener
     private int pageType;
     private AppCompatEditText email;
     private AppCompatEditText password;
-    private AppCompatButton login;
-    private AppCompatButton facebookLogin;
-    private AppCompatTextView textViewOr;
-    private AppCompatButton skipLogin;
 
     @Nullable
     @Override
@@ -52,10 +48,10 @@ public class FragmentOnBoarding extends Fragment implements View.OnClickListener
 
         email = view.findViewById(R.id.edit_text_email);
         password = view.findViewById(R.id.edit_text_password);
-        login = view.findViewById(R.id.button_login);
-        facebookLogin = view.findViewById(R.id.button_facebook_login);
-        textViewOr = view.findViewById(R.id.text_or);
-        skipLogin = view.findViewById(R.id.button_skip);
+        AppCompatButton login = view.findViewById(R.id.button_login);
+        AppCompatButton facebookLogin = view.findViewById(R.id.button_facebook_login);
+        AppCompatTextView textViewOr = view.findViewById(R.id.text_or);
+        AppCompatButton skipLogin = view.findViewById(R.id.button_skip);
 
 
         switch (pageType) {
@@ -168,7 +164,7 @@ public class FragmentOnBoarding extends Fragment implements View.OnClickListener
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt(ARG_PAGE_TYPE, pageType);
     }

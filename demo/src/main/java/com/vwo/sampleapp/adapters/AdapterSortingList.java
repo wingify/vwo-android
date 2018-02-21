@@ -88,12 +88,9 @@ public class AdapterSortingList extends RecyclerView.Adapter<RecyclerView.ViewHo
             itemImage = itemView.findViewById(R.id.item_image);
             itemVendor = itemView.findViewById(R.id.item_vendor);
             itemPrice = itemView.findViewById(R.id.item_price);
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if(itemClickListener != null) {
-                        itemClickListener.onItemClicked(ViewHolderList.this, getAdapterPosition());
-                    }
+            itemView.setOnClickListener(view -> {
+                if(itemClickListener != null) {
+                    itemClickListener.onItemClicked(ViewHolderList.this, getAdapterPosition());
                 }
             });
         }
@@ -111,12 +108,9 @@ public class AdapterSortingList extends RecyclerView.Adapter<RecyclerView.ViewHo
             itemImage = itemView.findViewById(R.id.item_image);
             itemVendor = itemView.findViewById(R.id.item_vendor);
             itemPrice = itemView.findViewById(R.id.item_price);
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if(itemClickListener != null) {
-                        itemClickListener.onItemClicked(ViewHolderGrid.this, getAdapterPosition());
-                    }
+            itemView.setOnClickListener(view -> {
+                if(itemClickListener != null) {
+                    itemClickListener.onItemClicked(ViewHolderGrid.this, getAdapterPosition());
                 }
             });
         }

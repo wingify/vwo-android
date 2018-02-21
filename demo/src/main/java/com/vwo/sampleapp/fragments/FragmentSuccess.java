@@ -4,6 +4,7 @@ import android.databinding.BindingAdapter;
 import android.databinding.DataBindingUtil;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.graphics.drawable.VectorDrawableCompat;
 import android.support.v4.app.Fragment;
@@ -29,12 +30,13 @@ public class FragmentSuccess extends Fragment {
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         FragmentSuccessBinding binding = DataBindingUtil.inflate(inflater, R.layout.fragment_success, container, false);
 
         View view = binding.getRoot();
 
         if (savedInstanceState == null) {
+            assert getArguments() != null;
             success = getArguments().getParcelable(ARG_SUCCESS);
         } else {
             success = savedInstanceState.getParcelable(ARG_SUCCESS);
@@ -47,7 +49,7 @@ public class FragmentSuccess extends Fragment {
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelable(ARG_SUCCESS, success);
     }

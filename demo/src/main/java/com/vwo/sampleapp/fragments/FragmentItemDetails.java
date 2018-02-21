@@ -32,43 +32,30 @@ public class FragmentItemDetails extends Fragment {
 
     private Mobile mobile;
     private int fragmentType;
-    private AppCompatImageView closeButton;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         FragmentItemDetailsBinding binding = DataBindingUtil.inflate(inflater, R.layout.fragment_item_details, container, false);
         View view = binding.getRoot();
-        closeButton = view.findViewById(R.id.button_close);
+        AppCompatImageView closeButton = view.findViewById(R.id.button_close);
         AppCompatButton addToCart = view.findViewById(R.id.button_add_to_cart);
         AppCompatButton buyNow = view.findViewById(R.id.button_buy);
-        addToCart.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                VWO.trackConversion("AddToCard");
-            }
-        });
-        buyNow.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                VWO.trackConversion("Bought", mobile.getPrice());
-            }
-        });
-        closeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (getParentFragment() instanceof ChangeFragment) {
-                    ChangeFragment listener = (ChangeFragment) getParentFragment();
-                    Bundle bundle = new Bundle();
-                    if (fragmentType == FragmentSortingMain.ID_DETAILS_CONTROL) {
-                        listener.loadFragment(bundle, FragmentSortingMain.ID_LIST_CONTROL, FragmentSortingMain.TAG_CONTROL);
-                    } else {
-                        listener.loadFragment(bundle, FragmentSortingMain.ID_LIST_VARIATION, FragmentSortingMain.TAG_VARIATION);
-                    }
+        addToCart.setOnClickListener(view1 -> VWO.trackConversion("AddToCard"));
+        buyNow.setOnClickListener(view12 -> VWO.trackConversion("Bought", mobile.getPrice()));
+        closeButton.setOnClickListener(view13 -> {
+            if (getParentFragment() instanceof ChangeFragment) {
+                ChangeFragment listener = (ChangeFragment) getParentFragment();
+                Bundle bundle = new Bundle();
+                if (fragmentType == FragmentSortingMain.ID_DETAILS_CONTROL) {
+                    listener.loadFragment(bundle, FragmentSortingMain.ID_LIST_CONTROL, FragmentSortingMain.TAG_CONTROL);
+                } else {
+                    listener.loadFragment(bundle, FragmentSortingMain.ID_LIST_VARIATION, FragmentSortingMain.TAG_VARIATION);
                 }
             }
         });
         if(savedInstanceState == null) {
+            assert getArguments() != null;
             mobile = getArguments().getParcelable(ARG_ITEM);
             fragmentType = getArguments().getInt(ARG_FRAGMENT_TYPE);
         } else {
@@ -127,7 +114,7 @@ public class FragmentItemDetails extends Fragment {
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelable(ARG_ITEM, mobile);
         outState.putInt(ARG_FRAGMENT_TYPE, fragmentType);
