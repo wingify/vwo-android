@@ -263,7 +263,7 @@ public class VWOUtils {
             if (manager != null) {
                 final String simCountry = manager.getSimCountryIso();
                 if (simCountry != null && simCountry.length() == 2) {
-                    return simCountry.toLowerCase(Locale.US);
+                    return simCountry;
                 } else if (manager.getPhoneType() != TelephonyManager.PHONE_TYPE_CDMA) {
                     String countryCode = manager.getNetworkCountryIso();
                     if (countryCode != null && countryCode.length() == 2) {
