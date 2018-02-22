@@ -9,15 +9,14 @@ import android.content.res.Configuration;
 import android.os.Build;
 import android.support.annotation.CheckResult;
 import android.support.annotation.NonNull;
+import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 
 import com.vwo.mobile.VWO;
 import com.vwo.mobile.constants.AppConstants;
 
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Locale;
@@ -31,8 +30,8 @@ import java.util.regex.Pattern;
  */
 public class VWOUtils {
 
-    public static Boolean mIsAppStoreApp;
     private static final boolean FORCE_APP_STORE = false;
+    public static Boolean mIsAppStoreApp;
     private VWO mVWO;
 
     public VWOUtils(VWO vwo) {
@@ -136,10 +135,6 @@ public class VWOUtils {
         return Locale.getDefault().getLanguage();
     }
 
-    public static String getLocale() {
-        return Locale.getDefault().toString();
-    }
-
     public static String getLocaleTag() {
         return Locale.getDefault().toString();
     }
@@ -162,15 +157,10 @@ public class VWOUtils {
         return metrics.densityDpi >= 240 ? 0.5F : 1.0F;
     }
 
-    public boolean isDebugMode() {
-        assert mVWO.getCurrentContext() != null;
-        return (0 != (mVWO.getCurrentContext().getApplicationInfo().flags &= ApplicationInfo.FLAG_DEBUGGABLE));
-    }
-
     public static boolean checkForInternetPermissions(Context context) {
 
         boolean hasInternetPermission = checkForPermission(context, Manifest.permission.INTERNET);
-        if(!hasInternetPermission) {
+        if (!hasInternetPermission) {
             String errorMsg = "VWO requires Internet permission.\n" +
                     "Add <uses-permission android:name=\"android.permission.INTERNET\"/> in AndroidManifest.xml";
             VWOLog.e(VWOLog.CONFIG_LOGS, errorMsg, false, false);
@@ -179,7 +169,7 @@ public class VWOUtils {
 
         boolean hasNetworkStatePermission = checkForPermission(context, Manifest.permission.ACCESS_NETWORK_STATE);
 
-        if(!hasNetworkStatePermission) {
+        if (!hasNetworkStatePermission) {
             String errorMsg = "Granting ACCESS_NETWORK_STATE permission makes VWO work smarter.\n" +
                     "Add <uses-permission android:name=\"android.permission.ACCESS_NETWORK_STATE\"/> in AndroidManifest.xml";
             VWOLog.e(VWOLog.CONFIG_LOGS, errorMsg, false, false);
@@ -251,5 +241,40 @@ public class VWOUtils {
             phrase.append(c);
         }
         return phrase.toString();
+    }
+
+    public boolean isDebugMode() {
+        assert mVWO.getCurrentContext() != null;
+        return (0 != (mVWO.getCurrentContext().getApplicationInfo().flags &= ApplicationInfo.FLAG_DEBUGGABLE));
+    }
+
+
+    /**
+     * Get device ISO 3166 alpha-2 country code.
+     * This function uses sim card or network to fetch country code, uses Device locale as a fallback.
+     *
+     * @param context is the application context.
+     * @return the ISO 3166 alpha-2 country code eg. IN for India, US for United States of America,
+     * AE for United Arab Emirates etc.
+     */
+    public static String getDeviceCountryCode(Context context) {
+        try {
+            TelephonyManager manager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+            if (manager != null) {
+                final String simCountry = manager.getSimCountryIso();
+                if (simCountry != null && simCountry.length() == 2) {
+                    return simCountry.toLowerCase(Locale.US);
+                } else if (manager.getPhoneType() != TelephonyManager.PHONE_TYPE_CDMA) {
+                    String countryCode = manager.getNetworkCountryIso();
+                    if (countryCode != null && countryCode.length() == 2) {
+                        return countryCode;
+                    }
+                }
+            }
+        } catch (Exception exception) {
+            VWOLog.e(VWOLog.CONFIG_LOGS, exception, true, false);
+        }
+
+        return Locale.getDefault().getCountry();
     }
 }

@@ -143,16 +143,16 @@ public class CustomSegmentEnumTest {
 
     @Test
     @PrepareForTest({VWOUtils.class})
-    public void appVersionContainsTest() throws JSONException {
+    public void appVersionLessThanTest() throws JSONException {
         VWO vwo = new VWOMock().getVWOMockObject();
 
         PowerMockito.mockStatic(VWOUtils.class);
         PowerMockito.when(VWOUtils.applicationVersion(any(Context.class))).thenReturn(20);
 
         CustomSegmentEvaluateEnum.EvaluateSegment evaluator =
-                CustomSegmentEvaluateEnum.getEvaluator(AppConstants.APP_VERSION, AppConstants.CONTAINS);
+                CustomSegmentEvaluateEnum.getEvaluator(AppConstants.APP_VERSION, AppConstants.LESS_THAN);
 
-        Assert.assertTrue(evaluator.evaluate(vwo, new JSONArray("[\"2\"]")));
+        Assert.assertTrue(evaluator.evaluate(vwo, new JSONArray("[\"21\"]")));
 
         Assert.assertFalse(evaluator.evaluate(vwo, new JSONArray("[\"1\"]")));
 
@@ -161,36 +161,18 @@ public class CustomSegmentEnumTest {
 
     @Test
     @PrepareForTest({VWOUtils.class})
-    public void appVersionStartsWithTest() throws JSONException {
+    public void appVersionGreaterThanTest() throws JSONException {
         VWO vwo = new VWOMock().getVWOMockObject();
 
         PowerMockito.mockStatic(VWOUtils.class);
         PowerMockito.when(VWOUtils.applicationVersion(any(Context.class))).thenReturn(20);
 
         CustomSegmentEvaluateEnum.EvaluateSegment evaluator =
-                CustomSegmentEvaluateEnum.getEvaluator(AppConstants.APP_VERSION, AppConstants.STARTS_WITH);
+                CustomSegmentEvaluateEnum.getEvaluator(AppConstants.APP_VERSION, AppConstants.GREATER_THAN);
 
         Assert.assertTrue(evaluator.evaluate(vwo, new JSONArray("[\"2\"]")));
 
-        Assert.assertFalse(evaluator.evaluate(vwo, new JSONArray("[\"1\"]")));
-
-        Assert.assertFalse(evaluator.evaluate(vwo, new JSONArray("[\"abc\"]")));
-    }
-
-    @Test
-    @PrepareForTest({VWOUtils.class})
-    public void appVersionMatchesRegexTest() throws JSONException {
-        VWO vwo = new VWOMock().getVWOMockObject();
-
-        PowerMockito.mockStatic(VWOUtils.class);
-        PowerMockito.when(VWOUtils.applicationVersion(any(Context.class))).thenReturn(20);
-
-        CustomSegmentEvaluateEnum.EvaluateSegment evaluator =
-                CustomSegmentEvaluateEnum.getEvaluator(AppConstants.APP_VERSION, AppConstants.MATCHES_REGEX);
-
-        Assert.assertTrue(evaluator.evaluate(vwo, new JSONArray("[\"[0-9]*\"]")));
-
-        Assert.assertFalse(evaluator.evaluate(vwo, new JSONArray("[\"[3-9]*\"]")));
+        Assert.assertFalse(evaluator.evaluate(vwo, new JSONArray("[\"21\"]")));
 
         Assert.assertFalse(evaluator.evaluate(vwo, new JSONArray("[\"abc\"]")));
     }
@@ -373,6 +355,39 @@ public class CustomSegmentEnumTest {
         Assert.assertFalse(evaluator.evaluate(vwo, new JSONArray("[0, 3, 7]")));
     }
 
+    @Test
+    @Config(qualifiers = "en-rIN")
+    public void locationEqualsTest() throws JSONException {
+        VWO vwo = new VWOMock().getVWOMockObject();
+
+        CustomSegmentEvaluateEnum.EvaluateSegment evaluator =
+                CustomSegmentEvaluateEnum.getEvaluator(AppConstants.LOCATION, AppConstants.EQUAL_TO);
+
+        Assert.assertTrue(evaluator.evaluate(vwo, new JSONArray("[\n" +
+                "\"AF\",\n" +
+                "\"AI\",\n" +
+                "\"AQ\",\n" +
+                "\"IN\",\n" +
+                "\"SR\"\n" +
+                "]")));
+    }
+
+    @Test
+    @Config(qualifiers = "en-rUS")
+    public void locationNotEqualsTest() throws JSONException {
+        VWO vwo = new VWOMock().getVWOMockObject();
+
+        CustomSegmentEvaluateEnum.EvaluateSegment evaluator =
+                CustomSegmentEvaluateEnum.getEvaluator(AppConstants.LOCATION, AppConstants.NOT_EQUAL_TO);
+
+        Assert.assertTrue(evaluator.evaluate(vwo, new JSONArray("[\n" +
+                "\"AF\",\n" +
+                "\"AI\",\n" +
+                "\"AQ\",\n" +
+                "\"IN\",\n" +
+                "\"SR\"\n" +
+                "]")));
+    }
 
     @Test
     @Config(qualifiers = "en-rUS-w320dp-h240dp-xxxhdpi")

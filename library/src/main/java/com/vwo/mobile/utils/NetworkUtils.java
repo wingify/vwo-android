@@ -6,10 +6,12 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.telephony.TelephonyManager;
 
 import com.vwo.mobile.VWO;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 /**

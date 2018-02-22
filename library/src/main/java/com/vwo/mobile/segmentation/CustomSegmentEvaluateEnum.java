@@ -167,18 +167,14 @@ public enum CustomSegmentEvaluateEnum {
     LOCATION_EQUAL_TO(AppConstants.LOCATION, AppConstants.EQUAL_TO, new EvaluateSegment() {
         @Override
         public boolean evaluate(VWO vwo, JSONArray data) {
-            String locale = VWOUtils.getLocale();
-            if (locale.contains("_")) {
-                String[] tempLocale = locale.split("_");
-                locale = tempLocale[1];
-            }
+            String locale = VWOUtils.getDeviceCountryCode(vwo.getCurrentContext());
 
             for (int i = 0; i < data.length(); i++) {
                 try {
                     if (data.getString(i).equalsIgnoreCase(locale)) {
                         return true;
                     }
-                } catch (JSONException exception) {
+                } catch (Exception exception) {
                     VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse location", exception,
                             false, true);
                 }
@@ -190,18 +186,14 @@ public enum CustomSegmentEvaluateEnum {
     LOCATION_NOT_EQUAL_TO(AppConstants.LOCATION, AppConstants.NOT_EQUAL_TO, new EvaluateSegment() {
         @Override
         public boolean evaluate(VWO vwo, JSONArray data) {
-            String locale = VWOUtils.getLocale();
-            if (locale.contains("_")) {
-                String[] tempLocale = locale.split("_");
-                locale = tempLocale[1];
-            }
+            String locale = VWOUtils.getDeviceCountryCode(vwo.getCurrentContext());
 
             for (int i = 0; i < data.length(); i++) {
                 try {
                     if (data.getString(i).equalsIgnoreCase(locale)) {
                         return false;
                     }
-                } catch (JSONException exception) {
+                } catch (Exception exception) {
                     VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse location", exception,
                             false, true);
                 }
@@ -248,18 +240,16 @@ public enum CustomSegmentEvaluateEnum {
         }
     }),
 
-    APP_VERSION_MATCHES_REGEX(AppConstants.APP_VERSION, AppConstants.MATCHES_REGEX, new EvaluateSegment() {
+    APP_VERSION_LESS_THAN(AppConstants.APP_VERSION, AppConstants.LESS_THAN, new EvaluateSegment() {
         @Override
         public boolean evaluate(VWO vwo, JSONArray data) {
-            String appVersion = String.valueOf(VWOUtils.applicationVersion(vwo.getCurrentContext()));
+            int appVersion = VWOUtils.applicationVersion(vwo.getCurrentContext());
             for (int i = 0; i < data.length(); i++) {
                 try {
-                    Pattern pattern = Pattern.compile(data.getString(i));
-                    Matcher matcher = pattern.matcher(appVersion);
-                    if (matcher.matches()) {
+                    if (appVersion < data.getInt(i)) {
                         return true;
                     }
-                } catch (JSONException exception) {
+                } catch (Exception exception) {
                     VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse app version", exception,
                             false, false);
                 }
@@ -268,33 +258,14 @@ public enum CustomSegmentEvaluateEnum {
         }
     }),
 
-    APP_VERSION_CONTAINS(AppConstants.APP_VERSION, AppConstants.CONTAINS, new EvaluateSegment() {
+    APP_VERSION_GREATER_THAN(AppConstants.APP_VERSION, AppConstants.GREATER_THAN, new EvaluateSegment() {
         @Override
         public boolean evaluate(VWO vwo, JSONArray data) {
-            String appVersion = String.valueOf(VWOUtils.applicationVersion(vwo.getCurrentContext()));
+            int appVersion = VWOUtils.applicationVersion(vwo.getCurrentContext());
             for (int i = 0; i < data.length(); i++) {
                 try {
-                    String version = data.getString(i);
-                    if (appVersion.contains(version)) {
-                        return true;
-                    }
-                } catch (JSONException exception) {
-                    VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse app version", exception,
-                            false, false);
-                }
-            }
-            return false;
-        }
-    }),
-
-    APP_VERSION_STARTS_WITH(AppConstants.APP_VERSION, AppConstants.STARTS_WITH, new EvaluateSegment() {
-        @Override
-        public boolean evaluate(VWO vwo, JSONArray data) {
-            String appVersion = String.valueOf(VWOUtils.applicationVersion(vwo.getCurrentContext()));
-            for (int i = 0; i < data.length(); i++) {
-                try {
-                    String version = data.getString(i);
-                    if (appVersion.startsWith(version)) {
+                    int version = data.getInt(i);
+                    if (appVersion > version) {
                         return true;
                     }
                 } catch (JSONException exception) {

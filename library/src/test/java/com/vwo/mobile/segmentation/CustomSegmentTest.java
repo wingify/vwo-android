@@ -174,74 +174,49 @@ public class CustomSegmentTest {
     }
 
     @Test
-    public void appVersionContainsTest() throws JSONException, IOException {
+    public void appVersionLessThanTest() throws JSONException, IOException {
         VWO vwo = new VWOMock().getVWOMockObject();
 
         PowerMockito.mockStatic(VWOUtils.class);
         PowerMockito.when(VWOUtils.applicationVersion(any(Context.class))).thenReturn(20);
 
-        String appVersionContainsTrue = TestUtils.readJsonFile(getClass(), "com/vwo/mobile/segmentation/app_version_contains.json");
+        String lessThanTrue = TestUtils.readJsonFile(getClass(), "com/vwo/mobile/segmentation/app_version_less_than.json");
 
-        CustomSegment customSegmentAppVersionContainsTrue = new CustomSegment(vwo, new JSONObject(appVersionContainsTrue));
-        Assert.assertTrue(customSegmentAppVersionContainsTrue.evaluate());
-        PowerMockito.when(VWOUtils.applicationVersion(any(Context.class))).thenReturn(10);
+        CustomSegment customSegmentLessThanTrue = new CustomSegment(vwo, new JSONObject(lessThanTrue));
+        Assert.assertTrue(customSegmentLessThanTrue.evaluate());
+        PowerMockito.when(VWOUtils.applicationVersion(any(Context.class))).thenReturn(22);
 
-        String appVersionContainsFalse = TestUtils.readJsonFile(getClass(), "com/vwo/mobile/segmentation/app_version_contains.json");
+        String lessThanFalse = TestUtils.readJsonFile(getClass(), "com/vwo/mobile/segmentation/app_version_less_than.json");
 
-        CustomSegment customSegmentAppVersionContainsFalse = new CustomSegment(vwo, new JSONObject(appVersionContainsFalse));
-        Assert.assertFalse(customSegmentAppVersionContainsFalse.evaluate());
+        CustomSegment customSegmentLessThanFalse = new CustomSegment(vwo, new JSONObject(lessThanFalse));
+        Assert.assertFalse(customSegmentLessThanFalse.evaluate());
 
-        String invalid = TestUtils.readJsonFile(getClass(), "com/vwo/mobile/segmentation/app_version_contains_invalid.json");
+        String invalid = TestUtils.readJsonFile(getClass(), "com/vwo/mobile/segmentation/app_version_less_than_invalid.json");
 
         CustomSegment segmentInvalid = new CustomSegment(vwo, new JSONObject(invalid));
         Assert.assertFalse(segmentInvalid.evaluate());
     }
 
     @Test
-    public void appVersionStartsWithTest() throws JSONException, IOException {
+    public void appVersionGreaterThanTest() throws JSONException, IOException {
         VWO vwo = new VWOMock().getVWOMockObject();
 
         PowerMockito.mockStatic(VWOUtils.class);
         PowerMockito.when(VWOUtils.applicationVersion(any(Context.class))).thenReturn(20);
 
-        String startsWithTrue = TestUtils.readJsonFile(getClass(), "com/vwo/mobile/segmentation/app_version_starts_with.json");
+        String greaterThanTrue = TestUtils.readJsonFile(getClass(), "com/vwo/mobile/segmentation/app_version_greater_than.json");
 
-        CustomSegment segmentStartsWithTrue = new CustomSegment(vwo, new JSONObject(startsWithTrue));
-        Assert.assertTrue(segmentStartsWithTrue.evaluate());
+        CustomSegment segmentGreaterThanTrue = new CustomSegment(vwo, new JSONObject(greaterThanTrue));
+        Assert.assertTrue(segmentGreaterThanTrue.evaluate());
 
-        PowerMockito.when(VWOUtils.applicationVersion(any(Context.class))).thenReturn(10);
+        PowerMockito.when(VWOUtils.applicationVersion(any(Context.class))).thenReturn(5);
 
-        String startsWithFalse = TestUtils.readJsonFile(getClass(), "com/vwo/mobile/segmentation/app_version_starts_with.json");
+        String greaterThanFalse = TestUtils.readJsonFile(getClass(), "com/vwo/mobile/segmentation/app_version_greater_than.json");
 
-        CustomSegment segmentStartsWithFalse = new CustomSegment(vwo, new JSONObject(startsWithFalse));
-        Assert.assertFalse(segmentStartsWithFalse.evaluate());
+        CustomSegment segmentGreaterThanFalse = new CustomSegment(vwo, new JSONObject(greaterThanFalse));
+        Assert.assertFalse(segmentGreaterThanFalse.evaluate());
 
-        String invalid = TestUtils.readJsonFile(getClass(), "com/vwo/mobile/segmentation/app_version_starts_with_invalid.json");
-
-        CustomSegment segmentInvalid = new CustomSegment(vwo, new JSONObject(invalid));
-        Assert.assertFalse(segmentInvalid.evaluate());
-    }
-
-    @Test
-    public void appVersionMatchesRegexTest() throws JSONException, IOException {
-        VWO vwo = new VWOMock().getVWOMockObject();
-
-        PowerMockito.mockStatic(VWOUtils.class);
-        PowerMockito.when(VWOUtils.applicationVersion(any(Context.class))).thenReturn(20);
-
-        String matchesRegexTrue = TestUtils.readJsonFile(getClass(), "com/vwo/mobile/segmentation/app_version_matches_regex.json");
-
-        CustomSegment segmentRegexMatchesTrue = new CustomSegment(vwo, new JSONObject(matchesRegexTrue));
-        Assert.assertTrue(segmentRegexMatchesTrue.evaluate());
-
-        PowerMockito.when(VWOUtils.applicationVersion(any(Context.class))).thenReturn(40);
-
-        String matchesRegexFalse = TestUtils.readJsonFile(getClass(), "com/vwo/mobile/segmentation/app_version_matches_regex.json");
-
-        CustomSegment segmentRegexMatchesFalse = new CustomSegment(vwo, new JSONObject(matchesRegexFalse));
-        Assert.assertFalse(segmentRegexMatchesFalse.evaluate());
-
-        String invalid = TestUtils.readJsonFile(getClass(), "com/vwo/mobile/segmentation/app_version_matches_regex_invalid.json");
+        String invalid = TestUtils.readJsonFile(getClass(), "com/vwo/mobile/segmentation/app_version_greater_than_invalid.json");
 
         CustomSegment segmentInvalid = new CustomSegment(vwo, new JSONObject(invalid));
         Assert.assertFalse(segmentInvalid.evaluate());
@@ -466,6 +441,29 @@ public class CustomSegmentTest {
         Assert.assertTrue(customSegment.evaluate());
 
         Mockito.when(calendar.get(anyInt())).thenReturn(7);
+        Assert.assertFalse(customSegment.evaluate());
+    }
+
+
+    @Test
+    @Config(qualifiers = "en-rIN")
+    public void locationEqualsTest() throws IOException, JSONException {
+        VWO vwo = new VWOMock().getVWOMockObject();
+
+        String locationEquals = TestUtils.readJsonFile(getClass(), "com/vwo/mobile/segmentation/location_equals.json");
+
+        CustomSegment customSegment = new CustomSegment(vwo, new JSONObject(locationEquals));
+        Assert.assertTrue(customSegment.evaluate());
+    }
+
+    @Test
+    @Config(qualifiers = "en-rIN")
+    public void locationNotEqualsTest() throws JSONException, IOException {
+        VWO vwo = new VWOMock().getVWOMockObject();
+
+        String locationEquals = TestUtils.readJsonFile(getClass(), "com/vwo/mobile/segmentation/location_not_equals.json");
+
+        CustomSegment customSegment = new CustomSegment(vwo, new JSONObject(locationEquals));
         Assert.assertFalse(customSegment.evaluate());
     }
 

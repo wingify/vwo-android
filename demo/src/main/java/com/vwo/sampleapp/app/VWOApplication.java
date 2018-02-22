@@ -12,8 +12,8 @@ public class VWOApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
-                .detectAll()
-                .build());
+//        StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
+//                .detectAll()
+//                .build());
     }
 }

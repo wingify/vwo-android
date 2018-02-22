@@ -7,6 +7,7 @@ import junit.framework.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
+import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
 /**
@@ -29,5 +30,19 @@ public class VWOUtilsTest {
         Assert.assertFalse(VWOUtils.isValidVwoAppKey("abcnhdz3424234rh348ghginlaie7te4-"));
         Assert.assertFalse(VWOUtils.isValidVwoAppKey("-"));
         Assert.assertFalse(VWOUtils.isValidVwoAppKey("abcnhdz3424234rh348ghginlaie7te4-abc"));
+    }
+
+    @Test
+    @Config(qualifiers = "en-rIN")
+    public void countryCodeTestIndia(){
+        Assert.assertEquals("IN", VWOUtils.getDeviceCountryCode(RuntimeEnvironment.application.getApplicationContext()));
+        Assert.assertNotSame("US", VWOUtils.getDeviceCountryCode(RuntimeEnvironment.application.getApplicationContext()));
+    }
+
+    @Test
+    @Config(qualifiers = "ar-rAE-ldrtl")
+    public void countryCodeTestUnitedArab(){
+        Assert.assertEquals("AE", VWOUtils.getDeviceCountryCode(RuntimeEnvironment.application.getApplicationContext()));
+        Assert.assertNotSame("US", VWOUtils.getDeviceCountryCode(RuntimeEnvironment.application.getApplicationContext()));
     }
 }
