@@ -467,6 +467,17 @@ public class CustomSegmentTest {
         Assert.assertFalse(customSegment.evaluate());
     }
 
+    @Test
+    @Config(qualifiers = "en-")
+    public void locationEqualsInvalidTest() throws JSONException, IOException {
+        VWO vwo = new VWOMock().getVWOMockObject();
+
+        String locationEquals = TestUtils.readJsonFile(getClass(), "com/vwo/mobile/segmentation/location_equals.json");
+
+        CustomSegment customSegment = new CustomSegment(vwo, new JSONObject(locationEquals));
+        Assert.assertFalse(customSegment.evaluate());
+    }
+
 
     @Test
     @Config(qualifiers = "en-rUS-w320dp-h240dp-xxxhdpi")
