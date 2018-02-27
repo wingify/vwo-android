@@ -634,7 +634,7 @@ public enum CustomSegmentEvaluateEnum {
                     }
                 } catch (Exception exception) {
                     VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse custom segment", exception,
-                            false, false);
+                            false, true);
                 }
             }
             return false;
@@ -653,7 +653,7 @@ public enum CustomSegmentEvaluateEnum {
                     }
                 } catch (Exception exception) {
                     VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse custom segment", exception,
-                            false, false);
+                            false, true);
                 }
             }
             return false;
@@ -672,7 +672,7 @@ public enum CustomSegmentEvaluateEnum {
                     }
                 } catch (Exception exception) {
                     VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse custom segment", exception,
-                            false, false);
+                            false, true);
                 }
             }
             return false;
@@ -691,7 +691,7 @@ public enum CustomSegmentEvaluateEnum {
                     }
                 } catch (Exception exception) {
                     VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse custom segment", exception,
-                            false, false);
+                            false, true);
                 }
             }
             return false;
