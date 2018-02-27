@@ -29,21 +29,10 @@ import java.util.regex.Pattern;
  * Created by abhishek on 18/09/15 at 1:34 AM.
  */
 public class VWOUtils {
-
-    private static final boolean FORCE_APP_STORE = false;
-    public static Boolean mIsAppStoreApp;
     private VWO mVWO;
 
     public VWOUtils(VWO vwo) {
         mVWO = vwo;
-    }
-
-    public static String deviceId() {
-        return Build.DISPLAY.replaceAll(" ", "_");
-    }
-
-    public static String deviceName() {
-        return String.format("%s %s", Build.MANUFACTURER.toUpperCase(Locale.ENGLISH), Build.MODEL);
     }
 
     public static boolean isValidVwoAppKey(String appKey) {
@@ -64,11 +53,7 @@ public class VWOUtils {
         return deviceUuid;
     }
 
-    public static String deviceModel() {
-        return Build.MODEL;
-    }
-
-    public static String applicationName(Context context) {
+    private static String applicationName(Context context) {
         if (context != null) {
             ApplicationInfo applicationInfo = context.getApplicationInfo();
             if (applicationInfo != null && applicationInfo.packageName != null) {
@@ -90,25 +75,6 @@ public class VWOUtils {
                 >= Configuration.SCREENLAYOUT_SIZE_LARGE;
     }
 
-    public static Map<String, Integer> getScreenSizeMap(Context context) {
-        DisplayMetrics metrics = context.getResources().getDisplayMetrics();
-
-        assert metrics != null;
-
-        HashMap<String, Integer> screenMap = new HashMap<>();
-        screenMap.put("height", metrics.heightPixels);
-        screenMap.put("width", metrics.widthPixels);
-        return screenMap;
-    }
-
-    public static Map<String, Integer> getScaledScreenSizeMap(Context context) {
-        Map<String, Integer> toReturn = getScreenSizeMap(context);
-        double scaling = (double) getScreenshotScaling(context);
-        toReturn.put("height", (int) ((double) (Integer) toReturn.get("height") * scaling));
-        toReturn.put("width", (int) ((double) (Integer) toReturn.get("width") * scaling));
-        return toReturn;
-    }
-
     public static int applicationVersion(Context context) {
         if (context != null) {
             try {
@@ -128,33 +94,6 @@ public class VWOUtils {
         Random rn = new Random(System.currentTimeMillis() / 1000L + new Random().nextInt());
         return (rn.nextInt(100)) / 100.0;
 
-    }
-
-
-    public static String getLanguage() {
-        return Locale.getDefault().getLanguage();
-    }
-
-    public static String getLocaleTag() {
-        return Locale.getDefault().toString();
-    }
-
-    public static boolean isAppStoreApp(Context context) {
-        if (mIsAppStoreApp == null) {
-            PackageManager packageManager = context.getPackageManager();
-            String installer = packageManager.getInstallerPackageName(context.getPackageName());
-            mIsAppStoreApp = FORCE_APP_STORE || installer != null && !installer.isEmpty();
-        }
-
-        return mIsAppStoreApp;
-    }
-
-    public static float getScreenshotScaling(Context context) {
-        DisplayMetrics metrics = context.getResources().getDisplayMetrics();
-
-        assert metrics != null;
-
-        return metrics.densityDpi >= 240 ? 0.5F : 1.0F;
     }
 
     public static boolean checkForInternetPermissions(Context context) {
