@@ -1,8 +1,5 @@
 package com.vwo.mobile.constants;
 
-/**
- * Created by abhishek on 10/06/15.
- */
 public class AppConstants {
 
     public static final String CONFIG_FILE = "config1.json";
@@ -32,6 +29,9 @@ public class AppConstants {
     public static final String CUSTOM_SEGMENT = "7";
     public static final String USER_TYPE = "8";
     public static final String DEVICE_TYPE = "9";
+    public static final String SCREEN_WIDTH = "10";
+    public static final String SCREEN_HEIGHT = "11";
+    public static final String SCALE = "12";
 
     public static final int EQUAL_TO = 11;
     public static final int NOT_EQUAL_TO = 12;

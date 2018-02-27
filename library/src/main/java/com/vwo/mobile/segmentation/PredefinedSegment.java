@@ -7,9 +7,6 @@ import org.json.JSONObject;
 
 import java.util.Iterator;
 
-/**
- * Created by abhishek on 09/10/15 at 4:20 PM.
- */
 public class PredefinedSegment extends Segment {
 
     private static final String ID = "id";

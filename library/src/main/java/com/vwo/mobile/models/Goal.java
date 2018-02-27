@@ -3,9 +3,6 @@ package com.vwo.mobile.models;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-/**
- * Created by abhishek on 17/09/15 at 11:52 AM.
- */
 public class Goal {
 
     public final static String TYPE = "type";

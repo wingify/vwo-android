@@ -19,10 +19,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-
-/**
- * Created by abhishek on 17/09/15 at 11:39 PM.
- */
 public class VWODownloader {
 
     private static final int WARN_THRESHOLD = 3;

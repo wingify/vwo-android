@@ -6,6 +6,7 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.os.Build;
 import android.support.annotation.CheckResult;
 import android.support.annotation.NonNull;
@@ -25,9 +26,6 @@ import java.util.Random;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
-/**
- * Created by abhishek on 18/09/15 at 1:34 AM.
- */
 public class VWOUtils {
     private VWO mVWO;
 
@@ -185,6 +183,19 @@ public class VWOUtils {
     public boolean isDebugMode() {
         assert mVWO.getCurrentContext() != null;
         return (0 != (mVWO.getCurrentContext().getApplicationInfo().flags &= ApplicationInfo.FLAG_DEBUGGABLE));
+    }
+
+    public static int getScreenWidth() {
+        return Resources.getSystem().getDisplayMetrics().widthPixels;
+    }
+
+    public static int getScreenHeight() {
+        return Resources.getSystem().getDisplayMetrics().heightPixels;
+    }
+
+    public static double getScale(Context context) {
+        DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
+        return 1.0f / DisplayMetrics.DENSITY_DEFAULT * displayMetrics.densityDpi;
     }
 
 

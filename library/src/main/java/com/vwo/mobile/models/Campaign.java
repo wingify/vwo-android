@@ -14,9 +14,6 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-/**
- * Created by abhishek on 17/09/15 at 12:08 PM.
- */
 public class Campaign {
 
     public final static String ID = "id";

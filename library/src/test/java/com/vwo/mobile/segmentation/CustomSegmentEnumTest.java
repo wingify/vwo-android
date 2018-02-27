@@ -490,6 +490,186 @@ public class CustomSegmentEnumTest {
     }
 
     @Test
+    @PrepareForTest(VWOPersistData.class)
+    @Config(qualifiers = "en-rUS-w320dp-h240dp-xxhdpi")
+    public void screenWidthEqualsTest() throws JSONException {  // 320 * 3.0 = 960  xxhdpi is of the ratio 1:3.0
+        VWO vwo = new VWOMock().getVWOMockObject();
+
+        PowerMockito.mockStatic(VWOPersistData.class);
+        PowerMockito.when(VWOPersistData.isReturningUser(ArgumentMatchers.any(VWO.class))).thenReturn(false);
+
+        CustomSegmentEvaluateEnum.EvaluateSegment evaluator =
+                CustomSegmentEvaluateEnum.getEvaluator(AppConstants.SCREEN_WIDTH, AppConstants.EQUAL_TO);
+
+        Assert.assertTrue(evaluator.evaluate(vwo, new JSONArray("[960]")));
+    }
+
+    @Test
+    @PrepareForTest(VWOPersistData.class)
+    @Config(qualifiers = "en-rUS-w320dp-h240dp-xxxhdpi")
+    public void screenWidthNotEqualsTest() throws JSONException {  // 320 * 4.0 = 1280  xxxhdpi is of the ratio 1:4.0
+        VWO vwo = new VWOMock().getVWOMockObject();
+
+        PowerMockito.mockStatic(VWOPersistData.class);
+        PowerMockito.when(VWOPersistData.isReturningUser(ArgumentMatchers.any(VWO.class))).thenReturn(false);
+
+        CustomSegmentEvaluateEnum.EvaluateSegment evaluator =
+                CustomSegmentEvaluateEnum.getEvaluator(AppConstants.SCREEN_WIDTH, AppConstants.NOT_EQUAL_TO);
+
+        Assert.assertTrue(evaluator.evaluate(vwo, new JSONArray("[960]")));
+    }
+
+    @Test
+    @PrepareForTest(VWOPersistData.class)
+    @Config(qualifiers = "en-rUS-w480dp-h240dp-ldpi")
+    public void screenWidthLessThanTest() throws JSONException {  // 480 * 0.75 = 360  ldpi is of the ratio 1:0.75
+        VWO vwo = new VWOMock().getVWOMockObject();
+
+        PowerMockito.mockStatic(VWOPersistData.class);
+        PowerMockito.when(VWOPersistData.isReturningUser(ArgumentMatchers.any(VWO.class))).thenReturn(false);
+
+        CustomSegmentEvaluateEnum.EvaluateSegment evaluator =
+                CustomSegmentEvaluateEnum.getEvaluator(AppConstants.SCREEN_WIDTH, AppConstants.LESS_THAN);
+
+        Assert.assertTrue(evaluator.evaluate(vwo, new JSONArray("[960]")));
+    }
+
+    @Test
+    @PrepareForTest(VWOPersistData.class)
+    @Config(qualifiers = "en-rUS-w480dp-h240dp-xxxhdpi")
+    public void screenWidthGreaterThanTest() throws JSONException {  // 480 * 4.0 = 1920  xxxhdpi is of the ratio 1:4.0
+        VWO vwo = new VWOMock().getVWOMockObject();
+
+        PowerMockito.mockStatic(VWOPersistData.class);
+        PowerMockito.when(VWOPersistData.isReturningUser(ArgumentMatchers.any(VWO.class))).thenReturn(false);
+
+        CustomSegmentEvaluateEnum.EvaluateSegment evaluator =
+                CustomSegmentEvaluateEnum.getEvaluator(AppConstants.SCREEN_WIDTH, AppConstants.GREATER_THAN);
+
+        Assert.assertTrue(evaluator.evaluate(vwo, new JSONArray("[960]")));
+    }
+
+    @Test
+    @PrepareForTest(VWOPersistData.class)
+    @Config(qualifiers = "en-rUS-w480dp-h320dp-xxhdpi")
+    public void screenHeightEqualsTest() throws JSONException {  // 320 * 3.0 = 960  xxhdpi is of the ratio 1:3.0
+        VWO vwo = new VWOMock().getVWOMockObject();
+
+        PowerMockito.mockStatic(VWOPersistData.class);
+        PowerMockito.when(VWOPersistData.isReturningUser(ArgumentMatchers.any(VWO.class))).thenReturn(false);
+
+        CustomSegmentEvaluateEnum.EvaluateSegment evaluator =
+                CustomSegmentEvaluateEnum.getEvaluator(AppConstants.SCREEN_HEIGHT, AppConstants.EQUAL_TO);
+
+        Assert.assertTrue(evaluator.evaluate(vwo, new JSONArray("[960]")));
+    }
+
+    @Test
+    @PrepareForTest(VWOPersistData.class)
+    @Config(qualifiers = "en-rUS-w320dp-h320dp-xxxhdpi")
+    public void screenHeightNotEqualsTest() throws JSONException {  // 320 * 4.0 = 1280  xxxhdpi is of the ratio 1:4.0
+        VWO vwo = new VWOMock().getVWOMockObject();
+
+        PowerMockito.mockStatic(VWOPersistData.class);
+        PowerMockito.when(VWOPersistData.isReturningUser(ArgumentMatchers.any(VWO.class))).thenReturn(false);
+
+        CustomSegmentEvaluateEnum.EvaluateSegment evaluator =
+                CustomSegmentEvaluateEnum.getEvaluator(AppConstants.SCREEN_HEIGHT, AppConstants.NOT_EQUAL_TO);
+
+        Assert.assertTrue(evaluator.evaluate(vwo, new JSONArray("[960]")));
+    }
+
+    @Test
+    @PrepareForTest(VWOPersistData.class)
+    @Config(qualifiers = "en-rUS-w320dp-h480dp-ldpi")
+    public void screenHeightLessThanTest() throws JSONException {  // 480 * 0.75 = 360  ldpi is of the ratio 1:0.75
+        VWO vwo = new VWOMock().getVWOMockObject();
+
+        PowerMockito.mockStatic(VWOPersistData.class);
+        PowerMockito.when(VWOPersistData.isReturningUser(ArgumentMatchers.any(VWO.class))).thenReturn(false);
+
+        CustomSegmentEvaluateEnum.EvaluateSegment evaluator =
+                CustomSegmentEvaluateEnum.getEvaluator(AppConstants.SCREEN_HEIGHT, AppConstants.LESS_THAN);
+
+        Assert.assertTrue(evaluator.evaluate(vwo, new JSONArray("[960]")));
+    }
+
+    @Test
+    @PrepareForTest(VWOPersistData.class)
+    @Config(qualifiers = "en-rUS-w240dp-h480dp-xxxhdpi")
+    public void screenHeightGreaterThanTest() throws JSONException {  // 480 * 4.0 = 1920  xxxhdpi is of the ratio 1:4.0
+        VWO vwo = new VWOMock().getVWOMockObject();
+
+        PowerMockito.mockStatic(VWOPersistData.class);
+        PowerMockito.when(VWOPersistData.isReturningUser(ArgumentMatchers.any(VWO.class))).thenReturn(false);
+
+        CustomSegmentEvaluateEnum.EvaluateSegment evaluator =
+                CustomSegmentEvaluateEnum.getEvaluator(AppConstants.SCREEN_HEIGHT, AppConstants.GREATER_THAN);
+
+        Assert.assertTrue(evaluator.evaluate(vwo, new JSONArray("[960]")));
+    }
+
+    @Test
+    @PrepareForTest(VWOPersistData.class)
+    @Config(qualifiers = "en-rUS-w480dp-h320dp-xxhdpi")
+    public void scaleEqualsTest() throws JSONException {  // for xxhdpi scale = 3.0
+        VWO vwo = new VWOMock().getVWOMockObject();
+
+        PowerMockito.mockStatic(VWOPersistData.class);
+        PowerMockito.when(VWOPersistData.isReturningUser(ArgumentMatchers.any(VWO.class))).thenReturn(false);
+
+        CustomSegmentEvaluateEnum.EvaluateSegment evaluator =
+                CustomSegmentEvaluateEnum.getEvaluator(AppConstants.SCALE, AppConstants.EQUAL_TO);
+
+        Assert.assertTrue(evaluator.evaluate(vwo, new JSONArray("[3.0]")));
+    }
+
+    @Test
+    @PrepareForTest(VWOPersistData.class)
+    @Config(qualifiers = "en-rUS-w320dp-h320dp-xxxhdpi")
+    public void scaleNotEqualsTest() throws JSONException {  // for xxxhdpi scale = 4.0
+        VWO vwo = new VWOMock().getVWOMockObject();
+
+        PowerMockito.mockStatic(VWOPersistData.class);
+        PowerMockito.when(VWOPersistData.isReturningUser(ArgumentMatchers.any(VWO.class))).thenReturn(false);
+
+        CustomSegmentEvaluateEnum.EvaluateSegment evaluator =
+                CustomSegmentEvaluateEnum.getEvaluator(AppConstants.SCALE, AppConstants.NOT_EQUAL_TO);
+
+        Assert.assertTrue(evaluator.evaluate(vwo, new JSONArray("[3.0]")));
+    }
+
+    @Test
+    @PrepareForTest(VWOPersistData.class)
+    @Config(qualifiers = "en-rUS-w320dp-h480dp-ldpi")
+    public void scaleLessThanTest() throws JSONException {  // for ldpi scale = 0.75
+        VWO vwo = new VWOMock().getVWOMockObject();
+
+        PowerMockito.mockStatic(VWOPersistData.class);
+        PowerMockito.when(VWOPersistData.isReturningUser(ArgumentMatchers.any(VWO.class))).thenReturn(false);
+
+        CustomSegmentEvaluateEnum.EvaluateSegment evaluator =
+                CustomSegmentEvaluateEnum.getEvaluator(AppConstants.SCALE, AppConstants.LESS_THAN);
+
+        Assert.assertTrue(evaluator.evaluate(vwo, new JSONArray("[3.0]")));
+    }
+
+    @Test
+    @PrepareForTest(VWOPersistData.class)
+    @Config(qualifiers = "en-rUS-w240dp-h480dp-xxxhdpi")
+    public void scaleGreaterThanTest() throws JSONException { // for xxxhdpi scale = 4.0
+        VWO vwo = new VWOMock().getVWOMockObject();
+
+        PowerMockito.mockStatic(VWOPersistData.class);
+        PowerMockito.when(VWOPersistData.isReturningUser(ArgumentMatchers.any(VWO.class))).thenReturn(false);
+
+        CustomSegmentEvaluateEnum.EvaluateSegment evaluator =
+                CustomSegmentEvaluateEnum.getEvaluator(AppConstants.SCALE, AppConstants.GREATER_THAN);
+
+        Assert.assertTrue(evaluator.evaluate(vwo, new JSONArray("[2.0]")));
+    }
+
+    @Test
     public void invalidSegmentTest() throws JSONException {
         VWO vwo = new VWOMock().getVWOMockObject();
 

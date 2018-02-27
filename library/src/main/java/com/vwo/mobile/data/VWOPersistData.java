@@ -10,9 +10,6 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-/**
- * Created by abhishek on 24/09/15 at 1:28 PM.
- */
 public class VWOPersistData {
 
     /**
