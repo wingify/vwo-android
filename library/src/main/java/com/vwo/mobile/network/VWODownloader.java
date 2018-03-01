@@ -33,7 +33,7 @@ public class VWODownloader {
     public static void fetchFromServer(VWO vwo, final DownloadResult downloadResult) {
 
         String url = vwo.getVwoUrlBuilder().getDownloadUrl();
-        VWOLog.i(VWOLog.URL_LOGS, "Fetching data from: " + url, true);
+        VWOLog.v(VWOLog.URL_LOGS, "Fetching data from: " + url);
 
         if (vwo.getConfig().getTimeout() != null) {
             try {

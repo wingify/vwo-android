@@ -19,9 +19,7 @@ import com.vwo.mobile.constants.AppConstants;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
-import java.util.HashMap;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
 import java.util.regex.Pattern;
@@ -180,19 +178,44 @@ public class VWOUtils {
         return phrase.toString();
     }
 
+    /**
+     * Returns {@link Boolean#TRUE} is app is running in debug mode else {@link Boolean#FALSE}
+     *
+     * @return {@link Boolean#TRUE} is app is running in debug mode else {@link Boolean#FALSE}
+     */
     public boolean isDebugMode() {
         assert mVWO.getCurrentContext() != null;
         return (0 != (mVWO.getCurrentContext().getApplicationInfo().flags &= ApplicationInfo.FLAG_DEBUGGABLE));
     }
 
+    /**
+     * Returns the width of screen in pixels.
+     *
+     * @return the width of screen in pixels
+     */
     public static int getScreenWidth() {
         return Resources.getSystem().getDisplayMetrics().widthPixels;
     }
 
+    /**
+     * Returns the height of screen in pixels.
+     *
+     * @return the height of screen in pixels
+     *
+     * Note: it does not include the size of status bar and navigation bar.
+     */
     public static int getScreenHeight() {
         return Resources.getSystem().getDisplayMetrics().heightPixels;
     }
 
+    /**
+     * Returns the scale calculated as 1.0f / {@link DisplayMetrics#DENSITY_DEFAULT} * {@link DisplayMetrics#densityDpi}.
+     * Scale 1 is for mdpi i.e. 160
+     *
+     * @param context the application context.
+     *
+     * @return the screen scale in {@link Integer}.
+     */
     public static double getScale(Context context) {
         DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
         return 1.0f / DisplayMetrics.DENSITY_DEFAULT * displayMetrics.densityDpi;

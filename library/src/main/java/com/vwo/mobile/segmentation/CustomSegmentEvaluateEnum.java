@@ -400,7 +400,7 @@ public enum CustomSegmentEvaluateEnum {
         }
     }),
 
-    CUSTOM_SEGMENT_USER_TYPE_EQUALS(AppConstants.USER_TYPE, AppConstants.EQUAL_TO, new EvaluateSegment() {
+    USER_TYPE_EQUALS(AppConstants.USER_TYPE, AppConstants.EQUAL_TO, new EvaluateSegment() {
         @Override
         public boolean evaluate(VWO vwo, JSONArray data) {
             boolean isReturning = VWOPersistData.isReturningUser(vwo);
@@ -410,14 +410,14 @@ public enum CustomSegmentEvaluateEnum {
                     return isReturning && type.equalsIgnoreCase(AppConstants.USER_TYPE_RETURNING) ||
                             !isReturning && type.equalsIgnoreCase(AppConstants.USER_TYPE_NEW);
                 } catch (Exception exception) {
-                    VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse custom segment", exception,
+                    VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse user type", exception,
                             false, false);
                 }
             }
             return false;
         }
     }),
-    CUSTOM_SEGMENT_USER_TYPE_NOT_EQUALS(AppConstants.USER_TYPE, AppConstants.NOT_EQUAL_TO, new EvaluateSegment() {
+    USER_TYPE_NOT_EQUALS(AppConstants.USER_TYPE, AppConstants.NOT_EQUAL_TO, new EvaluateSegment() {
         @Override
         public boolean evaluate(VWO vwo, JSONArray data) {
             boolean isReturning = VWOPersistData.isReturningUser(vwo);
@@ -427,14 +427,14 @@ public enum CustomSegmentEvaluateEnum {
                     return !isReturning && type.equalsIgnoreCase(AppConstants.USER_TYPE_RETURNING) ||
                             isReturning && type.equalsIgnoreCase(AppConstants.USER_TYPE_NEW);
                 } catch (Exception exception) {
-                    VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse custom segment", exception,
+                    VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse user type", exception,
                             false, false);
                 }
             }
             return false;
         }
     }),
-    CUSTOM_SEGMENT_DEVICE_TYPE_EQUALS(AppConstants.DEVICE_TYPE, AppConstants.EQUAL_TO, new EvaluateSegment() {
+    DEVICE_TYPE_EQUALS(AppConstants.DEVICE_TYPE, AppConstants.EQUAL_TO, new EvaluateSegment() {
         @Override
         public boolean evaluate(VWO vwo, JSONArray data) {
             boolean isTablet = VWOUtils.isTablet(vwo.getCurrentContext());
@@ -444,7 +444,7 @@ public enum CustomSegmentEvaluateEnum {
                     return isTablet && type.equalsIgnoreCase(AppConstants.DEVICE_TYPE_TABLET) ||
                             !isTablet && type.equalsIgnoreCase(AppConstants.DEVICE_TYPE_PHONE);
                 } catch (Exception exception) {
-                    VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse custom segment", exception,
+                    VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse device type", exception,
                             false, false);
                 }
             }
@@ -452,7 +452,7 @@ public enum CustomSegmentEvaluateEnum {
         }
     }),
 
-    CUSTOM_SEGMENT_DEVICE_TYPE_NOT_EQUALS(AppConstants.DEVICE_TYPE, AppConstants.NOT_EQUAL_TO, new EvaluateSegment() {
+    DEVICE_TYPE_NOT_EQUALS(AppConstants.DEVICE_TYPE, AppConstants.NOT_EQUAL_TO, new EvaluateSegment() {
         @Override
         public boolean evaluate(VWO vwo, JSONArray data) {
             boolean isTablet = VWOUtils.isTablet(vwo.getCurrentContext());
@@ -462,7 +462,7 @@ public enum CustomSegmentEvaluateEnum {
                     return !isTablet && type.equalsIgnoreCase(AppConstants.DEVICE_TYPE_TABLET) ||
                             isTablet && type.equalsIgnoreCase(AppConstants.DEVICE_TYPE_PHONE);
                 } catch (Exception exception) {
-                    VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse custom segment", exception,
+                    VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse device type", exception,
                             false, false);
                 }
             }
@@ -470,7 +470,7 @@ public enum CustomSegmentEvaluateEnum {
         }
     }),
 
-    CUSTOM_SEGMENT_SCREEN_WIDTH_EQUALS(AppConstants.SCREEN_WIDTH, AppConstants.EQUAL_TO, new EvaluateSegment() {
+    SCREEN_WIDTH_EQUALS(AppConstants.SCREEN_WIDTH, AppConstants.EQUAL_TO, new EvaluateSegment() {
         @Override
         public boolean evaluate(VWO vwo, JSONArray data) {
             int screenWidth = VWOUtils.getScreenWidth();
@@ -481,7 +481,7 @@ public enum CustomSegmentEvaluateEnum {
                         return true;
                     }
                 } catch (Exception exception) {
-                    VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse custom segment", exception,
+                    VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse screen width", exception,
                             false, false);
                 }
             }
@@ -489,7 +489,7 @@ public enum CustomSegmentEvaluateEnum {
         }
     }),
 
-    CUSTOM_SEGMENT_SCREEN_WIDTH_NOT_EQUALS(AppConstants.SCREEN_WIDTH, AppConstants.NOT_EQUAL_TO, new EvaluateSegment() {
+    SCREEN_WIDTH_NOT_EQUALS(AppConstants.SCREEN_WIDTH, AppConstants.NOT_EQUAL_TO, new EvaluateSegment() {
         @Override
         public boolean evaluate(VWO vwo, JSONArray data) {
             int screenWidth = VWOUtils.getScreenWidth();
@@ -500,7 +500,7 @@ public enum CustomSegmentEvaluateEnum {
                         return true;
                     }
                 } catch (Exception exception) {
-                    VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse custom segment", exception,
+                    VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse screen width", exception,
                             false, false);
                 }
             }
@@ -508,7 +508,7 @@ public enum CustomSegmentEvaluateEnum {
         }
     }),
 
-    CUSTOM_SEGMENT_SCREEN_WIDTH_GREATER_THAN(AppConstants.SCREEN_WIDTH, AppConstants.GREATER_THAN, new EvaluateSegment() {
+    SCREEN_WIDTH_GREATER_THAN(AppConstants.SCREEN_WIDTH, AppConstants.GREATER_THAN, new EvaluateSegment() {
         @Override
         public boolean evaluate(VWO vwo, JSONArray data) {
             int screenWidth = VWOUtils.getScreenWidth();
@@ -519,7 +519,7 @@ public enum CustomSegmentEvaluateEnum {
                         return true;
                     }
                 } catch (Exception exception) {
-                    VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse custom segment", exception,
+                    VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse screen width", exception,
                             false, false);
                 }
             }
@@ -527,7 +527,7 @@ public enum CustomSegmentEvaluateEnum {
         }
     }),
 
-    CUSTOM_SEGMENT_SCREEN_WIDTH_LESS_THAN(AppConstants.SCREEN_WIDTH, AppConstants.LESS_THAN, new EvaluateSegment() {
+    SCREEN_WIDTH_LESS_THAN(AppConstants.SCREEN_WIDTH, AppConstants.LESS_THAN, new EvaluateSegment() {
         @Override
         public boolean evaluate(VWO vwo, JSONArray data) {
             int screenWidth = VWOUtils.getScreenWidth();
@@ -538,7 +538,7 @@ public enum CustomSegmentEvaluateEnum {
                         return true;
                     }
                 } catch (Exception exception) {
-                    VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse custom segment", exception,
+                    VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse screen width", exception,
                             false, false);
                 }
             }
@@ -546,7 +546,7 @@ public enum CustomSegmentEvaluateEnum {
         }
     }),
 
-    CUSTOM_SEGMENT_SCREEN_HEIGHT_EQUALS(AppConstants.SCREEN_HEIGHT, AppConstants.EQUAL_TO, new EvaluateSegment() {
+    SCREEN_HEIGHT_EQUALS(AppConstants.SCREEN_HEIGHT, AppConstants.EQUAL_TO, new EvaluateSegment() {
         @Override
         public boolean evaluate(VWO vwo, JSONArray data) {
             int screenHeight = VWOUtils.getScreenHeight();
@@ -557,7 +557,7 @@ public enum CustomSegmentEvaluateEnum {
                         return true;
                     }
                 } catch (Exception exception) {
-                    VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse custom segment", exception,
+                    VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse screen height", exception,
                             false, false);
                 }
             }
@@ -565,7 +565,7 @@ public enum CustomSegmentEvaluateEnum {
         }
     }),
 
-    CUSTOM_SEGMENT_SCREEN_HEIGHT_NOT_EQUALS(AppConstants.SCREEN_HEIGHT, AppConstants.NOT_EQUAL_TO, new EvaluateSegment() {
+    SCREEN_HEIGHT_NOT_EQUALS(AppConstants.SCREEN_HEIGHT, AppConstants.NOT_EQUAL_TO, new EvaluateSegment() {
         @Override
         public boolean evaluate(VWO vwo, JSONArray data) {
             int screenHeight = VWOUtils.getScreenHeight();
@@ -576,7 +576,7 @@ public enum CustomSegmentEvaluateEnum {
                         return true;
                     }
                 } catch (Exception exception) {
-                    VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse custom segment", exception,
+                    VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse screen height", exception,
                             false, false);
                 }
             }
@@ -584,7 +584,7 @@ public enum CustomSegmentEvaluateEnum {
         }
     }),
 
-    CUSTOM_SEGMENT_SCREEN_HEIGHT_GREATER_THAN(AppConstants.SCREEN_HEIGHT, AppConstants.GREATER_THAN, new EvaluateSegment() {
+    SCREEN_HEIGHT_GREATER_THAN(AppConstants.SCREEN_HEIGHT, AppConstants.GREATER_THAN, new EvaluateSegment() {
         @Override
         public boolean evaluate(VWO vwo, JSONArray data) {
             int screenHeight = VWOUtils.getScreenHeight();
@@ -595,7 +595,7 @@ public enum CustomSegmentEvaluateEnum {
                         return true;
                     }
                 } catch (Exception exception) {
-                    VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse custom segment", exception,
+                    VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse screen height", exception,
                             false, false);
                 }
             }
@@ -603,7 +603,7 @@ public enum CustomSegmentEvaluateEnum {
         }
     }),
 
-    CUSTOM_SEGMENT_SCREEN_HEIGHT_LESS_THAN(AppConstants.SCREEN_HEIGHT, AppConstants.LESS_THAN, new EvaluateSegment() {
+    SCREEN_HEIGHT_LESS_THAN(AppConstants.SCREEN_HEIGHT, AppConstants.LESS_THAN, new EvaluateSegment() {
         @Override
         public boolean evaluate(VWO vwo, JSONArray data) {
             int screenHeight = VWOUtils.getScreenHeight();
@@ -614,7 +614,7 @@ public enum CustomSegmentEvaluateEnum {
                         return true;
                     }
                 } catch (Exception exception) {
-                    VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse custom segment", exception,
+                    VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse screen height", exception,
                             false, false);
                 }
             }
@@ -622,7 +622,7 @@ public enum CustomSegmentEvaluateEnum {
         }
     }),
 
-    CUSTOM_SEGMENT_SCALE_EQUALS(AppConstants.SCALE, AppConstants.EQUAL_TO, new EvaluateSegment() {
+    SCREEN_DENSITY_EQUALS(AppConstants.SCALE, AppConstants.EQUAL_TO, new EvaluateSegment() {
         @Override
         public boolean evaluate(VWO vwo, JSONArray data) {
             double actualScale = VWOUtils.getScale(vwo.getCurrentContext());
@@ -633,7 +633,7 @@ public enum CustomSegmentEvaluateEnum {
                         return true;
                     }
                 } catch (Exception exception) {
-                    VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse custom segment", exception,
+                    VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse screen density", exception,
                             false, true);
                 }
             }
@@ -641,7 +641,7 @@ public enum CustomSegmentEvaluateEnum {
         }
     }),
 
-    CUSTOM_SEGMENT_SCALE_NOT_EQUALS(AppConstants.SCALE, AppConstants.NOT_EQUAL_TO, new EvaluateSegment() {
+    SCREEN_DENSITY_NOT_EQUALS(AppConstants.SCALE, AppConstants.NOT_EQUAL_TO, new EvaluateSegment() {
         @Override
         public boolean evaluate(VWO vwo, JSONArray data) {
             double actualScale = VWOUtils.getScale(vwo.getCurrentContext());
@@ -652,7 +652,7 @@ public enum CustomSegmentEvaluateEnum {
                         return true;
                     }
                 } catch (Exception exception) {
-                    VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse custom segment", exception,
+                    VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse screen density", exception,
                             false, true);
                 }
             }
@@ -660,7 +660,7 @@ public enum CustomSegmentEvaluateEnum {
         }
     }),
 
-    CUSTOM_SEGMENT_SCALE_GREATER_THAN(AppConstants.SCALE, AppConstants.GREATER_THAN, new EvaluateSegment() {
+    SCREEN_DENSITY_GREATER_THAN(AppConstants.SCALE, AppConstants.GREATER_THAN, new EvaluateSegment() {
         @Override
         public boolean evaluate(VWO vwo, JSONArray data) {
             double actualScale = VWOUtils.getScale(vwo.getCurrentContext());
@@ -671,7 +671,7 @@ public enum CustomSegmentEvaluateEnum {
                         return true;
                     }
                 } catch (Exception exception) {
-                    VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse custom segment", exception,
+                    VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse screen density", exception,
                             false, true);
                 }
             }
@@ -679,7 +679,7 @@ public enum CustomSegmentEvaluateEnum {
         }
     }),
 
-    CUSTOM_SEGMENT_SCALE_LESS_THAN(AppConstants.SCALE, AppConstants.LESS_THAN, new EvaluateSegment() {
+    SCREEN_DENSITY_LESS_THAN(AppConstants.SCALE, AppConstants.LESS_THAN, new EvaluateSegment() {
         @Override
         public boolean evaluate(VWO vwo, JSONArray data) {
             double actualScale = VWOUtils.getScale(vwo.getCurrentContext());
@@ -690,7 +690,7 @@ public enum CustomSegmentEvaluateEnum {
                         return true;
                     }
                 } catch (Exception exception) {
-                    VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse custom segment", exception,
+                    VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse screen density", exception,
                             false, true);
                 }
             }
