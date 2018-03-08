@@ -97,14 +97,11 @@ public class VWODataTest {
 
         VWOPreference vwoPreference = Mockito.mock(VWOPreference.class);
 
-        Mockito.doAnswer(new Answer() {
-            @Override
-            public Object answer(InvocationOnMock invocation) {
-                String argument1 = invocation.getArgument(0);
-                String argument2 = invocation.getArgument(1);
-                savedCampaignMap.put(argument1, argument2);
-                return null;
-            }
+        Mockito.doAnswer(invocation -> {
+            String argument1 = invocation.getArgument(0);
+            String argument2 = invocation.getArgument(1);
+            savedCampaignMap.put(argument1, argument2);
+            return null;
         }).when(vwoPreference).putString(ArgumentMatchers.anyString(), ArgumentMatchers.anyString());
         Mockito.when(vwo.getVwoPreference()).thenReturn(vwoPreference);
 
@@ -128,14 +125,11 @@ public class VWODataTest {
         VWOPreference vwoPreference = Mockito.mock(VWOPreference.class);
         Mockito.when(vwoPreference.isPartOfCampaign(anyString())).thenReturn(true);
 
-        Mockito.doAnswer(new Answer() {
-            @Override
-            public Object answer(InvocationOnMock invocation) {
-                String argument1 = invocation.getArgument(0);
-                String argument2 = invocation.getArgument(1);
-                savedCampaignMap.put(argument1, argument2);
-                return null;
-            }
+        Mockito.doAnswer(invocation -> {
+            String argument1 = invocation.getArgument(0);
+            String argument2 = invocation.getArgument(1);
+            savedCampaignMap.put(argument1, argument2);
+            return null;
         }).when(vwoPreference).putString(ArgumentMatchers.anyString(), ArgumentMatchers.anyString());
 
 
@@ -166,14 +160,11 @@ public class VWODataTest {
         VWOPreference vwoPreference = Mockito.mock(VWOPreference.class);
         Mockito.when(vwoPreference.isPartOfCampaign(anyString())).thenReturn(true);
 
-        Mockito.doAnswer(new Answer() {
-            @Override
-            public Object answer(InvocationOnMock invocation) {
-                String argument1 = invocation.getArgument(0);
-                String argument2 = invocation.getArgument(1);
-                savedCampaignMap.put(argument1, argument2);
-                return null;
-            }
+        Mockito.doAnswer(invocation -> {
+            String argument1 = invocation.getArgument(0);
+            String argument2 = invocation.getArgument(1);
+            savedCampaignMap.put(argument1, argument2);
+            return null;
         }).when(vwoPreference).putString(ArgumentMatchers.anyString(), ArgumentMatchers.anyString());
 
 
@@ -206,14 +197,11 @@ public class VWODataTest {
         VWOPreference vwoPreference = Mockito.mock(VWOPreference.class);
         Mockito.when(vwoPreference.isPartOfCampaign(anyString())).thenReturn(false);
 
-        Mockito.doAnswer(new Answer() {
-            @Override
-            public Object answer(InvocationOnMock invocation) {
-                String argument1 = invocation.getArgument(0);
-                String argument2 = invocation.getArgument(1);
-                savedCampaignMap.put(argument1, argument2);
-                return null;
-            }
+        Mockito.doAnswer(invocation -> {
+            String argument1 = invocation.getArgument(0);
+            String argument2 = invocation.getArgument(1);
+            savedCampaignMap.put(argument1, argument2);
+            return null;
         }).when(vwoPreference).putString(ArgumentMatchers.anyString(), ArgumentMatchers.anyString());
 
 
@@ -245,14 +233,11 @@ public class VWODataTest {
         VWOPreference vwoPreference = Mockito.mock(VWOPreference.class);
         Mockito.when(vwoPreference.isPartOfCampaign(anyString())).thenReturn(false);
 
-        Mockito.doAnswer(new Answer() {
-            @Override
-            public Object answer(InvocationOnMock invocation) {
-                String argument1 = invocation.getArgument(0);
-                String argument2 = invocation.getArgument(1);
-                savedCampaignMap.put(argument1, argument2);
-                return null;
-            }
+        Mockito.doAnswer(invocation -> {
+            String argument1 = invocation.getArgument(0);
+            String argument2 = invocation.getArgument(1);
+            savedCampaignMap.put(argument1, argument2);
+            return null;
         }).when(vwoPreference).putString(ArgumentMatchers.anyString(), ArgumentMatchers.anyString());
 
 
