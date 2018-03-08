@@ -12,13 +12,6 @@ import java.io.File;
 public class IOUtils {
 
     public static File getCacheDirectory(Context context) {
-        File dir;
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
-            dir = context.getFilesDir();
-        } else {
-            dir = context.getExternalFilesDir(null);
-        }
-
-        return dir;
+        return context.getFilesDir();
     }
 }
