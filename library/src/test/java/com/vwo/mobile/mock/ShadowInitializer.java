@@ -23,15 +23,18 @@ public class ShadowInitializer {
     }
 
     @Implementation
-    public void launch(@Nullable VWOStatusListener statusListener) {
-        Thread thread = new Thread(() -> {
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            if (statusListener != null) {
-                statusListener.onVWOLoaded();
+    public void launch(@Nullable final VWOStatusListener statusListener) {
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                if (statusListener != null) {
+                    statusListener.onVWOLoaded();
+                }
             }
         });
         thread.start();

@@ -162,43 +162,49 @@ public class VWOMessageQueueTest {
     @Test
     public void delayedInsertRemoveTest() throws InterruptedException {
         final int count = 100;
-        Thread writeThread = new Thread(() -> {
-            for(int i = 0; i < count; i++) {
-                GoalEntry goalEntry = new GoalEntry("http://www.abc" + i + ".com", 1, 2, 3);
-                vwoMessageQueue.add(goalEntry);
-                System.out.println("Added: " + goalEntry.getUrl());
-                try {
-                    Thread.sleep(100);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-
-        Thread readThread = new Thread(() -> {
-            int readCounter = 0;
-            while(readCounter < count) {
-                if(vwoMessageQueue.peek() == null) {
-                    continue;
-                }
-                Entry entry = vwoMessageQueue.poll();
-                Assert.assertNotNull(entry);
-                Assert.assertEquals(entry.getUrl(), "http://www.abc" + readCounter + ".com");
-                System.out.println("Verified: " + entry.getUrl());
-                if(readCounter % 20 == 0) {
+        Thread writeThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                for(int i = 0; i < count; i++) {
+                    GoalEntry goalEntry = new GoalEntry("http://www.abc" + i + ".com", 1, 2, 3);
+                    vwoMessageQueue.add(goalEntry);
+                    System.out.println("Added: " + goalEntry.getUrl());
                     try {
-                        Thread.sleep(2000);
+                        Thread.sleep(100);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
                 }
-                readCounter++;
             }
+        });
 
-            synchronized (lock) {
-                lock.notify();
+        Thread readThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                int readCounter = 0;
+                while(readCounter < count) {
+                    if(vwoMessageQueue.peek() == null) {
+                        continue;
+                    }
+                    Entry entry = vwoMessageQueue.poll();
+                    Assert.assertNotNull(entry);
+                    Assert.assertEquals(entry.getUrl(), "http://www.abc" + readCounter + ".com");
+                    System.out.println("Verified: " + entry.getUrl());
+                    if(readCounter % 20 == 0) {
+                        try {
+                            Thread.sleep(2000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    readCounter++;
+                }
+
+                synchronized (lock) {
+                    lock.notify();
+                }
+
             }
-
         });
 
         writeThread.start();
@@ -212,31 +218,37 @@ public class VWOMessageQueueTest {
     @Test
     public void insertRemoveTest() throws InterruptedException {
         final int count = 10000;
-        Thread writeThread = new Thread(() -> {
-            for(int i = 0; i < count; i++) {
-                GoalEntry goalEntry = new GoalEntry("http://www.abc" + i + ".com", 1, 2, 3);
-                vwoMessageQueue.add(goalEntry);
-                System.out.println("Added: " + goalEntry.getUrl());
+        Thread writeThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                for(int i = 0; i < count; i++) {
+                    GoalEntry goalEntry = new GoalEntry("http://www.abc" + i + ".com", 1, 2, 3);
+                    vwoMessageQueue.add(goalEntry);
+                    System.out.println("Added: " + goalEntry.getUrl());
+                }
             }
         });
 
-        Thread readThread = new Thread(() -> {
-            int readCounter = 0;
-            while(readCounter < count) {
-                if(vwoMessageQueue.peek() == null) {
-                    continue;
+        Thread readThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                int readCounter = 0;
+                while(readCounter < count) {
+                    if(vwoMessageQueue.peek() == null) {
+                        continue;
+                    }
+                    Entry entry = vwoMessageQueue.poll();
+                    Assert.assertNotNull(entry);
+                    Assert.assertEquals(entry.getUrl(), "http://www.abc" + readCounter + ".com");
+                    System.out.println("Verified: " + entry.getUrl());
+                    readCounter++;
                 }
-                Entry entry = vwoMessageQueue.poll();
-                Assert.assertNotNull(entry);
-                Assert.assertEquals(entry.getUrl(), "http://www.abc" + readCounter + ".com");
-                System.out.println("Verified: " + entry.getUrl());
-                readCounter++;
-            }
 
-            synchronized (lock) {
-                lock.notify();
-            }
+                synchronized (lock) {
+                    lock.notify();
+                }
 
+            }
         });
 
         readThread.start();

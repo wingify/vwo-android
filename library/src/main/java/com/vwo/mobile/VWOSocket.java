@@ -46,9 +46,12 @@ public class VWOSocket {
     private Map<String, Object> mVariationKeys;
     private JSONObject mVariation;
 
-    private Emitter.Listener mServerConnected = args -> {
-        VWOLog.v(VWOLog.INIT_SOCKET_LOGS, "Device connected to socket");
-        registerDevice();
+    private Emitter.Listener mServerConnected = new Emitter.Listener() {
+        @Override
+        public void call(Object... args) {
+            VWOLog.v(VWOLog.INIT_SOCKET_LOGS, "Device connected to socket");
+            registerDevice();
+        }
     };
     private Emitter.Listener mServerDisconnected = new Emitter.Listener() {
         @Override

@@ -222,12 +222,15 @@ public class QueueFile {
     private static void initialize(File file) throws IOException {
         // Use a temp file so we don't leave a partially-initialized file.
         File tempFile = new File(file.getPath() + ".tmp");
-        try (RandomAccessFile raf = open(tempFile)) {
+        RandomAccessFile raf = open(tempFile);
+        try {
             raf.setLength(INITIAL_LENGTH);
             raf.seek(0);
             byte[] headerBuffer = new byte[16];
             writeInts(headerBuffer, INITIAL_LENGTH, 0, 0, 0);
             raf.write(headerBuffer);
+        } finally {
+            raf.close();
         }
 
         // A rename is atomic.
