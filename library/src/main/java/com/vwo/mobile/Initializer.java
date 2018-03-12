@@ -25,7 +25,6 @@ public class Initializer {
 
     /**
      * Launches VWO sdk in Async mode.
-     *
      * <p>
      * This method will initialize the SDK either by fetching data from server or
      * from data of previous launch or from defaults(in case of network failure)
@@ -47,7 +46,6 @@ public class Initializer {
 
     /**
      * Launches VWO sdk in Async mode with callback
-     *
      * <p>
      * This method will initialize the SDK either by fetching data from server or
      * from data of previous launch or from defaults(in case of network failure)
@@ -61,7 +59,7 @@ public class Initializer {
             Manifest.permission.ACCESS_NETWORK_STATE})
     public void launch(@Nullable VWOStatusListener statusListener) {
         setup(null);
-        if(statusListener != null) {
+        if (statusListener != null) {
             VWO.setVWOStatusListener(statusListener);
         }
         vwo.startVwoInstance();
@@ -69,14 +67,12 @@ public class Initializer {
 
     /**
      * Start VWO sdk in sync mode(Not recommended. because it blocks UI thread for fetching data).
-     *
      * <p>
      * This method will initialize the sdk either by fetching data from server or
      * from data of previous launch or from defaults(in case of network failure)
      * </p>
      *
      * @param timeout is the timeout(in Milliseconds) for the HTTP call made to server.
-     *
      */
     @RequiresPermission(allOf = {
             Manifest.permission.INTERNET,

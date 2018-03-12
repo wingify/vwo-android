@@ -10,7 +10,6 @@ import android.support.v4.content.LocalBroadcastManager;
 import com.vwo.mobile.TestUtils;
 import com.vwo.mobile.VWO;
 import com.vwo.mobile.mock.ShadowVWOLog;
-import com.vwo.mobile.mock.ShadowVWOUtils;
 import com.vwo.mobile.mock.VWOMock;
 import com.vwo.mobile.mock.VWOPersistDataShadow;
 import com.vwo.mobile.utils.VWOPreference;
