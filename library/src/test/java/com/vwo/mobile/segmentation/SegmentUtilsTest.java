@@ -54,6 +54,13 @@ public class SegmentUtilsTest {
     }
 
     @Test
+    public void campaignNoSegmentation() throws IOException, JSONException {
+        String data = TestUtils.readJsonFile(getClass(), "com/vwo/mobile/segmentation/campaign_no_segmentation.json");
+        Campaign campaign = new Campaign(vwo, new JSONObject(data));
+        Assert.assertTrue(SegmentUtils.evaluateSegmentation(campaign));
+    }
+
+    @Test
     public void test1() throws JSONException, IOException {
         String data = TestUtils.readJsonFile(getClass(), "com/vwo/mobile/segmentation/campaign1.json");
         Campaign campaign = new Campaign(vwo, new JSONObject(data));

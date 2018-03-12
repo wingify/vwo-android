@@ -66,7 +66,7 @@ dependencies {
     implementation 'com.android.support:design:27.1.0'
     implementation 'com.squareup.picasso:picasso:2.5.2'
 //    implementation project(':library')
-    implementation 'com.vwo:mobile:2.1.0@aar'
+    implementation 'com.vwo:mobile:+@aar'
     debugImplementation('io.socket:socket.io-client:1.0.0') {
         // excluding org.json which is provided by Android
         exclude group: 'org.json', module: 'json'

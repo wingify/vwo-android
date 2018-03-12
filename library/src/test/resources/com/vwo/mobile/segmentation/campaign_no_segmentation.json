@@ -1,0 +1,42 @@
+{
+  "track_user_on_launch": false,
+  "version": 2,
+  "id": 14,
+  "status": "RUNNING",
+  "pc_traffic": 100,
+  "goals": [
+    {
+      "type": "REVENUE_TRACKING",
+      "identifier": "addToCart",
+      "id": 1
+    },
+    {
+      "type": "REVENUE_TRACKING",
+      "identifier": "productPurchased",
+      "id": 2
+    },
+    {
+      "type": "REVENUE_TRACKING",
+      "identifier": "goal",
+      "id": 349
+    },
+    {
+      "type": "CUSTOM_GOAL",
+      "identifier": "productView",
+      "id": 351
+    }
+  ],
+  "variations": {
+    "changes": {
+      "layout": "list",
+      "socialMedia": true
+    },
+    "weight": 33.3333,
+    "name": "Variation-2",
+    "id": "3"
+  },
+  "type": "VISUAL_AB",
+  "clickmap": 1,
+  "name": "Campaign 14",
+  "count_goal_once": 1
+}
