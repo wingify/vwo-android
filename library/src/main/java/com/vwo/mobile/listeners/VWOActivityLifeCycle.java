@@ -4,9 +4,6 @@ import android.app.Activity;
 import android.app.Application;
 import android.os.Bundle;
 
-/**
- * Created by abhishek on 19/10/15 at 12:12 AM.
- */
 public class VWOActivityLifeCycle implements Application.ActivityLifecycleCallbacks {
 
     private static int sResumed;

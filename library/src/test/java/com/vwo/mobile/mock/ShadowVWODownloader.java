@@ -35,7 +35,12 @@ public class ShadowVWODownloader {
 
         } else {
             final String finalData = data;
-            Thread thread = new Thread(() -> downloadResult.onDownloadSuccess(finalData));
+            Thread thread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    downloadResult.onDownloadSuccess(finalData);
+                }
+            });
             thread.start();
         }
     }

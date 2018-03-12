@@ -33,6 +33,11 @@ public enum CustomSegmentEvaluateEnum {
             }
             return false;
         }
+
+        @Override
+        public boolean evaluate(VWO vwo, JSONArray data, String key) {
+            return false;
+        }
     }),
 
     ANDROID_VERSION_NOT_EQUAL_TO(AppConstants.ANDROID_VERSION, AppConstants.NOT_EQUAL_TO, new EvaluateSegment() {
@@ -50,6 +55,11 @@ public enum CustomSegmentEvaluateEnum {
             }
             return true;
         }
+
+        @Override
+        public boolean evaluate(VWO vwo, JSONArray data, String key) {
+            return false;
+        }
     }),
 
     ANDROID_VERSION_LESS_THAN(AppConstants.ANDROID_VERSION, AppConstants.LESS_THAN, new EvaluateSegment() {
@@ -65,6 +75,11 @@ public enum CustomSegmentEvaluateEnum {
                             false, true);
                 }
             }
+            return false;
+        }
+
+        @Override
+        public boolean evaluate(VWO vwo, JSONArray data, String key) {
             return false;
         }
     }),
@@ -84,6 +99,11 @@ public enum CustomSegmentEvaluateEnum {
             }
             return false;
         }
+
+        @Override
+        public boolean evaluate(VWO vwo, JSONArray data, String key) {
+            return false;
+        }
     }),
 
     DAY_OF_WEEK_EQUAL_TO(AppConstants.DAY_OF_WEEK, AppConstants.EQUAL_TO, new EvaluateSegment() {
@@ -101,6 +121,11 @@ public enum CustomSegmentEvaluateEnum {
                             false, true);
                 }
             }
+            return false;
+        }
+
+        @Override
+        public boolean evaluate(VWO vwo, JSONArray data, String key) {
             return false;
         }
     }),
@@ -123,6 +148,11 @@ public enum CustomSegmentEvaluateEnum {
             }
             return true;
         }
+
+        @Override
+        public boolean evaluate(VWO vwo, JSONArray data, String key) {
+            return false;
+        }
     }),
 
     HOUR_OF_DAY_EQUAL_TO(AppConstants.HOUR_OF_DAY, AppConstants.EQUAL_TO, new EvaluateSegment() {
@@ -140,6 +170,11 @@ public enum CustomSegmentEvaluateEnum {
                             false, true);
                 }
             }
+            return false;
+        }
+
+        @Override
+        public boolean evaluate(VWO vwo, JSONArray data, String key) {
             return false;
         }
     }),
@@ -161,6 +196,11 @@ public enum CustomSegmentEvaluateEnum {
             }
             return true;
         }
+
+        @Override
+        public boolean evaluate(VWO vwo, JSONArray data, String key) {
+            return false;
+        }
     }),
 
     LOCATION_EQUAL_TO(AppConstants.LOCATION, AppConstants.EQUAL_TO, new EvaluateSegment() {
@@ -178,6 +218,11 @@ public enum CustomSegmentEvaluateEnum {
                             false, true);
                 }
             }
+            return false;
+        }
+
+        @Override
+        public boolean evaluate(VWO vwo, JSONArray data, String key) {
             return false;
         }
     }),
@@ -199,6 +244,11 @@ public enum CustomSegmentEvaluateEnum {
             }
             return true;
         }
+
+        @Override
+        public boolean evaluate(VWO vwo, JSONArray data, String key) {
+            return false;
+        }
     }),
 
     APP_VERSION_EQUAL_TO(AppConstants.APP_VERSION, AppConstants.EQUAL_TO, new EvaluateSegment() {
@@ -216,6 +266,11 @@ public enum CustomSegmentEvaluateEnum {
                             false, false);
                 }
             }
+            return false;
+        }
+
+        @Override
+        public boolean evaluate(VWO vwo, JSONArray data, String key) {
             return false;
         }
     }),
@@ -237,6 +292,11 @@ public enum CustomSegmentEvaluateEnum {
             }
             return false;
         }
+
+        @Override
+        public boolean evaluate(VWO vwo, JSONArray data, String key) {
+            return false;
+        }
     }),
 
     APP_VERSION_LESS_THAN(AppConstants.APP_VERSION, AppConstants.LESS_THAN, new EvaluateSegment() {
@@ -253,6 +313,11 @@ public enum CustomSegmentEvaluateEnum {
                             false, false);
                 }
             }
+            return false;
+        }
+
+        @Override
+        public boolean evaluate(VWO vwo, JSONArray data, String key) {
             return false;
         }
     }),
@@ -274,9 +339,19 @@ public enum CustomSegmentEvaluateEnum {
             }
             return false;
         }
+
+        @Override
+        public boolean evaluate(VWO vwo, JSONArray data, String key) {
+            return false;
+        }
     }),
 
     CUSTOM_SEGMENT_EQUAL_TO(AppConstants.CUSTOM_SEGMENT, AppConstants.EQUAL_TO, new EvaluateSegment() {
+        @Override
+        public boolean evaluate(VWO vwo, JSONArray data) {
+            return false;
+        }
+
         @Override
         public boolean evaluate(VWO vwo, JSONArray data, String key) {
             String customVariable = vwo.getConfig().getValueForCustomSegment(key);
@@ -302,6 +377,11 @@ public enum CustomSegmentEvaluateEnum {
 
     CUSTOM_SEGMENT_NOT_EQUAL_TO(AppConstants.CUSTOM_SEGMENT, AppConstants.NOT_EQUAL_TO, new EvaluateSegment() {
         @Override
+        public boolean evaluate(VWO vwo, JSONArray data) {
+            return false;
+        }
+
+        @Override
         public boolean evaluate(VWO vwo, JSONArray data, String key) {
             String customVariable = vwo.getConfig().getValueForCustomSegment(key);
             // Check if custom keys are set by developer or not if not return false otherwise evaluate.
@@ -325,6 +405,11 @@ public enum CustomSegmentEvaluateEnum {
     }),
 
     CUSTOM_SEGMENT_MATCHES_REGEX(AppConstants.CUSTOM_SEGMENT, AppConstants.MATCHES_REGEX, new EvaluateSegment() {
+        @Override
+        public boolean evaluate(VWO vwo, JSONArray data) {
+            return false;
+        }
+
         @Override
         public boolean evaluate(VWO vwo, JSONArray data, String key) {
             String customVariable = vwo.getConfig().getValueForCustomSegment(key);
@@ -352,6 +437,11 @@ public enum CustomSegmentEvaluateEnum {
 
     CUSTOM_SEGMENT_CONTAINS(AppConstants.CUSTOM_SEGMENT, AppConstants.CONTAINS, new EvaluateSegment() {
         @Override
+        public boolean evaluate(VWO vwo, JSONArray data) {
+            return false;
+        }
+
+        @Override
         public boolean evaluate(VWO vwo, JSONArray data, String key) {
             String customVariable = vwo.getConfig().getValueForCustomSegment(key);
             // Check if custom keys are set by developer or not if not return false otherwise evaluate.
@@ -376,6 +466,11 @@ public enum CustomSegmentEvaluateEnum {
     }),
 
     CUSTOM_SEGMENT_STARTS_WITH(AppConstants.CUSTOM_SEGMENT, AppConstants.STARTS_WITH, new EvaluateSegment() {
+        @Override
+        public boolean evaluate(VWO vwo, JSONArray data) {
+            return false;
+        }
+
         @Override
         public boolean evaluate(VWO vwo, JSONArray data, String key) {
             String customVariable = vwo.getConfig().getValueForCustomSegment(key);
@@ -416,6 +511,11 @@ public enum CustomSegmentEvaluateEnum {
             }
             return false;
         }
+
+        @Override
+        public boolean evaluate(VWO vwo, JSONArray data, String key) {
+            return false;
+        }
     }),
     USER_TYPE_NOT_EQUALS(AppConstants.USER_TYPE, AppConstants.NOT_EQUAL_TO, new EvaluateSegment() {
         @Override
@@ -431,6 +531,11 @@ public enum CustomSegmentEvaluateEnum {
                             false, false);
                 }
             }
+            return false;
+        }
+
+        @Override
+        public boolean evaluate(VWO vwo, JSONArray data, String key) {
             return false;
         }
     }),
@@ -450,6 +555,11 @@ public enum CustomSegmentEvaluateEnum {
             }
             return false;
         }
+
+        @Override
+        public boolean evaluate(VWO vwo, JSONArray data, String key) {
+            return false;
+        }
     }),
 
     DEVICE_TYPE_NOT_EQUALS(AppConstants.DEVICE_TYPE, AppConstants.NOT_EQUAL_TO, new EvaluateSegment() {
@@ -466,6 +576,11 @@ public enum CustomSegmentEvaluateEnum {
                             false, false);
                 }
             }
+            return false;
+        }
+
+        @Override
+        public boolean evaluate(VWO vwo, JSONArray data, String key) {
             return false;
         }
     }),
@@ -487,6 +602,11 @@ public enum CustomSegmentEvaluateEnum {
             }
             return false;
         }
+
+        @Override
+        public boolean evaluate(VWO vwo, JSONArray data, String key) {
+            return false;
+        }
     }),
 
     SCREEN_WIDTH_NOT_EQUALS(AppConstants.SCREEN_WIDTH, AppConstants.NOT_EQUAL_TO, new EvaluateSegment() {
@@ -504,6 +624,11 @@ public enum CustomSegmentEvaluateEnum {
                             false, false);
                 }
             }
+            return false;
+        }
+
+        @Override
+        public boolean evaluate(VWO vwo, JSONArray data, String key) {
             return false;
         }
     }),
@@ -525,6 +650,11 @@ public enum CustomSegmentEvaluateEnum {
             }
             return false;
         }
+
+        @Override
+        public boolean evaluate(VWO vwo, JSONArray data, String key) {
+            return false;
+        }
     }),
 
     SCREEN_WIDTH_LESS_THAN(AppConstants.SCREEN_WIDTH, AppConstants.LESS_THAN, new EvaluateSegment() {
@@ -542,6 +672,11 @@ public enum CustomSegmentEvaluateEnum {
                             false, false);
                 }
             }
+            return false;
+        }
+
+        @Override
+        public boolean evaluate(VWO vwo, JSONArray data, String key) {
             return false;
         }
     }),
@@ -563,6 +698,11 @@ public enum CustomSegmentEvaluateEnum {
             }
             return false;
         }
+
+        @Override
+        public boolean evaluate(VWO vwo, JSONArray data, String key) {
+            return false;
+        }
     }),
 
     SCREEN_HEIGHT_NOT_EQUALS(AppConstants.SCREEN_HEIGHT, AppConstants.NOT_EQUAL_TO, new EvaluateSegment() {
@@ -580,6 +720,11 @@ public enum CustomSegmentEvaluateEnum {
                             false, false);
                 }
             }
+            return false;
+        }
+
+        @Override
+        public boolean evaluate(VWO vwo, JSONArray data, String key) {
             return false;
         }
     }),
@@ -601,6 +746,11 @@ public enum CustomSegmentEvaluateEnum {
             }
             return false;
         }
+
+        @Override
+        public boolean evaluate(VWO vwo, JSONArray data, String key) {
+            return false;
+        }
     }),
 
     SCREEN_HEIGHT_LESS_THAN(AppConstants.SCREEN_HEIGHT, AppConstants.LESS_THAN, new EvaluateSegment() {
@@ -618,6 +768,11 @@ public enum CustomSegmentEvaluateEnum {
                             false, false);
                 }
             }
+            return false;
+        }
+
+        @Override
+        public boolean evaluate(VWO vwo, JSONArray data, String key) {
             return false;
         }
     }),
@@ -639,6 +794,11 @@ public enum CustomSegmentEvaluateEnum {
             }
             return false;
         }
+
+        @Override
+        public boolean evaluate(VWO vwo, JSONArray data, String key) {
+            return false;
+        }
     }),
 
     SCREEN_DENSITY_NOT_EQUALS(AppConstants.SCALE, AppConstants.NOT_EQUAL_TO, new EvaluateSegment() {
@@ -656,6 +816,11 @@ public enum CustomSegmentEvaluateEnum {
                             false, true);
                 }
             }
+            return false;
+        }
+
+        @Override
+        public boolean evaluate(VWO vwo, JSONArray data, String key) {
             return false;
         }
     }),
@@ -677,6 +842,11 @@ public enum CustomSegmentEvaluateEnum {
             }
             return false;
         }
+
+        @Override
+        public boolean evaluate(VWO vwo, JSONArray data, String key) {
+            return false;
+        }
     }),
 
     SCREEN_DENSITY_LESS_THAN(AppConstants.SCALE, AppConstants.LESS_THAN, new EvaluateSegment() {
@@ -696,9 +866,23 @@ public enum CustomSegmentEvaluateEnum {
             }
             return false;
         }
+
+        @Override
+        public boolean evaluate(VWO vwo, JSONArray data, String key) {
+            return false;
+        }
     }),
 
     DEFAULT("", -11, new EvaluateSegment() {
+        @Override
+        public boolean evaluate(VWO vwo, JSONArray data) {
+            return false;
+        }
+
+        @Override
+        public boolean evaluate(VWO vwo, JSONArray data, String key) {
+            return false;
+        }
     });
 
 
@@ -735,12 +919,8 @@ public enum CustomSegmentEvaluateEnum {
     }
 
     public interface EvaluateSegment {
-        default boolean evaluate(VWO vwo, JSONArray data) {
-            return false;
-        }
+        boolean evaluate(VWO vwo, JSONArray data);
 
-        default boolean evaluate(VWO vwo, JSONArray data, String key) {
-            return false;
-        }
+        boolean evaluate(VWO vwo, JSONArray data, String key);
     }
 }
