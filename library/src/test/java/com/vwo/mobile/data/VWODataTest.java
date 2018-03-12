@@ -1,10 +1,16 @@
 package com.vwo.mobile.data;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 
 import com.vwo.mobile.TestUtils;
 import com.vwo.mobile.VWO;
 import com.vwo.mobile.mock.ShadowVWOLog;
+import com.vwo.mobile.mock.ShadowVWOUtils;
 import com.vwo.mobile.mock.VWOMock;
 import com.vwo.mobile.mock.VWOPersistDataShadow;
 import com.vwo.mobile.utils.VWOPreference;
@@ -22,8 +28,6 @@ import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
@@ -34,6 +38,7 @@ import org.robolectric.annotation.Config;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Stack;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyFloat;
@@ -62,6 +67,8 @@ public class VWODataTest {
 
     private VWO vwo;
 
+    Stack<Intent> intentStack = new Stack<>();
+
 
     @Before
     public void setup() throws IOException {
@@ -70,6 +77,7 @@ public class VWODataTest {
         PowerMockito.mockStatic(VWOUtils.class);
         PowerMockito.when(VWOUtils.applicationVersion(any(Context.class))).thenReturn(1);
         PowerMockito.when(VWOUtils.androidVersion()).thenReturn("21");
+        PowerMockito.when(VWOUtils.checkIfClassExists(ArgumentMatchers.anyString())).thenReturn(true);
 
         PowerMockito.mockStatic(VWOPersistData.class);
         PowerMockito.when(VWOPersistData.isExistingCampaign(ArgumentMatchers.any(VWO.class), ArgumentMatchers.anyString())).thenReturn(false);
@@ -258,4 +266,46 @@ public class VWODataTest {
         }
         Assert.assertEquals(vwo.getMessageQueue().size(), 2);
     }
+
+    @Test
+    public void broadcastReceiverTest() throws IOException, JSONException, InterruptedException {
+        vwo.getMessageQueue().removeAll();
+
+        final HashMap<String, String> savedCampaignMap = new HashMap<>();
+
+        VWOPreference vwoPreference = Mockito.mock(VWOPreference.class);
+
+        Mockito.doAnswer(invocation -> {
+            String argument1 = invocation.getArgument(0);
+            String argument2 = invocation.getArgument(1);
+            savedCampaignMap.put(argument1, argument2);
+            return null;
+        }).when(vwoPreference).putString(ArgumentMatchers.anyString(), ArgumentMatchers.anyString());
+        Mockito.when(vwo.getVwoPreference()).thenReturn(vwoPreference);
+
+        IntentFilter intentFilter = new IntentFilter(VWO.Constants.NOTIFY_USER_TRACKING_STARTED);
+
+        LocalBroadcastManager.getInstance(RuntimeEnvironment.application.getApplicationContext())
+                .registerReceiver(myBroadcastReceiverMock, intentFilter);
+
+        String data = TestUtils.readJsonFile(getClass(), "com/vwo/mobile/data/campaigns.json");
+
+        VWOData vwoData = new VWOData(vwo);
+        vwoData.parseData(new JSONArray(data));
+
+        Intent intent = intentStack.pop();
+        Bundle bundle = intent.getExtras();
+        Assert.assertNotNull(bundle);
+        Assert.assertEquals("14", bundle.getString(VWO.Constants.ARG_CAMPAIGN_ID));
+        Assert.assertEquals("Campaign 14", bundle.getString(VWO.Constants.ARG_CAMPAIGN_NAME));
+        Assert.assertEquals("2", bundle.getString(VWO.Constants.ARG_VARIATION_ID));
+        Assert.assertEquals("Variation-1", bundle.getString(VWO.Constants.ARG_VARIATION_NAME));
+    }
+
+    private BroadcastReceiver myBroadcastReceiverMock = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            intentStack.push(intent);
+        }
+    };
 }
