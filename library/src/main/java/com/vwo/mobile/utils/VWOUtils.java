@@ -6,45 +6,29 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.os.Build;
 import android.support.annotation.CheckResult;
 import android.support.annotation.NonNull;
+import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 
 import com.vwo.mobile.VWO;
 import com.vwo.mobile.constants.AppConstants;
 
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.HashMap;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
-/**
- * Created by abhishek on 18/09/15 at 1:34 AM.
- */
 public class VWOUtils {
-
-    public static Boolean mIsAppStoreApp;
-    private static final boolean FORCE_APP_STORE = false;
     private VWO mVWO;
 
     public VWOUtils(VWO vwo) {
         mVWO = vwo;
-    }
-
-    public static String deviceId() {
-        return Build.DISPLAY.replaceAll(" ", "_");
-    }
-
-    public static String deviceName() {
-        return String.format("%s %s", Build.MANUFACTURER.toUpperCase(Locale.ENGLISH), Build.MODEL);
     }
 
     public static boolean isValidVwoAppKey(String appKey) {
@@ -65,11 +49,7 @@ public class VWOUtils {
         return deviceUuid;
     }
 
-    public static String deviceModel() {
-        return Build.MODEL;
-    }
-
-    public static String applicationName(Context context) {
+    private static String applicationName(Context context) {
         if (context != null) {
             ApplicationInfo applicationInfo = context.getApplicationInfo();
             if (applicationInfo != null && applicationInfo.packageName != null) {
@@ -89,25 +69,6 @@ public class VWOUtils {
         return (context.getResources().getConfiguration().screenLayout
                 & Configuration.SCREENLAYOUT_SIZE_MASK)
                 >= Configuration.SCREENLAYOUT_SIZE_LARGE;
-    }
-
-    public static Map<String, Integer> getScreenSizeMap(Context context) {
-        DisplayMetrics metrics = context.getResources().getDisplayMetrics();
-
-        assert metrics != null;
-
-        HashMap<String, Integer> screenMap = new HashMap<>();
-        screenMap.put("height", metrics.heightPixels);
-        screenMap.put("width", metrics.widthPixels);
-        return screenMap;
-    }
-
-    public static Map<String, Integer> getScaledScreenSizeMap(Context context) {
-        Map<String, Integer> toReturn = getScreenSizeMap(context);
-        double scaling = (double) getScreenshotScaling(context);
-        toReturn.put("height", (int) ((double) (Integer) toReturn.get("height") * scaling));
-        toReturn.put("width", (int) ((double) (Integer) toReturn.get("width") * scaling));
-        return toReturn;
     }
 
     public static int applicationVersion(Context context) {
@@ -131,46 +92,10 @@ public class VWOUtils {
 
     }
 
-
-    public static String getLanguage() {
-        return Locale.getDefault().getLanguage();
-    }
-
-    public static String getLocale() {
-        return Locale.getDefault().toString();
-    }
-
-    public static String getLocaleTag() {
-        return Locale.getDefault().toString();
-    }
-
-    public static boolean isAppStoreApp(Context context) {
-        if (mIsAppStoreApp == null) {
-            PackageManager packageManager = context.getPackageManager();
-            String installer = packageManager.getInstallerPackageName(context.getPackageName());
-            mIsAppStoreApp = FORCE_APP_STORE || installer != null && !installer.isEmpty();
-        }
-
-        return mIsAppStoreApp;
-    }
-
-    public static float getScreenshotScaling(Context context) {
-        DisplayMetrics metrics = context.getResources().getDisplayMetrics();
-
-        assert metrics != null;
-
-        return metrics.densityDpi >= 240 ? 0.5F : 1.0F;
-    }
-
-    public boolean isDebugMode() {
-        assert mVWO.getCurrentContext() != null;
-        return (0 != (mVWO.getCurrentContext().getApplicationInfo().flags &= ApplicationInfo.FLAG_DEBUGGABLE));
-    }
-
     public static boolean checkForInternetPermissions(Context context) {
 
         boolean hasInternetPermission = checkForPermission(context, Manifest.permission.INTERNET);
-        if(!hasInternetPermission) {
+        if (!hasInternetPermission) {
             String errorMsg = "VWO requires Internet permission.\n" +
                     "Add <uses-permission android:name=\"android.permission.INTERNET\"/> in AndroidManifest.xml";
             VWOLog.e(VWOLog.CONFIG_LOGS, errorMsg, false, false);
@@ -179,7 +104,7 @@ public class VWOUtils {
 
         boolean hasNetworkStatePermission = checkForPermission(context, Manifest.permission.ACCESS_NETWORK_STATE);
 
-        if(!hasNetworkStatePermission) {
+        if (!hasNetworkStatePermission) {
             String errorMsg = "Granting ACCESS_NETWORK_STATE permission makes VWO work smarter.\n" +
                     "Add <uses-permission android:name=\"android.permission.ACCESS_NETWORK_STATE\"/> in AndroidManifest.xml";
             VWOLog.e(VWOLog.CONFIG_LOGS, errorMsg, false, false);
@@ -251,5 +176,78 @@ public class VWOUtils {
             phrase.append(c);
         }
         return phrase.toString();
+    }
+
+    /**
+     * Returns {@link Boolean#TRUE} is app is running in debug mode else {@link Boolean#FALSE}
+     *
+     * @return {@link Boolean#TRUE} is app is running in debug mode else {@link Boolean#FALSE}
+     */
+    public boolean isDebugMode() {
+        assert mVWO.getCurrentContext() != null;
+        return (0 != (mVWO.getCurrentContext().getApplicationInfo().flags &= ApplicationInfo.FLAG_DEBUGGABLE));
+    }
+
+    /**
+     * Returns the width of screen in pixels.
+     *
+     * @return the width of screen in pixels
+     */
+    public static int getScreenWidth() {
+        return Resources.getSystem().getDisplayMetrics().widthPixels;
+    }
+
+    /**
+     * Returns the height of screen in pixels.
+     *
+     * @return the height of screen in pixels
+     *
+     * Note: it does not include the size of status bar and navigation bar.
+     */
+    public static int getScreenHeight() {
+        return Resources.getSystem().getDisplayMetrics().heightPixels;
+    }
+
+    /**
+     * Returns the scale calculated as 1.0f / {@link DisplayMetrics#DENSITY_DEFAULT} * {@link DisplayMetrics#densityDpi}.
+     * Scale 1 is for mdpi i.e. 160
+     *
+     * @param context the application context.
+     *
+     * @return the screen scale in {@link Integer}.
+     */
+    public static double getScale(Context context) {
+        DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
+        return 1.0f / DisplayMetrics.DENSITY_DEFAULT * displayMetrics.densityDpi;
+    }
+
+
+    /**
+     * Get device ISO 3166 alpha-2 country code.
+     * This function uses sim card or network to fetch country code, uses Device locale as a fallback.
+     *
+     * @param context is the application context.
+     * @return the ISO 3166 alpha-2 country code eg. IN for India, US for United States of America,
+     * AE for United Arab Emirates etc.
+     */
+    public static String getDeviceCountryCode(Context context) {
+        try {
+            TelephonyManager manager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+            if (manager != null) {
+                final String simCountry = manager.getSimCountryIso();
+                if (simCountry != null && simCountry.length() == 2) {
+                    return simCountry;
+                } else if (manager.getPhoneType() != TelephonyManager.PHONE_TYPE_CDMA) {
+                    String countryCode = manager.getNetworkCountryIso();
+                    if (countryCode != null && countryCode.length() == 2) {
+                        return countryCode;
+                    }
+                }
+            }
+        } catch (Exception exception) {
+            VWOLog.e(VWOLog.CONFIG_LOGS, exception, true, false);
+        }
+
+        return Locale.getDefault().getCountry();
     }
 }

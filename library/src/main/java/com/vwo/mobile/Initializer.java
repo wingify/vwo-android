@@ -2,6 +2,7 @@ package com.vwo.mobile;
 
 import android.Manifest;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.annotation.RequiresPermission;
 
 import com.vwo.mobile.events.VWOStatusListener;
@@ -24,16 +25,17 @@ public class Initializer {
 
     /**
      * Launches VWO sdk in Async mode.
-     *
      * <p>
      * This method will initialize the SDK either by fetching data from server or
      * from data of previous launch or from defaults(in case of network failure)
      * </p>
      *
+     * @deprecated Use {@link Initializer#launch(VWOStatusListener)} instead.
      */
     @RequiresPermission(allOf = {
             Manifest.permission.INTERNET,
             Manifest.permission.ACCESS_NETWORK_STATE})
+    @Deprecated
     public void launch() {
         if (vwo == null) {
             throw new IllegalArgumentException("You need to initialize vwo instance first");
@@ -44,7 +46,6 @@ public class Initializer {
 
     /**
      * Launches VWO sdk in Async mode with callback
-     *
      * <p>
      * This method will initialize the SDK either by fetching data from server or
      * from data of previous launch or from defaults(in case of network failure)
@@ -56,22 +57,22 @@ public class Initializer {
     @RequiresPermission(allOf = {
             Manifest.permission.INTERNET,
             Manifest.permission.ACCESS_NETWORK_STATE})
-    public void launch(@NonNull VWOStatusListener statusListener) {
+    public void launch(@Nullable VWOStatusListener statusListener) {
         setup(null);
-        VWO.setVWOStatusListener(statusListener);
+        if (statusListener != null) {
+            VWO.setVWOStatusListener(statusListener);
+        }
         vwo.startVwoInstance();
     }
 
     /**
      * Start VWO sdk in sync mode(Not recommended. because it blocks UI thread for fetching data).
-     *
      * <p>
      * This method will initialize the sdk either by fetching data from server or
      * from data of previous launch or from defaults(in case of network failure)
      * </p>
      *
      * @param timeout is the timeout(in Milliseconds) for the HTTP call made to server.
-     *
      */
     @RequiresPermission(allOf = {
             Manifest.permission.INTERNET,

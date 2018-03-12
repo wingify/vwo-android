@@ -7,9 +7,6 @@ import com.vwo.mobile.VWO;
 import org.json.JSONArray;
 import org.json.JSONException;
 
-/**
- * Created by abhishek on 07/10/15 at 6:07 PM.
- */
 public class VWOLocalData {
 
     @SuppressWarnings("SpellCheckingInspection")

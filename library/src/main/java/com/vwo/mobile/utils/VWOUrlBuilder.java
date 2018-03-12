@@ -85,11 +85,8 @@ public class VWOUrlBuilder {
         if (!TextUtils.isEmpty(existingCampaignList)) {
             uriBuilder.appendQueryParameter(EXISTING_CAMPAIGN_LIST, existingCampaignList);
         }
-        String url = uriBuilder.build().toString();
 
-        VWOLog.v(VWOLog.URL_LOGS, "Campaign download url : " + url);
-
-        return url;
+        return uriBuilder.build().toString();
     }
 
     public String getCampaignUrl(long experimentId, int variationId) {
@@ -112,10 +109,7 @@ public class VWOUrlBuilder {
                 .appendQueryParameter(EXTRA_DATA, getExtraData());
 
 
-
-        String url = uriBuilder.build().toString();
-        VWOLog.v(VWOLog.URL_LOGS, "Campaign url: " + url);
-        return url;
+        return uriBuilder.build().toString();
     }
 
     public String getGoalUrl(long experimentId, int variationId, int goalId) {

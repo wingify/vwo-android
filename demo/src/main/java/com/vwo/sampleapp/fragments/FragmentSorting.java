@@ -28,12 +28,8 @@ public class FragmentSorting extends Fragment implements ItemClickListener {
     public static final String ARG_ITEM = "item";
     private static final String ARG_FRAGMENT_TYPE = "fragment_type";
 
-    private RecyclerView recyclerView;
-    private RecyclerView.LayoutManager layoutManager;
-
     private int type;
 
-    private ArrayList<Mobile> mobiles;
     private AdapterSortingList adapterSortingList;
 
     @Nullable
@@ -41,9 +37,9 @@ public class FragmentSorting extends Fragment implements ItemClickListener {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_sorting, container, false);
 
-        recyclerView = view.findViewById(R.id.sorting_recycler_view);
+        RecyclerView recyclerView = view.findViewById(R.id.sorting_recycler_view);
 
-        mobiles = new ArrayList<>();
+        ArrayList<Mobile> mobiles = new ArrayList<>();
         Mobile apple = new Mobile("iPhone 6 (16GB, Black)", 399, "$", true,
                 true, R.drawable.iphone, "Apple", "Also Available in Space Grey and Rose Gold", 4);
         Mobile samsung = new Mobile("Samsung Galaxy S8 (64GB, Midnight Black)", 799, "$",
@@ -59,11 +55,13 @@ public class FragmentSorting extends Fragment implements ItemClickListener {
         mobiles.add(ZTE);
 
         if (savedInstanceState == null) {
+            assert getArguments() != null;
             type = getArguments().getInt(ARG_FRAGMENT_TYPE, FragmentSortingMain.ID_LIST_CONTROL);
         } else {
             type = savedInstanceState.getInt(ARG_FRAGMENT_TYPE, FragmentSortingMain.ID_LIST_CONTROL);
         }
 
+        RecyclerView.LayoutManager layoutManager;
         if (type == FragmentSortingMain.ID_LIST_CONTROL || type == FragmentSortingMain.ID_LIST_VARIATION) {
             layoutManager = new LinearLayoutManager(getContext());
         } else {

@@ -5,20 +5,17 @@ import android.util.Log;
 
 import com.vwo.mobile.VWO;
 import com.vwo.mobile.constants.AppConstants;
+import com.vwo.mobile.data.VWOPersistData;
 import com.vwo.mobile.utils.VWOLog;
 import com.vwo.mobile.utils.VWOUtils;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/**
- * Created by abhishek on 22/09/15 at 4:48 PM.
- */
 public enum CustomSegmentEvaluateEnum {
 
     ANDROID_VERSION_EQUAL_TO(AppConstants.ANDROID_VERSION, AppConstants.EQUAL_TO, new EvaluateSegment() {
@@ -29,16 +26,11 @@ public enum CustomSegmentEvaluateEnum {
                     if (Integer.parseInt(VWOUtils.androidVersion()) == Integer.parseInt(data.getString(i))) {
                         return true;
                     }
-                } catch (NumberFormatException | JSONException exception) {
+                } catch (Exception exception) {
                     VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse Android Version",
                             exception, false, true);
                 }
             }
-            return false;
-        }
-
-        @Override
-        public boolean evaluate(VWO vwo, JSONArray data, String key) {
             return false;
         }
     }),
@@ -51,17 +43,12 @@ public enum CustomSegmentEvaluateEnum {
                     if (Integer.parseInt(VWOUtils.androidVersion()) == Integer.parseInt(data.getString(i))) {
                         return false;
                     }
-                } catch (NumberFormatException | JSONException ex) {
+                } catch (Exception ex) {
                     VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse Android Version", ex,
                             false, true);
                 }
             }
             return true;
-        }
-
-        @Override
-        public boolean evaluate(VWO vwo, JSONArray data, String key) {
-            return false;
         }
     }),
 
@@ -73,16 +60,11 @@ public enum CustomSegmentEvaluateEnum {
                     if (Integer.parseInt(VWOUtils.androidVersion()) < Integer.parseInt(data.getString(i))) {
                         return true;
                     }
-                } catch (NumberFormatException | JSONException ex) {
+                } catch (Exception ex) {
                     VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse Android Version", ex,
                             false, true);
                 }
             }
-            return false;
-        }
-
-        @Override
-        public boolean evaluate(VWO vwo, JSONArray data, String key) {
             return false;
         }
     }),
@@ -95,16 +77,11 @@ public enum CustomSegmentEvaluateEnum {
                     if (Integer.parseInt(VWOUtils.androidVersion()) > Integer.parseInt(data.getString(i))) {
                         return true;
                     }
-                } catch (NumberFormatException | JSONException ex) {
+                } catch (Exception ex) {
                     VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse Android Version", ex,
                             false, true);
                 }
             }
-            return false;
-        }
-
-        @Override
-        public boolean evaluate(VWO vwo, JSONArray data, String key) {
             return false;
         }
     }),
@@ -119,16 +96,11 @@ public enum CustomSegmentEvaluateEnum {
                     if (dayOfWeek == Integer.parseInt(data.getString(i))) {
                         return true;
                     }
-                } catch (NumberFormatException | JSONException ex) {
+                } catch (Exception ex) {
                     VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse day of week", ex,
                             false, true);
                 }
             }
-            return false;
-        }
-
-        @Override
-        public boolean evaluate(VWO vwo, JSONArray data, String key) {
             return false;
         }
     }),
@@ -144,17 +116,12 @@ public enum CustomSegmentEvaluateEnum {
                     if (dayOfWeek == Integer.parseInt(data.getString(i))) {
                         return false;
                     }
-                } catch (NumberFormatException | JSONException ex) {
+                } catch (Exception ex) {
                     VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse day of week", ex,
                             false, true);
                 }
             }
             return true;
-        }
-
-        @Override
-        public boolean evaluate(VWO vwo, JSONArray data, String key) {
-            return false;
         }
     }),
 
@@ -168,16 +135,11 @@ public enum CustomSegmentEvaluateEnum {
                     if (hourOfTheDay == Integer.parseInt(data.getString(i))) {
                         return true;
                     }
-                } catch (NumberFormatException | JSONException ex) {
+                } catch (Exception ex) {
                     VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse hour of the day", ex,
                             false, true);
                 }
             }
-            return false;
-        }
-
-        @Override
-        public boolean evaluate(VWO vwo, JSONArray data, String key) {
             return false;
         }
     }),
@@ -192,44 +154,30 @@ public enum CustomSegmentEvaluateEnum {
                     if (hourOfTheDay == Integer.parseInt(data.getString(i))) {
                         return false;
                     }
-                } catch (NumberFormatException | JSONException ex) {
+                } catch (Exception ex) {
                     VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse hour of the day", ex,
                             false, true);
                 }
             }
             return true;
         }
-
-        @Override
-        public boolean evaluate(VWO vwo, JSONArray data, String key) {
-            return false;
-        }
     }),
 
     LOCATION_EQUAL_TO(AppConstants.LOCATION, AppConstants.EQUAL_TO, new EvaluateSegment() {
         @Override
         public boolean evaluate(VWO vwo, JSONArray data) {
-            String locale = VWOUtils.getLocale();
-            if (locale.contains("_")) {
-                String[] tempLocale = locale.split("_");
-                locale = tempLocale[1];
-            }
+            String locale = VWOUtils.getDeviceCountryCode(vwo.getCurrentContext());
 
             for (int i = 0; i < data.length(); i++) {
                 try {
                     if (data.getString(i).equalsIgnoreCase(locale)) {
                         return true;
                     }
-                } catch (JSONException exception) {
+                } catch (Exception exception) {
                     VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse location", exception,
                             false, true);
                 }
             }
-            return false;
-        }
-
-        @Override
-        public boolean evaluate(VWO vwo, JSONArray data, String key) {
             return false;
         }
     }),
@@ -237,28 +185,19 @@ public enum CustomSegmentEvaluateEnum {
     LOCATION_NOT_EQUAL_TO(AppConstants.LOCATION, AppConstants.NOT_EQUAL_TO, new EvaluateSegment() {
         @Override
         public boolean evaluate(VWO vwo, JSONArray data) {
-            String locale = VWOUtils.getLocale();
-            if (locale.contains("_")) {
-                String[] tempLocale = locale.split("_");
-                locale = tempLocale[1];
-            }
+            String locale = VWOUtils.getDeviceCountryCode(vwo.getCurrentContext());
 
             for (int i = 0; i < data.length(); i++) {
                 try {
                     if (data.getString(i).equalsIgnoreCase(locale)) {
                         return false;
                     }
-                } catch (JSONException exception) {
+                } catch (Exception exception) {
                     VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse location", exception,
                             false, true);
                 }
             }
             return true;
-        }
-
-        @Override
-        public boolean evaluate(VWO vwo, JSONArray data, String key) {
-            return false;
         }
     }),
 
@@ -272,16 +211,11 @@ public enum CustomSegmentEvaluateEnum {
                     if (version == appVersion) {
                         return true;
                     }
-                } catch (JSONException | NumberFormatException exception) {
+                } catch (Exception exception) {
                     VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse app version", exception,
                             false, false);
                 }
             }
-            return false;
-        }
-
-        @Override
-        public boolean evaluate(VWO vwo, JSONArray data, String key) {
             return false;
         }
     }),
@@ -296,99 +230,53 @@ public enum CustomSegmentEvaluateEnum {
                     if (version != appVersion) {
                         return true;
                     }
-                } catch (JSONException | NumberFormatException exception) {
+                } catch (Exception exception) {
                     VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse app version", exception,
                             false, false);
                 }
             }
-            return false;
-        }
-
-        @Override
-        public boolean evaluate(VWO vwo, JSONArray data, String key) {
             return false;
         }
     }),
 
-    APP_VERSION_MATCHES_REGEX(AppConstants.APP_VERSION, AppConstants.MATCHES_REGEX, new EvaluateSegment() {
+    APP_VERSION_LESS_THAN(AppConstants.APP_VERSION, AppConstants.LESS_THAN, new EvaluateSegment() {
         @Override
         public boolean evaluate(VWO vwo, JSONArray data) {
-            String appVersion = String.valueOf(VWOUtils.applicationVersion(vwo.getCurrentContext()));
+            int appVersion = VWOUtils.applicationVersion(vwo.getCurrentContext());
             for (int i = 0; i < data.length(); i++) {
                 try {
-                    Pattern pattern = Pattern.compile(data.getString(i));
-                    Matcher matcher = pattern.matcher(appVersion);
-                    if (matcher.matches()) {
+                    if (appVersion < data.getInt(i)) {
                         return true;
                     }
-                } catch (JSONException exception) {
+                } catch (Exception exception) {
                     VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse app version", exception,
                             false, false);
                 }
             }
-            return false;
-        }
-
-        @Override
-        public boolean evaluate(VWO vwo, JSONArray data, String key) {
             return false;
         }
     }),
 
-    APP_VERSION_CONTAINS(AppConstants.APP_VERSION, AppConstants.CONTAINS, new EvaluateSegment() {
+    APP_VERSION_GREATER_THAN(AppConstants.APP_VERSION, AppConstants.GREATER_THAN, new EvaluateSegment() {
         @Override
         public boolean evaluate(VWO vwo, JSONArray data) {
-            String appVersion = String.valueOf(VWOUtils.applicationVersion(vwo.getCurrentContext()));
+            int appVersion = VWOUtils.applicationVersion(vwo.getCurrentContext());
             for (int i = 0; i < data.length(); i++) {
                 try {
-                    String version = data.getString(i);
-                    if (appVersion.contains(version)) {
+                    int version = data.getInt(i);
+                    if (appVersion > version) {
                         return true;
                     }
-                } catch (JSONException exception) {
+                } catch (Exception exception) {
                     VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse app version", exception,
                             false, false);
                 }
             }
-            return false;
-        }
-
-        @Override
-        public boolean evaluate(VWO vwo, JSONArray data, String key) {
-            return false;
-        }
-    }),
-
-    APP_VERSION_STARTS_WITH(AppConstants.APP_VERSION, AppConstants.STARTS_WITH, new EvaluateSegment() {
-        @Override
-        public boolean evaluate(VWO vwo, JSONArray data) {
-            String appVersion = String.valueOf(VWOUtils.applicationVersion(vwo.getCurrentContext()));
-            for (int i = 0; i < data.length(); i++) {
-                try {
-                    String version = data.getString(i);
-                    if (appVersion.startsWith(version)) {
-                        return true;
-                    }
-                } catch (JSONException exception) {
-                    VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse app version", exception,
-                            false, false);
-                }
-            }
-            return false;
-        }
-
-        @Override
-        public boolean evaluate(VWO vwo, JSONArray data, String key) {
             return false;
         }
     }),
 
     CUSTOM_SEGMENT_EQUAL_TO(AppConstants.CUSTOM_SEGMENT, AppConstants.EQUAL_TO, new EvaluateSegment() {
-        @Override
-        public boolean evaluate(VWO vwo, JSONArray data) {
-            return false;
-        }
-
         @Override
         public boolean evaluate(VWO vwo, JSONArray data, String key) {
             String customVariable = vwo.getConfig().getValueForCustomSegment(key);
@@ -403,7 +291,7 @@ public enum CustomSegmentEvaluateEnum {
                     if (customVar.equals(customVariable)) {
                         return true;
                     }
-                } catch (JSONException exception) {
+                } catch (Exception exception) {
                     VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse custom segment", exception,
                             false, false);
                 }
@@ -413,11 +301,6 @@ public enum CustomSegmentEvaluateEnum {
     }),
 
     CUSTOM_SEGMENT_NOT_EQUAL_TO(AppConstants.CUSTOM_SEGMENT, AppConstants.NOT_EQUAL_TO, new EvaluateSegment() {
-        @Override
-        public boolean evaluate(VWO vwo, JSONArray data) {
-            return false;
-        }
-
         @Override
         public boolean evaluate(VWO vwo, JSONArray data, String key) {
             String customVariable = vwo.getConfig().getValueForCustomSegment(key);
@@ -432,7 +315,7 @@ public enum CustomSegmentEvaluateEnum {
                     if (customVar.equals(customVariable)) {
                         return false;
                     }
-                } catch (JSONException exception) {
+                } catch (Exception exception) {
                     VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse custom segment", exception,
                             false, false);
                 }
@@ -442,11 +325,6 @@ public enum CustomSegmentEvaluateEnum {
     }),
 
     CUSTOM_SEGMENT_MATCHES_REGEX(AppConstants.CUSTOM_SEGMENT, AppConstants.MATCHES_REGEX, new EvaluateSegment() {
-        @Override
-        public boolean evaluate(VWO vwo, JSONArray data) {
-            return false;
-        }
-
         @Override
         public boolean evaluate(VWO vwo, JSONArray data, String key) {
             String customVariable = vwo.getConfig().getValueForCustomSegment(key);
@@ -463,7 +341,7 @@ public enum CustomSegmentEvaluateEnum {
                     if (matcher.matches()) {
                         return true;
                     }
-                } catch (JSONException exception) {
+                } catch (Exception exception) {
                     VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse custom segment", exception,
                             false, false);
                 }
@@ -473,11 +351,6 @@ public enum CustomSegmentEvaluateEnum {
     }),
 
     CUSTOM_SEGMENT_CONTAINS(AppConstants.CUSTOM_SEGMENT, AppConstants.CONTAINS, new EvaluateSegment() {
-        @Override
-        public boolean evaluate(VWO vwo, JSONArray data) {
-            return false;
-        }
-
         @Override
         public boolean evaluate(VWO vwo, JSONArray data, String key) {
             String customVariable = vwo.getConfig().getValueForCustomSegment(key);
@@ -493,7 +366,7 @@ public enum CustomSegmentEvaluateEnum {
                     if (customVariable.contains(customVar)) {
                         return true;
                     }
-                } catch (JSONException exception) {
+                } catch (Exception exception) {
                     VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse custom segment", exception,
                             false, false);
                 }
@@ -503,11 +376,6 @@ public enum CustomSegmentEvaluateEnum {
     }),
 
     CUSTOM_SEGMENT_STARTS_WITH(AppConstants.CUSTOM_SEGMENT, AppConstants.STARTS_WITH, new EvaluateSegment() {
-        @Override
-        public boolean evaluate(VWO vwo, JSONArray data) {
-            return false;
-        }
-
         @Override
         public boolean evaluate(VWO vwo, JSONArray data, String key) {
             String customVariable = vwo.getConfig().getValueForCustomSegment(key);
@@ -523,7 +391,7 @@ public enum CustomSegmentEvaluateEnum {
                     if (customVariable.startsWith(customVar)) {
                         return true;
                     }
-                } catch (JSONException exception) {
+                } catch (Exception exception) {
                     VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse custom segment", exception,
                             false, false);
                 }
@@ -532,16 +400,305 @@ public enum CustomSegmentEvaluateEnum {
         }
     }),
 
-    DEFAULT("", -11, new EvaluateSegment() {
+    USER_TYPE_EQUALS(AppConstants.USER_TYPE, AppConstants.EQUAL_TO, new EvaluateSegment() {
         @Override
         public boolean evaluate(VWO vwo, JSONArray data) {
+            boolean isReturning = VWOPersistData.isReturningUser(vwo);
+            for (int i = 0; i < data.length(); i++) {
+                try {
+                    String type = data.getString(i);
+                    return isReturning && type.equalsIgnoreCase(AppConstants.USER_TYPE_RETURNING) ||
+                            !isReturning && type.equalsIgnoreCase(AppConstants.USER_TYPE_NEW);
+                } catch (Exception exception) {
+                    VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse user type", exception,
+                            false, false);
+                }
+            }
             return false;
         }
-
+    }),
+    USER_TYPE_NOT_EQUALS(AppConstants.USER_TYPE, AppConstants.NOT_EQUAL_TO, new EvaluateSegment() {
         @Override
-        public boolean evaluate(VWO vwo, JSONArray data, String key) {
+        public boolean evaluate(VWO vwo, JSONArray data) {
+            boolean isReturning = VWOPersistData.isReturningUser(vwo);
+            for (int i = 0; i < data.length(); i++) {
+                try {
+                    String type = data.getString(i);
+                    return !isReturning && type.equalsIgnoreCase(AppConstants.USER_TYPE_RETURNING) ||
+                            isReturning && type.equalsIgnoreCase(AppConstants.USER_TYPE_NEW);
+                } catch (Exception exception) {
+                    VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse user type", exception,
+                            false, false);
+                }
+            }
             return false;
         }
+    }),
+    DEVICE_TYPE_EQUALS(AppConstants.DEVICE_TYPE, AppConstants.EQUAL_TO, new EvaluateSegment() {
+        @Override
+        public boolean evaluate(VWO vwo, JSONArray data) {
+            boolean isTablet = VWOUtils.isTablet(vwo.getCurrentContext());
+            for (int i = 0; i < data.length(); i++) {
+                try {
+                    String type = data.getString(i);
+                    return isTablet && type.equalsIgnoreCase(AppConstants.DEVICE_TYPE_TABLET) ||
+                            !isTablet && type.equalsIgnoreCase(AppConstants.DEVICE_TYPE_PHONE);
+                } catch (Exception exception) {
+                    VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse device type", exception,
+                            false, false);
+                }
+            }
+            return false;
+        }
+    }),
+
+    DEVICE_TYPE_NOT_EQUALS(AppConstants.DEVICE_TYPE, AppConstants.NOT_EQUAL_TO, new EvaluateSegment() {
+        @Override
+        public boolean evaluate(VWO vwo, JSONArray data) {
+            boolean isTablet = VWOUtils.isTablet(vwo.getCurrentContext());
+            for (int i = 0; i < data.length(); i++) {
+                try {
+                    String type = data.getString(i);
+                    return !isTablet && type.equalsIgnoreCase(AppConstants.DEVICE_TYPE_TABLET) ||
+                            isTablet && type.equalsIgnoreCase(AppConstants.DEVICE_TYPE_PHONE);
+                } catch (Exception exception) {
+                    VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse device type", exception,
+                            false, false);
+                }
+            }
+            return false;
+        }
+    }),
+
+    SCREEN_WIDTH_EQUALS(AppConstants.SCREEN_WIDTH, AppConstants.EQUAL_TO, new EvaluateSegment() {
+        @Override
+        public boolean evaluate(VWO vwo, JSONArray data) {
+            int screenWidth = VWOUtils.getScreenWidth();
+            for (int i = 0; i < data.length(); i++) {
+                try {
+                    int width = data.getInt(i);
+                    if (screenWidth == width) {
+                        return true;
+                    }
+                } catch (Exception exception) {
+                    VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse screen width", exception,
+                            false, false);
+                }
+            }
+            return false;
+        }
+    }),
+
+    SCREEN_WIDTH_NOT_EQUALS(AppConstants.SCREEN_WIDTH, AppConstants.NOT_EQUAL_TO, new EvaluateSegment() {
+        @Override
+        public boolean evaluate(VWO vwo, JSONArray data) {
+            int screenWidth = VWOUtils.getScreenWidth();
+            for (int i = 0; i < data.length(); i++) {
+                try {
+                    int width = data.getInt(i);
+                    if (screenWidth != width) {
+                        return true;
+                    }
+                } catch (Exception exception) {
+                    VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse screen width", exception,
+                            false, false);
+                }
+            }
+            return false;
+        }
+    }),
+
+    SCREEN_WIDTH_GREATER_THAN(AppConstants.SCREEN_WIDTH, AppConstants.GREATER_THAN, new EvaluateSegment() {
+        @Override
+        public boolean evaluate(VWO vwo, JSONArray data) {
+            int screenWidth = VWOUtils.getScreenWidth();
+            for (int i = 0; i < data.length(); i++) {
+                try {
+                    int width = data.getInt(i);
+                    if (screenWidth > width) {
+                        return true;
+                    }
+                } catch (Exception exception) {
+                    VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse screen width", exception,
+                            false, false);
+                }
+            }
+            return false;
+        }
+    }),
+
+    SCREEN_WIDTH_LESS_THAN(AppConstants.SCREEN_WIDTH, AppConstants.LESS_THAN, new EvaluateSegment() {
+        @Override
+        public boolean evaluate(VWO vwo, JSONArray data) {
+            int screenWidth = VWOUtils.getScreenWidth();
+            for (int i = 0; i < data.length(); i++) {
+                try {
+                    int width = data.getInt(i);
+                    if (screenWidth < width) {
+                        return true;
+                    }
+                } catch (Exception exception) {
+                    VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse screen width", exception,
+                            false, false);
+                }
+            }
+            return false;
+        }
+    }),
+
+    SCREEN_HEIGHT_EQUALS(AppConstants.SCREEN_HEIGHT, AppConstants.EQUAL_TO, new EvaluateSegment() {
+        @Override
+        public boolean evaluate(VWO vwo, JSONArray data) {
+            int screenHeight = VWOUtils.getScreenHeight();
+            for (int i = 0; i < data.length(); i++) {
+                try {
+                    int height = data.getInt(i);
+                    if (screenHeight == height) {
+                        return true;
+                    }
+                } catch (Exception exception) {
+                    VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse screen height", exception,
+                            false, false);
+                }
+            }
+            return false;
+        }
+    }),
+
+    SCREEN_HEIGHT_NOT_EQUALS(AppConstants.SCREEN_HEIGHT, AppConstants.NOT_EQUAL_TO, new EvaluateSegment() {
+        @Override
+        public boolean evaluate(VWO vwo, JSONArray data) {
+            int screenHeight = VWOUtils.getScreenHeight();
+            for (int i = 0; i < data.length(); i++) {
+                try {
+                    int height = data.getInt(i);
+                    if (screenHeight != height) {
+                        return true;
+                    }
+                } catch (Exception exception) {
+                    VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse screen height", exception,
+                            false, false);
+                }
+            }
+            return false;
+        }
+    }),
+
+    SCREEN_HEIGHT_GREATER_THAN(AppConstants.SCREEN_HEIGHT, AppConstants.GREATER_THAN, new EvaluateSegment() {
+        @Override
+        public boolean evaluate(VWO vwo, JSONArray data) {
+            int screenHeight = VWOUtils.getScreenHeight();
+            for (int i = 0; i < data.length(); i++) {
+                try {
+                    int height = data.getInt(i);
+                    if (screenHeight > height) {
+                        return true;
+                    }
+                } catch (Exception exception) {
+                    VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse screen height", exception,
+                            false, false);
+                }
+            }
+            return false;
+        }
+    }),
+
+    SCREEN_HEIGHT_LESS_THAN(AppConstants.SCREEN_HEIGHT, AppConstants.LESS_THAN, new EvaluateSegment() {
+        @Override
+        public boolean evaluate(VWO vwo, JSONArray data) {
+            int screenHeight = VWOUtils.getScreenHeight();
+            for (int i = 0; i < data.length(); i++) {
+                try {
+                    int height = data.getInt(i);
+                    if (screenHeight < height) {
+                        return true;
+                    }
+                } catch (Exception exception) {
+                    VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse screen height", exception,
+                            false, false);
+                }
+            }
+            return false;
+        }
+    }),
+
+    SCREEN_DENSITY_EQUALS(AppConstants.SCALE, AppConstants.EQUAL_TO, new EvaluateSegment() {
+        @Override
+        public boolean evaluate(VWO vwo, JSONArray data) {
+            double actualScale = VWOUtils.getScale(vwo.getCurrentContext());
+            for (int i = 0; i < data.length(); i++) {
+                try {
+                    double scale = data.getDouble(i);
+                    if (actualScale == scale) {
+                        return true;
+                    }
+                } catch (Exception exception) {
+                    VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse screen density", exception,
+                            false, true);
+                }
+            }
+            return false;
+        }
+    }),
+
+    SCREEN_DENSITY_NOT_EQUALS(AppConstants.SCALE, AppConstants.NOT_EQUAL_TO, new EvaluateSegment() {
+        @Override
+        public boolean evaluate(VWO vwo, JSONArray data) {
+            double actualScale = VWOUtils.getScale(vwo.getCurrentContext());
+            for (int i = 0; i < data.length(); i++) {
+                try {
+                    double scale = data.getDouble(i);
+                    if (actualScale != scale) {
+                        return true;
+                    }
+                } catch (Exception exception) {
+                    VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse screen density", exception,
+                            false, true);
+                }
+            }
+            return false;
+        }
+    }),
+
+    SCREEN_DENSITY_GREATER_THAN(AppConstants.SCALE, AppConstants.GREATER_THAN, new EvaluateSegment() {
+        @Override
+        public boolean evaluate(VWO vwo, JSONArray data) {
+            double actualScale = VWOUtils.getScale(vwo.getCurrentContext());
+            for (int i = 0; i < data.length(); i++) {
+                try {
+                    double scale = data.getDouble(i);
+                    if (actualScale > scale) {
+                        return true;
+                    }
+                } catch (Exception exception) {
+                    VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse screen density", exception,
+                            false, true);
+                }
+            }
+            return false;
+        }
+    }),
+
+    SCREEN_DENSITY_LESS_THAN(AppConstants.SCALE, AppConstants.LESS_THAN, new EvaluateSegment() {
+        @Override
+        public boolean evaluate(VWO vwo, JSONArray data) {
+            double actualScale = VWOUtils.getScale(vwo.getCurrentContext());
+            for (int i = 0; i < data.length(); i++) {
+                try {
+                    double scale = data.getDouble(i);
+                    if (actualScale < scale) {
+                        return true;
+                    }
+                } catch (Exception exception) {
+                    VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse screen density", exception,
+                            false, true);
+                }
+            }
+            return false;
+        }
+    }),
+
+    DEFAULT("", -11, new EvaluateSegment() {
     });
 
 
@@ -578,8 +735,12 @@ public enum CustomSegmentEvaluateEnum {
     }
 
     public interface EvaluateSegment {
-        boolean evaluate(VWO vwo, JSONArray data);
+        default boolean evaluate(VWO vwo, JSONArray data) {
+            return false;
+        }
 
-        boolean evaluate(VWO vwo, JSONArray data, String key);
+        default boolean evaluate(VWO vwo, JSONArray data, String key) {
+            return false;
+        }
     }
 }

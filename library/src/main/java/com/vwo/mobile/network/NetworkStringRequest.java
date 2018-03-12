@@ -126,21 +126,17 @@ public class NetworkStringRequest extends NetworkRequest<String> {
      * @throws IOException is the exception that can be thrown during decompression
      */
     private byte[] decompressResponse(byte[] compressed) throws IOException {
-        ByteArrayOutputStream baos = null;
-        try {
+        try(ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
             int size;
-            ByteArrayInputStream memstream = new ByteArrayInputStream(compressed);
-            GZIPInputStream gzip = new GZIPInputStream(memstream);
-            final int buffSize = 8192;
-            byte[] tempBuffer = new byte[buffSize];
-            baos = new ByteArrayOutputStream();
-            while ((size = gzip.read(tempBuffer, 0, buffSize)) != -1) {
-                baos.write(tempBuffer, 0, size);
-            }
-            return baos.toByteArray();
-        } finally {
-            if (baos != null) {
-                baos.close();
+            try(ByteArrayInputStream memstream = new ByteArrayInputStream(compressed)) {
+                try(GZIPInputStream gzip = new GZIPInputStream(memstream)) {
+                    final int buffSize = 8192;
+                    byte[] tempBuffer = new byte[buffSize];
+                    while ((size = gzip.read(tempBuffer, 0, buffSize)) != -1) {
+                        baos.write(tempBuffer, 0, size);
+                    }
+                    return baos.toByteArray();
+                }
             }
         }
     }
@@ -155,23 +151,19 @@ public class NetworkStringRequest extends NetworkRequest<String> {
         if (body != null) {
             if (gzipEnabled) {
                 VWOLog.i(VWOLog.UPLOAD_LOGS, body, true);
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                GZIPOutputStream gzos = null;
-                try {
-                    gzos = new GZIPOutputStream(baos);
-                    gzos.write(body.getBytes(DEFAULT_CONTENT_ENCODING));
-                    gzos.flush();
+                try(ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+                    try (GZIPOutputStream gzos = new GZIPOutputStream(baos)) {
+                        gzos.write(body.getBytes(DEFAULT_CONTENT_ENCODING));
+                        gzos.flush();
+                    } catch (IOException exception) {
+                        VWOLog.e(VWOLog.UPLOAD_LOGS, exception, false, true);
+                        return super.getBody();
+                    }
+                    return baos.toByteArray();
                 } catch (IOException exception) {
                     VWOLog.e(VWOLog.UPLOAD_LOGS, exception, false, true);
                     return super.getBody();
-                } finally {
-                    if (gzos != null) try {
-                        gzos.close();
-                    } catch (IOException exception) {
-                        VWOLog.e(VWOLog.UPLOAD_LOGS, exception, false, true);
-                    }
                 }
-                return baos.toByteArray();
             } else {
                 try {
                     return body.getBytes(DEFAULT_CONTENT_ENCODING);

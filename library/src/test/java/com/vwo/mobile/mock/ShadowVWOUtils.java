@@ -29,4 +29,9 @@ public class ShadowVWOUtils {
         return true;
     }
 
+    @Implementation
+    public static boolean checkIfClassExists(String className) {
+        return true;
+    }
+
 }

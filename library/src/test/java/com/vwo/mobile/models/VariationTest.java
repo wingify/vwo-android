@@ -2,6 +2,7 @@ package com.vwo.mobile.models;
 
 import com.vwo.mobile.BuildConfig;
 import com.vwo.mobile.TestUtils;
+import com.vwo.mobile.mock.ShadowVWOLog;
 
 import junit.framework.Assert;
 
@@ -18,7 +19,7 @@ import java.io.IOException;
  * Created by aman on Thu 04/01/18 13:06.
  */
 @RunWith(RobolectricTestRunner.class)
-@Config(constants = BuildConfig.class, sdk = 22)
+@Config(constants = BuildConfig.class, sdk = 22, shadows = {ShadowVWOLog.class})
 public class VariationTest {
 
     @Test

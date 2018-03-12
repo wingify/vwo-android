@@ -66,6 +66,7 @@ public class LogUtils {
      * @return the unused amount of internal storage, in bytes
      */
     @Nullable
+    @SuppressWarnings({"deprecation"})
     public static Long getUnusedInternalStorageSize() {
         try {
             File path = Environment.getDataDirectory();
@@ -92,6 +93,7 @@ public class LogUtils {
      * @return the total amount of internal storage, in bytes
      */
     @Nullable
+    @SuppressWarnings({"deprecation"})
     public static Long getInternalStorageSize() {
         try {
             File path = Environment.getDataDirectory();
@@ -121,6 +123,7 @@ public class LogUtils {
      * is mounted
      */
     @Nullable
+    @SuppressWarnings({"deprecation"})
     public static Long getUnusedExternalStorageSize() {
         try {
             if (isExternalStorageMounted()) {
@@ -153,6 +156,7 @@ public class LogUtils {
      * is mounted
      */
     @Nullable
+    @SuppressWarnings({"deprecation"})
     public static Long getExternalStorageSize() {
         try {
             if (isExternalStorageMounted()) {

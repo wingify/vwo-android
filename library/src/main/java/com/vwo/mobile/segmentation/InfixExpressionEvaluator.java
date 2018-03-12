@@ -6,7 +6,6 @@ import java.util.Stack;
 /**
  * Created by aman on Tue 09/01/18 12:26.
  */
-
 public class InfixExpressionEvaluator {
     private Stack<Operator> operatorStack;
     private Stack<Boolean> operandStack;

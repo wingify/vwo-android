@@ -8,7 +8,6 @@ import java.util.List;
 /**
  * Created by aman on Fri 05/01/18 18:04.
  */
-
 public class SegmentUtils {
 
     public static boolean evaluateSegmentation(Campaign campaign) {
@@ -22,7 +21,7 @@ public class SegmentUtils {
                 expression.addAll(customSegment.toInfix());
             }
 
-            // TODO: fix for bug in backend service serving data. send an extra operator.
+            // FIXME: fix for bug in backend service serving data. send an extra operator.
             if (expression.get(0) instanceof Operator && ((Operator) expression.get(0)).canEvaluate()) {
                 expression.remove(0);
             }

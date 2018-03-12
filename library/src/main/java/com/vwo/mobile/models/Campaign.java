@@ -14,9 +14,6 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-/**
- * Created by abhishek on 17/09/15 at 12:08 PM.
- */
 public class Campaign {
 
     public final static String ID = "id";
@@ -39,11 +36,8 @@ public class Campaign {
     private static final String PARTIAL_SEGMENTS = "partialSegments";
     private long mId;
     private int mVersion;
-    private int mTraffic;
     private boolean trackUserAutomatically;
     private CampaignTypeEnum mType;
-    private boolean mCountGoalOnce;
-    private boolean mIsClickMap;
     private ArrayList<Goal> mGoals;
     private Variation mVariation;
     private String mSegmentType;
@@ -57,7 +51,6 @@ public class Campaign {
             this.mId = campaignData.getInt(ID);
             this.mVersion = campaignData.getInt(VERSION);
             mGoals = new ArrayList<>();
-            this.mTraffic = campaignData.getInt(TRAFFIC);
             this.mType = CampaignTypeEnum.getEnumFromCampaign(campaignData.getString(TYPE));
 
             if (campaignData.has(CAMPAIGN_NAME)) {
@@ -82,10 +75,8 @@ public class Campaign {
             }
 
             int clickMap = campaignData.getInt(CLICK_MAP);
-            this.mIsClickMap = (clickMap != 0);
 
             int countGoalOnce = campaignData.getInt(COUNT_GOAL_ONCE);
-            this.mCountGoalOnce = (countGoalOnce != 0);
 
 
             if (campaignData.has(SEGMENT_CODE) && campaignData.getJSONObject(SEGMENT_CODE).has(SEGMENT_TYPE)) {

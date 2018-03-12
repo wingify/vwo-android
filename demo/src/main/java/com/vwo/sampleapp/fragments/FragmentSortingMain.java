@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.IntDef;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.AppCompatImageView;
@@ -30,11 +31,8 @@ import java.lang.annotation.RetentionPolicy;
 public class FragmentSortingMain extends Fragment implements ChangeFragment {
     private static final String LOG_TAG = FragmentSortingMain.class.getSimpleName();
 
-    private AppCompatImageView navigation;
-    private AppCompatImageView refresh;
     private AppCompatTextView titleControl;
     private AppCompatTextView titleVariation;
-    private AppCompatTextView toolbarTitle;
     private NavigationToggleListener listener;
 
     public static final String TAG_CONTROL = "Control";
@@ -67,35 +65,27 @@ public class FragmentSortingMain extends Fragment implements ChangeFragment {
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_sorting_main, container, false);
         setHasOptionsMenu(true);
 
-        navigation = view.findViewById(R.id.campaign_navigation);
-        refresh =  view.findViewById(R.id.refresh_campaign);
+        AppCompatImageView navigation = view.findViewById(R.id.campaign_navigation);
+        AppCompatImageView refresh = view.findViewById(R.id.refresh_campaign);
         titleControl = view.findViewById(R.id.control_text_view_title);
         titleVariation = view.findViewById(R.id.variation_text_view_title);
-        toolbarTitle = view.findViewById(R.id.toolbar_title);
+        AppCompatTextView toolbarTitle = view.findViewById(R.id.toolbar_title);
 
         toolbarTitle.setText(R.string.title_layout_campaign);
 
-        navigation.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(listener != null) {
-                    listener.onToggle();
-                }
+        navigation.setOnClickListener(view1 -> {
+            if(listener != null) {
+                listener.onToggle();
             }
         });
 
         loadFragments();
 
-        refresh.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                loadFragments();
-            }
-        });
+        refresh.setOnClickListener(view12 -> loadFragments());
 
         return view;
     }
@@ -140,8 +130,7 @@ public class FragmentSortingMain extends Fragment implements ChangeFragment {
                 break;
             case ID_DETAILS_CONTROL:
                 if(bundle != null) {
-                    FragmentItemDetails detailsFragment = FragmentItemDetails.getInstance((Mobile)
-                            bundle.getParcelable(FragmentSorting.ARG_ITEM), fragmentId);
+                    FragmentItemDetails detailsFragment = FragmentItemDetails.getInstance(bundle.getParcelable(FragmentSorting.ARG_ITEM), fragmentId);
                     getChildFragmentManager().beginTransaction().replace(R.id.sorting_control_container,
                             detailsFragment, null).addToBackStack(null).commit();
                 }
@@ -170,8 +159,7 @@ public class FragmentSortingMain extends Fragment implements ChangeFragment {
                 break;
             case ID_DETAILS_VARIATION:
                 if(bundle != null) {
-                    FragmentItemDetails detailsFragment = FragmentItemDetails.getInstance((Mobile)
-                            bundle.getParcelable(FragmentSorting.ARG_ITEM), fragmentId);
+                    FragmentItemDetails detailsFragment = FragmentItemDetails.getInstance(bundle.getParcelable(FragmentSorting.ARG_ITEM), fragmentId);
                     getChildFragmentManager().beginTransaction().replace(R.id.sorting_variation_container,
                             detailsFragment, null).addToBackStack(null).commit();
                 }

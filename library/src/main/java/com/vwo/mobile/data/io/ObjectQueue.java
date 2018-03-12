@@ -41,7 +41,7 @@ public interface ObjectQueue<T> {
      *
      * @param <T> The type of elements in the queue.
      */
-    public interface Listener<T> {
+    interface Listener<T> {
 
         /**
          * Called after an entry is added.

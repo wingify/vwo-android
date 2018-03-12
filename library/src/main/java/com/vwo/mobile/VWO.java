@@ -35,6 +35,7 @@ import java.io.IOException;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -140,9 +141,11 @@ public class VWO implements VWODownloader.DownloadResult {
      *
      * @param key is the key for which variation is to be requested
      * @return an {@link Object} corresponding to given key.
+     * @deprecated Use {@link VWO#getVariationForKey(String, Object)} instead.
      */
-    @SuppressWarnings("unused")
+    @SuppressWarnings({"unused", "DeprecatedIsStillUsed"})
     @Nullable
+    @Deprecated
     public static Object getVariationForKey(@NonNull String key) {
         synchronized (lock) {
             if (sSharedInstance != null) {
@@ -195,12 +198,13 @@ public class VWO implements VWODownloader.DownloadResult {
      * @param control is the default value to be returned if key is not found in any campaigns.
      * @return an {@link Object} corresponding to given key.
      */
-    @SuppressWarnings("unused")
+    @SuppressWarnings({"unused", "deprecation"})
     @NonNull
     public static Object getVariationForKey(@NonNull String key, @NonNull Object control) {
         Object data = getVariationForKey(key);
         if (data == null) {
-            VWOLog.e(VWOLog.DATA_LOGS, "No data found for key: " + key, false, false);
+            VWOLog.w(VWOLog.DATA_LOGS, String.format(Locale.ENGLISH, "No variation found for key: %s " +
+                    "returning default value", key), false);
             return control;
         } else {
             return data;
@@ -340,7 +344,7 @@ public class VWO implements VWODownloader.DownloadResult {
             VWOLog.w(VWOLog.INITIALIZATION_LOGS, "VWO is already initializing.",
                     true);
             return true;
-        } else if(this.mVWOStartState >= STATE_STARTED) {
+        } else if (this.mVWOStartState >= STATE_STARTED) {
             VWOLog.w(VWOLog.INITIALIZATION_LOGS, "VWO is already initialized.",
                     true);
             onLoadSuccess();
@@ -362,7 +366,7 @@ public class VWO implements VWODownloader.DownloadResult {
             int vwoSession = this.mVWOPreference.getInt(AppConstants.DEVICE_SESSION, 0) + 1;
             this.mVWOPreference.putInt(AppConstants.DEVICE_SESSION, vwoSession);
 
-            VWODownloader.fetchFromServer(sSharedInstance,this);
+            VWODownloader.fetchFromServer(sSharedInstance, this);
 
             return true;
         }
@@ -472,23 +476,13 @@ public class VWO implements VWODownloader.DownloadResult {
     private void onLoadFailure(final String reason) {
         this.mVWOStartState = STATE_FAILED;
         if (mStatusListener != null) {
-            new Handler(getCurrentContext().getMainLooper()).post(new Runnable() {
-                @Override
-                public void run() {
-                    mStatusListener.onVWOLoadFailure(reason);
-                }
-            });
+            new Handler(getCurrentContext().getMainLooper()).post(() -> mStatusListener.onVWOLoadFailure(reason));
         }
     }
 
     private void onLoadSuccess() {
         if (mStatusListener != null) {
-            new Handler(getCurrentContext().getMainLooper()).post(new Runnable() {
-                @Override
-                public void run() {
-                    mStatusListener.onVWOLoaded();
-                }
-            });
+            new Handler(getCurrentContext().getMainLooper()).post(mStatusListener::onVWOLoaded);
         }
     }
 
@@ -549,7 +543,7 @@ public class VWO implements VWODownloader.DownloadResult {
      * VWO.
      * <p>
      * Note: Opting out can only be done before initialization of VWO SDK i.e. before calling
-     * {@link Initializer#launch()} or {@link Initializer#launch(VWOStatusListener)} or
+     * {@link Initializer#launch(VWOStatusListener)} or
      * {@link Initializer#launchSynchronously(long)}
      *
      * @param optOut is the {@link Boolean} value.

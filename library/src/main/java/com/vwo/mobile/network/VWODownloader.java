@@ -1,6 +1,5 @@
 package com.vwo.mobile.network;
 
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.vwo.mobile.VWO;
@@ -20,10 +19,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-
-/**
- * Created by abhishek on 17/09/15 at 11:39 PM.
- */
 public class VWODownloader {
 
     private static final int WARN_THRESHOLD = 3;
@@ -38,7 +33,7 @@ public class VWODownloader {
     public static void fetchFromServer(VWO vwo, final DownloadResult downloadResult) {
 
         String url = vwo.getVwoUrlBuilder().getDownloadUrl();
-        VWOLog.i(VWOLog.URL_LOGS, "Fetching data from: " + url, true);
+        VWOLog.v(VWOLog.URL_LOGS, "Fetching data from: " + url);
 
         if (vwo.getConfig().getTimeout() != null) {
             try {
@@ -101,27 +96,18 @@ public class VWODownloader {
         }
         try {
             NetworkStringRequest request = new NetworkStringRequest(url, NetworkRequest.GET,
-                    NetworkUtils.Headers.getBasicHeaders(), new Response.Listener<String>() {
-
-                @Override
-                public void onResponse(@NonNull NetworkRequest<String> networkRequest, @Nullable String response) {
-                    downloadResult.onDownloadSuccess(response);
+                    NetworkUtils.Headers.getBasicHeaders(), (networkRequest, response) -> downloadResult.onDownloadSuccess(response), errorResponse -> {
+                String message;
+                if (errorResponse.getCause() != null && (errorResponse.getCause() instanceof IOException ||
+                        errorResponse.getCause() instanceof ConnectException)) {
+                    message = "Either no internet connectivity or internet is very slow";
+                    VWOLog.e(VWOLog.UPLOAD_LOGS, "Either no internet connectivity or internet is very slow",
+                            errorResponse, true, false);
+                } else {
+                    message = "Something went wrong";
+                    VWOLog.e(VWOLog.DOWNLOAD_DATA_LOGS, "Something went wrong", errorResponse, true, false);
                 }
-            }, new Response.ErrorListener() {
-                @Override
-                public void onFailure(ErrorResponse errorResponse) {
-                    String message;
-                    if (errorResponse.getCause() != null && (errorResponse.getCause() instanceof IOException ||
-                            errorResponse.getCause() instanceof ConnectException)) {
-                        message = "Either no internet connectivity or internet is very slow";
-                        VWOLog.e(VWOLog.UPLOAD_LOGS, "Either no internet connectivity or internet is very slow",
-                                errorResponse, true, false);
-                    } else {
-                        message = "Something went wrong";
-                        VWOLog.e(VWOLog.DOWNLOAD_DATA_LOGS, "Something went wrong", errorResponse, true, false);
-                    }
-                    downloadResult.onDownloadError(errorResponse, message);
-                }
+                downloadResult.onDownloadError(errorResponse, message);
             });
             request.setGzipEnabled(true);
             PriorityRequestQueue.getInstance().addToQueue(request);
@@ -132,62 +118,59 @@ public class VWODownloader {
     }
 
     public static void initializeMessageQueue(final VWO vwo) {
-        Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                final VWOMessageQueue messageQueue = vwo.getMessageQueue();
-                final VWOMessageQueue failureQueue = vwo.getFailureQueue();
-                Entry entry = messageQueue.peek();
+        Runnable runnable = () -> {
+            final VWOMessageQueue messageQueue = vwo.getMessageQueue();
+            final VWOMessageQueue failureQueue = vwo.getFailureQueue();
+            Entry entry = messageQueue.peek();
 
-                while (entry != null) {
-                    try {
-                        if (((vwo.getConfig().getActivityLifecycleListener() == null && !VWOActivityLifeCycle.isApplicationInForeground())) || !NetworkUtils.shouldAttemptNetworkCall(vwo.getCurrentContext())) {
-                            VWOLog.e(VWOLog.UPLOAD_LOGS, "Either no network, or application is not in foreground", true, false);
+            while (entry != null) {
+                try {
+                    if (((vwo.getConfig().getActivityLifecycleListener() == null && !VWOActivityLifeCycle.isApplicationInForeground())) || !NetworkUtils.shouldAttemptNetworkCall(vwo.getCurrentContext())) {
+                        VWOLog.e(VWOLog.UPLOAD_LOGS, "Either no network, or application is not in foreground", true, false);
+                        break;
+                    }
+                    FutureNetworkRequest<String> futureNetworkRequest = FutureNetworkRequest.getInstance();
+                    NetworkStringRequest request = new NetworkStringRequest(entry.getUrl(),
+                            NetworkRequest.GET, NetworkUtils.Headers.getBasicHeaders(),
+                            futureNetworkRequest, futureNetworkRequest);
+                    request.setGzipEnabled(true);
+                    PriorityRequestQueue.getInstance().addToQueue(request);
+                    String data = futureNetworkRequest.get();
+                    VWOLog.v(VWOLog.UPLOAD_LOGS, String.format("Completed Upload Request with url : %s \ndata : %s", entry.getUrl(), data));
+                    messageQueue.remove();
+                    entry = messageQueue.peek();
+                } catch (MalformedURLException exception) {
+                    VWOLog.e(VWOLog.UPLOAD_LOGS, "Malformed url: " + entry.getUrl(),
+                            exception, true, true);
+                    messageQueue.remove();
+                    entry = messageQueue.peek();
+                } catch (InterruptedException exception) {
+                    VWOLog.e(VWOLog.UPLOAD_LOGS, exception, true, false);
+                    entry.incrementRetryCount();
+                    messageQueue.remove();
+                    if (entry.getRetryCount() < WARN_THRESHOLD) {
+                        messageQueue.add(entry);
+                    } else {
+                        failureQueue.add(entry);
+                    }
+                    entry = messageQueue.peek();
+                } catch (ExecutionException exception) {
+                    if (exception.getCause() != null && exception.getCause() instanceof ErrorResponse) {
+                        ErrorResponse errorResponse = (ErrorResponse) exception.getCause();
+                        if (errorResponse.getCause() != null && (errorResponse.getCause() instanceof IOException ||
+                                errorResponse.getCause() instanceof ConnectException)) {
+                            VWOLog.e(VWOLog.UPLOAD_LOGS, "Either no internet connectivity or internet is very slow",
+                                    exception, true, false);
                             break;
-                        }
-                        FutureNetworkRequest<String> futureNetworkRequest = FutureNetworkRequest.getInstance();
-                        NetworkStringRequest request = new NetworkStringRequest(entry.getUrl(),
-                                NetworkRequest.GET, NetworkUtils.Headers.getBasicHeaders(),
-                                futureNetworkRequest, futureNetworkRequest);
-                        request.setGzipEnabled(true);
-                        PriorityRequestQueue.getInstance().addToQueue(request);
-                        String data = futureNetworkRequest.get();
-                        VWOLog.v(VWOLog.UPLOAD_LOGS, String.format("Completed Upload Request with url : %s \ndata : %s", entry.getUrl(), data));
-                        messageQueue.remove();
-                        entry = messageQueue.peek();
-                    } catch (MalformedURLException exception) {
-                        VWOLog.e(VWOLog.UPLOAD_LOGS, "Malformed url: " + entry.getUrl(),
-                                exception, true, true);
-                        messageQueue.remove();
-                        entry = messageQueue.peek();
-                    } catch (InterruptedException exception) {
-                        VWOLog.e(VWOLog.UPLOAD_LOGS, exception, true, false);
-                        entry.incrementRetryCount();
-                        messageQueue.remove();
-                        if (entry.getRetryCount() < WARN_THRESHOLD) {
-                            messageQueue.add(entry);
-                        } else {
-                            failureQueue.add(entry);
-                        }
-                        entry = messageQueue.peek();
-                    } catch (ExecutionException exception) {
-                        if (exception.getCause() != null && exception.getCause() instanceof ErrorResponse) {
-                            ErrorResponse errorResponse = (ErrorResponse) exception.getCause();
-                            if (errorResponse.getCause() != null && (errorResponse.getCause() instanceof IOException ||
-                                    errorResponse.getCause() instanceof ConnectException)) {
-                                VWOLog.e(VWOLog.UPLOAD_LOGS, "Either no internet connectivity or internet is very slow",
-                                        exception, true, false);
-                                break;
-                            } else {
-                                VWOLog.e(VWOLog.UPLOAD_LOGS, exception, true, true);
-                                checkMessageQueueEntryStatus(entry, messageQueue, failureQueue);
-                                entry = messageQueue.peek();
-                            }
                         } else {
                             VWOLog.e(VWOLog.UPLOAD_LOGS, exception, true, true);
                             checkMessageQueueEntryStatus(entry, messageQueue, failureQueue);
                             entry = messageQueue.peek();
                         }
+                    } else {
+                        VWOLog.e(VWOLog.UPLOAD_LOGS, exception, true, true);
+                        checkMessageQueueEntryStatus(entry, messageQueue, failureQueue);
+                        entry = messageQueue.peek();
                     }
                 }
             }
@@ -215,51 +198,48 @@ public class VWODownloader {
     }
 
     public static void initializeFailureQueue(final VWO vwo) {
-        Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                final VWOMessageQueue failureQueue = vwo.getFailureQueue();
-                int taskCount = failureQueue.size();
-                VWOLog.i(VWOLog.UPLOAD_LOGS, "Flushing failure message queue of size : " + taskCount, true);
-                for (int i = 0; i < taskCount; i++) {
-                    Entry entry = failureQueue.peek();
-                    if (entry == null) {
+        Runnable runnable = () -> {
+            final VWOMessageQueue failureQueue = vwo.getFailureQueue();
+            int taskCount = failureQueue.size();
+            VWOLog.i(VWOLog.UPLOAD_LOGS, "Flushing failure message queue of size : " + taskCount, true);
+            for (int i = 0; i < taskCount; i++) {
+                Entry entry = failureQueue.peek();
+                if (entry == null) {
+                    break;
+                }
+                try {
+                    if (!NetworkUtils.shouldAttemptNetworkCall(vwo.getCurrentContext())) {
+                        VWOLog.e(VWOLog.UPLOAD_LOGS, "No internet connectivity", true, false);
                         break;
                     }
-                    try {
-                        if (!NetworkUtils.shouldAttemptNetworkCall(vwo.getCurrentContext())) {
-                            VWOLog.e(VWOLog.UPLOAD_LOGS, "No internet connectivity", true, false);
+                    FutureNetworkRequest<String> futureNetworkRequest = FutureNetworkRequest.getInstance();
+                    NetworkStringRequest request = new NetworkStringRequest(entry.getUrl(),
+                            NetworkRequest.GET, NetworkUtils.Headers.getBasicHeaders(),
+                            futureNetworkRequest, futureNetworkRequest);
+                    request.setGzipEnabled(true);
+                    PriorityRequestQueue.getInstance().addToQueue(request);
+                    String data = futureNetworkRequest.get();
+                    VWOLog.v(VWOLog.UPLOAD_LOGS, String.format("Completed Upload Request with url : %s \ndata : %s", entry.getUrl(), data));
+                    failureQueue.remove();
+                } catch (MalformedURLException exception) {
+                    VWOLog.e(VWOLog.UPLOAD_LOGS, "Malformed url: " + entry.getUrl(),
+                            exception, true, true);
+                    failureQueue.remove();
+                } catch (InterruptedException | ExecutionException exception) {
+                    if (exception.getCause() != null && exception.getCause() instanceof ErrorResponse) {
+                        ErrorResponse errorResponse = (ErrorResponse) exception.getCause();
+                        if (errorResponse.getCause() != null && (errorResponse.getCause() instanceof IOException ||
+                                errorResponse.getCause() instanceof ConnectException)) {
+                            VWOLog.e(VWOLog.UPLOAD_LOGS, "Either no internet connectivity or internet is very slow",
+                                    exception, true, false);
                             break;
-                        }
-                        FutureNetworkRequest<String> futureNetworkRequest = FutureNetworkRequest.getInstance();
-                        NetworkStringRequest request = new NetworkStringRequest(entry.getUrl(),
-                                NetworkRequest.GET, NetworkUtils.Headers.getBasicHeaders(),
-                                futureNetworkRequest, futureNetworkRequest);
-                        request.setGzipEnabled(true);
-                        PriorityRequestQueue.getInstance().addToQueue(request);
-                        String data = futureNetworkRequest.get();
-                        VWOLog.v(VWOLog.UPLOAD_LOGS, String.format("Completed Upload Request with url : %s \ndata : %s", entry.getUrl(), data));
-                        failureQueue.remove();
-                    } catch (MalformedURLException exception) {
-                        VWOLog.e(VWOLog.UPLOAD_LOGS, "Malformed url: " + entry.getUrl(),
-                                exception, true, true);
-                        failureQueue.remove();
-                    } catch (InterruptedException | ExecutionException exception) {
-                        if (exception.getCause() != null && exception.getCause() instanceof ErrorResponse) {
-                            ErrorResponse errorResponse = (ErrorResponse) exception.getCause();
-                            if (errorResponse.getCause() != null && (errorResponse.getCause() instanceof IOException ||
-                                    errorResponse.getCause() instanceof ConnectException)) {
-                                VWOLog.e(VWOLog.UPLOAD_LOGS, "Either no internet connectivity or internet is very slow",
-                                        exception, true, false);
-                                break;
-                            } else {
-                                VWOLog.e(VWOLog.UPLOAD_LOGS, exception, true, true);
-                                checkFailureQueueEntryStatus(entry, failureQueue);
-                            }
                         } else {
                             VWOLog.e(VWOLog.UPLOAD_LOGS, exception, true, true);
                             checkFailureQueueEntryStatus(entry, failureQueue);
                         }
+                    } else {
+                        VWOLog.e(VWOLog.UPLOAD_LOGS, exception, true, true);
+                        checkFailureQueueEntryStatus(entry, failureQueue);
                     }
                 }
             }
@@ -289,65 +269,62 @@ public class VWODownloader {
     }
 
     public static void scheduleLoggingQueue(final VWO vwo, final VWOMessageQueue loggingQueue) {
-        Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                int taskCount = loggingQueue.size();
-                VWOLog.i(VWOLog.UPLOAD_LOGS, "Flushing logging queue of size : " + taskCount, true);
-                Entry entry = loggingQueue.peek();
+        Runnable runnable = () -> {
+            int taskCount = loggingQueue.size();
+            VWOLog.i(VWOLog.UPLOAD_LOGS, "Flushing logging queue of size : " + taskCount, true);
+            Entry entry = loggingQueue.peek();
 
-                while (entry != null) {
-                    try {
-                        if (!VWOActivityLifeCycle.isApplicationInForeground() || !NetworkUtils.shouldAttemptNetworkCall(vwo.getCurrentContext())) {
-                            VWOLog.e(VWOLog.UPLOAD_LOGS, "Either no network, or application is not in foreground", true, false);
-                            break;
-                        }
-
-                        VWOError error = (VWOError) entry;
-                        FutureNetworkRequest<String> futureNetworkRequest = FutureNetworkRequest.getInstance();
-                        NetworkStringRequest request = new NetworkStringRequest(error.getUrl(),
-                                NetworkRequest.POST, NetworkUtils.Headers.getAuthHeaders(vwo.getConfig().getAccountId(),
-                                vwo.getConfig().getAppKey()), error.getErrorAsJSON().toString(),
-                                futureNetworkRequest, futureNetworkRequest);
-                        request.setGzipEnabled(true);
-                        PriorityRequestQueue.getInstance().addToQueue(request);
-                        String response = futureNetworkRequest.get();
-                        VWOLog.v(VWOLog.UPLOAD_LOGS, String.format("Logging error completed Request with data : %s \nand Response: %s",
-                                error.getErrorAsJSON().toString(), response));
-                        loggingQueue.remove();
-                        entry = loggingQueue.peek();
-                    } catch (MalformedURLException exception) {
-                        VWOLog.e(VWOLog.UPLOAD_LOGS, "Malformed url: " + entry.getUrl(),
-                                exception, true, false);
-                        loggingQueue.remove();
-                        entry = loggingQueue.peek();
-                    } catch (InterruptedException exception) {
-                        VWOLog.e(VWOLog.UPLOAD_LOGS, exception, true, false);
-                        entry.incrementRetryCount();
+            while (entry != null) {
+                try {
+                    if (!VWOActivityLifeCycle.isApplicationInForeground() || !NetworkUtils.shouldAttemptNetworkCall(vwo.getCurrentContext())) {
+                        VWOLog.e(VWOLog.UPLOAD_LOGS, "Either no network, or application is not in foreground", true, false);
                         break;
-                    } catch (ExecutionException exception) {
-                        if (exception.getCause() != null && exception.getCause() instanceof ErrorResponse) {
-                            ErrorResponse errorResponse = (ErrorResponse) exception.getCause();
-                            if (errorResponse.getCause() != null && (errorResponse.getCause() instanceof IOException ||
-                                    errorResponse.getCause() instanceof ConnectException)) {
-                                VWOLog.e(VWOLog.UPLOAD_LOGS, "Either no internet connectivity or internet is very slow",
-                                        exception, true, false);
-                                break;
-                            } else {
-                                VWOLog.e(VWOLog.UPLOAD_LOGS, exception, true, false);
-                                checkLoggingQueueEntryStatus(entry, loggingQueue);
-                                entry = loggingQueue.peek();
-                            }
+                    }
+
+                    VWOError error = (VWOError) entry;
+                    FutureNetworkRequest<String> futureNetworkRequest = FutureNetworkRequest.getInstance();
+                    NetworkStringRequest request = new NetworkStringRequest(error.getUrl(),
+                            NetworkRequest.POST, NetworkUtils.Headers.getAuthHeaders(vwo.getConfig().getAccountId(),
+                            vwo.getConfig().getAppKey()), error.getErrorAsJSON().toString(),
+                            futureNetworkRequest, futureNetworkRequest);
+                    request.setGzipEnabled(true);
+                    PriorityRequestQueue.getInstance().addToQueue(request);
+                    String response = futureNetworkRequest.get();
+                    VWOLog.v(VWOLog.UPLOAD_LOGS, String.format("Logging error completed Request with data : %s \nand Response: %s",
+                            error.getErrorAsJSON().toString(), response));
+                    loggingQueue.remove();
+                    entry = loggingQueue.peek();
+                } catch (MalformedURLException exception) {
+                    VWOLog.e(VWOLog.UPLOAD_LOGS, "Malformed url: " + entry.getUrl(),
+                            exception, true, false);
+                    loggingQueue.remove();
+                    entry = loggingQueue.peek();
+                } catch (InterruptedException exception) {
+                    VWOLog.e(VWOLog.UPLOAD_LOGS, exception, true, false);
+                    entry.incrementRetryCount();
+                    break;
+                } catch (ExecutionException exception) {
+                    if (exception.getCause() != null && exception.getCause() instanceof ErrorResponse) {
+                        ErrorResponse errorResponse = (ErrorResponse) exception.getCause();
+                        if (errorResponse.getCause() != null && (errorResponse.getCause() instanceof IOException ||
+                                errorResponse.getCause() instanceof ConnectException)) {
+                            VWOLog.e(VWOLog.UPLOAD_LOGS, "Either no internet connectivity or internet is very slow",
+                                    exception, true, false);
+                            break;
                         } else {
                             VWOLog.e(VWOLog.UPLOAD_LOGS, exception, true, false);
                             checkLoggingQueueEntryStatus(entry, loggingQueue);
                             entry = loggingQueue.peek();
                         }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                        loggingQueue.remove();
+                    } else {
+                        VWOLog.e(VWOLog.UPLOAD_LOGS, exception, true, false);
+                        checkLoggingQueueEntryStatus(entry, loggingQueue);
                         entry = loggingQueue.peek();
                     }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    loggingQueue.remove();
+                    entry = loggingQueue.peek();
                 }
             }
         };

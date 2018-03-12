@@ -2,7 +2,6 @@ package com.vwo.sampleapp.activities;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
@@ -163,19 +162,11 @@ public class MainActivity extends BaseActivity
             AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.popup_theme);
             builder.setTitle(getString(R.string.confirm));
             builder.setMessage(getString(R.string.clear_data_message));
-            builder.setNegativeButton(R.string.clear_data_negative, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    dialogInterface.dismiss();
-                }
-            });
-            builder.setPositiveButton(R.string.clear_data_positive, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    SharedPreferencesHelper.clearData(MainActivity.this);
-                    dialogInterface.dismiss();
-                    Toast.makeText(MainActivity.this, getString(R.string.data_cleared), Toast.LENGTH_SHORT).show();
-                }
+            builder.setNegativeButton(R.string.clear_data_negative, (dialogInterface, i) -> dialogInterface.dismiss());
+            builder.setPositiveButton(R.string.clear_data_positive, (dialogInterface, i) -> {
+                SharedPreferencesHelper.clearData(MainActivity.this);
+                dialogInterface.dismiss();
+                Toast.makeText(MainActivity.this, getString(R.string.data_cleared), Toast.LENGTH_SHORT).show();
             });
             builder.show();
         } else if (id == R.id.action_enter_api_key) {
@@ -223,33 +214,22 @@ public class MainActivity extends BaseActivity
 
         // Set up the buttons
         builder.setPositiveButton("OK", null);
-        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-            }
-        });
+        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
 
         final AlertDialog alertDialog = builder.create();
-        alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
-            @Override
-            public void onShow(DialogInterface dialog) {
-                Button button = ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_POSITIVE);
-                button.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        String apiKey = input.getText().toString().trim();
+        alertDialog.setOnShowListener(dialog -> {
+            Button button = ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_POSITIVE);
+            button.setOnClickListener(view -> {
+                String apiKey = input.getText().toString().trim();
 
-                        if (validateAndSetApiKey(apiKey)) {
-                            initVWO(apiKey, false, null);
-                            alertDialog.dismiss();
-                        } else {
-                            textInputLayout.setErrorEnabled(true);
-                            textInputLayout.setError(getString(R.string.error_api_key));
-                        }
-                    }
-                });
-            }
+                if (validateAndSetApiKey(apiKey)) {
+                    initVWO(apiKey, false, null);
+                    alertDialog.dismiss();
+                } else {
+                    textInputLayout.setErrorEnabled(true);
+                    textInputLayout.setError(getString(R.string.error_api_key));
+                }
+            });
         });
 
         alertDialog.show();
@@ -290,12 +270,7 @@ public class MainActivity extends BaseActivity
                     if (showProgress) {
                         progressBar.setVisibility(View.GONE);
                     }
-                    new Handler(getMainLooper()).post(new Runnable() {
-                        @Override
-                        public void run() {
-                            loadFragment(null, ID_FRAGMENT_SORTING, null);
-                        }
-                    });
+                    new Handler(getMainLooper()).post(() -> loadFragment(null, ID_FRAGMENT_SORTING, null));
                 }
 
                 @Override
@@ -303,12 +278,7 @@ public class MainActivity extends BaseActivity
                     if (showProgress) {
                         progressBar.setVisibility(View.GONE);
                     }
-                    new Handler(getMainLooper()).post(new Runnable() {
-                        @Override
-                        public void run() {
-                            loadFragment(null, ID_FRAGMENT_SORTING, null);
-                        }
-                    });
+                    new Handler(getMainLooper()).post(() -> loadFragment(null, ID_FRAGMENT_SORTING, null));
                 }
             });
         } else {

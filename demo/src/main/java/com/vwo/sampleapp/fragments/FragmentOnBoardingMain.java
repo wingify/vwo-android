@@ -31,12 +31,9 @@ import java.lang.annotation.RetentionPolicy;
 public class FragmentOnBoardingMain extends Fragment implements ChangeFragment {
     private static final String LOG_TAG = FragmentOnBoardingMain.class.getSimpleName();
 
-    private AppCompatImageView navigation;
-    private AppCompatImageView refresh;
     private NavigationToggleListener listener;
     private AppCompatTextView titleControl;
     private AppCompatTextView titleVariation;
-    private AppCompatTextView toolbarTitle;
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({CONTROL_LOGIN_TYPE_NORMAL,
@@ -70,30 +67,22 @@ public class FragmentOnBoardingMain extends Fragment implements ChangeFragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_onboarding_campaign, container, false);
 
-        navigation = view.findViewById(R.id.campaign_navigation);
-        refresh =  view.findViewById(R.id.refresh_campaign);
+        AppCompatImageView navigation = view.findViewById(R.id.campaign_navigation);
+        AppCompatImageView refresh = view.findViewById(R.id.refresh_campaign);
         titleControl = view.findViewById(R.id.control_text_view_title);
         titleVariation = view.findViewById(R.id.variation_text_view_title);
-        toolbarTitle = view.findViewById(R.id.toolbar_title);
+        AppCompatTextView toolbarTitle = view.findViewById(R.id.toolbar_title);
 
         titleControl.setVisibility(View.GONE);
         titleVariation.setVisibility(View.GONE);
 
-        navigation.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(listener != null) {
-                    listener.onToggle();
-                }
+        navigation.setOnClickListener(view1 -> {
+            if(listener != null) {
+                listener.onToggle();
             }
         });
 
-        refresh.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                loadDefaultFragments();
-            }
-        });
+        refresh.setOnClickListener(view12 -> loadDefaultFragments());
 
         toolbarTitle.setText(R.string.title_on_boarding);
         loadDefaultFragments();

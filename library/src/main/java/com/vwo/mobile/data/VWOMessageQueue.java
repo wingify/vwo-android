@@ -36,22 +36,19 @@ public class VWOMessageQueue implements MessageQueue<Entry> {
             this.waitingQueue = new ConcurrentLinkedQueue<>();
             executorService = Executors.newSingleThreadExecutor();
 
-            thread = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    while (!waitingQueue.isEmpty()) {
-                        Entry entry = waitingQueue.poll();
-                        VWOLog.i(VWOLog.STORAGE_LOGS, String.format(Locale.ENGLISH, "Adding to queue %s\n%s", filename, entry.toString()), true);
-                        byte[] data = Parceler.marshall(entry);
-                        try {
-                            synchronized (queueFile) {
-                                queueFile.add(data);
-                            }
-                        } catch (IOException exception) {
-                            VWOLog.e(VWOLog.STORAGE_LOGS, String.format(Locale.ENGLISH, "File %s corrupted. Clearing last entry...", filename), true, false);
-                            remove();
-                            VWOLog.e(VWOLog.STORAGE_LOGS, "Unable to create Object", exception, true, true);
+            thread = new Thread(() -> {
+                while (!waitingQueue.isEmpty()) {
+                    Entry entry = waitingQueue.poll();
+                    VWOLog.i(VWOLog.STORAGE_LOGS, String.format(Locale.ENGLISH, "Adding to queue %s\n%s", filename, entry.toString()), true);
+                    byte[] data = Parceler.marshall(entry);
+                    try {
+                        synchronized (queueFile) {
+                            queueFile.add(data);
                         }
+                    } catch (IOException exception) {
+                        VWOLog.e(VWOLog.STORAGE_LOGS, String.format(Locale.ENGLISH, "File %s corrupted. Clearing last entry...", filename), true, false);
+                        remove();
+                        VWOLog.e(VWOLog.STORAGE_LOGS, "Unable to create Object", exception, true, true);
                     }
                 }
             });

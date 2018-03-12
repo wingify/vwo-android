@@ -9,9 +9,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-/**
- * Created by abhishek on 17/09/15 at 12:03 PM.
- */
 public class Variation {
 
     public static final int EMPTY_VARIATION = -99;

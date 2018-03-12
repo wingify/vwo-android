@@ -222,15 +222,12 @@ public class QueueFile {
     private static void initialize(File file) throws IOException {
         // Use a temp file so we don't leave a partially-initialized file.
         File tempFile = new File(file.getPath() + ".tmp");
-        RandomAccessFile raf = open(tempFile);
-        try {
+        try (RandomAccessFile raf = open(tempFile)) {
             raf.setLength(INITIAL_LENGTH);
             raf.seek(0);
             byte[] headerBuffer = new byte[16];
             writeInts(headerBuffer, INITIAL_LENGTH, 0, 0, 0);
             raf.write(headerBuffer);
-        } finally {
-            raf.close();
         }
 
         // A rename is atomic.
@@ -660,9 +657,9 @@ public class QueueFile {
      */
     public interface ElementReader {
 
-    /*
-     * TODO: Support remove() call from read().
-     */
+        /*
+         * TODO: Support remove() call from read().
+         */
 
         /**
          * Called once per element.

@@ -5,6 +5,7 @@ import android.os.Build;
 
 import com.vwo.mobile.TestUtils;
 import com.vwo.mobile.VWO;
+import com.vwo.mobile.data.VWOPersistData;
 import com.vwo.mobile.mock.ShadowVWOLog;
 import com.vwo.mobile.mock.VWOMock;
 import com.vwo.mobile.mock.VWOPersistDataShadow;
@@ -17,6 +18,7 @@ import org.json.JSONObject;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
@@ -172,74 +174,49 @@ public class CustomSegmentTest {
     }
 
     @Test
-    public void appVersionContainsTest() throws JSONException, IOException {
+    public void appVersionLessThanTest() throws JSONException, IOException {
         VWO vwo = new VWOMock().getVWOMockObject();
 
         PowerMockito.mockStatic(VWOUtils.class);
         PowerMockito.when(VWOUtils.applicationVersion(any(Context.class))).thenReturn(20);
 
-        String appVersionContainsTrue = TestUtils.readJsonFile(getClass(), "com/vwo/mobile/segmentation/app_version_contains.json");
+        String lessThanTrue = TestUtils.readJsonFile(getClass(), "com/vwo/mobile/segmentation/app_version_less_than.json");
 
-        CustomSegment customSegmentAppVersionContainsTrue = new CustomSegment(vwo, new JSONObject(appVersionContainsTrue));
-        Assert.assertTrue(customSegmentAppVersionContainsTrue.evaluate());
-        PowerMockito.when(VWOUtils.applicationVersion(any(Context.class))).thenReturn(10);
+        CustomSegment customSegmentLessThanTrue = new CustomSegment(vwo, new JSONObject(lessThanTrue));
+        Assert.assertTrue(customSegmentLessThanTrue.evaluate());
+        PowerMockito.when(VWOUtils.applicationVersion(any(Context.class))).thenReturn(22);
 
-        String appVersionContainsFalse = TestUtils.readJsonFile(getClass(), "com/vwo/mobile/segmentation/app_version_contains.json");
+        String lessThanFalse = TestUtils.readJsonFile(getClass(), "com/vwo/mobile/segmentation/app_version_less_than.json");
 
-        CustomSegment customSegmentAppVersionContainsFalse = new CustomSegment(vwo, new JSONObject(appVersionContainsFalse));
-        Assert.assertFalse(customSegmentAppVersionContainsFalse.evaluate());
+        CustomSegment customSegmentLessThanFalse = new CustomSegment(vwo, new JSONObject(lessThanFalse));
+        Assert.assertFalse(customSegmentLessThanFalse.evaluate());
 
-        String invalid = TestUtils.readJsonFile(getClass(), "com/vwo/mobile/segmentation/app_version_contains_invalid.json");
+        String invalid = TestUtils.readJsonFile(getClass(), "com/vwo/mobile/segmentation/app_version_less_than_invalid.json");
 
         CustomSegment segmentInvalid = new CustomSegment(vwo, new JSONObject(invalid));
         Assert.assertFalse(segmentInvalid.evaluate());
     }
 
     @Test
-    public void appVersionStartsWithTest() throws JSONException, IOException {
+    public void appVersionGreaterThanTest() throws JSONException, IOException {
         VWO vwo = new VWOMock().getVWOMockObject();
 
         PowerMockito.mockStatic(VWOUtils.class);
         PowerMockito.when(VWOUtils.applicationVersion(any(Context.class))).thenReturn(20);
 
-        String startsWithTrue = TestUtils.readJsonFile(getClass(), "com/vwo/mobile/segmentation/app_version_starts_with.json");
+        String greaterThanTrue = TestUtils.readJsonFile(getClass(), "com/vwo/mobile/segmentation/app_version_greater_than.json");
 
-        CustomSegment segmentStartsWithTrue = new CustomSegment(vwo, new JSONObject(startsWithTrue));
-        Assert.assertTrue(segmentStartsWithTrue.evaluate());
+        CustomSegment segmentGreaterThanTrue = new CustomSegment(vwo, new JSONObject(greaterThanTrue));
+        Assert.assertTrue(segmentGreaterThanTrue.evaluate());
 
-        PowerMockito.when(VWOUtils.applicationVersion(any(Context.class))).thenReturn(10);
+        PowerMockito.when(VWOUtils.applicationVersion(any(Context.class))).thenReturn(5);
 
-        String startsWithFalse = TestUtils.readJsonFile(getClass(), "com/vwo/mobile/segmentation/app_version_starts_with.json");
+        String greaterThanFalse = TestUtils.readJsonFile(getClass(), "com/vwo/mobile/segmentation/app_version_greater_than.json");
 
-        CustomSegment segmentStartsWithFalse = new CustomSegment(vwo, new JSONObject(startsWithFalse));
-        Assert.assertFalse(segmentStartsWithFalse.evaluate());
+        CustomSegment segmentGreaterThanFalse = new CustomSegment(vwo, new JSONObject(greaterThanFalse));
+        Assert.assertFalse(segmentGreaterThanFalse.evaluate());
 
-        String invalid = TestUtils.readJsonFile(getClass(), "com/vwo/mobile/segmentation/app_version_starts_with_invalid.json");
-
-        CustomSegment segmentInvalid = new CustomSegment(vwo, new JSONObject(invalid));
-        Assert.assertFalse(segmentInvalid.evaluate());
-    }
-
-    @Test
-    public void appVersionMatchesRegexTest() throws JSONException, IOException {
-        VWO vwo = new VWOMock().getVWOMockObject();
-
-        PowerMockito.mockStatic(VWOUtils.class);
-        PowerMockito.when(VWOUtils.applicationVersion(any(Context.class))).thenReturn(20);
-
-        String matchesRegexTrue = TestUtils.readJsonFile(getClass(), "com/vwo/mobile/segmentation/app_version_matches_regex.json");
-
-        CustomSegment segmentRegexMatchesTrue = new CustomSegment(vwo, new JSONObject(matchesRegexTrue));
-        Assert.assertTrue(segmentRegexMatchesTrue.evaluate());
-
-        PowerMockito.when(VWOUtils.applicationVersion(any(Context.class))).thenReturn(40);
-
-        String matchesRegexFalse = TestUtils.readJsonFile(getClass(), "com/vwo/mobile/segmentation/app_version_matches_regex.json");
-
-        CustomSegment segmentRegexMatchesFalse = new CustomSegment(vwo, new JSONObject(matchesRegexFalse));
-        Assert.assertFalse(segmentRegexMatchesFalse.evaluate());
-
-        String invalid = TestUtils.readJsonFile(getClass(), "com/vwo/mobile/segmentation/app_version_matches_regex_invalid.json");
+        String invalid = TestUtils.readJsonFile(getClass(), "com/vwo/mobile/segmentation/app_version_greater_than_invalid.json");
 
         CustomSegment segmentInvalid = new CustomSegment(vwo, new JSONObject(invalid));
         Assert.assertFalse(segmentInvalid.evaluate());
@@ -465,6 +442,382 @@ public class CustomSegmentTest {
 
         Mockito.when(calendar.get(anyInt())).thenReturn(7);
         Assert.assertFalse(customSegment.evaluate());
+    }
+
+
+    @Test
+    @Config(qualifiers = "en-rIN")
+    public void locationEqualsTest() throws IOException, JSONException {
+        VWO vwo = new VWOMock().getVWOMockObject();
+
+        String locationEquals = TestUtils.readJsonFile(getClass(), "com/vwo/mobile/segmentation/location_equals.json");
+
+        CustomSegment customSegment = new CustomSegment(vwo, new JSONObject(locationEquals));
+        Assert.assertTrue(customSegment.evaluate());
+    }
+
+    @Test
+    @Config(qualifiers = "en-rIN")
+    public void locationNotEqualsTest() throws JSONException, IOException {
+        VWO vwo = new VWOMock().getVWOMockObject();
+
+        String locationEquals = TestUtils.readJsonFile(getClass(), "com/vwo/mobile/segmentation/location_not_equals.json");
+
+        CustomSegment customSegment = new CustomSegment(vwo, new JSONObject(locationEquals));
+        Assert.assertFalse(customSegment.evaluate());
+    }
+
+    @Test
+    @Config(qualifiers = "en-")
+    public void locationEqualsInvalidTest() throws JSONException, IOException {
+        VWO vwo = new VWOMock().getVWOMockObject();
+
+        String locationEquals = TestUtils.readJsonFile(getClass(), "com/vwo/mobile/segmentation/location_equals.json");
+
+        CustomSegment customSegment = new CustomSegment(vwo, new JSONObject(locationEquals));
+        Assert.assertFalse(customSegment.evaluate());
+    }
+
+
+    @Test
+    @Config(qualifiers = "en-rUS-w320dp-h240dp-xxxhdpi")
+    public void phoneUserEqualsTest() throws JSONException, IOException {
+        VWO vwo = new VWOMock().getVWOMockObject();
+
+        String phoneUserEquals = TestUtils.readJsonFile(getClass(), "com/vwo/mobile/segmentation/phone_user_equals.json");
+
+        CustomSegment segmentPhoneUserEquals = new CustomSegment(vwo, new JSONObject(phoneUserEquals));
+        Assert.assertTrue(segmentPhoneUserEquals.evaluate());
+    }
+
+    @Test
+    @Config(qualifiers = "en-rUS-w480dp-h640dp-xxxhdpi")
+    public void phoneUserNotEqualsTest() throws JSONException, IOException {
+        VWO vwo = new VWOMock().getVWOMockObject();
+
+        String phoneUserNotEquals = TestUtils.readJsonFile(getClass(), "com/vwo/mobile/segmentation/phone_user_not_equals.json");
+
+        CustomSegment segmentPhoneUserNotEquals = new CustomSegment(vwo, new JSONObject(phoneUserNotEquals));
+
+        Assert.assertTrue(segmentPhoneUserNotEquals.evaluate());
+    }
+
+    @Test
+    @Config(qualifiers = "en-rUS-w480dp-h640dp-xxxhdpi")
+    public void tabletUserEqualsTest() throws JSONException, IOException {
+        VWO vwo = new VWOMock().getVWOMockObject();
+        String tabletUser = TestUtils.readJsonFile(getClass(), "com/vwo/mobile/segmentation/tablet_user_equals.json");
+
+        CustomSegment segmentTabletUser = new CustomSegment(vwo, new JSONObject(tabletUser));
+        Assert.assertTrue(segmentTabletUser.evaluate());
+    }
+
+    @Test
+    @Config(qualifiers = "en-rUS-w320dp-h240dp-xxxhdpi")
+    public void tabletUserNotEqualsTest() throws JSONException, IOException {
+        VWO vwo = new VWOMock().getVWOMockObject();
+        String tabletUser = TestUtils.readJsonFile(getClass(), "com/vwo/mobile/segmentation/tablet_user_not_equals.json");
+
+        CustomSegment segmentTabletUser = new CustomSegment(vwo, new JSONObject(tabletUser));
+        Assert.assertTrue(segmentTabletUser.evaluate());
+    }
+
+    @Test
+    @PrepareForTest(VWOPersistData.class)
+    public void newUserEqualsTest() throws JSONException, IOException {
+        VWO vwo = new VWOMock().getVWOMockObject();
+
+        PowerMockito.mockStatic(VWOPersistData.class);
+        PowerMockito.when(VWOPersistData.isReturningUser(ArgumentMatchers.any(VWO.class))).thenReturn(false);
+
+        String newUser = TestUtils.readJsonFile(getClass(), "com/vwo/mobile/segmentation/new_user_equals.json");
+
+        CustomSegment segmentNewUser = new CustomSegment(vwo, new JSONObject(newUser));
+        Assert.assertTrue(segmentNewUser.evaluate());
+    }
+
+    @Test
+    @PrepareForTest(VWOPersistData.class)
+    public void newUserNotEqualsTest() throws JSONException, IOException {
+        VWO vwo = new VWOMock().getVWOMockObject();
+
+        PowerMockito.mockStatic(VWOPersistData.class);
+        PowerMockito.when(VWOPersistData.isReturningUser(ArgumentMatchers.any(VWO.class))).thenReturn(true);
+
+        String newUser = TestUtils.readJsonFile(getClass(), "com/vwo/mobile/segmentation/new_user_not_equals.json");
+
+        CustomSegment segmentNewUser = new CustomSegment(vwo, new JSONObject(newUser));
+        Assert.assertTrue(segmentNewUser.evaluate());
+    }
+
+    @Test
+    @PrepareForTest(VWOPersistData.class)
+    public void returningUserEqualsTest() throws JSONException, IOException {
+        VWO vwo = new VWOMock().getVWOMockObject();
+
+        PowerMockito.mockStatic(VWOPersistData.class);
+        PowerMockito.when(VWOPersistData.isReturningUser(ArgumentMatchers.any(VWO.class))).thenReturn(true);
+
+        String json = TestUtils.readJsonFile(getClass(), "com/vwo/mobile/segmentation/returning_user_equals.json");
+
+
+        CustomSegment segment = new CustomSegment(vwo, new JSONObject(json));
+        Assert.assertTrue(segment.evaluate());
+    }
+
+    @Test
+    @PrepareForTest(VWOPersistData.class)
+    public void returningUserNotEqualsTest() throws JSONException, IOException {
+        VWO vwo = new VWOMock().getVWOMockObject();
+
+        PowerMockito.mockStatic(VWOPersistData.class);
+        PowerMockito.when(VWOPersistData.isReturningUser(ArgumentMatchers.any(VWO.class))).thenReturn(false);
+
+        String json = TestUtils.readJsonFile(getClass(), "com/vwo/mobile/segmentation/returning_user_not_equals.json");
+
+
+        CustomSegment segment = new CustomSegment(vwo, new JSONObject(json));
+        Assert.assertTrue(segment.evaluate());
+    }
+
+    @Test
+    @PrepareForTest(VWOPersistData.class)
+    @Config(qualifiers = "en-rUS-w320dp-h240dp-xxhdpi")
+    public void screenWidthEqualsTest() throws JSONException, IOException {  // 320 * 3.0 = 960  xxhdpi is of the ratio 1:3.0
+        VWO vwo = new VWOMock().getVWOMockObject();
+
+        PowerMockito.mockStatic(VWOPersistData.class);
+        PowerMockito.when(VWOPersistData.isReturningUser(ArgumentMatchers.any(VWO.class))).thenReturn(false);
+
+        String json = TestUtils.readJsonFile(getClass(), "com/vwo/mobile/segmentation/screen_width_equal_to.json");
+
+
+        CustomSegment segment = new CustomSegment(vwo, new JSONObject(json));
+        Assert.assertTrue(segment.evaluate());
+    }
+
+    @Test
+    @PrepareForTest(VWOPersistData.class)
+    @Config(qualifiers = "en-rUS-w320dp-h240dp-xxxhdpi")
+    public void screenWidthNotEqualsTest() throws JSONException, IOException {  // 320 * 4.0 = 1280  xxxhdpi is of the ratio 1:4.0
+        VWO vwo = new VWOMock().getVWOMockObject();
+
+        PowerMockito.mockStatic(VWOPersistData.class);
+        PowerMockito.when(VWOPersistData.isReturningUser(ArgumentMatchers.any(VWO.class))).thenReturn(false);
+
+        String json = TestUtils.readJsonFile(getClass(), "com/vwo/mobile/segmentation/screen_width_not_equal_to.json");
+
+
+        CustomSegment segment = new CustomSegment(vwo, new JSONObject(json));
+        Assert.assertTrue(segment.evaluate());
+    }
+
+    @Test
+    @PrepareForTest(VWOPersistData.class)
+    @Config(qualifiers = "en-rUS-w480dp-h240dp-ldpi")
+    public void screenWidthLessThanTest() throws JSONException, IOException {  // 480 * 0.75 = 360  ldpi is of the ratio 1:0.75
+        VWO vwo = new VWOMock().getVWOMockObject();
+
+        PowerMockito.mockStatic(VWOPersistData.class);
+        PowerMockito.when(VWOPersistData.isReturningUser(ArgumentMatchers.any(VWO.class))).thenReturn(false);
+
+        String json = TestUtils.readJsonFile(getClass(), "com/vwo/mobile/segmentation/screen_width_less_than.json");
+
+
+        CustomSegment segment = new CustomSegment(vwo, new JSONObject(json));
+        Assert.assertTrue(segment.evaluate());
+    }
+
+    @Test
+    @PrepareForTest(VWOPersistData.class)
+    @Config(qualifiers = "en-rUS-w480dp-h240dp-xxxhdpi")
+    public void screenWidthGreaterThanTest() throws JSONException, IOException {  // 480 * 4.0 = 1920  xxxhdpi is of the ratio 1:4.0
+        VWO vwo = new VWOMock().getVWOMockObject();
+
+        PowerMockito.mockStatic(VWOPersistData.class);
+        PowerMockito.when(VWOPersistData.isReturningUser(ArgumentMatchers.any(VWO.class))).thenReturn(false);
+
+        String json = TestUtils.readJsonFile(getClass(), "com/vwo/mobile/segmentation/screen_width_greater_than.json");
+
+
+        CustomSegment segment = new CustomSegment(vwo, new JSONObject(json));
+        Assert.assertTrue(segment.evaluate());
+    }
+
+    @Test
+    @PrepareForTest(VWOPersistData.class)
+    @Config(qualifiers = "en-rUS-w480dp-h240dp-xxxhdpi")
+    public void invalidScreenWidthTest() throws JSONException, IOException {  // 480 * 4.0 = 1920  xxxhdpi is of the ratio 1:4.0
+        VWO vwo = new VWOMock().getVWOMockObject();
+
+        PowerMockito.mockStatic(VWOPersistData.class);
+        PowerMockito.when(VWOPersistData.isReturningUser(ArgumentMatchers.any(VWO.class))).thenReturn(false);
+
+        String json = TestUtils.readJsonFile(getClass(), "com/vwo/mobile/segmentation/screen_width_invalid.json");
+
+
+        CustomSegment segment = new CustomSegment(vwo, new JSONObject(json));
+        Assert.assertFalse(segment.evaluate());
+    }
+
+    @Test
+    @PrepareForTest(VWOPersistData.class)
+    @Config(qualifiers = "en-rUS-w480dp-h320dp-xxhdpi")
+    public void screenHeightEqualsTest() throws JSONException, IOException {  // 320 * 3.0 = 960  xxhdpi is of the ratio 1:3.0
+        VWO vwo = new VWOMock().getVWOMockObject();
+
+        PowerMockito.mockStatic(VWOPersistData.class);
+        PowerMockito.when(VWOPersistData.isReturningUser(ArgumentMatchers.any(VWO.class))).thenReturn(false);
+
+        String json = TestUtils.readJsonFile(getClass(), "com/vwo/mobile/segmentation/screen_height_equal_to.json");
+
+
+        CustomSegment segment = new CustomSegment(vwo, new JSONObject(json));
+        Assert.assertTrue(segment.evaluate());
+    }
+
+    @Test
+    @PrepareForTest(VWOPersistData.class)
+    @Config(qualifiers = "en-rUS-w320dp-h320dp-xxxhdpi")
+    public void screenHeightNotEqualsTest() throws JSONException, IOException {  // 320 * 4.0 = 1280  xxxhdpi is of the ratio 1:4.0
+        VWO vwo = new VWOMock().getVWOMockObject();
+
+        PowerMockito.mockStatic(VWOPersistData.class);
+        PowerMockito.when(VWOPersistData.isReturningUser(ArgumentMatchers.any(VWO.class))).thenReturn(false);
+
+        String json = TestUtils.readJsonFile(getClass(), "com/vwo/mobile/segmentation/screen_height_not_equal_to.json");
+
+
+        CustomSegment segment = new CustomSegment(vwo, new JSONObject(json));
+        Assert.assertTrue(segment.evaluate());
+    }
+
+    @Test
+    @PrepareForTest(VWOPersistData.class)
+    @Config(qualifiers = "en-rUS-w320dp-h480dp-ldpi")
+    public void screenHeightLessThanTest() throws JSONException, IOException {  // 480 * 0.75 = 360  ldpi is of the ratio 1:0.75
+        VWO vwo = new VWOMock().getVWOMockObject();
+
+        PowerMockito.mockStatic(VWOPersistData.class);
+        PowerMockito.when(VWOPersistData.isReturningUser(ArgumentMatchers.any(VWO.class))).thenReturn(false);
+
+        String json = TestUtils.readJsonFile(getClass(), "com/vwo/mobile/segmentation/screen_height_less_than.json");
+
+
+        CustomSegment segment = new CustomSegment(vwo, new JSONObject(json));
+        Assert.assertTrue(segment.evaluate());
+    }
+
+    @Test
+    @PrepareForTest(VWOPersistData.class)
+    @Config(qualifiers = "en-rUS-w240dp-h480dp-xxxhdpi")
+    public void screenHeightGreaterThanTest() throws JSONException, IOException {  // 480 * 4.0 = 1920  xxxhdpi is of the ratio 1:4.0
+        VWO vwo = new VWOMock().getVWOMockObject();
+
+        PowerMockito.mockStatic(VWOPersistData.class);
+        PowerMockito.when(VWOPersistData.isReturningUser(ArgumentMatchers.any(VWO.class))).thenReturn(false);
+
+        String json = TestUtils.readJsonFile(getClass(), "com/vwo/mobile/segmentation/screen_height_greater_than.json");
+
+
+        CustomSegment segment = new CustomSegment(vwo, new JSONObject(json));
+        Assert.assertTrue(segment.evaluate());
+    }
+
+    @Test
+    @PrepareForTest(VWOPersistData.class)
+    @Config(qualifiers = "en-rUS-w240dp-h480dp-xxxhdpi")
+    public void invalidScreenHeightTest() throws JSONException, IOException {  // 480 * 4.0 = 1920  xxxhdpi is of the ratio 1:4.0
+        VWO vwo = new VWOMock().getVWOMockObject();
+
+        PowerMockito.mockStatic(VWOPersistData.class);
+        PowerMockito.when(VWOPersistData.isReturningUser(ArgumentMatchers.any(VWO.class))).thenReturn(false);
+
+        String json = TestUtils.readJsonFile(getClass(), "com/vwo/mobile/segmentation/screen_height_invalid.json");
+
+
+        CustomSegment segment = new CustomSegment(vwo, new JSONObject(json));
+        Assert.assertFalse(segment.evaluate());
+    }
+
+    @Test
+    @PrepareForTest(VWOPersistData.class)
+    @Config(qualifiers = "en-rUS-w480dp-h320dp-xxhdpi")
+    public void scaleEqualsTest() throws JSONException, IOException {  // for xxhdpi scale = 3.0
+        VWO vwo = new VWOMock().getVWOMockObject();
+
+        PowerMockito.mockStatic(VWOPersistData.class);
+        PowerMockito.when(VWOPersistData.isReturningUser(ArgumentMatchers.any(VWO.class))).thenReturn(false);
+
+        String json = TestUtils.readJsonFile(getClass(), "com/vwo/mobile/segmentation/scale_equal_to.json");
+
+
+        CustomSegment segment = new CustomSegment(vwo, new JSONObject(json));
+        Assert.assertTrue(segment.evaluate());
+    }
+
+    @Test
+    @PrepareForTest(VWOPersistData.class)
+    @Config(qualifiers = "en-rUS-w320dp-h320dp-xxxhdpi")
+    public void scaleNotEqualsTest() throws JSONException, IOException {  // for xxxhdpi scale = 4.0
+        VWO vwo = new VWOMock().getVWOMockObject();
+
+        PowerMockito.mockStatic(VWOPersistData.class);
+        PowerMockito.when(VWOPersistData.isReturningUser(ArgumentMatchers.any(VWO.class))).thenReturn(false);
+
+        String json = TestUtils.readJsonFile(getClass(), "com/vwo/mobile/segmentation/scale_not_equal_to.json");
+
+
+        CustomSegment segment = new CustomSegment(vwo, new JSONObject(json));
+        Assert.assertTrue(segment.evaluate());
+    }
+
+    @Test
+    @PrepareForTest(VWOPersistData.class)
+    @Config(qualifiers = "en-rUS-w320dp-h480dp-ldpi")
+    public void scaleLessThanTest() throws JSONException, IOException {  // for ldpi scale = 0.75
+        VWO vwo = new VWOMock().getVWOMockObject();
+
+        PowerMockito.mockStatic(VWOPersistData.class);
+        PowerMockito.when(VWOPersistData.isReturningUser(ArgumentMatchers.any(VWO.class))).thenReturn(false);
+
+        String json = TestUtils.readJsonFile(getClass(), "com/vwo/mobile/segmentation/scale_less_than.json");
+
+
+        CustomSegment segment = new CustomSegment(vwo, new JSONObject(json));
+        Assert.assertTrue(segment.evaluate());
+    }
+
+    @Test
+    @PrepareForTest(VWOPersistData.class)
+    @Config(qualifiers = "en-rUS-w240dp-h480dp-xxxhdpi")
+    public void scaleGreaterThanTest() throws JSONException, IOException { // for xxxhdpi scale = 4.0
+        VWO vwo = new VWOMock().getVWOMockObject();
+
+        PowerMockito.mockStatic(VWOPersistData.class);
+        PowerMockito.when(VWOPersistData.isReturningUser(ArgumentMatchers.any(VWO.class))).thenReturn(false);
+
+        String json = TestUtils.readJsonFile(getClass(), "com/vwo/mobile/segmentation/scale_greater_than.json");
+
+
+        CustomSegment segment = new CustomSegment(vwo, new JSONObject(json));
+        Assert.assertTrue(segment.evaluate());
+    }
+
+    @Test
+    @PrepareForTest(VWOPersistData.class)
+    @Config(qualifiers = "en-rUS-w240dp-h480dp-xxxhdpi")
+    public void invalidScaleTest() throws JSONException, IOException { // for xxxhdpi scale = 4.0
+        VWO vwo = new VWOMock().getVWOMockObject();
+
+        PowerMockito.mockStatic(VWOPersistData.class);
+        PowerMockito.when(VWOPersistData.isReturningUser(ArgumentMatchers.any(VWO.class))).thenReturn(false);
+
+        String json = TestUtils.readJsonFile(getClass(), "com/vwo/mobile/segmentation/scale_invalid.json");
+
+
+        CustomSegment segment = new CustomSegment(vwo, new JSONObject(json));
+        Assert.assertFalse(segment.evaluate());
     }
 
     @Test
