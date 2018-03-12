@@ -70,29 +70,7 @@ Update your project AndroidManifest.xml with following permissions:
 	
 ## Initializing SDK
 
-##### Launching VWO SDK in Asynchronous mode.
-```java
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
-import com.vwo.mobile.VWO;
-
-public class MainActivity extends AppCompatActivity {
-    private static final String VWO_API_KEY = "YOUR_VWO_API_KEY";
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-      super.onCreate(savedInstanceState);
-      setContentView(R.layout.activity_main);
-      
-      // Start VWO SDK in Async mode
-      VWO.with(this, VWO_APP_KEY).launch();
-    }
-}
-```
-
-##### Launching VWO SDK in Asynchronous mode with callback
+##### Launching VWO SDK in Asynchronous mode
 
 ```java
 import android.support.v7.app.AppCompatActivity;
