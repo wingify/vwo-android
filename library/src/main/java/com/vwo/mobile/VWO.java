@@ -3,9 +3,9 @@ package com.vwo.mobile;
 import android.annotation.SuppressLint;
 import android.app.Application;
 import android.content.Context;
+import android.hardware.SensorManager;
 import android.os.Build;
 import android.os.Handler;
-import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
@@ -22,6 +22,7 @@ import com.vwo.mobile.models.Campaign;
 import com.vwo.mobile.models.VWOError;
 import com.vwo.mobile.network.ErrorResponse;
 import com.vwo.mobile.network.VWODownloader;
+import com.vwo.mobile.utils.ShakeDetector;
 import com.vwo.mobile.utils.VWOLog;
 import com.vwo.mobile.utils.VWOPreference;
 import com.vwo.mobile.utils.VWOUrlBuilder;
@@ -31,11 +32,15 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.io.IOException;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+
+import static com.vwo.mobile.Connection.FAILED;
+import static com.vwo.mobile.Connection.NOT_STARTED;
+import static com.vwo.mobile.Connection.OPTED_OUT;
+import static com.vwo.mobile.Connection.STARTED;
+import static com.vwo.mobile.Connection.STARTING;
 
 /**
  * Created by Aman on Wed 27/09/17 at 14:55.
@@ -58,23 +63,6 @@ public class VWO implements VWODownloader.DownloadResult {
     private static final String MESSAGE_QUEUE_NAME = "queue_v2.vwo";
     private static final String FAILURE_QUEUE_NAME = "failure_queue_v2.vwo";
 
-    private static final int STATE_FAILED = -1;
-    private static final int STATE_NOT_STARTED = 0;
-    private static final int STATE_OPTED_OUT = 1;
-    private static final int STATE_STARTING = 2;
-    private static final int STATE_STARTED = 3;
-
-    @Retention(RetentionPolicy.SOURCE)
-    @IntDef({
-            STATE_NOT_STARTED,
-            STATE_STARTING,
-            STATE_STARTED,
-            STATE_FAILED,
-            STATE_OPTED_OUT
-    })
-    @interface VWOState {
-    }
-
     @SuppressLint("StaticFieldLeak")
     private static VWO sSharedInstance;
     @NonNull
@@ -94,7 +82,7 @@ public class VWO implements VWODownloader.DownloadResult {
 
     private static final Object lock = new Object();
 
-    @VWOState
+    @Connection.State
     private int mVWOStartState;
     private VWOMessageQueue messageQueue;
     private VWOMessageQueue failureQueue;
@@ -104,7 +92,7 @@ public class VWO implements VWODownloader.DownloadResult {
         this.mContext = context;
         this.mIsEditMode = false;
         this.vwoConfig = vwoConfig;
-        this.mVWOStartState = STATE_NOT_STARTED;
+        this.mVWOStartState = NOT_STARTED;
     }
 
     public static Initializer with(@NonNull Context context, @NonNull String apiKey) {
@@ -148,7 +136,7 @@ public class VWO implements VWODownloader.DownloadResult {
     public static Object getVariationForKey(@NonNull String key) {
         synchronized (lock) {
             if (sSharedInstance != null) {
-                if (sSharedInstance.mVWOStartState >= STATE_STARTED) {
+                if (sSharedInstance.mVWOStartState >= STARTED) {
                     // Only when the VWO has completely started or loaded from disk
                     Object object;
 
@@ -158,11 +146,11 @@ public class VWO implements VWODownloader.DownloadResult {
                         object = sSharedInstance.getVwoData().getVariationForKey(key);
                     }
                     return object;
-                } else if (sSharedInstance.mVWOStartState == STATE_OPTED_OUT) {
+                } else if (sSharedInstance.mVWOStartState == OPTED_OUT) {
                     VWOLog.e(VWOLog.DATA_LOGS, "Key not found. User opted out.",
                             true, false);
                     return null;
-                } else if (sSharedInstance.mVWOStartState == STATE_FAILED) {
+                } else if (sSharedInstance.mVWOStartState == FAILED) {
                     VWOLog.e(VWOLog.DATA_LOGS, "Key not found. SDK failed to Initialize",
                             true, false);
                 }
@@ -220,16 +208,16 @@ public class VWO implements VWODownloader.DownloadResult {
     public static void trackConversion(@NonNull String goalIdentifier) {
         synchronized (lock) {
             if (sSharedInstance != null) {
-                if (sSharedInstance.mVWOStartState >= STATE_STARTED) {
+                if (sSharedInstance.mVWOStartState >= STARTED) {
                     if (sSharedInstance.isEditMode()) {
                         sSharedInstance.getVwoSocket().triggerGoal(goalIdentifier);
                     } else {
                         sSharedInstance.mVWOData.saveGoal(goalIdentifier);
                     }
-                } else if (sSharedInstance.mVWOStartState == STATE_OPTED_OUT) {
+                } else if (sSharedInstance.mVWOStartState == OPTED_OUT) {
                     VWOLog.e(VWOLog.DATA_LOGS, "Conversion not tracked. User opted out.",
                             true, false);
-                } else if (sSharedInstance.mVWOStartState == STATE_FAILED) {
+                } else if (sSharedInstance.mVWOStartState == FAILED) {
                     VWOLog.e(VWOLog.DATA_LOGS, "Conversion not tracked. SDK Failed to Initialize",
                             true, false);
                 }
@@ -249,7 +237,7 @@ public class VWO implements VWODownloader.DownloadResult {
     public static void trackConversion(@NonNull String goalIdentifier, double value) {
         synchronized (lock) {
             if (sSharedInstance != null) {
-                if (sSharedInstance.mVWOStartState >= STATE_STARTED) {
+                if (sSharedInstance.mVWOStartState >= STARTED) {
 
                     if (sSharedInstance.isEditMode()) {
                         sSharedInstance.getVwoSocket().triggerGoal(goalIdentifier);
@@ -257,10 +245,10 @@ public class VWO implements VWODownloader.DownloadResult {
                         // Check if already present in persisting data
                         sSharedInstance.mVWOData.saveGoal(goalIdentifier, value);
                     }
-                } else if (sSharedInstance.mVWOStartState == STATE_OPTED_OUT) {
+                } else if (sSharedInstance.mVWOStartState == OPTED_OUT) {
                     VWOLog.e(VWOLog.DATA_LOGS, "Conversion not tracked. User opted out.",
                             true, false);
-                } else if (sSharedInstance.mVWOStartState == STATE_FAILED) {
+                } else if (sSharedInstance.mVWOStartState == FAILED) {
                     VWOLog.e(VWOLog.DATA_LOGS, "Conversion not tracked. SDK Failed to Initialize",
                             true, false);
                 }
@@ -311,12 +299,33 @@ public class VWO implements VWODownloader.DownloadResult {
         return BuildConfig.VERSION_CODE;
     }
 
+    /**
+     * To opt-out of the VWO SDK, This function can called by passing a true value.
+     * <p>
+     * After opting out, User won't become part of any campaign and won't be tracked by the
+     * VWO.
+     * <p>
+     * Note: Opting out can only be done before initialization of VWO SDK i.e. before calling
+     * {@link Initializer#launch(VWOStatusListener)} or
+     * {@link Initializer#launchSynchronously(long)}
+     *
+     * @param optOut is the {@link Boolean} value.
+     */
+    public static void setOptOut(boolean optOut) {
+        if (sSharedInstance != null && sSharedInstance.getState() >= STARTING) {
+            VWOLog.e(VWOLog.CONFIG_LOGS, "Cannot change opt-out setting after SDK is initialized",
+                    false, false);
+        } else {
+            VWO.optOut = optOut;
+        }
+    }
+
     @SuppressWarnings("SpellCheckingInspection")
     boolean startVwoInstance() {
         VWOLog.i(VWOLog.INITIALIZATION_LOGS, String.format("**** Starting VWO version: %s Build: %s ****",
                 version(), versionCode()), false);
         if (getConfig().isOptOut()) {
-            this.mVWOStartState = STATE_OPTED_OUT;
+            this.mVWOStartState = OPTED_OUT;
             new VWOPreference(sSharedInstance).clear();
             VWOLog.w(VWOLog.INITIALIZATION_LOGS, "Ignoring initalization, User opted out.", false);
             onLoadSuccess();
@@ -339,18 +348,18 @@ public class VWO implements VWODownloader.DownloadResult {
                     false, false);
             onLoadFailure("Invalid API Key.");
             return false;
-        } else if (this.mVWOStartState == STATE_STARTING) {
+        } else if (this.mVWOStartState == STARTING) {
             VWOLog.w(VWOLog.INITIALIZATION_LOGS, "VWO is already initializing.",
                     true);
             return true;
-        } else if (this.mVWOStartState >= STATE_STARTED) {
+        } else if (this.mVWOStartState >= STARTED) {
             VWOLog.w(VWOLog.INITIALIZATION_LOGS, "VWO is already initialized.",
                     true);
             onLoadSuccess();
             return true;
         } else {
             // Everything is good so far
-            this.mVWOStartState = STATE_STARTING;
+            this.mVWOStartState = STARTING;
             ((Application) (mContext)).registerActivityLifecycleCallbacks(new VWOActivityLifeCycle());
             try {
                 this.initializeComponents();
@@ -384,7 +393,7 @@ public class VWO implements VWODownloader.DownloadResult {
 
                 mVWOData.parseData(jsonArray);
                 mVWOLocalData.saveData(jsonArray);
-                mVWOStartState = STATE_STARTED;
+                mVWOStartState = STARTED;
                 onLoadSuccess();
             } catch (JSONException exception) {
                 onDownloadError(exception, "Unable to parse data");
@@ -411,37 +420,12 @@ public class VWO implements VWODownloader.DownloadResult {
         }
         if (mVWOLocalData.isLocalDataPresent()) {
             mVWOData.parseData(mVWOLocalData.getData());
-            mVWOStartState = STATE_STARTED;
+            mVWOStartState = STARTED;
             VWOLog.w(VWOLog.INITIALIZATION_LOGS, "Failed to fetch data serving cached data.",
                     false);
             onLoadSuccess();
         } else {
             onLoadFailure(message);
-        }
-    }
-
-    /**
-     * Initialize socket to use VWO in preview mode.
-     * Cases in which socket is not initialized:
-     * <ul>
-     * <li>socket.io dependency is not added to gradle</li>
-     * <li>App is in release mode</li>
-     * </ul>
-     */
-    private void initializeSocket() {
-        if (getVwoUtils().isDebugMode()) {
-            if (VWOUtils.checkIfClassExists("io.socket.client.Socket")) {
-                this.mVWOSocket = new VWOSocket(sSharedInstance);
-                mVWOSocket.connectToSocket();
-            } else {
-                VWOLog.e(VWOLog.INITIALIZATION_LOGS, "You need to add following dependency " +
-                                "\n\t\tcompile 'io.socket:socket.io-client:1.0.0\n" +
-                                " to your build.gradle file in order to use VWO's preview mode.",
-                        false, false);
-            }
-        } else {
-            VWOLog.i(VWOLog.INITIALIZATION_LOGS, "Skipping socket connection." +
-                    " Application is not in debug mode", true);
         }
     }
 
@@ -471,15 +455,32 @@ public class VWO implements VWODownloader.DownloadResult {
         initializeSocket();
     }
 
-    private void onLoadFailure(final String reason) {
-        this.mVWOStartState = STATE_FAILED;
-        if (mStatusListener != null) {
-            new Handler(getCurrentContext().getMainLooper()).post(new Runnable() {
+    /**
+     * Initialize socket to use VWO in preview mode.
+     * Cases in which socket is not initialized:
+     * <ul>
+     * <li>socket.io dependency is not added to gradle</li>
+     * <li>App is in release mode</li>
+     * </ul>
+     */
+    private void initializeSocket() {
+        if (VWOUtils.checkIfClassExists("io.socket.client.Socket")) {
+            this.mVWOSocket = new VWOSocket(sSharedInstance);
+            SensorManager sensorManager = (SensorManager) getCurrentContext().getSystemService(Context.SENSOR_SERVICE);
+            ShakeDetector shakeDetector = new ShakeDetector(new ShakeDetector.Listener() {
                 @Override
-                public void run() {
-                    mStatusListener.onVWOLoadFailure(reason);
+                public void hearShake() {
+                    mVWOSocket.connectToSocket();
                 }
             });
+            shakeDetector.setSensitivity(ShakeDetector.SENSITIVITY_HARD);
+            shakeDetector.start(sensorManager);
+
+        } else {
+            VWOLog.e(VWOLog.INITIALIZATION_LOGS, "You need to add following dependency " +
+                            "\n\t\tcompile 'io.socket:socket.io-client:1.0.0\n" +
+                            " to your build.gradle file in order to use VWO's preview mode.",
+                    false, false);
         }
     }
 
@@ -536,24 +537,15 @@ public class VWO implements VWODownloader.DownloadResult {
         return this.vwoConfig;
     }
 
-    /**
-     * To opt-out of the VWO SDK, This function can called by passing a true value.
-     * <p>
-     * After opting out, User won't become part of any campaign and won't be tracked by the
-     * VWO.
-     * <p>
-     * Note: Opting out can only be done before initialization of VWO SDK i.e. before calling
-     * {@link Initializer#launch(VWOStatusListener)} or
-     * {@link Initializer#launchSynchronously(long)}
-     *
-     * @param optOut is the {@link Boolean} value.
-     */
-    public static void setOptOut(boolean optOut) {
-        if (sSharedInstance != null && sSharedInstance.getState() >= STATE_STARTING) {
-            VWOLog.e(VWOLog.CONFIG_LOGS, "Cannot change opt-out setting after SDK is initialized",
-                    false, false);
-        } else {
-            VWO.optOut = optOut;
+    private void onLoadFailure(final String reason) {
+        this.mVWOStartState = FAILED;
+        if (mStatusListener != null) {
+            new Handler(getCurrentContext().getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+                    mStatusListener.onVWOLoadFailure(reason);
+                }
+            });
         }
     }
 
@@ -561,7 +553,7 @@ public class VWO implements VWODownloader.DownloadResult {
         this.vwoConfig = config;
     }
 
-    @VWOState
+    @Connection.State
     public int getState() {
         return this.mVWOStartState;
     }
@@ -596,6 +588,7 @@ public class VWO implements VWODownloader.DownloadResult {
                 throw new IllegalArgumentException("Context must not be null.");
             }
             this.context = context.getApplicationContext();
+
         }
 
         public VWO build() {
@@ -617,6 +610,5 @@ public class VWO implements VWODownloader.DownloadResult {
         public Context getContext() {
             return this.context;
         }
-
     }
 }
