@@ -22,7 +22,7 @@ import com.vwo.mobile.models.Campaign;
 import com.vwo.mobile.models.VWOError;
 import com.vwo.mobile.network.ErrorResponse;
 import com.vwo.mobile.network.VWODownloader;
-import com.vwo.mobile.utils.ShakeDetector;
+import com.vwo.mobile.gestures.ShakeDetector;
 import com.vwo.mobile.utils.VWOLog;
 import com.vwo.mobile.utils.VWOPreference;
 import com.vwo.mobile.utils.VWOUrlBuilder;
@@ -69,7 +69,6 @@ public class VWO implements VWODownloader.DownloadResult {
     private final Context mContext;
     private boolean mIsEditMode;
     private VWOUrlBuilder mVWOUrlBuilder;
-    private VWOUtils mVWOUtils;
     private VWOPreference mVWOPreference;
     private VWOSocket mVWOSocket;
 
@@ -440,7 +439,6 @@ public class VWO implements VWODownloader.DownloadResult {
     private void initializeComponents() throws IOException {
         initializeServerLogging();
         this.mVWOLocalData = new VWOLocalData(sSharedInstance);
-        this.mVWOUtils = new VWOUtils(sSharedInstance);
         this.mVWOUrlBuilder = new VWOUrlBuilder(sSharedInstance);
         this.mVWOData = new VWOData(sSharedInstance);
         this.mVWOPreference = new VWOPreference(sSharedInstance);
@@ -452,7 +450,7 @@ public class VWO implements VWODownloader.DownloadResult {
         VWODownloader.initializeMessageQueue(sSharedInstance);
         VWODownloader.initializeFailureQueue(sSharedInstance);
 
-        initializeSocket();
+        initializePreviewMode();
     }
 
     /**
@@ -460,28 +458,36 @@ public class VWO implements VWODownloader.DownloadResult {
      * Cases in which socket is not initialized:
      * <ul>
      * <li>socket.io dependency is not added to gradle</li>
-     * <li>App is in release mode</li>
+     * <li>{@link }</li>
      * </ul>
      */
-    private void initializeSocket() {
-        if (VWOUtils.checkIfClassExists("io.socket.client.Socket")) {
+    private void initializePreviewMode() {
+        if (VWOUtils.checkIfClassExists("io.socket.client.Socket") && vwoConfig.isPreviewEnabled()) {
             this.mVWOSocket = new VWOSocket(sSharedInstance);
-            SensorManager sensorManager = (SensorManager) getCurrentContext().getSystemService(Context.SENSOR_SERVICE);
-            ShakeDetector shakeDetector = new ShakeDetector(new ShakeDetector.Listener() {
-                @Override
-                public void hearShake() {
-                    mVWOSocket.connectToSocket();
-                }
-            });
-            shakeDetector.setSensitivity(ShakeDetector.SENSITIVITY_HARD);
-            shakeDetector.start(sensorManager);
-
+            setPreviewGesture();
+            if(VWOUtils.isApplicationDebuggable(getCurrentContext())) {
+                mVWOSocket.init();
+            }
         } else {
             VWOLog.e(VWOLog.INITIALIZATION_LOGS, "You need to add following dependency " +
                             "\n\t\tcompile 'io.socket:socket.io-client:1.0.0\n" +
                             " to your build.gradle file in order to use VWO's preview mode.",
                     false, false);
         }
+    }
+
+    private void setPreviewGesture() {
+        SensorManager sensorManager = (SensorManager) getCurrentContext().getSystemService(Context.SENSOR_SERVICE);
+
+        ShakeDetector shakeDetector = new ShakeDetector(new ShakeDetector.Listener() {
+            @Override
+            public void hearShake() {
+                mVWOSocket.init();
+            }
+        });
+
+        shakeDetector.setSensitivity(ShakeDetector.SENSITIVITY_HARD);
+        shakeDetector.start(sensorManager);
     }
 
     private void onLoadSuccess() {
@@ -569,10 +575,6 @@ public class VWO implements VWODownloader.DownloadResult {
     @Nullable
     public VWOStatusListener getStatusListener() {
         return mStatusListener;
-    }
-
-    VWOUtils getVwoUtils() {
-        return mVWOUtils;
     }
 
     public VWOPreference getVwoPreference() {

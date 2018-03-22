@@ -27,6 +27,7 @@ public class VWOConfig {
 
     // Is the VWO api key
     private String apiKey;
+    private boolean previewEnabled;
 
     private VWOConfig(Builder builder) {
         this.customSegmentationMapping = builder.customSegmentationMapping;
@@ -34,6 +35,7 @@ public class VWOConfig {
             setApiKey(builder.apiKey);
         }
         this.optOut = builder.optOut;
+        this.previewEnabled = builder.previewEnabled;
     }
 
     public Map<String, String> getCustomSegmentationMapping() {
@@ -80,6 +82,10 @@ public class VWOConfig {
      */
     boolean isOptOut() {
         return this.optOut;
+    }
+
+    boolean isPreviewEnabled() {
+        return this.previewEnabled;
     }
 
     /**
@@ -129,21 +135,31 @@ public class VWOConfig {
         private Map<String, String> customSegmentationMapping;
         private boolean optOut;
         private String apiKey = null;
+        private boolean previewEnabled = true;
 
+        @NonNull
         public VWOConfig build() {
             return new VWOConfig(this);
         }
 
-        Builder setOptOut(boolean optOut) {
+        @NonNull
+        public Builder setOptOut(boolean optOut) {
             this.optOut = optOut;
             return this;
         }
 
+        @NonNull
         Builder apiKey(@NonNull String apiKey) {
             if (TextUtils.isEmpty(apiKey)) {
                 throw new NullPointerException("Api key cannot be null");
             }
             this.apiKey = apiKey;
+            return this;
+        }
+
+        @NonNull
+        public Builder setPreviewModeEnabled(boolean enabled) {
+            this.previewEnabled = enabled;
             return this;
         }
 
@@ -154,6 +170,7 @@ public class VWOConfig {
          *
          * @return the current {@link Builder} object.
          */
+        @NonNull
         public Builder setCustomSegmentationMapping(@NonNull Map<String, String> customSegmentationMapping) {
             if (customSegmentationMapping == null) {
                 throw new IllegalArgumentException("Mapping cannot be null");

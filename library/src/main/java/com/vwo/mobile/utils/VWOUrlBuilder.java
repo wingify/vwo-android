@@ -91,7 +91,7 @@ public class VWOUrlBuilder {
 
     public String getCampaignUrl(long experimentId, int variationId) {
 
-        String deviceUuid = VWOUtils.getDeviceUUID(vwo);
+        String deviceUuid = VWOUtils.getDeviceUUID(vwo.getVwoPreference());
 
         String accountId = vwo.getConfig().getAccountId();
 
@@ -114,7 +114,7 @@ public class VWOUrlBuilder {
 
     public String getGoalUrl(long experimentId, int variationId, int goalId) {
         String accountId = vwo.getConfig().getAccountId();
-        String deviceUuid = VWOUtils.getDeviceUUID(vwo);
+        String deviceUuid = VWOUtils.getDeviceUUID(vwo.getVwoPreference());
 
         int session = vwo.getVwoPreference().getInt(AppConstants.DEVICE_SESSION, 0);
 

@@ -95,7 +95,7 @@ public class VWOSocket {
     /**
      * Connects device to server
      */
-    public void connectToSocket() {
+    public void init() {
         if (mSocketConnectionState < OPTED_OUT) {
             try {
                 mSocketConnectionState = STARTING;

@@ -58,6 +58,8 @@ public class VWOLog {
      */
     public static final String CAMPAIGN_LOGS = "campaign";
 
+    public static final String GESTURE_LOGS = "gesture";
+
     public static final String STORAGE_LOGS = "storage";
 
     public static final String UNCAUGHT = "uncaught";

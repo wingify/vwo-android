@@ -1,4 +1,4 @@
-package com.vwo.mobile.utils;
+package com.vwo.mobile.gestures;
 
 // Copyright 2010 Square, Inc.
 
@@ -216,7 +216,7 @@ public class ShakeDetector implements SensorEventListener {
          * Copies the samples into a list, with the oldest entry at index 0.
          */
         List<Sample> asList() {
-            List<Sample> list = new ArrayList<Sample>();
+            List<Sample> list = new ArrayList<>();
             Sample s = oldest;
             while (s != null) {
                 list.add(s);

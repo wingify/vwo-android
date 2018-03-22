@@ -258,6 +258,7 @@ public class MainActivity extends BaseActivity
             }
             VWOLog.setLogLevel(VWOLog.ALL);
             VWOConfig.Builder vwoConfigBuilder = new VWOConfig.Builder();
+            vwoConfigBuilder.previewEnabled(false);
             if (keys != null) {
                 vwoConfigBuilder.setCustomSegmentationMapping(keys);
             }
