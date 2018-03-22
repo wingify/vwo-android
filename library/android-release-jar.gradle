@@ -25,6 +25,29 @@ task androidJavadocs(type: Javadoc) {
     source = android.sourceSets.main.java.srcDirs
     ext.androidJar = "${android.sdkDirectory}/platforms/${android.compileSdkVersion}/android.jar"
     classpath += files(ext.androidJar)
+    exclude(
+            '**/R.*',
+            "**/constants/**",
+            "**/data/**",
+            "**/listeners/**",
+            "**/models/**",
+            "**/network/**",
+            "**/segmentation/**",
+            "**/NetworkUtils.*",
+            "**/Parceler.*",
+            "**/VWOPreference.*",
+            "**/VWOUrlBuilder.*",
+            "**/VWOUtils.*",
+            "**/VWOSocket.*",
+            "**/Connection.*",
+            "**/gestures/**",
+            "**/logging/**"
+    )
+    options {
+        encoding = 'UTF-8'
+        docEncoding = 'UTF-8'
+        charSet = 'UTF-8'
+    }
     failOnError false // add this line
 }
 
@@ -69,12 +92,12 @@ subprojects {
     tasks.withType(Javadoc).all { enabled = false }
 }
 
-uploadArchives.dependsOn ':library:test'
+uploadArchives.dependsOn 'testReleaseUnitTest'
 
 generateRelease.dependsOn(uploadArchives)
 
 
 artifacts {
     archives androidSourcesJar
-//    archives androidJavadocsJar
+    archives androidJavadocsJar
 }

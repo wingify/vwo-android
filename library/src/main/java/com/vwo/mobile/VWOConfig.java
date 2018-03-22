@@ -137,17 +137,37 @@ public class VWOConfig {
         private String apiKey = null;
         private boolean previewEnabled = true;
 
+        /**
+         * Generate the Configuration for the VWO SDK which can be passed to
+         * {@link Initializer#config(VWOConfig)} during SDK's initialization.
+         */
+        public Builder(){}
+
         @NonNull
         public VWOConfig build() {
             return new VWOConfig(this);
         }
 
+        /**
+         * Function to set whether you want to use VWO or not. Set {@link Boolean#TRUE} to opt out
+         * of VWO SDK else false. it defaults to {@link Boolean#FALSE}.
+         *
+         * @param optOut set {@link Boolean#TRUE} to opt out of the VWO SDK otherwise {@link Boolean#FALSE}.
+         *               it defaults to {@link Boolean#FALSE}.
+         * @return the {@link Builder} object
+         */
         @NonNull
         public Builder setOptOut(boolean optOut) {
             this.optOut = optOut;
             return this;
         }
 
+        /**
+         * Set the api key in the builder
+         *
+         * @param apiKey is the VWO Api key
+         * @return the {@link Builder} object
+         */
         @NonNull
         Builder apiKey(@NonNull String apiKey) {
             if (TextUtils.isEmpty(apiKey)) {
@@ -157,6 +177,12 @@ public class VWOConfig {
             return this;
         }
 
+        /**
+         * Set to enable or disable preview mode.
+         * @param enabled {@link Boolean} to enable or disable preview mode.
+         *                               It defaults to {@link Boolean#TRUE}
+         * @return the {@link Builder} object
+         */
         @NonNull
         public Builder setPreviewModeEnabled(boolean enabled) {
             this.previewEnabled = enabled;
