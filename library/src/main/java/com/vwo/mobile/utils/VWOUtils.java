@@ -14,7 +14,6 @@ import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 
-import com.vwo.mobile.VWO;
 import com.vwo.mobile.constants.AppConstants;
 
 import java.util.Calendar;
@@ -25,11 +24,6 @@ import java.util.UUID;
 import java.util.regex.Pattern;
 
 public class VWOUtils {
-    private VWO mVWO;
-
-    public VWOUtils(VWO vwo) {
-        mVWO = vwo;
-    }
 
     public static boolean isValidVwoAppKey(String appKey) {
         String regex = "[\\w]{32}-[0-9]+";
@@ -37,13 +31,13 @@ public class VWOUtils {
         return !TextUtils.isEmpty(appKey) && pattern.matcher(appKey).matches();
     }
 
-    public static String getDeviceUUID(VWO vwo) {
-        String deviceUuid = vwo.getVwoPreference().getString(AppConstants.DEVICE_UUID);
+    public static String getDeviceUUID(VWOPreference vwoPreference) {
+        String deviceUuid = vwoPreference.getString(AppConstants.DEVICE_UUID);
 
         if (deviceUuid == null || deviceUuid.equals("")) {
             deviceUuid = UUID.randomUUID().toString();
             deviceUuid = deviceUuid.replaceAll("-", "");
-            vwo.getVwoPreference().putString(AppConstants.DEVICE_UUID, deviceUuid);
+            vwoPreference.putString(AppConstants.DEVICE_UUID, deviceUuid);
         }
 
         return deviceUuid;
@@ -115,7 +109,7 @@ public class VWOUtils {
     }
 
     @CheckResult
-    public static boolean checkForPermission(Context context, String permission) {
+    private static boolean checkForPermission(Context context, String permission) {
         PackageManager pm = context.getPackageManager();
         int hasPerm = pm.checkPermission(permission, context.getPackageName());
         if (hasPerm == PackageManager.PERMISSION_DENIED) {
@@ -183,9 +177,8 @@ public class VWOUtils {
      *
      * @return {@link Boolean#TRUE} is app is running in debug mode else {@link Boolean#FALSE}
      */
-    public boolean isDebugMode() {
-        assert mVWO.getCurrentContext() != null;
-        return (0 != (mVWO.getCurrentContext().getApplicationInfo().flags &= ApplicationInfo.FLAG_DEBUGGABLE));
+    public static boolean isApplicationDebuggable(@NonNull Context context) {
+        return (0 != (context.getApplicationInfo().flags &= ApplicationInfo.FLAG_DEBUGGABLE));
     }
 
     /**
@@ -201,7 +194,7 @@ public class VWOUtils {
      * Returns the height of screen in pixels.
      *
      * @return the height of screen in pixels
-     *
+     * <p>
      * Note: it does not include the size of status bar and navigation bar.
      */
     public static int getScreenHeight() {
@@ -213,7 +206,6 @@ public class VWOUtils {
      * Scale 1 is for mdpi i.e. 160
      *
      * @param context the application context.
-     *
      * @return the screen scale in {@link Integer}.
      */
     public static double getScale(Context context) {

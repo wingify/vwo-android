@@ -258,11 +258,11 @@ public class MainActivity extends BaseActivity
             }
             VWOLog.setLogLevel(VWOLog.ALL);
             VWOConfig.Builder vwoConfigBuilder = new VWOConfig.Builder();
+//            vwoConfigBuilder.disablePreview();
+            vwoConfigBuilder.setOptOut(false);
             if (keys != null) {
-                vwoConfigBuilder.setCustomSegmentationMapping(keys);
+                vwoConfigBuilder.setCustomVariables(keys);
             }
-
-            VWO.setOptOut(false);
 
             VWO.with(this, key).config(vwoConfigBuilder.build()).launch(new VWOStatusListener() {
                 @Override

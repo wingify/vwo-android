@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import com.vwo.mobile.listeners.ActivityLifecycleListener;
+import com.vwo.mobile.events.VWOStatusListener;
 import com.vwo.mobile.utils.VWOLog;
 import com.vwo.mobile.utils.VWOUtils;
 
@@ -30,6 +31,8 @@ public class VWOConfig {
 
     // Is the VWO api key
     private String apiKey;
+    private boolean previewEnabled;
+    private VWOStatusListener statusListener;
 
     private VWOConfig(Builder builder) {
         this.customSegmentationMapping = builder.customSegmentationMapping;
@@ -38,6 +41,8 @@ public class VWOConfig {
         }
         this.optOut = builder.optOut;
         this.activityLifecycleListener = builder.lifecycleListener;
+        this.previewEnabled = builder.previewEnabled;
+        this.statusListener = builder.statusListener;
     }
 
     public Map<String, String> getCustomSegmentationMapping() {
@@ -94,6 +99,10 @@ public class VWOConfig {
         return this.optOut;
     }
 
+    boolean isPreviewEnabled() {
+        return this.previewEnabled;
+    }
+
     /**
      * @param customSegmentKeys is the keymap for custom segmentation variables
      */
@@ -136,27 +145,72 @@ public class VWOConfig {
         return null;
     }
 
+    void setStatusListener(@NonNull VWOStatusListener statusListener) {
+        this.statusListener = statusListener;
+    }
+
+    @Nullable
+    public VWOStatusListener getStatusListener() {
+        return statusListener;
+    }
+
     public static class Builder {
         // This variable
         private Map<String, String> customSegmentationMapping;
         private boolean optOut;
         private String apiKey = null;
         private ActivityLifecycleListener lifecycleListener;
+        private boolean previewEnabled = true;
+        private VWOStatusListener statusListener;
 
+        /**
+         * Generate the Configuration for the VWO SDK which can be passed to
+         * {@link Initializer#config(VWOConfig)} during SDK's initialization.
+         */
+        public Builder(){}
+
+        @NonNull
         public VWOConfig build() {
             return new VWOConfig(this);
         }
 
-        Builder setOptOut(boolean optOut) {
+        /**
+         * Function to set whether you want to use VWO or not. Set {@link Boolean#TRUE} to opt out
+         * of VWO SDK else false. it defaults to {@link Boolean#FALSE}.
+         *
+         * @param optOut set {@link Boolean#TRUE} to opt out of the VWO SDK otherwise {@link Boolean#FALSE}.
+         *               it defaults to {@link Boolean#FALSE}.
+         * @return the {@link Builder} object
+         */
+        @NonNull
+        public Builder setOptOut(boolean optOut) {
             this.optOut = optOut;
             return this;
         }
 
+        /**
+         * Set the api key in the builder
+         *
+         * @param apiKey is the VWO Api key
+         * @return the {@link Builder} object
+         */
+        @NonNull
         Builder apiKey(@NonNull String apiKey) {
             if (TextUtils.isEmpty(apiKey)) {
                 throw new NullPointerException("Api key cannot be null");
             }
             this.apiKey = apiKey;
+            return this;
+        }
+
+        /**
+         * Disable the preview mode.
+         *
+         * @return the {@link Builder} object
+         */
+        @NonNull
+        public Builder disablePreview() {
+            this.previewEnabled = false;
             return this;
         }
 
@@ -167,7 +221,8 @@ public class VWOConfig {
          *
          * @return the current {@link Builder} object.
          */
-        public Builder setCustomSegmentationMapping(@NonNull Map<String, String> customSegmentationMapping) {
+        @NonNull
+        public Builder setCustomVariables(@NonNull Map<String, String> customSegmentationMapping) {
             if (customSegmentationMapping == null) {
                 throw new IllegalArgumentException("Mapping cannot be null");
             }
@@ -180,6 +235,11 @@ public class VWOConfig {
                 throw new IllegalArgumentException("Listener cannot be null");
             }
             this.lifecycleListener = listener;
+            return this;
+        }
+
+        Builder setVWOStatusListener(@NonNull VWOStatusListener vwoStatusListener) {
+            this.statusListener = vwoStatusListener;
             return this;
         }
     }

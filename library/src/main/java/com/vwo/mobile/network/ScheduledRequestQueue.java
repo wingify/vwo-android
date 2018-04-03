@@ -16,20 +16,20 @@ public class ScheduledRequestQueue extends ScheduledThreadPoolExecutor {
     private ScheduledRequestQueue(String tag) {
         super(1);
         queueMap.put(tag, this);
-        VWOLog.i(VWOLog.UPLOAD_LOGS, "Creating new Scheduler with tag " + tag, true);
+        VWOLog.i(VWOLog.QUEUE, "Creating new Scheduler with tag " + tag, true);
         running = false;
     }
 
     @Override
     protected void afterExecute(Runnable r, Throwable t) {
         super.afterExecute(r, t);
-        VWOLog.e(VWOLog.UPLOAD_LOGS, "after execute", false, false);
+        VWOLog.e(VWOLog.QUEUE, "after execute", false, false);
     }
 
     @Override
     protected void beforeExecute(Thread t, Runnable r) {
         super.beforeExecute(t, r);
-        VWOLog.e(VWOLog.UPLOAD_LOGS, "before execute", false, false);
+        VWOLog.e(VWOLog.QUEUE, "before execute", false, false);
     }
 
     public static ScheduledRequestQueue getInstance(String tag) {

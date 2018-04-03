@@ -13,9 +13,7 @@ public class VWOActivityLifeCycle implements Application.ActivityLifecycleCallba
 
 
     @Override
-    public void onActivityCreated(Activity activity, Bundle bundle) {
-
-    }
+    public void onActivityCreated(Activity activity, Bundle bundle) { }
 
     @Override
     public void onActivityStarted(Activity activity) {
@@ -38,14 +36,10 @@ public class VWOActivityLifeCycle implements Application.ActivityLifecycleCallba
     }
 
     @Override
-    public void onActivitySaveInstanceState(Activity activity, Bundle bundle) {
-
-    }
+    public void onActivitySaveInstanceState(Activity activity, Bundle bundle) { }
 
     @Override
-    public void onActivityDestroyed(Activity activity) {
-
-    }
+    public void onActivityDestroyed(Activity activity) { }
 
     @SuppressWarnings("unused")
     public static boolean isApplicationVisible() {

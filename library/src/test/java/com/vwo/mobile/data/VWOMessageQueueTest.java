@@ -77,7 +77,7 @@ public class VWOMessageQueueTest {
         vwoMessageQueue.add(goalEntry2);
 
         synchronized (lock) {
-            lock.wait(count * 2);
+            lock.wait(count * 3);
         }
 
         int size = vwoMessageQueue.size();
