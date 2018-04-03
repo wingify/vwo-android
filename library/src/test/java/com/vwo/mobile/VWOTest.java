@@ -24,6 +24,7 @@ import org.robolectric.annotation.Config;
 public class VWOTest {
     private final Object lock = new Object();
 
+    @SuppressWarnings("deprecation")
     @Test
     public void variationForKeyTest() throws InterruptedException {
         VWO.with(RuntimeEnvironment.application.getApplicationContext(), "test-123")

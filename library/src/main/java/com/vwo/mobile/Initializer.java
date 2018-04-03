@@ -58,10 +58,15 @@ public class Initializer {
             Manifest.permission.INTERNET,
             Manifest.permission.ACCESS_NETWORK_STATE})
     public void launch(@Nullable VWOStatusListener statusListener) {
-        setup(null);
         if (statusListener != null) {
-            VWO.setVWOStatusListener(statusListener);
+            if(vwo.getConfig() == null) {
+                VWOConfig vwoConfig = new VWOConfig.Builder().setVWOStatusListener(statusListener).build();
+                vwo.setConfig(vwoConfig);
+            } else {
+                vwo.getConfig().setStatusListener(statusListener);
+            }
         }
+        setup(null);
         vwo.startVwoInstance();
     }
 
@@ -96,7 +101,7 @@ public class Initializer {
         return this;
     }
 
-    private void setup(Long timeout) {
+    private void setup(@Nullable Long timeout) {
         if (this.vwo.getConfig() == null) {
             VWOConfig vwoConfig = new VWOConfig
                     .Builder()

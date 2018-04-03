@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
+import com.vwo.mobile.events.VWOStatusListener;
 import com.vwo.mobile.utils.VWOLog;
 import com.vwo.mobile.utils.VWOUtils;
 
@@ -28,6 +29,7 @@ public class VWOConfig {
     // Is the VWO api key
     private String apiKey;
     private boolean previewEnabled;
+    private VWOStatusListener statusListener;
 
     private VWOConfig(Builder builder) {
         this.customSegmentationMapping = builder.customSegmentationMapping;
@@ -36,6 +38,7 @@ public class VWOConfig {
         }
         this.optOut = builder.optOut;
         this.previewEnabled = builder.previewEnabled;
+        this.statusListener = builder.statusListener;
     }
 
     public Map<String, String> getCustomSegmentationMapping() {
@@ -130,12 +133,22 @@ public class VWOConfig {
         return null;
     }
 
+    void setStatusListener(@NonNull VWOStatusListener statusListener) {
+        this.statusListener = statusListener;
+    }
+
+    @Nullable
+    public VWOStatusListener getStatusListener() {
+        return statusListener;
+    }
+
     public static class Builder {
         // This variable
         private Map<String, String> customSegmentationMapping;
         private boolean optOut;
         private String apiKey = null;
         private boolean previewEnabled = true;
+        private VWOStatusListener statusListener;
 
         /**
          * Generate the Configuration for the VWO SDK which can be passed to
@@ -178,14 +191,13 @@ public class VWOConfig {
         }
 
         /**
-         * Set to enable or disable preview mode.
-         * @param enabled {@link Boolean} to enable or disable preview mode.
-         *                               It defaults to {@link Boolean#TRUE}
+         * Disable the preview mode.
+         *
          * @return the {@link Builder} object
          */
         @NonNull
-        public Builder setPreviewModeEnabled(boolean enabled) {
-            this.previewEnabled = enabled;
+        public Builder disablePreview() {
+            this.previewEnabled = false;
             return this;
         }
 
@@ -197,11 +209,16 @@ public class VWOConfig {
          * @return the current {@link Builder} object.
          */
         @NonNull
-        public Builder setCustomSegmentationMapping(@NonNull Map<String, String> customSegmentationMapping) {
+        public Builder setCustomVariables(@NonNull Map<String, String> customSegmentationMapping) {
             if (customSegmentationMapping == null) {
                 throw new IllegalArgumentException("Mapping cannot be null");
             }
             this.customSegmentationMapping = customSegmentationMapping;
+            return this;
+        }
+
+        Builder setVWOStatusListener(@NonNull VWOStatusListener vwoStatusListener) {
+            this.statusListener = vwoStatusListener;
             return this;
         }
     }

@@ -8,7 +8,6 @@ import android.os.Build;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.annotation.VisibleForTesting;
 import android.text.TextUtils;
 
 import com.vwo.mobile.constants.AppConstants;
@@ -16,13 +15,13 @@ import com.vwo.mobile.data.VWOData;
 import com.vwo.mobile.data.VWOLocalData;
 import com.vwo.mobile.data.VWOMessageQueue;
 import com.vwo.mobile.events.VWOStatusListener;
+import com.vwo.mobile.gestures.ShakeDetector;
 import com.vwo.mobile.listeners.VWOActivityLifeCycle;
 import com.vwo.mobile.logging.VWOLoggingClient;
 import com.vwo.mobile.models.Campaign;
 import com.vwo.mobile.models.VWOError;
 import com.vwo.mobile.network.ErrorResponse;
 import com.vwo.mobile.network.VWODownloader;
-import com.vwo.mobile.gestures.ShakeDetector;
 import com.vwo.mobile.utils.VWOLog;
 import com.vwo.mobile.utils.VWOPreference;
 import com.vwo.mobile.utils.VWOUrlBuilder;
@@ -76,7 +75,6 @@ public class VWO implements VWODownloader.DownloadResult {
     private VWOLocalData mVWOLocalData;
     private VWOConfig vwoConfig;
 
-    private VWOStatusListener mStatusListener;
     private static boolean optOut;
 
     private static final Object lock = new Object();
@@ -86,7 +84,6 @@ public class VWO implements VWODownloader.DownloadResult {
     private VWOMessageQueue messageQueue;
     private VWOMessageQueue failureQueue;
 
-    @VisibleForTesting
     private VWO(@NonNull Context context, @NonNull VWOConfig vwoConfig) {
         this.mContext = context;
         this.mIsEditMode = false;
@@ -184,13 +181,33 @@ public class VWO implements VWODownloader.DownloadResult {
      * @param control is the default value to be returned if key is not found in any campaigns.
      * @return an {@link Object} corresponding to given key.
      */
-    @SuppressWarnings({"unused", "deprecation"})
     @NonNull
     public static Object getVariationForKey(@NonNull String key, @NonNull Object control) {
-        Object data = getVariationForKey(key);
+        Object data = null;
+        String message = "";
+        synchronized (lock) {
+            if (sSharedInstance != null) {
+                if (sSharedInstance.mVWOStartState >= STARTED) {
+                    if (sSharedInstance.isEditMode()) {
+                        data = sSharedInstance.getVwoSocket().getVariationForKey(key);
+                    } else {
+                        data = sSharedInstance.getVwoData().getVariationForKey(key);
+                    }
+                } else if (sSharedInstance.mVWOStartState == OPTED_OUT) {
+                    message = "User opted out.";
+                } else if (sSharedInstance.mVWOStartState == FAILED) {
+                    message = "SDK failed to Initialize.";
+                } else {
+                    message = "SDK is initializing";
+                }
+            } else {
+                message = "SDK is not initialized";
+            }
+        }
         if (data == null) {
-            VWOLog.w(VWOLog.DATA_LOGS, String.format(Locale.ENGLISH, "No variation found for key: %s " +
-                    "returning default value", key), false);
+            VWOLog.w(VWOLog.DATA_LOGS, String.format(Locale.ENGLISH,
+                    "No variation found for key: \"%s\"\nReason: %s, returning default value",
+                    key, message), false);
             return control;
         } else {
             return data;
@@ -265,8 +282,8 @@ public class VWO implements VWODownloader.DownloadResult {
      * @param listener This listener to be passed to SDK
      */
     public static void setVWOStatusListener(VWOStatusListener listener) {
-        if (sSharedInstance != null) {
-            sSharedInstance.mStatusListener = listener;
+        if (sSharedInstance != null && sSharedInstance.getConfig() != null) {
+            sSharedInstance.getConfig().setStatusListener(listener);
         } else {
             VWOLog.e(VWOLog.CONFIG_LOGS, "SDK not initialized, unable to setup VWOStatusListener",
                     false, false);
@@ -282,9 +299,11 @@ public class VWO implements VWODownloader.DownloadResult {
      *
      * @param key   is given key
      * @param value is the value corresponding to the given key.
+     * @deprecated Use {@link VWOConfig.Builder#setCustomVariables(Map)} instead
      */
+    @Deprecated
     public static void setCustomVariable(@NonNull String key, @NonNull String value) {
-        if (sSharedInstance == null) {
+        if (sSharedInstance == null || sSharedInstance.getConfig() == null) {
             throw new IllegalStateException("You need to initialize VWO SDK first and the try calling this function.");
         }
         sSharedInstance.getConfig().addCustomSegment(key, value);
@@ -309,7 +328,9 @@ public class VWO implements VWODownloader.DownloadResult {
      * {@link Initializer#launchSynchronously(long)}
      *
      * @param optOut is the {@link Boolean} value.
+     * @deprecated use {@link VWOConfig.Builder#setOptOut(boolean)} instead.
      */
+    @Deprecated
     public static void setOptOut(boolean optOut) {
         if (sSharedInstance != null && sSharedInstance.getState() >= STARTING) {
             VWOLog.e(VWOLog.CONFIG_LOGS, "Cannot change opt-out setting after SDK is initialized",
@@ -323,6 +344,7 @@ public class VWO implements VWODownloader.DownloadResult {
     boolean startVwoInstance() {
         VWOLog.i(VWOLog.INITIALIZATION_LOGS, String.format("**** Starting VWO version: %s Build: %s ****",
                 version(), versionCode()), false);
+        assert getConfig() != null;
         if (getConfig().isOptOut()) {
             this.mVWOStartState = OPTED_OUT;
             new VWOPreference(sSharedInstance).clear();
@@ -465,13 +487,13 @@ public class VWO implements VWODownloader.DownloadResult {
         if (VWOUtils.checkIfClassExists("io.socket.client.Socket") && vwoConfig.isPreviewEnabled()) {
             this.mVWOSocket = new VWOSocket(sSharedInstance);
             setPreviewGesture();
-            if(VWOUtils.isApplicationDebuggable(getCurrentContext())) {
+            if (VWOUtils.isApplicationDebuggable(getCurrentContext())) {
                 mVWOSocket.init();
             }
         } else {
-            VWOLog.e(VWOLog.INITIALIZATION_LOGS, "You need to add following dependency " +
-                            "\n\t\tcompile 'io.socket:socket.io-client:1.0.0\n" +
-                            " to your build.gradle file in order to use VWO's preview mode.",
+            VWOLog.e(VWOLog.INITIALIZATION_LOGS, "You need to add following dependency\n" +
+                            "\t\tcompile 'io.socket:socket.io-client:1.0.0\n" +
+                            "to your build.gradle file in order to use VWO's preview mode.",
                     false, false);
         }
     }
@@ -491,11 +513,11 @@ public class VWO implements VWODownloader.DownloadResult {
     }
 
     private void onLoadSuccess() {
-        if (mStatusListener != null) {
+        if (vwoConfig.getStatusListener() != null) {
             new Handler(getCurrentContext().getMainLooper()).post(new Runnable() {
                 @Override
                 public void run() {
-                    mStatusListener.onVWOLoaded();
+                    vwoConfig.getStatusListener().onVWOLoaded();
                 }
             });
         }
@@ -515,6 +537,7 @@ public class VWO implements VWODownloader.DownloadResult {
         return false;
     }
 
+    @NonNull
     public Context getCurrentContext() {
         return this.mContext;
     }
@@ -539,17 +562,18 @@ public class VWO implements VWODownloader.DownloadResult {
         return mVWOUrlBuilder;
     }
 
+    @Nullable
     public VWOConfig getConfig() {
         return this.vwoConfig;
     }
 
     private void onLoadFailure(final String reason) {
         this.mVWOStartState = FAILED;
-        if (mStatusListener != null) {
+        if (vwoConfig.getStatusListener() != null) {
             new Handler(getCurrentContext().getMainLooper()).post(new Runnable() {
                 @Override
                 public void run() {
-                    mStatusListener.onVWOLoadFailure(reason);
+                    vwoConfig.getStatusListener().onVWOLoadFailure(reason);
                 }
             });
         }
@@ -570,11 +594,6 @@ public class VWO implements VWODownloader.DownloadResult {
 
     public VWOMessageQueue getFailureQueue() {
         return this.failureQueue;
-    }
-
-    @Nullable
-    public VWOStatusListener getStatusListener() {
-        return mStatusListener;
     }
 
     public VWOPreference getVwoPreference() {
