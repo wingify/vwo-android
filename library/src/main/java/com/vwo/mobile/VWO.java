@@ -179,11 +179,11 @@ public class VWO implements VWODownloader.DownloadResult {
      * </p>
      *
      * @param key     is the key for which variation is to be requested
-     * @param control is the default value to be returned if key is not found in any campaigns.
+     * @param control is the default value to be returned if key is not found in any of the campaigns.
      * @return an {@link Object} corresponding to given key.
      */
-    @NonNull
-    public static Object getVariationForKey(@NonNull String key, @NonNull Object control) {
+    @Nullable
+    public static Object getVariationForKey(@NonNull String key, @Nullable Object control) {
         Object data = null;
         String message = "";
         synchronized (lock) {
