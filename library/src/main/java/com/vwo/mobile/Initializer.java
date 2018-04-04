@@ -15,9 +15,10 @@ import com.vwo.mobile.utils.VWOLog;
 public class Initializer {
     private final VWO vwo;
     private final String apiKey;
-    private final boolean optOut;
+    @Nullable
+    private final Boolean optOut;
 
-    Initializer(VWO vwo, String apiKey, boolean optOut) {
+    Initializer(VWO vwo, String apiKey, @Nullable Boolean optOut) {
         this.vwo = vwo;
         this.apiKey = apiKey;
         this.optOut = optOut;
@@ -106,13 +107,13 @@ public class Initializer {
             VWOConfig vwoConfig = new VWOConfig
                     .Builder()
                     .apiKey(apiKey)
-                    .setOptOut(optOut)
+                    .setOptOut(optOut != null && optOut)
                     .build();
             this.vwo.setConfig(vwoConfig);
         } else {
             VWOConfig vwoConfig = this.vwo.getConfig();
             vwoConfig.setApiKey(apiKey);
-            if(!this.vwo.getConfig().isOptOut()) {
+            if(optOut != null) {
                 vwoConfig.setOptOut(optOut);
             }
         }
