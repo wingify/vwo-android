@@ -76,7 +76,7 @@ public class VWO implements VWODownloader.DownloadResult {
     private VWOLocalData mVWOLocalData;
     private VWOConfig vwoConfig;
 
-    private static boolean optOut;
+    private static Boolean optOut = null;
 
     private static final Object lock = new Object();
 
