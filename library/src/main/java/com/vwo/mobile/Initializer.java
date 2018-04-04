@@ -112,7 +112,9 @@ public class Initializer {
         } else {
             VWOConfig vwoConfig = this.vwo.getConfig();
             vwoConfig.setApiKey(apiKey);
-            vwoConfig.setOptOut(optOut);
+            if(!this.vwo.getConfig().isOptOut()) {
+                vwoConfig.setOptOut(optOut);
+            }
         }
 
         this.vwo.getConfig().setTimeout(timeout);
