@@ -207,7 +207,7 @@ public class VWO implements VWODownloader.DownloadResult {
         if (data == null) {
             VWOLog.w(VWOLog.DATA_LOGS, String.format(Locale.ENGLISH,
                     "No variation found for key: \"%s\"\nReason: %s, returning default value",
-                    key, message), false);
+                    key, !TextUtils.isEmpty(message) ? message : "Key does not exist"), false);
             return control;
         } else {
             return data;
