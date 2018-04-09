@@ -57,7 +57,7 @@ Add dependencies to app/build.gradle file
         }
         
         // Skip this if you are already including support library in your app.
-        compile 'com.android.support:support-core-utils:27.0.2'
+        compile 'com.android.support:support-core-utils:27.1.1'
 	    ...
 	}
 	
@@ -69,6 +69,8 @@ Update your project AndroidManifest.xml with following permissions:
 ```
 	
 ## Initializing SDK
+
+NOTE: Initialization of VWO SDK must be done in the `onCreate()` method of your Activity or Application.
 
 ##### Launching VWO SDK in Asynchronous mode
 

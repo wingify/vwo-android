@@ -70,8 +70,8 @@ dependencies {
     implementation('io.socket:socket.io-client:1.0.0') {
         exclude group: 'org.json', module: 'json'
     }
-    implementation 'com.android.support:support-annotations:27.1.0'
-    implementation 'com.android.support:support-core-utils:27.1.0'
+    implementation 'com.android.support:support-annotations:27.1.1'
+    implementation 'com.android.support:support-core-utils:27.1.1'
 }
 
 ext {
