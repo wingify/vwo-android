@@ -50,14 +50,14 @@ Add dependencies to app/build.gradle file
 
 	dependencies {
 	    ...
-	    compile 'com.vwo:mobile:2.2.0@aar'
+	    compile 'com.vwo:mobile:2.3.0@aar'
         debugCompile ('io.socket:socket.io-client:1.0.0') {
             // excluding org.json which is provided by Android
             exclude group: 'org.json', module: 'json'
         }
         
         // Skip this if you are already including support library in your app.
-        compile 'com.android.support:support-core-utils:27.0.2'
+        compile 'com.android.support:support-core-utils:27.1.1'
 	    ...
 	}
 	
@@ -69,6 +69,8 @@ Update your project AndroidManifest.xml with following permissions:
 ```
 	
 ## Initializing SDK
+
+NOTE: Initialization of VWO SDK must be done in the `onCreate()` method of your Activity or Application.
 
 ##### Launching VWO SDK in Asynchronous mode
 
@@ -135,30 +137,21 @@ You can setup VWO Config while initialising SDK
     
     // Config for adding custom user segmentation parameters before launch.
     Map<String, String> userSegmentationMapping = new HashMap<>();
-    customKeys.put("key", "value");
+    customKeys.put("userType", "free");
     
     VWOConfig vwoConfig = new VWOConfig
             .Builder()
             .setCustomSegmentationMapping(userSegmentationMapping)
+            .disablePreview()                                             // To disable preview Mode.
+            .setOptOut(true)                                              // To opt out of VWO SDK.
             .build();
                 
 This config can be set during the VWO SDK launch:
 
-    VWO.with(this, VWO_APP_KEY).config(vwoConfig).launch();
+    VWO.with(Context, VWO_APP_KEY).config(vwoConfig).launch(null);
 
 ## Using Campaigns
-For fetching variation for a given key inside a campaign, use the following code.
-if key is not found in any of the running campaigns, null value is returned, Otherwise an object is
-returned corresponding to given key.
-
-```
-String key1 = "your-campaign-key";
-Object variation = VWO.getVariationForKey(key1);
-```
-
-Or
-
-You can also use following method for fetching a variation and passing a default value which is 
+You can use the following method to fetch a variation and pass a default value which is 
 returned back in case no key matches.
 
 ```
@@ -235,7 +228,11 @@ public class MainActivity extends AppCompatActivity {
 ### Opt-Out
 Use Following code to opt-out a user from SDK:
     
-    VWO.setOptOut(true);
+    VWOConfig vwoConfig = new VWOConfig.Builder()
+                             .setOptOut(true)               // set your opt out flag here
+                             .build();
+                             
+    VWO.with(Context, VWO_APP_KEY).config(vwoConfig).launch(null);
  
 ## Proguard
 
