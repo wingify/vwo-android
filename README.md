@@ -141,7 +141,7 @@ You can setup VWO Config while initialising SDK
     
     VWOConfig vwoConfig = new VWOConfig
             .Builder()
-            .setCustomSegmentationMapping(userSegmentationMapping)
+            .setCustomVariables(userSegmentationMapping)
             .disablePreview()                                             // To disable preview Mode.
             .setOptOut(true)                                              // To opt out of VWO SDK.
             .build();
