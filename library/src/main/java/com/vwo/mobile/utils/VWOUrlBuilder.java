@@ -137,7 +137,17 @@ public class VWOUrlBuilder {
         return url;
     }
 
-    public String getGoalUrl(long experimentId, int variationId, int goalId, float revenue) {
+    /**
+     * Generate the revenue goal URL
+     *
+     * @param experimentId is the campaign id
+     * @param variationId is the variation id
+     * @param goalId is the goal id
+     * @param revenue is the goal revenue
+     *
+     * @return the revenue goal URL
+     */
+    public String getGoalUrl(long experimentId, int variationId, int goalId, double revenue) {
 
         return Uri.parse(getGoalUrl(experimentId, variationId, goalId))
                 .buildUpon()

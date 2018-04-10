@@ -16,7 +16,7 @@ public class GoalEntry extends Entry {
     private int goalId;
     private int variationId;
 
-    public GoalEntry(String url, long campaignId, int variationId,int goalId) {
+    public GoalEntry(String url, long campaignId, int variationId, int goalId) {
         super(url);
         this.campaignId = campaignId;
         this.variationId = variationId;

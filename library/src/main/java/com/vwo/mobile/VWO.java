@@ -229,7 +229,7 @@ public class VWO implements VWODownloader.DownloadResult, PreviewListener {
                     if (sSharedInstance.isEditMode()) {
                         sSharedInstance.getVwoSocket().triggerGoal(goalIdentifier);
                     } else {
-                        sSharedInstance.mVWOData.saveGoal(goalIdentifier);
+                        sSharedInstance.mVWOData.saveGoal(goalIdentifier, null);
                     }
                 } else if (sSharedInstance.mVWOStartState == OPTED_OUT) {
                     VWOLog.e(VWOLog.DATA_LOGS, "Conversion not tracked. User opted out.",
@@ -348,7 +348,7 @@ public class VWO implements VWODownloader.DownloadResult, PreviewListener {
         assert getConfig() != null;
         if (getConfig().isOptOut()) {
             this.mVWOStartState = OPTED_OUT;
-            new VWOPreference(sSharedInstance).clear();
+            new VWOPreference(getCurrentContext()).clear();
             VWOLog.w(VWOLog.INITIALIZATION_LOGS, "Ignoring initalization, User opted out.", false);
             onLoadSuccess();
             return true;
@@ -474,7 +474,7 @@ public class VWO implements VWODownloader.DownloadResult, PreviewListener {
         this.mVWOLocalData = new VWOLocalData(sSharedInstance);
         this.mVWOUrlBuilder = new VWOUrlBuilder(sSharedInstance);
         this.mVWOData = new VWOData(sSharedInstance);
-        this.mVWOPreference = new VWOPreference(sSharedInstance);
+        this.mVWOPreference = new VWOPreference(getCurrentContext());
 
         // Initialize message queues
         this.messageQueue = VWOMessageQueue.getInstance(getCurrentContext(), MESSAGE_QUEUE_NAME);

@@ -178,9 +178,7 @@ public class VWOPersistData {
      * @param vwo {@link VWO instance}
      */
     static void updateReturningUser(VWO vwo) {
-
         vwo.getVwoPreference().putBoolean(AppConstants.IS_RETURNING_USER, true);
-
     }
 
     /**
