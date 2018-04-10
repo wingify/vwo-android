@@ -16,6 +16,7 @@ import com.vwo.mobile.data.VWOLocalData;
 import com.vwo.mobile.data.VWOMessageQueue;
 import com.vwo.mobile.events.VWOStatusListener;
 import com.vwo.mobile.gestures.ShakeDetector;
+import com.vwo.mobile.events.PreviewListener;
 import com.vwo.mobile.listeners.VWOActivityLifeCycle;
 import com.vwo.mobile.logging.VWOLoggingClient;
 import com.vwo.mobile.models.Campaign;
@@ -44,7 +45,7 @@ import static com.vwo.mobile.Connection.STARTING;
 /**
  * Created by Aman on Wed 27/09/17 at 14:55.
  */
-public class VWO implements VWODownloader.DownloadResult {
+public class VWO implements VWODownloader.DownloadResult, PreviewListener {
     /**
      * Constants exposed to developers
      */
@@ -450,6 +451,16 @@ public class VWO implements VWODownloader.DownloadResult {
         }
     }
 
+    @Override
+    public void onPreviewEnabled() {
+        mIsEditMode = true;
+    }
+
+    @Override
+    public void onPreviewDisabled() {
+        mIsEditMode = false;
+    }
+
     private void initializeServerLogging() {
         Map<String, String> extras = new HashMap<>();
         extras.put(VWOError.VWO_SDK_VERSION, version());
@@ -485,7 +496,7 @@ public class VWO implements VWODownloader.DownloadResult {
      */
     private void initializePreviewMode() {
         if (VWOUtils.checkIfClassExists("io.socket.client.Socket") && vwoConfig.isPreviewEnabled()) {
-            this.mVWOSocket = new VWOSocket(sSharedInstance);
+            this.mVWOSocket = new VWOSocket(this, vwoConfig.getAppKey());
             setPreviewGesture();
             if (VWOUtils.isApplicationDebuggable(getCurrentContext())) {
                 mVWOSocket.init();
