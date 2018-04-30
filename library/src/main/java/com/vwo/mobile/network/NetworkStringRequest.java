@@ -167,10 +167,9 @@ public class NetworkStringRequest extends NetworkRequest<String> {
                 } finally {
                     if (gzos != null) try {
                         gzos.close();
-                    } catch (IOException exception) {
-                        VWOLog.e(VWOLog.UPLOAD_LOGS, exception, false, true);
-                    }
+                    } catch (IOException ignore) { }
                 }
+                return baos.toByteArray();
             } else {
                 try {
                     return body.getBytes(DEFAULT_CONTENT_ENCODING);
