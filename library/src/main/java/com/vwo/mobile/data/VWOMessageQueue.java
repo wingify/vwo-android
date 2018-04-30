@@ -5,7 +5,7 @@ import android.support.annotation.Nullable;
 
 import com.vwo.mobile.data.io.QueueFile;
 import com.vwo.mobile.models.Entry;
-import com.vwo.mobile.utils.Parceler;
+import com.vwo.mobile.utils.Serializer;
 import com.vwo.mobile.utils.VWOLog;
 
 import java.io.File;
@@ -42,8 +42,9 @@ public class VWOMessageQueue implements MessageQueue<Entry> {
                     while (!waitingQueue.isEmpty()) {
                         Entry entry = waitingQueue.poll();
                         VWOLog.i(VWOLog.STORAGE_LOGS, String.format(Locale.ENGLISH, "Adding to queue %s\n%s", filename, entry.toString()), true);
-                        byte[] data = Parceler.marshall(entry);
                         try {
+                            byte[] data = Serializer.marshall(entry);
+
                             synchronized (queueFile) {
                                 queueFile.add(data);
                             }
@@ -82,7 +83,6 @@ public class VWOMessageQueue implements MessageQueue<Entry> {
     public Entry peek() {
         VWOLog.i(VWOLog.STORAGE_LOGS, String.format(Locale.ENGLISH, "Reading from queue %s", this.filename), true);
         try {
-
             byte[] data;
             synchronized (queueFile) {
                 data = queueFile.peek();
@@ -90,11 +90,19 @@ public class VWOMessageQueue implements MessageQueue<Entry> {
             if (data == null) {
                 return null;
             }
-            return Parceler.unmarshall(data, Entry.CREATOR);
+            return Serializer.unmarshall(data, Entry.class);
         } catch (IOException exception) {
-            VWOLog.e(VWOLog.STORAGE_LOGS, String.format(Locale.ENGLISH, "File %s corrupted. Clearing last entry...", filename), true, false);
+            VWOLog.e(VWOLog.STORAGE_LOGS, "Entry corrupted. Removing..", exception,
+                    true, true);
             remove();
-            VWOLog.e(VWOLog.STORAGE_LOGS, exception, true, false);
+        } catch (ClassNotFoundException exception) {
+            VWOLog.e(VWOLog.STORAGE_LOGS, "Entry corrupted. Removing...", exception,
+                    true, true);
+            remove();
+        } catch (Exception exception) {
+            VWOLog.e(VWOLog.STORAGE_LOGS, "Entry corrupted. Removing...", exception,
+                    true, true);
+            remove();
         }
         return null;
     }

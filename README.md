@@ -50,7 +50,7 @@ Add dependencies to app/build.gradle file
 
 	dependencies {
 	    ...
-	    compile 'com.vwo:mobile:2.3.0@aar'
+	    compile 'com.vwo:mobile:2.3.1@aar'
         compile ('io.socket:socket.io-client:1.0.0') {
             // excluding org.json which is provided by Android
             exclude group: 'org.json', module: 'json'
@@ -239,6 +239,12 @@ Use Following code to opt-out a user from SDK:
 if you are using proguard. Add the following rules to your proguard file
 
 ```proguard
+    # preserve the line number information for debugging stack traces.
+    -keepattributes SourceFile,LineNumberTable
+
+    # Hide the original source file name.
+    -renamesourcefileattribute SourceFile
+
     # Support libraries
     -keep class android.support.v4.content.LocalBroadcastManager
     

@@ -3,10 +3,10 @@ apply plugin: 'com.android.library'
 android {
     compileSdkVersion 27
     defaultConfig {
-        versionCode 18
+        versionCode 19
         minSdkVersion 14
         targetSdkVersion 27
-        versionName "2.3.0"
+        versionName "2.3.1"
     }
     signingConfigs {
         config {
@@ -60,7 +60,7 @@ dependencies {
     // Required -- JUnit 4 framework
     testImplementation 'junit:junit:4.12'
     // Optional -- Mockito framework
-    testImplementation 'org.mockito:mockito-core:2.13.0'
+    testImplementation 'org.mockito:mockito-core:2.18.3'
     testImplementation 'org.powermock:powermock-api-mockito2:2.0.0-beta.5'
     testImplementation 'org.powermock:powermock-module-junit4:2.0.0-beta.5'
     testImplementation 'org.powermock:powermock-module-junit4-rule:2.0.0-beta.5'

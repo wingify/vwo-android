@@ -1,5 +1,8 @@
 package com.vwo.mobile;
 
+import android.support.annotation.NonNull;
+
+import com.vwo.mobile.events.PreviewListener;
 import com.vwo.mobile.utils.VWOLog;
 import com.vwo.mobile.utils.VWOUtils;
 
@@ -42,8 +45,8 @@ public class VWOSocket {
     private static final String DEVICE_TYPE = "android";
 
     private Socket mSocket;
+    private PreviewListener mPreviewListener;
     private String mAppKey;
-    private VWO mVWO;
 
     private Map<String, Object> mVariationKeys;
     private JSONObject mVariation;
@@ -62,7 +65,7 @@ public class VWOSocket {
     private Emitter.Listener mServerDisconnected = new Emitter.Listener() {
         @Override
         public void call(Object... args) {
-            mVWO.setIsEditMode(false);
+            mPreviewListener.onPreviewDisabled();
             mSocketConnectionState = NOT_STARTED;
             VWOLog.v(VWOLog.INIT_SOCKET_LOGS, "Finished device preview");
         }
@@ -76,7 +79,7 @@ public class VWOSocket {
                 VWOLog.v(VWOLog.SOCKET_LOGS, "Device connected to Server: " + browserName);
 
                 mSocketConnectionState = STARTED;
-                mVWO.setIsEditMode(true);
+                mPreviewListener.onPreviewEnabled();
                 VWOLog.v(VWOLog.SOCKET_LOGS, "Started device preview with User: " + browserName);
             } catch (JSONException exception) {
                 mSocketConnectionState = FAILED;
@@ -86,10 +89,10 @@ public class VWOSocket {
         }
     };
 
-    VWOSocket(VWO vwo) {
-        this.mVWO = vwo;
-        this.mAppKey = mVWO.getConfig().getAppKey();
-        mSocketConnectionState = NOT_STARTED;
+    VWOSocket(@NonNull PreviewListener previewListener, String appKey) {
+        this.mPreviewListener = previewListener;
+        this.mSocketConnectionState = NOT_STARTED;
+        this.mAppKey = appKey;
     }
 
     /**
@@ -196,9 +199,8 @@ public class VWOSocket {
     private Emitter.Listener mBrowserDisconnectedListener = new Emitter.Listener() {
         @Override
         public void call(Object... args) {
-            mVWO.setIsEditMode(false);
+            mPreviewListener.onPreviewDisabled();
             VWOLog.i(VWOLog.SOCKET_LOGS, "Finished device preview", true);
-
         }
     };
 

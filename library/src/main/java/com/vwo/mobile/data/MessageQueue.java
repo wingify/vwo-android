@@ -1,10 +1,12 @@
 package com.vwo.mobile.data;
 
+import java.io.Serializable;
+
 /**
  * Created by aman on 19/09/17.
  */
 
-public interface MessageQueue<T> {
+public interface MessageQueue<T extends Serializable> {
     /**
      * Retrieves, but does not remove, the head of this queue, or returns null if this queue is empty.
      */

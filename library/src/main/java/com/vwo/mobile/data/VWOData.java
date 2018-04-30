@@ -183,48 +183,13 @@ public class VWOData {
         return false;
     }
 
-    public void saveGoal(String goalIdentifier) {
-        boolean foundGoal = false;
-        for (Campaign campaign : mCampaigns) {
-            for (Goal goal : campaign.getGoals()) {
-                if (goal.getIdentifier().equals(goalIdentifier)) {
-                    String campaignData = mVWO.getVwoPreference().getString(VWOPersistData.CAMPAIGN_KEY + campaign.getId());
-                    if (campaignData != null && !campaignData.equals("")) {
-                        try {
-                            JSONObject jsonObject = new JSONObject(campaignData);
-                            VWOPersistData vwoPersistData = new VWOPersistData(jsonObject);
-                            if (!vwoPersistData.isGoalExists(goal.getId())) {
-                                vwoPersistData.addGoal(goal.getId());
-                                vwoPersistData.saveCampaign(mVWO.getVwoPreference());
-
-                                String goalUrl = mVWO.getVwoUrlBuilder().getGoalUrl(campaign.getId(),
-                                        campaign.getVariation().getId(), goal.getId());
-                                GoalEntry goalEntry = new GoalEntry(goalUrl, campaign.getId(), campaign.getVariation().getId(), goal.getId());
-                                mVWO.getMessageQueue().add(goalEntry);
-                                foundGoal = true;
-                            } else {
-                                VWOLog.w(VWOLog.CAMPAIGN_LOGS, "Duplicate goal identifier: " + goalIdentifier, true);
-                            }
-                        } catch (JSONException exception) {
-                            VWOLog.w(VWOLog.CAMPAIGN_LOGS, "Unable to generate goal object", exception, true);
-                        }
-
-                    }
-                }
-            }
-        }
-        if(!foundGoal) {
-            VWOLog.w(VWOLog.CAMPAIGN_LOGS, "Goal not found.", true);
-        }
-    }
-
     /**
      * Mark goal as achieved with revenue
      *
      * @param goalIdentifier is the goal id set on dashboard
      * @param value is the revenue value
      */
-    public void saveGoal(@NonNull String goalIdentifier, double value) {
+    public void saveGoal(@NonNull String goalIdentifier, Double value) {
         for (Campaign campaign : mCampaigns) {
             for (Goal goal : campaign.getGoals()) {
                 if (goal.getIdentifier().equals(goalIdentifier)) {
@@ -237,8 +202,14 @@ public class VWOData {
                                 vwoPersistData.addGoal(goal.getId());
                                 vwoPersistData.saveCampaign(mVWO.getVwoPreference());
 
-                                String goalUrl = mVWO.getVwoUrlBuilder().getGoalUrl(campaign.getId(),
-                                        campaign.getVariation().getId(), goal.getId(), (float) value);
+                                String goalUrl;
+                                if(value != null) {
+                                    goalUrl = mVWO.getVwoUrlBuilder().getGoalUrl(campaign.getId(),
+                                            campaign.getVariation().getId(), goal.getId(), value);
+                                } else {
+                                    goalUrl = mVWO.getVwoUrlBuilder().getGoalUrl(campaign.getId(),
+                                            campaign.getVariation().getId(), goal.getId());
+                                }
 
                                 GoalEntry goalEntry = new GoalEntry(goalUrl, campaign.getId(),
                                         campaign.getVariation().getId(), goal.getId());

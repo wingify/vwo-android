@@ -155,9 +155,10 @@ public class NetworkStringRequest extends NetworkRequest<String> {
         if (body != null) {
             if (gzipEnabled) {
                 VWOLog.i(VWOLog.UPLOAD_LOGS, body, true);
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                ByteArrayOutputStream baos = null;
                 GZIPOutputStream gzos = null;
                 try {
+                    baos = new ByteArrayOutputStream();
                     gzos = new GZIPOutputStream(baos);
                     gzos.write(body.getBytes(DEFAULT_CONTENT_ENCODING));
                     gzos.flush();
@@ -165,12 +166,16 @@ public class NetworkStringRequest extends NetworkRequest<String> {
                     VWOLog.e(VWOLog.UPLOAD_LOGS, exception, false, true);
                     return super.getBody();
                 } finally {
+                    if(baos != null) {
+                        try {
+                            baos.close();
+                        } catch (IOException ignore) { }
+                    }
                     if (gzos != null) try {
                         gzos.close();
-                    } catch (IOException exception) {
-                        VWOLog.e(VWOLog.UPLOAD_LOGS, exception, false, true);
-                    }
+                    } catch (IOException ignore) { }
                 }
+                return baos.toByteArray();
             } else {
                 try {
                     return body.getBytes(DEFAULT_CONTENT_ENCODING);

@@ -14,6 +14,7 @@ import com.vwo.mobile.constants.AppConstants;
 import com.vwo.mobile.data.VWOData;
 import com.vwo.mobile.data.VWOLocalData;
 import com.vwo.mobile.data.VWOMessageQueue;
+import com.vwo.mobile.events.PreviewListener;
 import com.vwo.mobile.events.VWOStatusListener;
 import com.vwo.mobile.gestures.ShakeDetector;
 import com.vwo.mobile.listeners.ActivityLifecycleListener;
@@ -45,7 +46,7 @@ import static com.vwo.mobile.Connection.STARTING;
 /**
  * Created by Aman on Wed 27/09/17 at 14:55.
  */
-public class VWO implements VWODownloader.DownloadResult {
+public class VWO implements VWODownloader.DownloadResult, PreviewListener {
     /**
      * Constants exposed to developers
      */
@@ -229,7 +230,7 @@ public class VWO implements VWODownloader.DownloadResult {
                     if (sSharedInstance.isEditMode()) {
                         sSharedInstance.getVwoSocket().triggerGoal(goalIdentifier);
                     } else {
-                        sSharedInstance.mVWOData.saveGoal(goalIdentifier);
+                        sSharedInstance.mVWOData.saveGoal(goalIdentifier, null);
                     }
                 } else if (sSharedInstance.mVWOStartState == OPTED_OUT) {
                     VWOLog.e(VWOLog.DATA_LOGS, "Conversion not tracked. User opted out.",
@@ -348,7 +349,7 @@ public class VWO implements VWODownloader.DownloadResult {
         assert getConfig() != null;
         if (getConfig().isOptOut()) {
             this.mVWOStartState = OPTED_OUT;
-            new VWOPreference(sSharedInstance).clear();
+            new VWOPreference(getCurrentContext()).clear();
             VWOLog.w(VWOLog.INITIALIZATION_LOGS, "Ignoring initalization, User opted out.", false);
             onLoadSuccess();
             return true;
@@ -454,6 +455,16 @@ public class VWO implements VWODownloader.DownloadResult {
         }
     }
 
+    @Override
+    public void onPreviewEnabled() {
+        mIsEditMode = true;
+    }
+
+    @Override
+    public void onPreviewDisabled() {
+        mIsEditMode = false;
+    }
+
     private void initializeServerLogging() {
         Map<String, String> extras = new HashMap<>();
         extras.put(VWOError.VWO_SDK_VERSION, version());
@@ -467,7 +478,7 @@ public class VWO implements VWODownloader.DownloadResult {
         this.mVWOLocalData = new VWOLocalData(sSharedInstance);
         this.mVWOUrlBuilder = new VWOUrlBuilder(sSharedInstance);
         this.mVWOData = new VWOData(sSharedInstance);
-        this.mVWOPreference = new VWOPreference(sSharedInstance);
+        this.mVWOPreference = new VWOPreference(getCurrentContext());
 
         // Initialize message queues
         this.messageQueue = VWOMessageQueue.getInstance(getCurrentContext(), MESSAGE_QUEUE_NAME);
@@ -489,7 +500,7 @@ public class VWO implements VWODownloader.DownloadResult {
      */
     private void initializePreviewMode() {
         if (VWOUtils.checkIfClassExists("io.socket.client.Socket") && vwoConfig.isPreviewEnabled()) {
-            this.mVWOSocket = new VWOSocket(sSharedInstance);
+            this.mVWOSocket = new VWOSocket(this, vwoConfig.getAppKey());
             setPreviewGesture();
             if (VWOUtils.isApplicationDebuggable(getCurrentContext())) {
                 mVWOSocket.init();

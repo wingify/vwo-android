@@ -34,7 +34,7 @@ task androidJavadocs(type: Javadoc) {
             "**/network/**",
             "**/segmentation/**",
             "**/NetworkUtils.*",
-            "**/Parceler.*",
+            "**/Serializer.*",
             "**/VWOPreference.*",
             "**/VWOUrlBuilder.*",
             "**/VWOUtils.*",

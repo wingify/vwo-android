@@ -68,6 +68,8 @@ public class VWOLog {
 
     public static final String QUEUE = "queue";
 
+    public static final String FILE_LOGS = "file";
+
     /**
      * OFF is a special level that can be used to turn off logging.
      * This level is initialized to <CODE>Integer.MAX_VALUE</CODE>.
@@ -313,7 +315,7 @@ public class VWOLog {
         }
 
         if(sendToServer) {
-            VWOLoggingClient.log(new Exception(tag + ": " + msg));
+            VWOLoggingClient.log(tag + ": " + msg);
         }
     }
 
@@ -346,7 +348,7 @@ public class VWOLog {
             }
         }
         if(sendToServer) {
-            VWOLoggingClient.log(tag + ": " + msg);
+            VWOLoggingClient.log(tag + ": " + msg, exception);
         }
     }
 
@@ -468,7 +470,7 @@ public class VWOLog {
             }
         }
         if (!TextUtils.isEmpty(msg)) {
-            VWOLoggingClient.log(msg);
+            VWOLoggingClient.log(msg, exception);
         }
     }
 

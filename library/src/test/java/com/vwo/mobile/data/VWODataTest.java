@@ -42,6 +42,7 @@ import java.util.HashMap;
 import java.util.Stack;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyDouble;
 import static org.mockito.ArgumentMatchers.anyFloat;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -92,7 +93,7 @@ public class VWODataTest {
                 .thenReturn("https://dacdn.visualwebsiteoptimizer.com/track-user?experiment_id=14&account_id=295087&combination=2&u=68fde50e3c26412c86c05c61f0d4917b&s=1&random=0.32&ed=%7B%22lt%22%3A1515580228%2C%22v%22%3A14%2C%22ai%22%3A%2290d22643c5c730732cf5c48ba2cdcf85%22%2C%22av%22%3A1%2C%22dt%22%3A%22android%22%2C%22os%22%3A%2226%22%7D");
         Mockito.when(vwoUrlBuilder.getGoalUrl(anyLong(), anyInt(), anyInt()))
                 .thenReturn("https://dacdn.visualwebsiteoptimizer.com/track-goal?experiment_id=14&account_id=295087&combination=2&u=193e45b8608c4821868a0e7162e0938f&s=7&random=0.55&goal_id=351&ed=%7B%22lt%22%3A1515579976%2C%22v%22%3A14%2C%22ai%22%3A%2290d22643c5c730732cf5c48ba2cdcf85%22%2C%22av%22%3A1%2C%22dt%22%3A%22android%22%2C%22os%22%3A%2226%22%7D");
-        Mockito.when(vwoUrlBuilder.getGoalUrl(anyLong(), anyInt(), anyInt(), anyFloat()))
+        Mockito.when(vwoUrlBuilder.getGoalUrl(anyLong(), anyInt(), anyInt(), anyDouble()))
                 .thenReturn("http://dacdn.visualwebsiteoptimizer.com/track-goal?experiment_id=14&account_id=295087&combination=2&u=a2c7a1df793b43b08ff8e55cd5faf6e6&s=1&random=0.93&goal_id=2&ed=%7B%22lt%22%3A1515584290%2C%22v%22%3A14%2C%22ai%22%3A%2290d22643c5c730732cf5c48ba2cdcf85%22%2C%22av%22%3A1%2C%22dt%22%3A%22android%22%2C%22os%22%3A%2226%22%7D&r=399.0");
 
         Mockito.when(vwo.getVwoUrlBuilder()).thenReturn(vwoUrlBuilder);
@@ -155,7 +156,7 @@ public class VWODataTest {
         VWOData vwoData = new VWOData(vwo);
         vwoData.parseData(new JSONArray(data));
 
-        vwoData.saveGoal("goal");
+        vwoData.saveGoal("goal", null);
 
         synchronized (lock) {
             lock.wait(1000);
@@ -177,7 +178,7 @@ public class VWODataTest {
 
         Mockito.doAnswer(new Answer() {
             @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
+            public Object answer(InvocationOnMock invocation) {
                 String argument1 = invocation.getArgument(0);
                 String argument2 = invocation.getArgument(1);
                 savedCampaignMap.put(argument1, argument2);
@@ -194,7 +195,7 @@ public class VWODataTest {
         VWOData vwoData = new VWOData(vwo);
         vwoData.parseData(new JSONArray(data));
 
-        vwoData.saveGoal("goal", 10);
+        vwoData.saveGoal("goal", 10.0);
 
         synchronized (lock) {
             lock.wait(1000);
