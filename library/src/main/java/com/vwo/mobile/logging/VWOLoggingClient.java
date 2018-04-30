@@ -95,6 +95,22 @@ public class VWOLoggingClient {
         getInstance().sendData(builder);
     }
 
+    public static void log(@NonNull String message, @NonNull Throwable throwable) {
+        if(getInstance() == null) {
+            throw new NullPointerException("Client not initialized");
+        }
+
+        VWOUrlBuilder vwoUrlBuilder = new VWOUrlBuilder(getInstance().mVWO);
+        String url = vwoUrlBuilder.getLoggingUrl();
+
+        VWOError.Builder builder = new VWOError.Builder(url,
+                System.currentTimeMillis());
+        builder.message(message);
+        builder.exception(throwable);
+
+        getInstance().sendData(builder);
+    }
+
     private void sendData(VWOError.Builder builder) {
         Map<String, String> deviceInfoExtra = new HashMap<>();
 

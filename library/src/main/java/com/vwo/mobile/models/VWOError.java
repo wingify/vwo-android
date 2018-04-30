@@ -1,16 +1,15 @@
 package com.vwo.mobile.models;
 
-import android.os.Parcel;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.vwo.mobile.logging.LogUtils;
-import com.vwo.mobile.utils.Parceler;
 import com.vwo.mobile.utils.VWOUtils;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.Serializable;
 import java.util.Map;
 import java.util.UUID;
 
@@ -82,18 +81,8 @@ public class VWOError extends Entry {
         return builder.id;
     }
 
-    /**
-     * This class name is used to generate correct {@link Parcel} of the inherited class.
-     *
-     * @return the class name by {@link Class#getName()}
-     */
-    @NonNull
-    @Override
-    public String getClassName() {
-        return VWOError.class.getName();
-    }
 
-    public static class Builder implements android.os.Parcelable {
+    public static class Builder implements Serializable {
         private String stackTrace;
         private String versionName;
         private int versionCode;
@@ -147,76 +136,5 @@ public class VWOError extends Entry {
             return new VWOError(url, this);
         }
 
-        @Override
-        public int describeContents() {
-            return 0;
-        }
-
-        @Override
-        public void writeToParcel(Parcel dest, int flags) {
-            dest.writeString(this.stackTrace);
-            dest.writeString(this.versionName);
-            dest.writeInt(this.versionCode);
-            dest.writeString(this.message);
-            dest.writeString(this.url);
-            dest.writeLong(this.timestamp);
-            dest.writeString(this.androidVersion);
-            Parceler.writeStringMapToParcel(extras, dest);
-            Parceler.writeStringMapToParcel(deviceInfoExtras, dest);
-            dest.writeString(this.id);
-        }
-
-        protected Builder(Parcel in) {
-            this.stackTrace = in.readString();
-            this.versionName = in.readString();
-            this.versionCode = in.readInt();
-            this.message = in.readString();
-            this.url = in.readString();
-            this.timestamp = in.readLong();
-            this.androidVersion = in.readString();
-            this.extras = Parceler.readStringMapFromParcel(in);
-            this.deviceInfoExtras = Parceler.readStringMapFromParcel(in);
-            this.id = in.readString();
-        }
-
-        public static final Creator<Builder> CREATOR = new Creator<Builder>() {
-            @Override
-            public Builder createFromParcel(Parcel source) {
-                return new Builder(source);
-            }
-
-            @Override
-            public Builder[] newArray(int size) {
-                return new Builder[size];
-            }
-        };
     }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        super.writeToParcel(dest, flags);
-        dest.writeParcelable(this.builder, flags);
-    }
-
-    public VWOError(Parcel in) {
-        super(in);
-        this.builder = in.readParcelable(Builder.class.getClassLoader());
-    }
-
-    public static final Creator<VWOError> CREATOR = new Creator<VWOError>() {
-        @Override
-        public VWOError createFromParcel(Parcel source) {
-            return new VWOError(source);
-        }
-
-        @Override
-        public VWOError[] newArray(int size) {
-            return new VWOError[size];
-        }
-    };
 }

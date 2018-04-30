@@ -115,7 +115,7 @@ public class VWODownloader {
                         message = "Something went wrong";
                         VWOLog.e(VWOLog.DOWNLOAD_DATA_LOGS, message, errorResponse, true, false);
                     }
-                    downloadResult.onDownloadError(errorResponse, message);
+                    downloadResult.onDownloadError(new Exception(errorResponse), message);
                 }
             });
             request.setGzipEnabled(true);

@@ -1,13 +1,15 @@
 package com.vwo.mobile.models;
 
 import com.vwo.mobile.BuildConfig;
-import com.vwo.mobile.utils.Parceler;
+import com.vwo.mobile.utils.Serializer;
 
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
+
+import java.io.IOException;
 
 /**
  * Created by aman on Thu 09/11/17 11:18.
@@ -17,7 +19,7 @@ import org.robolectric.annotation.Config;
 public class EntryTest {
 
     @Test
-    public void parcelTest() {
+    public void parcelTest() throws IOException, ClassNotFoundException {
         String campaignUrl = "www.wingify.com/campaign";
         String goalUrl = "www.wingify.com/goal";
         int campaignId = 100;
@@ -27,11 +29,11 @@ public class EntryTest {
         CampaignEntry campaignEntry = new CampaignEntry(campaignUrl, campaignId, variationId);
         GoalEntry goalEntry = new GoalEntry(goalUrl, campaignId, variationId, goalId);
 
-        byte[] campaignParcel = Parceler.marshall(campaignEntry);
-        byte[] goalParcel = Parceler.marshall(goalEntry);
+        byte[] campaignParcel = Serializer.marshall(campaignEntry);
+        byte[] goalParcel = Serializer.marshall(goalEntry);
 
-        CampaignEntry entryCampaign = (CampaignEntry) Parceler.unmarshall(campaignParcel, Entry.CREATOR);
-        GoalEntry entryGoal = (GoalEntry) Parceler.unmarshall(goalParcel, Entry.CREATOR);
+        CampaignEntry entryCampaign = (CampaignEntry) Serializer.unmarshall(campaignParcel, Entry.class);
+        GoalEntry entryGoal = (GoalEntry) Serializer.unmarshall(goalParcel, Entry.class);
 
         Assert.assertEquals(campaignId, entryCampaign.getCampaignId());
         Assert.assertEquals(variationId, entryCampaign.getVariationId());

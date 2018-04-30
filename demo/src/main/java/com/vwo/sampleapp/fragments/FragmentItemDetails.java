@@ -41,7 +41,7 @@ public class FragmentItemDetails extends Fragment {
         AppCompatImageView closeButton = view.findViewById(R.id.button_close);
         AppCompatButton addToCart = view.findViewById(R.id.button_add_to_cart);
         AppCompatButton buyNow = view.findViewById(R.id.button_buy);
-        addToCart.setOnClickListener(view1 -> VWO.trackConversion("AddToCard"));
+        addToCart.setOnClickListener(view1 -> VWO.trackConversion("AddToCart"));
         buyNow.setOnClickListener(view12 -> VWO.trackConversion("Bought", mobile.getPrice()));
         closeButton.setOnClickListener(view13 -> {
             if (getParentFragment() instanceof ChangeFragment) {
