@@ -34,7 +34,7 @@ public class ScheduledRequestQueue extends ScheduledThreadPoolExecutor {
 
     public static ScheduledRequestQueue getInstance(String tag) {
         if(queueMap.containsKey(tag) && queueMap.get(tag) != null) {
-            VWOLog.i(VWOLog.UPLOAD_LOGS, "Returning existing Scheduler with tag " + tag, true);
+            VWOLog.i(VWOLog.NETWORK_LOGS, "Returning existing Scheduler with tag " + tag, true);
             return queueMap.get(tag);
         }
         return new ScheduledRequestQueue(tag);

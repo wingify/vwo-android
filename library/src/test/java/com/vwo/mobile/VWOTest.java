@@ -49,11 +49,23 @@ public class VWOTest {
             lock.wait();
         }
 
-        Assert.assertEquals("grid", VWO.getVariationForKey("layout", "list"));
-        Assert.assertEquals("email", VWO.getVariationForKey("social", "email"));
-        Assert.assertEquals("default", VWO.getVariationForKey(null, "default"));
-        Assert.assertEquals("default", VWO.getVariationForKey("", "default"));
-        Assert.assertEquals("grid", VWO.getVariationForKey("layout"));
-        Assert.assertNull(VWO.getVariationForKey("email"));
+        Assert.assertEquals("grid", VWO.getObjectForKey("layout", "list"));
+        Assert.assertEquals("email", VWO.getObjectForKey("social", "email"));
+        Assert.assertEquals("default", VWO.getObjectForKey(null, "default"));
+        Assert.assertEquals("default", VWO.getObjectForKey("", "default"));
+        Assert.assertEquals("grid", VWO.getObjectForKey("layout", null));
+
+        Assert.assertEquals("grid", VWO.getStringForKey("layout", "list"));
+        Assert.assertNull(VWO.getObjectForKey("email", null));
+
+        Assert.assertEquals(1, VWO.getIntForKey("layout", 1));
+        Assert.assertEquals(2.5, VWO.getDoubleForKey("double", 0));
+        Assert.assertEquals("string", VWO.getStringForKey("String", null));
+        Assert.assertTrue(VWO.getBooleanForKey("boolean", false));
+
+        Assert.assertEquals(2, VWO.getIntForKey("String", 2));
+        Assert.assertEquals(1.0, VWO.getDoubleForKey("integer", 1.5));
+        Assert.assertEquals("true", VWO.getStringForKey("boolean", "String"));
+        Assert.assertFalse(VWO.getBooleanForKey("double", false));
     }
 }

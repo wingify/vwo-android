@@ -40,6 +40,10 @@
     "variations": {
       "changes": {
         "layout": "grid",
+        "integer": 1,
+        "double": 2.5,
+        "boolean": true,
+        "String": "string",
         "socialMedia": true
       },
       "weight": 100,
