@@ -356,54 +356,12 @@ public class VWO implements VWODownloader.DownloadResult, PreviewListener {
         }
     }
 
-    /**
-     * Sets custom key value pair for user segmentation.
-     * <p>
-     * This function can be used to segment users based on this key value pair.
-     * This will decide whether user will be a part of campaign or not.
-     * </p>
-     *
-     * @param key   is given key
-     * @param value is the value corresponding to the given key.
-     * @deprecated Use {@link VWOConfig.Builder#setCustomVariables(Map)} instead
-     */
-    @Deprecated
-    public static void setCustomVariable(@NonNull String key, @NonNull String value) {
-        if (sSharedInstance == null || sSharedInstance.getConfig() == null) {
-            throw new IllegalStateException("You need to initialize VWO SDK first and the try calling this function.");
-        }
-        sSharedInstance.getConfig().addCustomSegment(key, value);
-    }
-
     public static String version() {
         return BuildConfig.VERSION_NAME;
     }
 
     public static int versionCode() {
         return BuildConfig.VERSION_CODE;
-    }
-
-    /**
-     * To opt-out of the VWO SDK, This function can called by passing a true value.
-     * <p>
-     * After opting out, User won't become part of any campaign and won't be tracked by the
-     * VWO.
-     * <p>
-     * Note: Opting out can only be done before initialization of VWO SDK i.e. before calling
-     * {@link Initializer#launch(VWOStatusListener)} or
-     * {@link Initializer#launchSynchronously(long)}
-     *
-     * @param optOut is the {@link Boolean} value.
-     * @deprecated use {@link VWOConfig.Builder#setOptOut(boolean)} instead.
-     */
-    @Deprecated
-    public static void setOptOut(boolean optOut) {
-        if (sSharedInstance != null && sSharedInstance.getState() >= STARTING) {
-            VWOLog.e(VWOLog.CONFIG_LOGS, "Cannot change opt-out setting after SDK is initialized",
-                    false, false);
-        } else {
-            VWO.optOut = optOut;
-        }
     }
 
     @SuppressWarnings("SpellCheckingInspection")
