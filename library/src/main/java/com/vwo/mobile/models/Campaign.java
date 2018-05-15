@@ -24,11 +24,10 @@ public class Campaign {
     public static final String CAMPAIGN_NAME = "name";
     public final static String VARIATION = "variations";
     public final static String GOALS = "goals";
-    public static final String COUNT_GOAL_ONCE = "count_goal_once";
-    public static final String CLICK_MAP = "clickmap";
     public static final String SEGMENT_CUSTOM = "custom";
     public static final String SEGMENT_PREDEFINED = "predefined";
     public static final String SEGMENT_DEFAULT = "default";
+    public static final String TEST_KEY = "test_key";
     // Track user automatically for a given campaign
     public static final String TRACK_USER_AUTOMATICALLY = "track_user_on_launch";
     private static final String SEGMENT_CODE = "segment_object";
@@ -41,6 +40,7 @@ public class Campaign {
     private ArrayList<Goal> mGoals;
     private Variation mVariation;
     private String mSegmentType;
+    private String testKey;
     private String name;
     private ArrayList<Segment> mSegments;
 
@@ -53,11 +53,8 @@ public class Campaign {
             mGoals = new ArrayList<>();
             this.mType = CampaignTypeEnum.getEnumFromCampaign(campaignData.getString(TYPE));
 
-            if (campaignData.has(CAMPAIGN_NAME)) {
-                name = campaignData.getString(CAMPAIGN_NAME);
-            } else {
-                name = "campaign";
-            }
+            name = campaignData.optString(CAMPAIGN_NAME, "campaign");
+            testKey = campaignData.optString(TEST_KEY, name + "_" + mId);
 
             JSONArray goals = campaignData.getJSONArray(GOALS);
             for (int i = 0; i < goals.length(); i++) {
@@ -73,11 +70,6 @@ public class Campaign {
                 VWOLog.e(VWOLog.DATA_LOGS, "Cannot find or parse key: " + TRACK_USER_AUTOMATICALLY,
                         exception, true, true);
             }
-
-            int clickMap = campaignData.getInt(CLICK_MAP);
-
-            int countGoalOnce = campaignData.getInt(COUNT_GOAL_ONCE);
-
 
             if (campaignData.has(SEGMENT_CODE) && campaignData.getJSONObject(SEGMENT_CODE).has(SEGMENT_TYPE)) {
 
@@ -147,6 +139,10 @@ public class Campaign {
 
     public String getSegmentType() {
         return mSegmentType;
+    }
+
+    public String getTestKey() {
+        return this.testKey;
     }
 
     @Override

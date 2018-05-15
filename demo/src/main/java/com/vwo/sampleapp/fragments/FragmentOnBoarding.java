@@ -62,8 +62,8 @@ public class FragmentOnBoarding extends Fragment implements View.OnClickListener
                 login.setVisibility(View.VISIBLE);
                 break;
             case FragmentOnBoardingMain.VARIATION_LOGIN_TYPE_NORMAL:
-                boolean socialMedia = (Boolean) VWO.getVariationForKey(Constants.VWOKeys.KEY_SOCIAL_MEDIA, false);
-                boolean skip = (Boolean) VWO.getVariationForKey(Constants.VWOKeys.KEY_SKIP, false);
+                boolean socialMedia = VWO.getBooleanForKey(Constants.VWOKeys.KEY_SOCIAL_MEDIA, false);
+                boolean skip = VWO.getBooleanForKey(Constants.VWOKeys.KEY_SKIP, false);
                 if (socialMedia) {
                     textViewOr.setVisibility(View.VISIBLE);
                     facebookLogin.setVisibility(View.VISIBLE);

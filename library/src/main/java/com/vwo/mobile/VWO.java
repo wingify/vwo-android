@@ -22,6 +22,7 @@ import com.vwo.mobile.listeners.VWOActivityLifeCycle;
 import com.vwo.mobile.logging.VWOLoggingClient;
 import com.vwo.mobile.models.Campaign;
 import com.vwo.mobile.models.VWOError;
+import com.vwo.mobile.models.Variation;
 import com.vwo.mobile.network.ErrorResponse;
 import com.vwo.mobile.network.VWODownloader;
 import com.vwo.mobile.utils.VWOLog;
@@ -111,7 +112,67 @@ public class VWO implements VWODownloader.DownloadResult, PreviewListener {
         return new Initializer(sSharedInstance, apiKey, optOut);
     }
 
-    public static int getIntForKey(@NonNull String key, int defaultValue) {
+    @Nullable
+    public static String getVariationNameForTestKey(@NonNull String testKey) {
+        if(TextUtils.isEmpty(testKey)) {
+            VWOLog.w(VWOLog.INITIALIZATION_LOGS, "testKey cannot be null or empty", false);
+            return null;
+        }
+        Variation variation = null;
+        String message = "";
+        synchronized (lock) {
+            if (sSharedInstance != null) {
+                if (sSharedInstance.mVWOStartState >= STARTED) {
+                    variation = sSharedInstance.getVwoData().getVariationForCampaign(testKey);
+                } else if (sSharedInstance.mVWOStartState == OPTED_OUT) {
+                    message = "User opted out.";
+                } else if (sSharedInstance.mVWOStartState == FAILED) {
+                    message = "SDK failed to Initialize.";
+                } else {
+                    message = "SDK is initializing";
+                }
+            } else {
+                message = "SDK is not initialized";
+            }
+        }
+
+        if(variation == null) {
+            VWOLog.w(VWOLog.DATA_LOGS, String.format(Locale.ENGLISH,
+                    "No campaign found for given test key : %s, reason: %s",
+                    testKey, !TextUtils.isEmpty(message) ? message : "Campaign does not exist."), false);
+            return null;
+        } else {
+            return variation.getName();
+        }
+    }
+
+    /**
+     * Get an {@link Integer} value for a given key. returns control if key does not exist in any
+     * Campaigns.
+     * <p>
+     * <p>
+     * This function will return an {@link Integer} value for a given key. This function will search for key in
+     * all the currently active campaigns.
+     * </p>
+     * <p>
+     * <p>
+     * If key exists in multiple campaigns it will return the value for the key of the latest
+     * {@link Campaign}.
+     * </p>
+     * <p>
+     * <p>
+     * If user is not already part of a the {@link Campaign} in which the key exists. User automatically
+     * becomes part of all the campaign for which that key exists.
+     * </p>
+     *
+     * @param key     is the key for which variation is to be requested
+     * @param defaultValue is the {@link Integer} value to be returned in case of missing key or invalid value.
+     * @return an {@link Integer} value corresponding to given key.
+     */
+    public static int getIntegerForKey(@NonNull String key, int defaultValue) {
+        if(TextUtils.isEmpty(key)) {
+            throw new NullPointerException("key cannot be null or empty");
+        }
         Object data = getObjectForKey(key, defaultValue);
         if(data == null) {
             return defaultValue;
@@ -135,7 +196,33 @@ public class VWO implements VWODownloader.DownloadResult, PreviewListener {
         return defaultValue;
     }
 
+    /**
+     * Get a {@link String} value for a given key. returns control if key does not exist in any
+     * Campaigns.
+     * <p>
+     * <p>
+     * This function will return a {@link String} value for a given key. This function will search for key in
+     * all the currently active campaigns.
+     * </p>
+     * <p>
+     * <p>
+     * If key exists in multiple campaigns it will return the value for the key of the latest
+     * {@link Campaign}.
+     * </p>
+     * <p>
+     * <p>
+     * If user is not already part of a the {@link Campaign} in which the key exists. User automatically
+     * becomes part of all the campaign for which that key exists.
+     * </p>
+     *
+     * @param key     is the key for which variation is to be requested
+     * @param defaultValue is the {@link String} value to be returned in case of missing key or invalid value.
+     * @return a {@link String} value corresponding to given key.
+     */
     public static String getStringForKey(@NonNull String key, @Nullable String defaultValue) {
+        if(TextUtils.isEmpty(key)) {
+            throw new NullPointerException("key cannot be null or empty");
+        }
         Object data = getObjectForKey(key, defaultValue);
         if(data == null) {
             return defaultValue;
@@ -160,7 +247,33 @@ public class VWO implements VWODownloader.DownloadResult, PreviewListener {
         return defaultValue;
     }
 
+    /**
+     * Get a {@link Double} value for a given key. returns control if key does not exist in any
+     * Campaigns.
+     * <p>
+     * <p>
+     * This function will return a {@link Double} value for a given key. This function will search for key in
+     * all the currently active campaigns.
+     * </p>
+     * <p>
+     * <p>
+     * If key exists in multiple campaigns it will return the value for the key of the latest
+     * {@link Campaign}.
+     * </p>
+     * <p>
+     * <p>
+     * If user is not already part of a the {@link Campaign} in which the key exists. User automatically
+     * becomes part of all the campaign for which that key exists.
+     * </p>
+     *
+     * @param key     is the key for which variation is to be requested
+     * @param defaultValue is the {@link Double} value to be returned in case of missing key or invalid value.
+     * @return a {@link Double} value corresponding to given key.
+     */
     public static double getDoubleForKey(@NonNull String key, double defaultValue) {
+        if(TextUtils.isEmpty(key)) {
+            throw new NullPointerException("key cannot be empty");
+        }
         Object data = getObjectForKey(key, defaultValue);
         if(data == null) {
             return defaultValue;
@@ -185,7 +298,34 @@ public class VWO implements VWODownloader.DownloadResult, PreviewListener {
         return defaultValue;
     }
 
+    /**
+     * Get a {@link Boolean} value for a given key. returns control if key does not exist in any
+     * Campaigns.
+     * <p>
+     * <p>
+     * This function will return a {@link Boolean} value for a given key. This function will search for key in
+     * all the currently active campaigns.
+     * </p>
+     * <p>
+     * <p>
+     * If key exists in multiple campaigns it will return the value for the key of the latest
+     * {@link Campaign}.
+     * </p>
+     * <p>
+     * <p>
+     * If user is not already part of a the {@link Campaign} in which the key exists. User automatically
+     * becomes part of all the campaign for which that key exists.
+     * </p>
+     *
+     * @param key     is the key for which variation is to be requested
+     * @param defaultValue is the {@link Boolean} value to be returned in case of missing key or invalid value.
+     *
+     * @return a {@link Boolean} value corresponding to given key.
+     */
     public static boolean getBooleanForKey(@NonNull String key, boolean defaultValue) {
+        if(TextUtils.isEmpty(key)) {
+            throw new NullPointerException("key cannot be null or empty");
+        }
         Object data = getObjectForKey(key, defaultValue);
         if(data == null) {
             return defaultValue;
@@ -264,6 +404,9 @@ public class VWO implements VWODownloader.DownloadResult, PreviewListener {
      * @return an {@link Object} corresponding to given key.
      */
     public static Object getObjectForKey(@NonNull String key, @Nullable Object defaultValue) {
+        if(TextUtils.isEmpty(key)) {
+            throw new NullPointerException("key cannot be null or empty");
+        }
         Object data = null;
         String message = "";
         synchronized (lock) {
