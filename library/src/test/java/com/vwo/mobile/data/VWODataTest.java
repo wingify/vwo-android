@@ -69,7 +69,7 @@ public class VWODataTest {
 
     private VWO vwo;
 
-    Stack<Intent> intentStack = new Stack<>();
+    private Stack<Intent> intentStack = new Stack<>();
 
 
     @Before
