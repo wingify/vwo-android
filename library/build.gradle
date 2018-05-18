@@ -6,7 +6,7 @@ android {
         versionCode 20
         minSdkVersion 14
         targetSdkVersion 27
-        versionName "2.4.0"
+        versionName "2.4.0-SNAPSHOT"
     }
     signingConfigs {
         config {
@@ -23,7 +23,7 @@ android {
     buildTypes {
         release {
             signingConfig signingConfigs.config
-            it.buildConfigField 'String', 'SCHEME', URL_SCHEME_HTTPS
+            it.buildConfigField 'String', 'SCHEME', URL_SCHEME_HTTP
 
             postprocessing {
                 removeUnusedCode true
