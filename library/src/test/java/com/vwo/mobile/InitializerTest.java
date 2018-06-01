@@ -56,14 +56,14 @@ public class InitializerTest {
             lock.wait();
         }
 
-        Assert.assertEquals(VWO.getVariationForKey("layout"), "grid");
+        Assert.assertEquals("grid", VWO.getObjectForKey("layout", null));
     }
 
     @Test
     public void launchSyncTest() {
         Context context = RuntimeEnvironment.application.getApplicationContext();
         VWO.with(context, "adbas-1234").launchSynchronously(5000);
-        Assert.assertEquals(VWO.getVariationForKey("layout"), "grid");
+        Assert.assertEquals("grid", VWO.getObjectForKey("layout", null));
     }
 }
 

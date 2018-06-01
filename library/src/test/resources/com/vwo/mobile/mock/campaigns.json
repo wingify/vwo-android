@@ -1,6 +1,7 @@
 [
   {
-    "track_user_on_launch": true,
+    "track_user_on_launch": false,
+    "test_key": "demoapp",
     "version": 2,
     "segment_object": {
       "type": "custom",
@@ -40,10 +41,104 @@
     "variations": {
       "changes": {
         "layout": "grid",
+        "integer": 1,
+        "double": 2.5,
+        "boolean": true,
+        "String": "string",
         "socialMedia": true
       },
       "weight": 100,
       "name": "Variation-1",
+      "id": "2"
+    },
+    "type": "VISUAL_AB",
+    "name": "Campaign 14",
+    "count_goal_once": 1,
+    "clickmap": 1
+  },
+  {
+    "track_user_on_launch": false,
+    "version": 2,
+    "id": 18,
+    "status": "RUNNING",
+    "pc_traffic": 100,
+    "test_key": "default_value_test",
+    "goals": [
+      {
+        "type": "CUSTOM_GOAL",
+        "identifier": "test",
+        "id": 357
+      }
+    ],
+    "variations": {
+      "changes": {
+        "integer": 1,
+        "string": "string",
+        "floating": 1.5,
+        "bool": false,
+        "json": {
+          "a": "b"
+        }
+      },
+      "weight": 100,
+      "name": "second",
+      "id": "2"
+    },
+    "type": "VISUAL_AB",
+    "clickmap": 1,
+    "name": "Type campaign",
+    "count_goal_once": 1
+  },
+  {
+    "track_user_on_launch": false,
+    "test_key": "demoapp",
+    "version": 2,
+    "segment_object": {
+      "type": "custom",
+      "partialSegments": [
+        {
+          "type": "1",
+          "operator": 15,
+          "rOperandValue": "14"
+        }
+      ]
+    },
+    "status": "RUNNING",
+    "pc_traffic": 100,
+    "id": 14,
+    "goals": [
+      {
+        "type": "REVENUE_TRACKING",
+        "identifier": "addToCart",
+        "id": 1
+      },
+      {
+        "type": "REVENUE_TRACKING",
+        "identifier": "productPurchased",
+        "id": 2
+      },
+      {
+        "type": "REVENUE_TRACKING",
+        "identifier": "goal",
+        "id": 349
+      },
+      {
+        "type": "CUSTOM_GOAL",
+        "identifier": "productView",
+        "id": 351
+      }
+    ],
+    "variations": {
+      "changes": {
+        "layout": "grid",
+        "integer": 1,
+        "double": 2.5,
+        "boolean": true,
+        "String": "string",
+        "socialMedia": true
+      },
+      "weight": 100,
+      "name": "third",
       "id": "2"
     },
     "type": "VISUAL_AB",

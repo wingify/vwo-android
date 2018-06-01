@@ -89,5 +89,5 @@ dependencies {
     implementation ('com.airbnb:deeplinkdispatch:3.1.1'){
         exclude group: 'com.squareup.okio', module: 'okio'
     }
-    annotationProcessor 'com.airbnb:deeplinkdispatch-processor:3.1.0'
+    annotationProcessor 'com.airbnb:deeplinkdispatch-processor:3.1.1'
 }

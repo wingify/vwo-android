@@ -58,7 +58,7 @@ public class VWOSocket {
         @Override
         public void call(Object... args) {
             mSocketConnectionState = STARTED;
-            VWOLog.v(VWOLog.INIT_SOCKET_LOGS, "Device connected to socket");
+            VWOLog.v(VWOLog.SOCKET_LOGS, "Device connected to socket");
             registerDevice();
         }
     };
@@ -67,7 +67,7 @@ public class VWOSocket {
         public void call(Object... args) {
             mPreviewListener.onPreviewDisabled();
             mSocketConnectionState = NOT_STARTED;
-            VWOLog.v(VWOLog.INIT_SOCKET_LOGS, "Finished device preview");
+            VWOLog.v(VWOLog.SOCKET_LOGS, "Finished device preview");
         }
     };
     private Emitter.Listener mBrowserConnectedListener = new Emitter.Listener() {

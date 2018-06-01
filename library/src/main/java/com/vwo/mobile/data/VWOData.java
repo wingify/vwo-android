@@ -11,6 +11,7 @@ import com.vwo.mobile.models.Campaign;
 import com.vwo.mobile.models.CampaignEntry;
 import com.vwo.mobile.models.Goal;
 import com.vwo.mobile.models.GoalEntry;
+import com.vwo.mobile.models.Variation;
 import com.vwo.mobile.segmentation.SegmentUtils;
 import com.vwo.mobile.utils.VWOLog;
 import com.vwo.mobile.utils.VWOUtils;
@@ -34,6 +35,7 @@ public class VWOData {
 
     private ArrayList<Campaign> mCampaigns;
     private Map<String, Campaign> mVariations;
+    private Map<String, Variation> mCampaignKeyVariationMap;
     private ArrayList<Campaign> mUntrackedCampaigns;
     private VWO mVWO;
 
@@ -121,7 +123,6 @@ public class VWOData {
         }
 
         // Check if key exists in campaigns that user is not part of.
-
         boolean foundAnyCampaign = false;
         List<Campaign> campaignsToBeRemoved = new ArrayList<>();
         for(Campaign campaign : mUntrackedCampaigns) {
@@ -136,6 +137,40 @@ public class VWOData {
             mUntrackedCampaigns.removeAll(campaignsToBeRemoved);
             generateVariationHash();
             variation = getVariationForKey(key);
+        }
+
+        return variation;
+    }
+
+    @Nullable
+    public Variation getVariationForCampaign(String testKey) {
+        if (mVariations == null) {
+            return null;
+        }
+
+        Variation variation = null;
+
+
+        // Check is user is accessing key for the campaign that user is already part of.
+        if (mCampaignKeyVariationMap.containsKey(testKey)) {
+            variation = mCampaignKeyVariationMap.get(testKey);
+        }
+
+        // Check if key exists in campaigns that user is not part of.
+        boolean foundAnyCampaign = false;
+        List<Campaign> campaignsToBeRemoved = new ArrayList<>();
+        for(Campaign campaign : mUntrackedCampaigns) {
+            if(campaign.getTestKey().equals(testKey)) {
+                evaluateAndMakeUserPartOfCampaign(campaign);
+                campaignsToBeRemoved.add(campaign);
+                foundAnyCampaign = true;
+            }
+        }
+
+        if(foundAnyCampaign) {
+            mUntrackedCampaigns.removeAll(campaignsToBeRemoved);
+            generateVariationHash();
+            variation = getVariationForCampaign(testKey);
         }
 
         return variation;
@@ -229,11 +264,14 @@ public class VWOData {
     private void generateVariationHash() {
         if (mVariations == null) {
             mVariations = new HashMap<>();
+            mCampaignKeyVariationMap = new HashMap<>();
         } else {
             mVariations.clear();
+            mCampaignKeyVariationMap.clear();
         }
 
         for (Campaign campaign : mCampaigns) {
+            mCampaignKeyVariationMap.put(campaign.getTestKey(), campaign.getVariation());
             Iterator<?> keys = campaign.getVariation().getServeObject().keys();
             while (keys.hasNext()) {
                 String key = (String) keys.next();
