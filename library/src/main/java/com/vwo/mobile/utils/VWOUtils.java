@@ -81,9 +81,7 @@ public class VWOUtils {
     }
 
     public static double getRandomNumber() {
-        Random rn = new Random(System.currentTimeMillis() / 1000L + new Random().nextInt());
-        return (rn.nextInt(100)) / 100.0;
-
+        return new Random(System.currentTimeMillis() / 1000L + new Random().nextInt()).nextDouble();
     }
 
     public static boolean checkForInternetPermissions(Context context) {
