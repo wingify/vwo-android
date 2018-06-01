@@ -22,29 +22,15 @@ public class VWOLog {
      */
     public static final String SOCKET_LOGS = "socket";
     /**
-     * The constant INIT_SOCKET_LOGS.
-     */
-    public static final String INIT_SOCKET_LOGS = "socketInit";
-    /**
      * The constant DATA_LOGS.
      */
     public static final String DATA_LOGS = "data";
-    /**
-     * The constant DOWNLOAD_DATA_LOGS.
-     */
-    public static final String DOWNLOAD_DATA_LOGS = "downloadData";
-    /**
-     * The constant UPLOAD_LOGS.
-     */
-    public static final String UPLOAD_LOGS = "uploadData";
+
+    public static final String NETWORK_LOGS = "network";
     /**
      * The constant CONFIG_LOGS.
      */
     public static final String CONFIG_LOGS = "config";
-    /**
-     * The constant PREFERENCE_LOGS.
-     */
-    public static final String PREFERENCE_LOGS = "preference";
     /**
      * The constant URL_LOGS.
      */
@@ -58,13 +44,9 @@ public class VWOLog {
      */
     public static final String CAMPAIGN_LOGS = "campaign";
 
-    public static final String GESTURE_LOGS = "gesture";
-
     public static final String STORAGE_LOGS = "storage";
 
     public static final String UNCAUGHT = "uncaught";
-
-    public static final String DATA = "data";
 
     public static final String QUEUE = "queue";
 

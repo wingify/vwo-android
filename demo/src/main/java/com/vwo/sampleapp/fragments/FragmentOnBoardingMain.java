@@ -93,7 +93,7 @@ public class FragmentOnBoardingMain extends Fragment implements ChangeFragment {
         loadFragment(null, CONTROL_LOGIN_TYPE_NORMAL, null);
         loadFragment(null, VARIATION_LOGIN_TYPE_NORMAL, null);
 
-//        String value = String.valueOf(VWO.getVariationForKey(Constants.VWOKeys.KEY_LOGIN, Constants.VWOKeys.VALUE_EMAIL));
+//        String value = VWO.getStringForKey(Constants.VWOKeys.KEY_LOGIN, Constants.VWOKeys.VALUE_EMAIL);
 //        switch (value) {
 //            case Constants.VWOKeys.VALUE_EMAIL:
 //                loadFragment(null, VARIATION_LOGIN_TYPE_NORMAL, null);

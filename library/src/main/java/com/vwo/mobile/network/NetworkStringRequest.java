@@ -70,7 +70,7 @@ public class NetworkStringRequest extends NetworkRequest<String> {
                     try {
                         body = decompressResponse(response.getBody());
                     } catch (IOException exception) {
-                        VWOLog.e(VWOLog.DOWNLOAD_DATA_LOGS, "Unable to decompress body",
+                        VWOLog.e(VWOLog.NETWORK_LOGS, "Unable to decompress body",
                                 exception, false, true);
                         return null;
                     }
@@ -79,10 +79,10 @@ public class NetworkStringRequest extends NetworkRequest<String> {
                 }
                 return new String(body, NetworkUtils.Headers.parseCharset(response.getHeaders()));
             } else {
-                VWOLog.e(VWOLog.DOWNLOAD_DATA_LOGS, "Response body is empty", true, false);
+                VWOLog.e(VWOLog.NETWORK_LOGS, "Response body is empty", true, false);
             }
         } catch (UnsupportedEncodingException exception) {
-            VWOLog.e(VWOLog.DOWNLOAD_DATA_LOGS, exception, true, false);
+            VWOLog.e(VWOLog.NETWORK_LOGS, exception, true, false);
         }
         return null;
     }
@@ -154,7 +154,7 @@ public class NetworkStringRequest extends NetworkRequest<String> {
     public byte[] getBody() {
         if (body != null) {
             if (gzipEnabled) {
-                VWOLog.i(VWOLog.UPLOAD_LOGS, body, true);
+                VWOLog.i(VWOLog.NETWORK_LOGS, body, true);
                 ByteArrayOutputStream baos = null;
                 GZIPOutputStream gzos = null;
                 try {
@@ -163,7 +163,7 @@ public class NetworkStringRequest extends NetworkRequest<String> {
                     gzos.write(body.getBytes(DEFAULT_CONTENT_ENCODING));
                     gzos.flush();
                 } catch (IOException exception) {
-                    VWOLog.e(VWOLog.UPLOAD_LOGS, exception, false, true);
+                    VWOLog.e(VWOLog.NETWORK_LOGS, exception, false, true);
                     return super.getBody();
                 } finally {
                     if(baos != null) {
@@ -180,7 +180,7 @@ public class NetworkStringRequest extends NetworkRequest<String> {
                 try {
                     return body.getBytes(DEFAULT_CONTENT_ENCODING);
                 } catch (UnsupportedEncodingException exception) {
-                    VWOLog.e(VWOLog.UPLOAD_LOGS, exception, false, true);
+                    VWOLog.e(VWOLog.NETWORK_LOGS, exception, false, true);
                 }
             }
         }
@@ -197,7 +197,7 @@ public class NetworkStringRequest extends NetworkRequest<String> {
                     try {
                         body = decompressResponse(errorResponse.getNetworkResponse().getBody());
                     } catch (IOException exception) {
-                        VWOLog.e(VWOLog.DOWNLOAD_DATA_LOGS, "Unable to decompress body",
+                        VWOLog.e(VWOLog.NETWORK_LOGS, "Unable to decompress body",
                                 exception, false, true);
                         return null;
                     }
@@ -205,12 +205,12 @@ public class NetworkStringRequest extends NetworkRequest<String> {
                     body = errorResponse.getNetworkResponse().getBody();
                 }
                 String err = new String(body, NetworkUtils.Headers.parseCharset(errorResponse.getNetworkResponse().getHeaders()));
-                VWOLog.e(VWOLog.DOWNLOAD_DATA_LOGS, err, false, false);
+                VWOLog.e(VWOLog.NETWORK_LOGS, err, false, false);
             } else {
-                VWOLog.e(VWOLog.DOWNLOAD_DATA_LOGS, "Response body is empty", true, false);
+                VWOLog.e(VWOLog.NETWORK_LOGS, "Response body is empty", true, false);
             }
         } catch (UnsupportedEncodingException exception) {
-            VWOLog.e(VWOLog.DOWNLOAD_DATA_LOGS, exception, true, false);
+            VWOLog.e(VWOLog.NETWORK_LOGS, exception, true, false);
         }
         return super.getErrorResponse(errorResponse);
     }

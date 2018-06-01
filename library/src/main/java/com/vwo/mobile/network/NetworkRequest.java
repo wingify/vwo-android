@@ -164,7 +164,7 @@ public abstract class NetworkRequest<T> implements Runnable, Comparable<NetworkR
         try {
             urlConnection = (HttpURLConnection) url.openConnection();
         } catch (IOException exception) {
-            VWOLog.e(VWOLog.DATA_LOGS, exception, true, false);
+            VWOLog.e(VWOLog.NETWORK_LOGS, exception, true, false);
             return;
         }
         try {
@@ -274,13 +274,13 @@ public abstract class NetworkRequest<T> implements Runnable, Comparable<NetworkR
         } catch (final ProtocolException exception) {
             notifyErrorListeners(new ErrorResponse(exception));
 
-            VWOLog.e(VWOLog.DATA_LOGS, exception, false, true);
+            VWOLog.e(VWOLog.NETWORK_LOGS, exception, false, true);
         }catch (final IOException exception) {
             notifyErrorListeners(new ErrorResponse(exception));
 
-            VWOLog.e(VWOLog.DATA_LOGS, exception, true, false);
+            VWOLog.e(VWOLog.NETWORK_LOGS, exception, true, false);
         } catch (final InterruptedException exception) {
-            VWOLog.e(VWOLog.DATA_LOGS, "Either connection was closed or " +
+            VWOLog.e(VWOLog.NETWORK_LOGS, "Either connection was closed or " +
                             "download thread was interrupted for request with tag : " + requestTag, exception,
                     true, false);
             notifyErrorListeners(new ErrorResponse(exception));
