@@ -222,8 +222,8 @@ public class VWODownloader {
                         break;
                     }
                     try {
-                        if (!NetworkUtils.shouldAttemptNetworkCall(vwo.getCurrentContext())) {
-                            VWOLog.e(VWOLog.NETWORK_LOGS, "No internet connectivity", true, false);
+                        if (!VWOActivityLifeCycle.isApplicationInForeground() || !NetworkUtils.shouldAttemptNetworkCall(vwo.getCurrentContext())) {
+                            VWOLog.e(VWOLog.NETWORK_LOGS, "Either no network, or application is not in foreground", true, false);
                             break;
                         }
                         FutureNetworkRequest<String> futureNetworkRequest = FutureNetworkRequest.getInstance();
@@ -293,8 +293,8 @@ public class VWODownloader {
 
                 while (entry != null) {
                     try {
-                        if (!NetworkUtils.shouldAttemptNetworkCall(vwo.getCurrentContext())) {
-                            VWOLog.e(VWOLog.NETWORK_LOGS, "Either slow or no internet", true, false);
+                        if (!VWOActivityLifeCycle.isApplicationInForeground() || !NetworkUtils.shouldAttemptNetworkCall(vwo.getCurrentContext())) {
+                            VWOLog.e(VWOLog.NETWORK_LOGS, "Either no network, or application is not in foreground", true, false);
                             break;
                         }
 
