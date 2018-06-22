@@ -11,9 +11,6 @@ import com.vwo.mobile.data.VWOPersistData;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-/**
- * Created by abhishek on 16/09/15 at 10:18 PM.
- */
 public class VWOUrlBuilder {
     private static final String DACDN_URL = BuildConfig.DACDN_URL;
     private static final String DACDN_URL_SCHEME = BuildConfig.SCHEME;

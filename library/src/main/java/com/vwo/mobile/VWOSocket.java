@@ -17,6 +17,8 @@ import java.util.Map;
 import io.socket.client.IO;
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
+import okhttp3.OkHttpClient;
+import okhttp3.logging.HttpLoggingInterceptor;
 
 import static com.vwo.mobile.Connection.FAILED;
 import static com.vwo.mobile.Connection.NOT_STARTED;
@@ -32,8 +34,6 @@ public class VWOSocket {
     private static final String ON_BROWSER_DISCONNECT = "browser_disconnect";
     private static final String ON_BROWSER_CONNECT = "browser_connect";
     private static final String ON_VARIATION_RECEIVED = "receive_variation";
-    private static final String ON_SERVER_DISCONNECTED = "disconnect";
-    private static final String ON_SERVER_CONNECTED = "connect";
 
     private static final String JSON_KEY_VARIATION_ID = "variationId";
     private static final String JSON_KEY_BROWSER_NAME = "name";
@@ -104,12 +104,13 @@ public class VWOSocket {
                 mSocketConnectionState = STARTING;
                 IO.Options opts = new IO.Options();
                 opts.reconnection = true;
+                enableSocketLogging(opts);
 
                 mSocket = IO.socket(BuildConfig.SOCKET_URL, opts);
                 mSocket.connect();
 
-                mSocket.on(ON_SERVER_DISCONNECTED, mServerDisconnected);
-                mSocket.on(ON_SERVER_CONNECTED, mServerConnected);
+                mSocket.on(Socket.EVENT_DISCONNECT, mServerDisconnected);
+                mSocket.on(Socket.EVENT_CONNECT, mServerConnected);
 
                 mSocket.on(ON_VARIATION_RECEIVED, mVariationListener);
                 mSocket.on(ON_BROWSER_CONNECT, mBrowserConnectedListener);
@@ -162,6 +163,20 @@ public class VWOSocket {
             mSocket.emit(EMIT_RECEIVE_VARIATION_SUCCESS, jsonObject);
         }
     };
+
+    private void enableSocketLogging(IO.Options options) {
+        if (BuildConfig.ENABLE_SOCKET_LOGS && VWOUtils.checkIfClassExists("okhttp3.logging.HttpLoggingInterceptor") &&
+                VWOUtils.checkIfClassExists("okhttp3.OkHttpClient")) {
+            HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
+            logging.setLevel(HttpLoggingInterceptor.Level.BODY);
+            OkHttpClient client = new OkHttpClient.Builder()
+                    .addInterceptor(logging)
+                    .build();
+
+            options.callFactory = client;
+            options.webSocketFactory = client;
+        }
+    }
 
     private void registerDevice() {
         JSONObject deviceData = new JSONObject();
