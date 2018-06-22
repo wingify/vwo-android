@@ -60,7 +60,7 @@ android {
                     showStackTraces = true
                     exceptionFormat = "full"
                 }
-                maxParallelForks = 4
+                maxParallelForks = 8
                 forkEvery = 20
             }
         }
