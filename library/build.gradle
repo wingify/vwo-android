@@ -54,6 +54,15 @@ android {
     testOptions {
         unitTests {
             includeAndroidResources = true
+            all {
+                testLogging {
+                    events "failed", "skipped"
+                    showStackTraces = true
+                    exceptionFormat = "full"
+                }
+                maxParallelForks = 4
+                forkEvery = 20
+            }
         }
     }
 }
