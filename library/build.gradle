@@ -56,7 +56,7 @@ android {
             includeAndroidResources = true
             all {
                 testLogging {
-                    events "failed", "skipped"
+                    events "failed", "skipped", "passed"
                     showStackTraces = true
                     exceptionFormat = "full"
                 }
