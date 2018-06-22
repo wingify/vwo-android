@@ -73,8 +73,8 @@ public class VWOSocket {
     private Emitter.Listener mBrowserConnectedListener = new Emitter.Listener() {
         @Override
         public void call(Object... args) {
-            JSONObject data = (JSONObject) args[0];
             try {
+                JSONObject data = (JSONObject) args[0];
                 String browserName = data.getString(JSON_KEY_BROWSER_NAME);
                 VWOLog.v(VWOLog.SOCKET_LOGS, "Device connected to Server: " + browserName);
 
@@ -84,6 +84,9 @@ public class VWOSocket {
             } catch (JSONException exception) {
                 mSocketConnectionState = FAILED;
                 VWOLog.e(VWOLog.SOCKET_LOGS, "Browser Name key not found or cannot be parsed", exception, false, true);
+            } catch (Exception exception) {
+                mSocketConnectionState = FAILED;
+                VWOLog.e(VWOLog.SOCKET_LOGS, exception, false, true);
             }
 
         }
@@ -142,25 +145,28 @@ public class VWOSocket {
 
         @Override
         public void call(Object... args) {
-            JSONObject data = (JSONObject) args[0];
             try {
-                mVariation = data.getJSONObject("json");
-                generateVariationHash();
-            } catch (JSONException exception) {
-                VWOLog.e(VWOLog.SOCKET_LOGS, "Unable to parse json object", exception, true, true);
+                JSONObject data = (JSONObject) args[0];
+                try {
+                    mVariation = data.getJSONObject("json");
+                    generateVariationHash();
+                } catch (JSONException exception) {
+                    VWOLog.e(VWOLog.SOCKET_LOGS, "Unable to parse json object", exception, true, true);
+                }
+
+
+                JSONObject jsonObject = new JSONObject();
+                try {
+                    jsonObject.put(JSON_KEY_VARIATION_ID, data.getInt(JSON_KEY_VARIATION_ID));
+                    VWOLog.v(VWOLog.SOCKET_LOGS, "Socket data :\n" + jsonObject.toString());
+
+                } catch (JSONException exception) {
+                    VWOLog.e(VWOLog.SOCKET_LOGS, "Variation id cannot be parsed", exception, true, true);
+                }
+                mSocket.emit(EMIT_RECEIVE_VARIATION_SUCCESS, jsonObject);
+            } catch (Exception exception) {
+                VWOLog.e(VWOLog.SOCKET_LOGS, exception, true, true);
             }
-
-
-            JSONObject jsonObject = new JSONObject();
-            try {
-                jsonObject.put(JSON_KEY_VARIATION_ID, data.getInt(JSON_KEY_VARIATION_ID));
-                VWOLog.v(VWOLog.SOCKET_LOGS, "Socket data :\n" + jsonObject.toString());
-
-            } catch (JSONException exception) {
-                VWOLog.e(VWOLog.SOCKET_LOGS, "Variation id cannot be parsed", exception, true, true);
-            }
-
-            mSocket.emit(EMIT_RECEIVE_VARIATION_SUCCESS, jsonObject);
         }
     };
 
