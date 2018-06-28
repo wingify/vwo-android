@@ -1,6 +1,7 @@
 package com.vwo.mobile.models;
 
 import android.support.annotation.Keep;
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Patterns;
 
@@ -20,10 +21,7 @@ public abstract class Entry implements Serializable {
     private String url;
     private int retryCount;
 
-    public Entry(String url) {
-        if (!Pattern.compile(Patterns.WEB_URL.pattern()).matcher(url).matches()) {
-            throw new IllegalArgumentException("Invalid url " + url);
-        }
+    public Entry(@NonNull String url) {
         this.url = url;
         retryCount = 0;
     }
