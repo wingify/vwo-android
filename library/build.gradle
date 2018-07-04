@@ -3,10 +3,10 @@ apply plugin: 'com.android.library'
 android {
     compileSdkVersion 27
     defaultConfig {
-        versionCode 20
+        versionCode Integer.parseInt(project.VERSION_CODE)
         minSdkVersion 14
         targetSdkVersion 27
-        versionName "2.4.0"
+        versionName project.VERSION_NAME
     }
     signingConfigs {
         config {
@@ -77,11 +77,4 @@ dependencies {
     implementation 'com.android.support:support-core-utils:27.1.1'
 }
 
-ext {
-
-    PUBLISH_GROUP_ID = 'com.vwo'
-    PUBLISH_ARTIFACT_ID = 'mobile'
-    PUBLISH_VERSION = android.defaultConfig.versionName
-}
-
-apply from: 'android-release-jar.gradle'
+apply from: '../gradle-mvn-push.gradle'
