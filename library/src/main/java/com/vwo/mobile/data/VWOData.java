@@ -252,7 +252,7 @@ public class VWOData {
                             } else {
                                 VWOLog.w(VWOLog.CAMPAIGN_LOGS, "Duplicate goal identifier: " + goalIdentifier, true);
                             }
-                        } catch (JSONException exception) {
+                        } catch (Exception exception) {
                             VWOLog.w(VWOLog.CAMPAIGN_LOGS, "Unable to generate goal data object", exception, true);
                         }
                     }

@@ -9,14 +9,12 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.vwo.mobile.constants.AppConstants;
 import com.vwo.mobile.data.VWOData;
 import com.vwo.mobile.data.VWOLocalData;
 import com.vwo.mobile.data.VWOMessageQueue;
 import com.vwo.mobile.events.PreviewListener;
-import com.vwo.mobile.events.VWOStatusListener;
 import com.vwo.mobile.gestures.ShakeDetector;
 import com.vwo.mobile.listeners.ActivityLifecycleListener;
 import com.vwo.mobile.listeners.VWOActivityLifeCycle;
@@ -115,7 +113,7 @@ public class VWO implements VWODownloader.DownloadResult, PreviewListener {
 
     @Nullable
     public static String getVariationNameForTestKey(@NonNull String testKey) {
-        if(TextUtils.isEmpty(testKey)) {
+        if (TextUtils.isEmpty(testKey)) {
             VWOLog.w(VWOLog.INITIALIZATION_LOGS, "testKey cannot be null or empty", false);
             return null;
         }
@@ -137,7 +135,7 @@ public class VWO implements VWODownloader.DownloadResult, PreviewListener {
             }
         }
 
-        if(variation == null) {
+        if (variation == null) {
             VWOLog.w(VWOLog.DATA_LOGS, String.format(Locale.ENGLISH,
                     "No campaign found for given test key : %s, reason: %s",
                     testKey, !TextUtils.isEmpty(message) ? message : "Campaign does not exist."), false);
@@ -166,20 +164,20 @@ public class VWO implements VWODownloader.DownloadResult, PreviewListener {
      * becomes part of all the campaign for which that key exists.
      * </p>
      *
-     * @param key     is the key for which variation is to be requested
+     * @param key          is the key for which variation is to be requested
      * @param defaultValue is the {@link Integer} value to be returned in case of missing key or invalid value.
      * @return an {@link Integer} value corresponding to given key.
      */
     public static int getIntegerForKey(@NonNull String key, int defaultValue) {
-        if(TextUtils.isEmpty(key)) {
+        if (TextUtils.isEmpty(key)) {
             throw new NullPointerException("key cannot be null or empty");
         }
         Object data = getObjectForKey(key, defaultValue);
-        if(data == null) {
+        if (data == null) {
             return defaultValue;
         } else {
             try {
-                if(!(data instanceof Integer)) {
+                if (!(data instanceof Integer)) {
                     VWOLog.w(VWOLog.DATA_LOGS, String.format(Locale.ENGLISH, "Casting %s to %s.",
                             data.getClass().getName(), int.class.getName()),
                             false);
@@ -216,20 +214,20 @@ public class VWO implements VWODownloader.DownloadResult, PreviewListener {
      * becomes part of all the campaign for which that key exists.
      * </p>
      *
-     * @param key     is the key for which variation is to be requested
+     * @param key          is the key for which variation is to be requested
      * @param defaultValue is the {@link String} value to be returned in case of missing key or invalid value.
      * @return a {@link String} value corresponding to given key.
      */
     public static String getStringForKey(@NonNull String key, @Nullable String defaultValue) {
-        if(TextUtils.isEmpty(key)) {
+        if (TextUtils.isEmpty(key)) {
             throw new NullPointerException("key cannot be null or empty");
         }
         Object data = getObjectForKey(key, defaultValue);
-        if(data == null) {
+        if (data == null) {
             return defaultValue;
         } else {
             try {
-                if(!(data instanceof String)) {
+                if (!(data instanceof String)) {
                     VWOLog.w(VWOLog.DATA_LOGS, String.format(Locale.ENGLISH, "Casting %s to %s.",
                             data.getClass().getName(), String.class.getName()),
                             false);
@@ -267,20 +265,20 @@ public class VWO implements VWODownloader.DownloadResult, PreviewListener {
      * becomes part of all the campaign for which that key exists.
      * </p>
      *
-     * @param key     is the key for which variation is to be requested
+     * @param key          is the key for which variation is to be requested
      * @param defaultValue is the {@link Double} value to be returned in case of missing key or invalid value.
      * @return a {@link Double} value corresponding to given key.
      */
     public static double getDoubleForKey(@NonNull String key, double defaultValue) {
-        if(TextUtils.isEmpty(key)) {
+        if (TextUtils.isEmpty(key)) {
             throw new NullPointerException("key cannot be empty");
         }
         Object data = getObjectForKey(key, defaultValue);
-        if(data == null) {
+        if (data == null) {
             return defaultValue;
         } else {
             try {
-                if(!(data instanceof Double)) {
+                if (!(data instanceof Double)) {
                     VWOLog.w(VWOLog.DATA_LOGS, String.format(Locale.ENGLISH, "Casting %s to %s.",
                             data.getClass().getName(), double.class.getName()),
                             false);
@@ -318,21 +316,20 @@ public class VWO implements VWODownloader.DownloadResult, PreviewListener {
      * becomes part of all the campaign for which that key exists.
      * </p>
      *
-     * @param key     is the key for which variation is to be requested
+     * @param key          is the key for which variation is to be requested
      * @param defaultValue is the {@link Boolean} value to be returned in case of missing key or invalid value.
-     *
      * @return a {@link Boolean} value corresponding to given key.
      */
     public static boolean getBooleanForKey(@NonNull String key, boolean defaultValue) {
-        if(TextUtils.isEmpty(key)) {
+        if (TextUtils.isEmpty(key)) {
             throw new NullPointerException("key cannot be null or empty");
         }
         Object data = getObjectForKey(key, defaultValue);
-        if(data == null) {
+        if (data == null) {
             return defaultValue;
         } else {
             try {
-                if(!(data instanceof Boolean)) {
+                if (!(data instanceof Boolean)) {
                     VWOLog.w(VWOLog.DATA_LOGS, String.format(Locale.ENGLISH, "Casting %s to %s.",
                             data.getClass().getName(), double.class.getName()),
                             false);
@@ -369,10 +366,9 @@ public class VWO implements VWODownloader.DownloadResult, PreviewListener {
      * becomes part of all the campaign for which that key exists.
      * </p>
      *
-     * @param key     is the key for which variation is to be requested
+     * @param key          is the key for which variation is to be requested
      * @param defaultValue is the default value to be returned if key is not found in any of the campaigns.
      * @return an {@link Object} corresponding to given key.
-     *
      * @deprecated use {@link VWO#getObjectForKey(String, Object)} instead
      */
     @Deprecated
@@ -400,12 +396,12 @@ public class VWO implements VWODownloader.DownloadResult, PreviewListener {
      * becomes part of all the campaign for which that key exists.
      * </p>
      *
-     * @param key     is the key for which variation is to be requested
+     * @param key          is the key for which variation is to be requested
      * @param defaultValue is the default value to be returned if key is not found in any of the campaigns.
      * @return an {@link Object} corresponding to given key.
      */
     public static Object getObjectForKey(@NonNull String key, @Nullable Object defaultValue) {
-        if(TextUtils.isEmpty(key)) {
+        if (TextUtils.isEmpty(key)) {
             throw new NullPointerException("key cannot be null or empty");
         }
         Object data = null;
@@ -499,6 +495,24 @@ public class VWO implements VWODownloader.DownloadResult, PreviewListener {
             }
         }
     }
+
+    /**
+     * Sets custom key value pair for user segmentation.
+     * <p>
+     * This function can be used to segment users based on this key value pair.
+     * This will decide whether user will be a part of campaign or not.
+     * </p>
+     *
+     * @param key   is given key
+     * @param value is the value corresponding to the given key.
+     */
+    public static void setCustomVariable(@NonNull String key, @NonNull String value) {
+        if (sSharedInstance == null || sSharedInstance.getConfig() == null) {
+            throw new IllegalStateException("You need to initialize VWO SDK first and the try calling this function.");
+        }
+        sSharedInstance.getConfig().addCustomSegment(key, value);
+    }
+
 
     public static String version() {
         return BuildConfig.VERSION_NAME;
