@@ -76,8 +76,8 @@ dependencies {
     implementation 'com.android.support:appcompat-v7:27.1.1'
     implementation 'com.android.support:design:27.1.1'
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
-    implementation project(path: ':library')
-//    implementation 'com.vwo:mobile:2.3.0@aar'
+//    implementation project(path: ':library')
+    implementation 'com.vwo:mobile:2.4.1-SNAPSHOT@aar'
 //    implementation('io.socket:socket.io-client:1.0.0') {
 //        // excluding org.json which is provided by Android
 //        exclude group: 'org.json', module: 'json'
