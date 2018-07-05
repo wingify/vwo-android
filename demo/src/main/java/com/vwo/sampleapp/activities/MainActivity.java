@@ -260,9 +260,11 @@ public class MainActivity extends BaseActivity
             VWOConfig.Builder vwoConfigBuilder = new VWOConfig.Builder();
 //            vwoConfigBuilder.disablePreview();
             vwoConfigBuilder.setOptOut(false);
-            if (keys != null) {
-                vwoConfigBuilder.setCustomVariables(keys);
+            if (keys == null) {
+                keys = new HashMap<>();
             }
+            keys.put("userType", "free");
+            vwoConfigBuilder.setCustomVariables(keys);
 
             VWO.with(this, key).config(vwoConfigBuilder.build()).launch(new VWOStatusListener() {
                 @Override

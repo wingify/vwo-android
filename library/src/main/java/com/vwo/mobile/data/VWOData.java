@@ -115,7 +115,7 @@ public class VWOData {
 
         Object variation = null;
 
-        // Check is user is accessing key for the campaign that user is already part of.
+        // Check if user is accessing key for the campaign that user is already part of.
         if (mVariations.containsKey(key)) {
             Campaign campaign = mVariations.get(key);
 

@@ -495,6 +495,24 @@ public class VWO implements VWODownloader.DownloadResult, PreviewListener {
         }
     }
 
+    /**
+     * Sets custom key value pair for user segmentation.
+     * <p>
+     * This function can be used to segment users based on this key value pair.
+     * This will decide whether user will be a part of campaign or not.
+     * </p>
+     *
+     * @param key   is given key
+     * @param value is the value corresponding to the given key.
+     */
+    public static void setCustomVariable(@NonNull String key, @NonNull String value) {
+        if (sSharedInstance == null || sSharedInstance.getConfig() == null) {
+            throw new IllegalStateException("You need to initialize VWO SDK first and the try calling this function.");
+        }
+        sSharedInstance.getConfig().addCustomSegment(key, value);
+    }
+
+
     public static String version() {
         return BuildConfig.VERSION_NAME;
     }
