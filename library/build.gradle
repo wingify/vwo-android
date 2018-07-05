@@ -3,10 +3,10 @@ apply plugin: 'com.android.library'
 android {
     compileSdkVersion 27
     defaultConfig {
-        versionCode 20
+        versionCode 21
         minSdkVersion 14
         targetSdkVersion 27
-        versionName "2.4.0"
+        versionName "2.4.1"
     }
     signingConfigs {
         config {
