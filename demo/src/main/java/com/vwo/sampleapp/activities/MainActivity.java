@@ -263,7 +263,7 @@ public class MainActivity extends BaseActivity
             if (keys == null) {
                 keys = new HashMap<>();
             }
-            keys.put("userType", "free");
+//            keys.put("userType", "free");
             vwoConfigBuilder.setCustomVariables(keys);
 
             VWO.with(this, key).config(vwoConfigBuilder.build()).launch(new VWOStatusListener() {
@@ -283,6 +283,7 @@ public class MainActivity extends BaseActivity
                     new Handler(getMainLooper()).post(() -> loadFragment(null, ID_FRAGMENT_SORTING, null));
                 }
             });
+            VWO.setCustomVariable("userType", "free");
         } else {
             progressBar.setVisibility(View.GONE);
             loadFragment(null, ID_FRAGMENT_SORTING, null);
