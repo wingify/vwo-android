@@ -3,41 +3,37 @@ package com.vwo.sampleapp.fragments;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.IntDef;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v7.widget.AppCompatImageView;
-import android.support.v7.widget.AppCompatTextView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.vwo.mobile.VWO;
 import com.vwo.sampleapp.R;
 import com.vwo.sampleapp.interfaces.ChangeFragment;
 import com.vwo.sampleapp.interfaces.NavigationToggleListener;
 import com.vwo.sampleapp.models.Success;
-import com.vwo.sampleapp.utils.Constants;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+
+import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.AppCompatImageView;
+import androidx.appcompat.widget.AppCompatTextView;
+import androidx.fragment.app.Fragment;
 
 /**
  * Created by aman on 08/08/17.
  */
 
-public class FragmentOnBoardingMain extends Fragment implements ChangeFragment {
-    private static final String LOG_TAG = FragmentOnBoardingMain.class.getSimpleName();
+public class FragmentHousingMain extends Fragment implements ChangeFragment {
+    private static final String LOG_TAG = FragmentHousingMain.class.getSimpleName();
 
     private NavigationToggleListener listener;
-    private AppCompatTextView titleControl;
-    private AppCompatTextView titleVariation;
 
     @Retention(RetentionPolicy.SOURCE)
-    @IntDef({CONTROL_LOGIN_TYPE_NORMAL,
-            CONTROL_LOGIN_SUCCESS,
+    @IntDef({
             VARIATION_LOGIN_TYPE_NORMAL,
             VARIATION_LOGIN_TYPE_SOCIAL,
             VARIATION_LOGIN_TYPE_SKIP,
@@ -69,12 +65,7 @@ public class FragmentOnBoardingMain extends Fragment implements ChangeFragment {
 
         AppCompatImageView navigation = view.findViewById(R.id.campaign_navigation);
         AppCompatImageView refresh = view.findViewById(R.id.refresh_campaign);
-        titleControl = view.findViewById(R.id.control_text_view_title);
-        titleVariation = view.findViewById(R.id.variation_text_view_title);
         AppCompatTextView toolbarTitle = view.findViewById(R.id.toolbar_title);
-
-        titleControl.setVisibility(View.GONE);
-        titleVariation.setVisibility(View.GONE);
 
         navigation.setOnClickListener(view1 -> {
             if(listener != null) {
@@ -121,9 +112,8 @@ public class FragmentOnBoardingMain extends Fragment implements ChangeFragment {
     public void loadFragment(@Nullable Bundle bundle, int fragmentId, @Nullable String tag) {
         switch (fragmentId) {
             case CONTROL_LOGIN_TYPE_NORMAL:
-                titleControl.setText(R.string.title_email);
                 getChildFragmentManager().beginTransaction().replace(R.id.onboarding_control_container,
-                        FragmentOnBoarding.getInstance(fragmentId)).commit();
+                        FragmentHousing.getInstance(fragmentId)).commit();
                 break;
             case CONTROL_LOGIN_SUCCESS:
                 if(bundle != null) {
@@ -135,19 +125,16 @@ public class FragmentOnBoardingMain extends Fragment implements ChangeFragment {
                 }
                 break;
             case VARIATION_LOGIN_TYPE_NORMAL:
-                titleVariation.setText(R.string.title_email);
                 getChildFragmentManager().beginTransaction().replace(R.id.onboarding_variation_container,
-                        FragmentOnBoarding.getInstance(fragmentId)).commit();
+                        FragmentHousing.getInstance(fragmentId)).commit();
                 break;
             case VARIATION_LOGIN_TYPE_SOCIAL:
-                titleVariation.setText(R.string.title_social);
                 getChildFragmentManager().beginTransaction().replace(R.id.onboarding_variation_container,
-                        FragmentOnBoarding.getInstance(fragmentId)).commit();
+                        FragmentHousing.getInstance(fragmentId)).commit();
                 break;
             case VARIATION_LOGIN_TYPE_SKIP:
-                titleVariation.setText(R.string.title_skip);
                 getChildFragmentManager().beginTransaction().replace(R.id.onboarding_variation_container,
-                        FragmentOnBoarding.getInstance(fragmentId)).commit();
+                        FragmentHousing.getInstance(fragmentId)).commit();
                 break;
             case VARIATION_LOGIN_SUCCESS:
                 if(bundle != null) {

@@ -1,86 +1,82 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/white"
-    android:id="@+id/constraint_sorting_list"
+    app:strokeColor="@color/divider"
+    app:strokeWidth="0.5dp"
     >
 
-    <android.support.v7.widget.AppCompatImageView
-        android:id="@+id/item_image"
-        android:layout_width="50dp"
-        android:layout_height="70dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/iphone" />
-
-    <android.support.v7.widget.AppCompatTextView
-        android:id="@+id/item_name"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginEnd="24dp"
-        android:layout_marginLeft="24dp"
-        android:layout_marginRight="24dp"
-        android:textColor="@color/primary_text"
-        android:textSize="12sp"
-        app:layout_constraintStart_toEndOf="@+id/item_image"
-        app:layout_constraintTop_toTopOf="@+id/item_image"
-        tools:text="iPhone 6"
-        app:layout_constraintBottom_toBottomOf="@+id/item_image"
-        android:layout_marginBottom="8dp"
-        app:layout_constraintVertical_bias="0.217"
-        app:layout_constraintHorizontal_bias="0"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <android.support.v7.widget.AppCompatTextView
-        android:id="@+id/item_vendor"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="@color/secondary_text"
-        android:textSize="8sp"
-        android:layout_marginStart="24dp"
-        android:layout_marginEnd="24dp"
-        android:layout_marginLeft="24dp"
-        android:layout_marginRight="24dp"
-        app:layout_constraintStart_toEndOf="@+id/item_image"
-        app:layout_constraintTop_toBottomOf="@+id/item_name"
-        tools:text="by Apple"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0"
-        />
-
-
-    <android.support.v7.widget.AppCompatTextView
-        android:id="@+id/item_price"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginLeft="24dp"
-        android:layout_marginTop="8dp"
-        android:textColor="@color/red"
-        android:textSize="15sp"
-        app:layout_constraintStart_toEndOf="@+id/item_image"
-        app:layout_constraintTop_toBottomOf="@+id/item_vendor"
-        tools:text="$250"
-        app:layout_constraintBottom_toBottomOf="@+id/item_image"
-        android:layout_marginBottom="8dp" />
-
-    <View
-        android:id="@+id/item_divider"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraint_sorting_list"
         android:layout_width="match_parent"
-        android:layout_height="2dp"
-        android:background="@color/divider"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/item_image"
-        app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginTop="16dp"
-        app:layout_constraintEnd_toEndOf="parent" />
+        android:layout_height="wrap_content"
+        android:paddingBottom="10dp"
+        android:background="@color/white">
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/item_image"
+            android:layout_width="50dp"
+            android:layout_height="70dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="16dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/iphone" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/item_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginLeft="24dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginRight="24dp"
+            android:layout_marginBottom="8dp"
+            android:textColor="@color/primary_text"
+            android:textSize="12sp"
+            app:layout_constraintBottom_toBottomOf="@+id/item_image"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0"
+            app:layout_constraintStart_toEndOf="@+id/item_image"
+            app:layout_constraintTop_toTopOf="@+id/item_image"
+            app:layout_constraintVertical_bias="0.217"
+            tools:text="iPhone 6" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/item_vendor"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginLeft="24dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginRight="24dp"
+            android:textColor="@color/secondary_text"
+            android:textSize="8sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0"
+            app:layout_constraintStart_toEndOf="@+id/item_image"
+            app:layout_constraintTop_toBottomOf="@+id/item_name"
+            tools:text="by Apple" />
 
 
-</android.support.constraint.ConstraintLayout>
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/item_price"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginLeft="24dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:textColor="@color/red"
+            android:textSize="15sp"
+            app:layout_constraintBottom_toBottomOf="@+id/item_image"
+            app:layout_constraintStart_toEndOf="@+id/item_image"
+            app:layout_constraintTop_toBottomOf="@+id/item_vendor"
+            tools:text="$250" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</com.google.android.material.card.MaterialCardView>

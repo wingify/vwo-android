@@ -18,7 +18,8 @@ package com.vwo.sampleapp.interfaces;
 
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
+
+import androidx.annotation.Nullable;
 
 /**
  * <p> This interface is basically used for controlling different fragments from a central place

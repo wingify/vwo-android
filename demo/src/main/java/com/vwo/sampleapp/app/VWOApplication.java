@@ -1,7 +1,6 @@
 package com.vwo.sampleapp.app;
 
 import android.app.Application;
-import android.os.StrictMode;
 
 /**
  * Created by aman on 16/08/17.

@@ -1,9 +1,6 @@
 package com.vwo.sampleapp.adapters;
 
 import android.content.Context;
-import android.support.v7.widget.AppCompatImageView;
-import android.support.v7.widget.AppCompatTextView;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,11 +12,15 @@ import com.vwo.sampleapp.models.Mobile;
 
 import java.util.ArrayList;
 
+import androidx.appcompat.widget.AppCompatImageView;
+import androidx.appcompat.widget.AppCompatTextView;
+import androidx.recyclerview.widget.RecyclerView;
+
 /**
  * Created by aman on 07/08/17.
  */
 
-public class AdapterSortingList extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class AdapterSorting extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private ArrayList<Mobile> mobiles;
     private Context mContext;
 
@@ -27,7 +28,7 @@ public class AdapterSortingList extends RecyclerView.Adapter<RecyclerView.ViewHo
     private int type;
     private ItemClickListener itemClickListener;
 
-    public AdapterSortingList(ArrayList<Mobile> mobiles, Context context, @FragmentSortingMain.FragmentType int type, ItemClickListener itemClickListener) {
+    public AdapterSorting(ArrayList<Mobile> mobiles, Context context, @FragmentSortingMain.FragmentType int type, ItemClickListener itemClickListener) {
         this.mobiles = new ArrayList<>(mobiles);
         this.mContext = context;
         this.type = type;
@@ -36,7 +37,7 @@ public class AdapterSortingList extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        if(type == FragmentSortingMain.ID_LIST_CONTROL || type == FragmentSortingMain.ID_LIST_VARIATION) {
+        if(type == FragmentSortingMain.ID_LIST_VARIATION) {
             View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.single_item_sorting_list, parent, false);
             return new ViewHolderList(view);
         } else {

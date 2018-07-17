@@ -1,14 +1,7 @@
 package com.vwo.sampleapp.fragments;
 
-import android.databinding.BindingAdapter;
-import android.databinding.DataBindingUtil;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.graphics.drawable.VectorDrawableCompat;
-import android.support.v4.app.Fragment;
-import android.support.v7.widget.AppCompatImageView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +11,14 @@ import com.vwo.sampleapp.R;
 import com.vwo.sampleapp.databinding.FragmentSuccessBinding;
 import com.vwo.sampleapp.models.Success;
 import com.vwo.sampleapp.utils.Constants;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.AppCompatImageView;
+import androidx.databinding.BindingAdapter;
+import androidx.databinding.DataBindingUtil;
+import androidx.fragment.app.Fragment;
+import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
 /**
  * Created by aman on 09/08/17.

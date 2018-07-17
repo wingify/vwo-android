@@ -1,16 +1,18 @@
 apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
+apply plugin: "androidx.navigation.safeargs"
 
 android {
-    compileSdkVersion 27
-    buildToolsVersion '27.0.3'
+    compileSdkVersion 28
     defaultConfig {
         versionCode 9
         minSdkVersion 14
-        targetSdkVersion 27
+        targetSdkVersion 28
         applicationId "com.vwo.sampleapp"
         versionCode 1
         versionName "1.0"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
     }
     dataBinding {
@@ -66,28 +68,53 @@ android {
     }
 }
 
+androidExtensions {
+    experimental = true
+}
+
 dependencies {
+    def lifecycle_version = "2.0.0-beta01"
+    def room_version = "2.0.0-beta01"
+    def paging_version = "2.0.0-beta01"
+    def support_library = "1.0.0-beta01"
+    def nav_version = "1.0.0-alpha03"
+    def glide = "4.7.1"
+    def retrofit_version = "2.4.0"
+    def okhttp_version = "3.10.0"
+
     testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'com.android.support.test:runner:1.0.2'
-    androidTestImplementation('com.android.support.test.espresso:espresso-core:3.0.1') {
+    androidTestImplementation 'androidx.test:runner:1.1.0-alpha3'
+    androidTestImplementation ("androidx.test.espresso:espresso-core:3.1.0-alpha3") {
         exclude group: 'com.google.code.findbugs', module: 'jsr305'
     }
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation 'com.android.support:appcompat-v7:27.1.1'
-    implementation 'com.android.support:design:27.1.1'
-    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
+    implementation 'androidx.constraintlayout:constraintlayout:1.1.2'
+    implementation "androidx.appcompat:appcompat:$support_library"
+    implementation "com.google.android.material:material:$support_library"
+    implementation "androidx.vectordrawable:vectordrawable:$support_library"
 //    implementation project(path: ':library')
     implementation 'com.vwo:mobile:2.4.1@aar'
     implementation('io.socket:socket.io-client:1.0.0') {
         // excluding org.json which is provided by Android
         exclude group: 'org.json', module: 'json'
     }
-    debugImplementation('com.airbnb:deeplinkdispatch:3.1.1') {
-        exclude group: 'com.squareup.okio', module: 'okio'
-    }
-    releaseImplementation 'com.airbnb:deeplinkdispatch:3.1.1'
-//    implementation ('com.airbnb:deeplinkdispatch:3.1.1'){
-//        exclude group: 'com.squareup.okio', module: 'okio'
-//    }
-    annotationProcessor 'com.airbnb:deeplinkdispatch-processor:3.1.1'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+
+    implementation "com.github.bumptech.glide:glide:$glide"
+    kapt "com.github.bumptech.glide:compiler:$glide"
+    // Room database
+    implementation "androidx.room:room-runtime:$room_version"
+    kapt "androidx.room:room-compiler:$room_version"
+    // Paging
+    implementation "androidx.paging:paging-runtime:$paging_version"
+    // ViewModel
+    implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle_version"
+    implementation "androidx.lifecycle:lifecycle-common-java8:$lifecycle_version"
+    // optional - Test helpers for LiveData
+    testImplementation "androidx.arch.core:core-testing:$lifecycle_version"
+
+    implementation 'androidx.core:core-ktx:1.0.0-beta01'
+}
+repositories {
+    mavenCentral()
 }

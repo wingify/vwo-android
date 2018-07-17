@@ -8,14 +8,14 @@
     android:id="@+id/dialog_linear"
     android:padding="18dp">
 
-    <android.support.design.widget.TextInputLayout
+    <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/input_wrapper"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/str_enter_api_key"
         app:errorEnabled="true">
 
-        <android.support.v7.widget.AppCompatEditText
+        <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/input"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -23,9 +23,9 @@
             android:inputType="text"
             android:textColor="@color/black" />
 
-    </android.support.design.widget.TextInputLayout>
+    </com.google.android.material.textfield.TextInputLayout>
 
-    <android.support.v7.widget.AppCompatTextView
+    <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/current_key"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
