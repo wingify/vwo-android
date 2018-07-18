@@ -10,7 +10,6 @@ import com.vwo.sampleapp.adapters.AdapterSorting;
 import com.vwo.sampleapp.data.MobileViewModel;
 import com.vwo.sampleapp.interfaces.ChangeFragment;
 import com.vwo.sampleapp.interfaces.ItemClickListener;
-import com.vwo.sampleapp.models.Mobile;
 
 import java.util.ArrayList;
 

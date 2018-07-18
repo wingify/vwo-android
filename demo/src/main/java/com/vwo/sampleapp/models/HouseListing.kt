@@ -5,5 +5,5 @@ package com.vwo.sampleapp.models
  */
 class HouseListing(val houses: MutableList<House>, type: Int) {
     val type: String = type.toString()
-        get() = "${field}BHK"
+        get() = "$field BHK Flats, Apartments near you."
 }

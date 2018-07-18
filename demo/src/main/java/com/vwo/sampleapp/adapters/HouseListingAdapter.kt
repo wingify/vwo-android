@@ -7,13 +7,16 @@ import androidx.appcompat.widget.AppCompatTextView
 import androidx.recyclerview.widget.RecyclerView
 import com.vwo.sample.extensions.inflate
 import com.vwo.sampleapp.R
+import com.vwo.sampleapp.interfaces.NestedItemClickListener
 import com.vwo.sampleapp.models.House
 import kotlinx.android.synthetic.main.single_item_house.view.*
 
 /**
  * Created by aman on Tue 10/07/18 16:07.
  */
-class HouseListingAdapter(val houses: MutableList<House>?) : RecyclerView.Adapter<HouseListingAdapter.HouseListingViewHolder>() {
+class HouseListingAdapter(private val houses: MutableList<House>?, private val parentAdapterPosition: Int,
+                          private val listener: NestedItemClickListener) :
+        RecyclerView.Adapter<HouseListingAdapter.HouseListingViewHolder>() {
 
     /**
      * Called when RecyclerView needs a new [ViewHolder] of the given type to represent
@@ -39,7 +42,7 @@ class HouseListingAdapter(val houses: MutableList<House>?) : RecyclerView.Adapte
      * @see .onBindViewHolder
      */
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HouseListingViewHolder {
-        return HouseListingViewHolder(parent.context.inflate(R.layout.single_item_house, parent))
+        return HouseListingViewHolder(parent.context.inflate(R.layout.single_item_house, parent), listener, parentAdapterPosition)
     }
 
     /**
@@ -83,10 +86,14 @@ class HouseListingAdapter(val houses: MutableList<House>?) : RecyclerView.Adapte
 
     }
 
-    class HouseListingViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    class HouseListingViewHolder(itemView: View, listener: NestedItemClickListener, parentAdapterPosition: Int) : RecyclerView.ViewHolder(itemView) {
         val name: AppCompatTextView = itemView.item_name
         val description: AppCompatTextView = itemView.item_description
         val image: AppCompatImageView = itemView.item_image
-
+        init {
+            itemView.item_house.setOnClickListener {
+                listener.onItemClicked(this, parentAdapterPosition, adapterPosition)
+            }
+        }
     }
 }

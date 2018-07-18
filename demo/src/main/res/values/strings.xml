@@ -50,4 +50,7 @@
     <string name="clear_data_negative">Cancel</string>
     <string name="clear_data_positive">Yes</string>
     <string name="data_cleared">Data cleared</string>
+    <string name="dialog_house_message">You can use our in-house agents who can help you find a suitable house!</string>
+    <string name="dialog_house_title">Find a house in minutes!</string>
+    <string name="dialog_house_button" formatted="false">Upgrade with %s%d</string>
 </resources>

@@ -7,13 +7,14 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.vwo.sample.extensions.inflate
 import com.vwo.sampleapp.R
+import com.vwo.sampleapp.interfaces.NestedItemClickListener
 import com.vwo.sampleapp.models.HouseListing
 import kotlinx.android.synthetic.main.single_item_recycler.view.*
 
 /**
  * Created by aman on Tue 17/07/18 16:22.
  */
-class HousingRecylerAdapter(val housesListing: List<HouseListing>?, val context: Context) : RecyclerView.Adapter<HousingRecylerAdapter.HousingRecyclerViewHolder>() {
+class HousingRecyclerAdapter(val housesListing: List<HouseListing>?, val context: Context, private val listener: NestedItemClickListener) : RecyclerView.Adapter<HousingRecyclerAdapter.HousingRecyclerViewHolder>() {
     /**
      * Called when RecyclerView needs a new [ViewHolder] of the given type to represent
      * an item.
@@ -80,7 +81,7 @@ class HousingRecylerAdapter(val housesListing: List<HouseListing>?, val context:
         housesListing?.get(position)?.let { houseListing ->
             holder.apply {
                 title.text = houseListing.type
-                recyler.adapter = HouseListingAdapter(houseListing.houses)
+                recyler.adapter = HouseListingAdapter(houseListing.houses, position, listener)
             }
         }
     }
