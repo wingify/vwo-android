@@ -8,16 +8,18 @@ import androidx.annotation.DrawableRes
 class House(
         val id: Int = 0,
         val name: String,
-        val type: Type = Type.RESIDENTIAL,
-        val description: String,
+        val price: Int,
         val BHK: Int,
         @DrawableRes
         val image: Int,
-        val price: Int,
+        val type: Type = Type.RESIDENTIAL,
+        val description: String = "Apartment for rent",
         val units: String = "$"
 ) {
-    enum class Type {
-        RESIDENTIAL,
-        COMMERCIAL
+    enum class Type(val type: String) {
+        RESIDENTIAL("Residential"),
+        COMMERCIAL("Commercial")
+
     }
+
 }

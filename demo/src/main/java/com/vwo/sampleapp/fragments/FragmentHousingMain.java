@@ -11,7 +11,6 @@ import android.view.ViewGroup;
 import com.vwo.sampleapp.R;
 import com.vwo.sampleapp.interfaces.ChangeFragment;
 import com.vwo.sampleapp.interfaces.NavigationToggleListener;
-import com.vwo.sampleapp.models.Success;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -34,24 +33,17 @@ public class FragmentHousingMain extends Fragment implements ChangeFragment {
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({
-            VARIATION_LOGIN_TYPE_NORMAL,
-            VARIATION_LOGIN_TYPE_SOCIAL,
-            VARIATION_LOGIN_TYPE_SKIP,
-            VARIATION_LOGIN_SUCCESS })
-    @interface LoginType {}
+            VARIATION_LOGIN_TYPE_NORMAL})
+    @interface LoginType {
+    }
 
-    public static final int CONTROL_LOGIN_TYPE_NORMAL = 0;
-    public static final int CONTROL_LOGIN_SUCCESS = 1;
     public static final int VARIATION_LOGIN_TYPE_NORMAL = 2;
-    public static final int VARIATION_LOGIN_TYPE_SOCIAL = 3;
-    public static final int VARIATION_LOGIN_TYPE_SKIP = 4;
-    public static final int VARIATION_LOGIN_SUCCESS = 5;
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
 
-        if(context instanceof NavigationToggleListener) {
+        if (context instanceof NavigationToggleListener) {
             listener = (NavigationToggleListener) context;
         } else {
             Log.e(LOG_TAG, "Interface NavigationToggleListener not implemented in Activity");
@@ -68,7 +60,7 @@ public class FragmentHousingMain extends Fragment implements ChangeFragment {
         AppCompatTextView toolbarTitle = view.findViewById(R.id.toolbar_title);
 
         navigation.setOnClickListener(view1 -> {
-            if(listener != null) {
+            if (listener != null) {
                 listener.onToggle();
             }
         });
@@ -81,23 +73,7 @@ public class FragmentHousingMain extends Fragment implements ChangeFragment {
     }
 
     private void loadDefaultFragments() {
-        loadFragment(null, CONTROL_LOGIN_TYPE_NORMAL, null);
         loadFragment(null, VARIATION_LOGIN_TYPE_NORMAL, null);
-
-//        String value = VWO.getStringForKey(Constants.VWOKeys.KEY_LOGIN, Constants.VWOKeys.VALUE_EMAIL);
-//        switch (value) {
-//            case Constants.VWOKeys.VALUE_EMAIL:
-//                loadFragment(null, VARIATION_LOGIN_TYPE_NORMAL, null);
-//                break;
-//            case Constants.VWOKeys.VALUE_SKIP:
-//                loadFragment(null, VARIATION_LOGIN_TYPE_SKIP, null);
-//                break;
-//            case Constants.VWOKeys.VALUE_SOCIAL_MEDIA:
-//                loadFragment(null, VARIATION_LOGIN_TYPE_SOCIAL, null);
-//                break;
-//            default:
-//                loadFragment(null, VARIATION_LOGIN_TYPE_NORMAL, null);
-//        }
     }
 
     /**
@@ -110,43 +86,7 @@ public class FragmentHousingMain extends Fragment implements ChangeFragment {
      */
     @Override
     public void loadFragment(@Nullable Bundle bundle, int fragmentId, @Nullable String tag) {
-        switch (fragmentId) {
-            case CONTROL_LOGIN_TYPE_NORMAL:
-                getChildFragmentManager().beginTransaction().replace(R.id.onboarding_control_container,
-                        FragmentHousing.getInstance(fragmentId)).commit();
-                break;
-            case CONTROL_LOGIN_SUCCESS:
-                if(bundle != null) {
-                    Success success = bundle.getParcelable(FragmentSuccess.ARG_SUCCESS);
-                    FragmentSuccess fragmentSuccess = FragmentSuccess.getInstance(success);
-                    fragmentSuccess.setArguments(bundle);
-                    getChildFragmentManager().beginTransaction().replace(R.id.onboarding_control_container,
-                            fragmentSuccess).commit();
-                }
-                break;
-            case VARIATION_LOGIN_TYPE_NORMAL:
-                getChildFragmentManager().beginTransaction().replace(R.id.onboarding_variation_container,
-                        FragmentHousing.getInstance(fragmentId)).commit();
-                break;
-            case VARIATION_LOGIN_TYPE_SOCIAL:
-                getChildFragmentManager().beginTransaction().replace(R.id.onboarding_variation_container,
-                        FragmentHousing.getInstance(fragmentId)).commit();
-                break;
-            case VARIATION_LOGIN_TYPE_SKIP:
-                getChildFragmentManager().beginTransaction().replace(R.id.onboarding_variation_container,
-                        FragmentHousing.getInstance(fragmentId)).commit();
-                break;
-            case VARIATION_LOGIN_SUCCESS:
-                if(bundle != null) {
-                    Success success = bundle.getParcelable(FragmentSuccess.ARG_SUCCESS);
-                    FragmentSuccess fragmentSuccess = FragmentSuccess.getInstance(success);
-                    fragmentSuccess.setArguments(bundle);
-                    getChildFragmentManager().beginTransaction().replace(R.id.onboarding_variation_container,
-                            fragmentSuccess).commit();
-                }
-                break;
-            default:
-                throw new IllegalArgumentException("Unknown fragment id : " + fragmentId);
-        }
+        getChildFragmentManager().beginTransaction().replace(R.id.onboarding_variation_container,
+                FragmentHousing.getInstance(fragmentId)).commit();
     }
 }
