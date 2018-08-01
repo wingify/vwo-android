@@ -39,9 +39,7 @@ In your top level build.gradle file add the following code under repositories.
     allprojects {
         repositories {
             ...
-            maven {
-                url 'https://raw.githubusercontent.com/wingify/vwo-mobile-android/master/'
-            }
+            mavenCentral()
             ...
         }
     }
