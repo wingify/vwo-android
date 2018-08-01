@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
@@ -81,30 +82,31 @@ public class MainActivity extends BaseActivity
 
         progressBar = findViewById(R.id.loading_progress);
         Intent intent = getIntent();
-        // TODO: Handle Deeplink
-        if (false) {
-            Bundle parameters = intent.getExtras();
-            if (parameters != null) {
-                String apiKey = parameters.getString("id");
-                Log.d(LOG_TAG, "API_KEY: " + apiKey);
 
-                Set<String> list = parameters.keySet();
-                list.remove("id");
-                list.remove("is_deep_link_flag");
-                Map<String, String> customKeys = new HashMap<>();
-                for (String key : list) {
-                    if (key.startsWith("__vwo__")) {
-                        customKeys.put(key.replace("__vwo__", ""), parameters.getString(key));
-                        Log.d(LOG_TAG, String.format(Locale.ENGLISH, "KEY: %s, VALUE: %s", key.replace("__vwo__", ""), parameters.getString(key)));
+        Uri data = intent.getData();
+        if (data != null) {
+            if(data.getPathSegments().size() == 2) {
+                String apiKey = data.getPathSegments().get(1);
+                if (!TextUtils.isEmpty(apiKey)) {
+
+                    Log.d(LOG_TAG, "API_KEY: " + apiKey);
+
+                    Set<String> list = data.getQueryParameterNames();
+                    Map<String, String> customKeys = new HashMap<>();
+                    for (String key : list) {
+                        if (key.startsWith("__vwo__")) {
+                            customKeys.put(key.replace("__vwo__", ""), data.getQueryParameter(key));
+                            Log.d(LOG_TAG, String.format(Locale.ENGLISH, "KEY: %s, VALUE: %s", key.replace("__vwo__", ""), data.getQueryParameter(key)));
+                        }
                     }
-                }
 
-                // Do something with idString
-                if (validateAndSetApiKey(apiKey)) {
-                    initVWO(apiKey, true, customKeys);
+                    // Do something with idString
+                    if (validateAndSetApiKey(apiKey)) {
+                        initVWO(apiKey, true, customKeys);
+                    }
+                } else {
+                    initVWO(SharedPreferencesHelper.getApiKey(this), true, null);
                 }
-            } else {
-                initVWO(SharedPreferencesHelper.getApiKey(this), true, null);
             }
         } else {
             initVWO(SharedPreferencesHelper.getApiKey(this), true, null);

@@ -8,11 +8,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.vwo.mobile.VWO;
 import com.vwo.sampleapp.R;
 import com.vwo.sampleapp.interfaces.ChangeFragment;
 import com.vwo.sampleapp.interfaces.NavigationToggleListener;
-import com.vwo.sampleapp.utils.Constants;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -40,7 +38,8 @@ public class FragmentSortingMain extends Fragment implements ChangeFragment {
     @IntDef({
             ID_LIST_VARIATION,
             ID_DETAILS_VARIATION})
-    public @interface FragmentType{}
+    public @interface FragmentType {
+    }
 
     public static final int ID_LIST_VARIATION = 1;
     public static final int ID_DETAILS_VARIATION = 2;
@@ -49,7 +48,7 @@ public class FragmentSortingMain extends Fragment implements ChangeFragment {
     public void onAttach(Context context) {
         super.onAttach(context);
 
-        if(context instanceof NavigationToggleListener) {
+        if (context instanceof NavigationToggleListener) {
             listener = (NavigationToggleListener) context;
         } else {
             Log.e(LOG_TAG, "Interface NavigationToggleListener not implemented in Activity");
@@ -69,7 +68,7 @@ public class FragmentSortingMain extends Fragment implements ChangeFragment {
         toolbarTitle.setText(R.string.title_layout_campaign);
 
         navigation.setOnClickListener(view1 -> {
-            if(listener != null) {
+            if (listener != null) {
                 listener.onToggle();
             }
         });
@@ -82,15 +81,6 @@ public class FragmentSortingMain extends Fragment implements ChangeFragment {
     }
 
     private void loadFragments() {
-        String value = String.valueOf(VWO.getStringForKey(Constants.VWOKeys.KEY_LAYOUT, Constants.VWOKeys.VALUE_LIST));
-        switch (value) {
-            case Constants.VWOKeys.VALUE_LIST:
-                loadFragment(null, ID_LIST_VARIATION, null);
-                break;
-            default:
-                loadFragment(null, ID_LIST_VARIATION, null);
-                break;
-        }
         loadFragment(null, ID_LIST_VARIATION, null);
     }
 
@@ -107,7 +97,7 @@ public class FragmentSortingMain extends Fragment implements ChangeFragment {
         switch (fragmentId) {
             case ID_LIST_VARIATION:
                 Fragment fragment = getChildFragmentManager().findFragmentByTag(tag);
-                if(fragment == null) {
+                if (fragment == null) {
                     getChildFragmentManager().beginTransaction().replace(R.id.sorting_variation_container,
                             FragmentSorting.getInstance(fragmentId), TAG_VARIATION).commit();
                 } else {
@@ -116,7 +106,7 @@ public class FragmentSortingMain extends Fragment implements ChangeFragment {
                 }
                 break;
             case ID_DETAILS_VARIATION:
-                if(bundle != null) {
+                if (bundle != null) {
                     FragmentItemDetails detailsFragment = FragmentItemDetails.getInstance(bundle.getParcelable(FragmentSorting.ARG_ITEM), fragmentId);
                     getChildFragmentManager().beginTransaction().replace(R.id.sorting_variation_container,
                             detailsFragment, null).addToBackStack(null).commit();

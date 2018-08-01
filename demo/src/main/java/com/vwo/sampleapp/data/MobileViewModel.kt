@@ -33,9 +33,10 @@ class MobileViewModel : ViewModel() {
                 R.drawable.one_plus_6, "OnePlus", "OnePlus 6 Mirror Black 6GB RAM and 64GB Memory", 5)
 
         mobilesList = listOf(apple, samsung, pixel, ZTE, galaxy, honor, miMix, redmi, onePlus6)
-        sortByName()
+        sortById()
     }
 
+    @JvmOverloads
     fun sortByPrice(asc: Boolean = true) {
         if(asc) {
             val sortedList = mobilesList.sortedWith(Comparator { first, second ->
@@ -50,6 +51,7 @@ class MobileViewModel : ViewModel() {
         }
     }
 
+    @JvmOverloads
     fun sortByName(asc: Boolean = true) {
         if(asc) {
             val sortedList = mobilesList.sortedWith(Comparator {first, second ->
@@ -64,6 +66,7 @@ class MobileViewModel : ViewModel() {
         }
     }
 
+    @JvmOverloads
     fun sortById(asc: Boolean = true) {
         if(asc) {
             val sortedList = mobilesList.sortedWith(Comparator { first, second ->
@@ -76,5 +79,9 @@ class MobileViewModel : ViewModel() {
             })
             mobiles.value = sortedList
         }
+    }
+
+    fun sortRandom() {
+        mobiles.value = mobilesList.shuffled()
     }
 }

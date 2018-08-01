@@ -1,15 +1,19 @@
 package com.vwo.sampleapp.fragments;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.vwo.mobile.VWO;
+import com.vwo.mobile.utils.VWOLog;
 import com.vwo.sampleapp.R;
 import com.vwo.sampleapp.adapters.AdapterSorting;
 import com.vwo.sampleapp.data.MobileViewModel;
 import com.vwo.sampleapp.interfaces.ChangeFragment;
 import com.vwo.sampleapp.interfaces.ItemClickListener;
+import com.vwo.sampleapp.utils.Constants;
 
 import java.util.ArrayList;
 
@@ -27,6 +31,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 public class FragmentSorting extends Fragment implements ItemClickListener {
 
+    private static final String LOG_TAG = FragmentSorting.class.getSimpleName();
+
     public static final String ARG_ITEM = "item";
     private static final String ARG_FRAGMENT_TYPE = "fragment_type";
 
@@ -40,7 +46,6 @@ public class FragmentSorting extends Fragment implements ItemClickListener {
         View view = inflater.inflate(R.layout.fragment_sorting, container, false);
 
         RecyclerView recyclerView = view.findViewById(R.id.sorting_recycler_view);
-
 
         if (savedInstanceState == null) {
             assert getArguments() != null;
@@ -58,12 +63,35 @@ public class FragmentSorting extends Fragment implements ItemClickListener {
             layoutManager = new GridLayoutManager(getContext(), 2);
         }
 
+        String variationName = VWO.getVariationNameForTestKey(Constants.VWOKeys.TEST_KEY_SORTING);
+
+        if(variationName != null) {
+            Log.d(LOG_TAG, "Received variation: " + variationName);
+            switch (variationName) {
+                case Constants.VWOKeys.TEST_KEY_VALUE_SORT_BY_NAME:
+                    mobileViewModel.sortByName();
+                    break;
+                case Constants.VWOKeys.TEST_KEY_VALUE_SORT_BY_PRICE:
+                    mobileViewModel.sortByPrice();
+                    break;
+                default:
+                    mobileViewModel.sortById();
+                    break;
+            }
+        } else {
+            mobileViewModel.sortById();
+        }
+
         recyclerView.setLayoutManager(layoutManager);
 
+        adapterSortingList = new AdapterSorting(null, getContext(), type, this);
+        recyclerView.setAdapter(adapterSortingList);
+
         mobileViewModel.getMobiles().observe(this, mobiles -> {
-            adapterSortingList = new AdapterSorting(new ArrayList<>(mobiles), getContext(), type, this);
-            recyclerView.setAdapter(adapterSortingList);
+            adapterSortingList.updateData(mobiles);
         });
+
+
 
         return view;
     }
