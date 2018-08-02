@@ -13,7 +13,7 @@
                     android:title="@string/title_layout_campaign" />
                 <item
                     android:id="@+id/nav_onboarding_campaign"
-                    android:title="@string/title_on_boarding" />
+                    android:title="@string/title_variable_campaign" />
             </group>
         </menu>
     </item>

@@ -7,15 +7,15 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.vwo.mobile.VWO;
-import com.vwo.mobile.utils.VWOLog;
 import com.vwo.sampleapp.R;
 import com.vwo.sampleapp.adapters.AdapterSorting;
 import com.vwo.sampleapp.data.MobileViewModel;
+import com.vwo.sampleapp.interfaces.ButtonClickListener;
 import com.vwo.sampleapp.interfaces.ChangeFragment;
 import com.vwo.sampleapp.interfaces.ItemClickListener;
 import com.vwo.sampleapp.utils.Constants;
 
-import java.util.ArrayList;
+import org.jetbrains.annotations.NotNull;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -38,6 +38,8 @@ public class FragmentSorting extends Fragment implements ItemClickListener {
 
     private int type;
 
+    private MobileViewModel mobileViewModel;
+
     private AdapterSorting adapterSortingList;
 
     @Nullable
@@ -54,7 +56,7 @@ public class FragmentSorting extends Fragment implements ItemClickListener {
             type = savedInstanceState.getInt(ARG_FRAGMENT_TYPE, FragmentSortingMain.ID_LIST_VARIATION);
         }
 
-        MobileViewModel mobileViewModel = ViewModelProviders.of(this).get(MobileViewModel.class);
+        mobileViewModel = ViewModelProviders.of(this).get(MobileViewModel.class);
 
         RecyclerView.LayoutManager layoutManager;
         if (type == FragmentSortingMain.ID_LIST_VARIATION) {
@@ -63,9 +65,26 @@ public class FragmentSorting extends Fragment implements ItemClickListener {
             layoutManager = new GridLayoutManager(getContext(), 2);
         }
 
+        recyclerView.setLayoutManager(layoutManager);
+
+        adapterSortingList = new AdapterSorting(null, getContext(), type, this);
+        recyclerView.setAdapter(adapterSortingList);
+
+        mobileViewModel.getMobiles().observe(this, mobiles -> adapterSortingList.updateData(mobiles));
+
+        return view;
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        refreshVariation();
+    }
+
+    private void refreshVariation() {
         String variationName = VWO.getVariationNameForTestKey(Constants.VWOKeys.TEST_KEY_SORTING);
 
-        if(variationName != null) {
+        if (variationName != null) {
             Log.d(LOG_TAG, "Received variation: " + variationName);
             switch (variationName) {
                 case Constants.VWOKeys.TEST_KEY_VALUE_SORT_BY_NAME:
@@ -81,21 +100,7 @@ public class FragmentSorting extends Fragment implements ItemClickListener {
         } else {
             mobileViewModel.sortById();
         }
-
-        recyclerView.setLayoutManager(layoutManager);
-
-        adapterSortingList = new AdapterSorting(null, getContext(), type, this);
-        recyclerView.setAdapter(adapterSortingList);
-
-        mobileViewModel.getMobiles().observe(this, mobiles -> {
-            adapterSortingList.updateData(mobiles);
-        });
-
-
-
-        return view;
     }
-
 
     public static FragmentSorting getInstance(@FragmentSortingMain.FragmentType int type) {
         Bundle bundle = new Bundle();
@@ -121,5 +126,9 @@ public class FragmentSorting extends Fragment implements ItemClickListener {
             bundle.putParcelable(ARG_ITEM, adapterSortingList.getItemAt(position));
             listener.loadFragment(bundle, FragmentSortingMain.ID_DETAILS_VARIATION, FragmentSortingMain.TAG_VARIATION);
         }
+    }
+
+    public void onRefreshClicked() {
+        refreshVariation();
     }
 }

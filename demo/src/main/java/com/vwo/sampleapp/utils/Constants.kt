@@ -6,13 +6,8 @@ package com.vwo.sampleapp.utils
 class Constants {
     class VWOKeys {
         companion object {
-            const val KEY_SKIP = "skip"
-            const val KEY_SOCIAL_MEDIA = "socialMedia"
-            const val VALUE_EMAIL = "email"
-
-            const val KEY_LAYOUT = "layout"
-            const val VALUE_LIST = "list"
-            const val VALUE_GRID = "grid"
+            const val KEY_DIALOG_HEADING = "heading"
+            const val KEY_DIALOG_CONTENT = "content"
 
             const val GOAL_PRODUCT_VIEWED = "productView"
             const val GOAL_LANDING_PAGE = "landingPage"
@@ -21,6 +16,7 @@ class Constants {
             const val TEST_KEY_SORTING = "sorting"
             const val TEST_KEY_VALUE_SORT_BY_NAME = "Control"
             const val TEST_KEY_VALUE_SORT_BY_PRICE = "Variation-1"
+            const val GOAL_UPGRADE_CLICKED = "upgrade-clicked"
         }
     }
 }

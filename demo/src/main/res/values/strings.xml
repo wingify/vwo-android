@@ -18,7 +18,7 @@
     <string name="or">or</string>
     <string name="login_with_facebook">Login with Facebook</string>
     <string name="str_signup">Sign up for new account</string>
-    <string name="title_on_boarding">Onboarding Campaign</string>
+    <string name="title_variable_campaign">Variable Campaign</string>
     <string name="title_email">(Email)</string>
     <string name="title_social">(Social Media)</string>
     <string name="title_skip">(Skip)</string>
@@ -42,7 +42,7 @@
     <string name="str_enter_api_key">Enter API Key</string>
     <string name="error_api_key">Enter a valid API Key</string>
     <string name="api_key_set">API key set</string>
-    <string name="title_api_key">Enter VWO API key</string>
+    <string name="title_api_key">Launch VWO</string>
 
     <string name="str_current_api_key" formatted="false">Current api key: %s</string>
     <string name="confirm">Confirm</string>
@@ -50,7 +50,8 @@
     <string name="clear_data_negative">Cancel</string>
     <string name="clear_data_positive">Yes</string>
     <string name="data_cleared">Data cleared</string>
-    <string name="dialog_house_message">You can use our in-house agents who can help you find a suitable house!</string>
-    <string name="dialog_house_title">Find a house in minutes!</string>
+    <string name="dialog_house_message">You can use our in-house agents who can help you find a suitable house.</string>
+    <string name="dialog_house_title">Use our House Agent!</string>
     <string name="dialog_house_button" formatted="false">Upgrade with %s%d</string>
+    <string name="dialog_button_cancel">Cancel</string>
 </resources>

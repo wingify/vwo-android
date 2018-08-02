@@ -214,7 +214,7 @@ public class MainActivity extends BaseActivity
         });
 
         // Set up the buttons
-        builder.setPositiveButton("OK", null);
+        builder.setPositiveButton("Launch VWO", null);
         builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
 
         final AlertDialog alertDialog = builder.create();

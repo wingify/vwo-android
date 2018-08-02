@@ -15,7 +15,6 @@ import androidx.fragment.app.Fragment
 import com.vwo.sampleapp.R
 import com.vwo.sampleapp.interfaces.ChangeFragment
 import com.vwo.sampleapp.interfaces.NavigationToggleListener
-import kotlinx.android.synthetic.main.toolbar_common.*
 import kotlinx.android.synthetic.main.toolbar_common.view.*
 
 /**
@@ -56,7 +55,7 @@ class FragmentHousingMain : Fragment(), ChangeFragment {
 
         refresh.visibility = View.GONE
 
-        toolbarTitle.setText(R.string.title_on_boarding)
+        toolbarTitle.setText(R.string.title_variable_campaign)
         loadDefaultFragments()
         return view
     }

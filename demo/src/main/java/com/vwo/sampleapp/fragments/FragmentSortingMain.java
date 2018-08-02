@@ -34,6 +34,8 @@ public class FragmentSortingMain extends Fragment implements ChangeFragment {
     public static final String TAG_CONTROL = "Control";
     public static final String TAG_VARIATION = "Variation";
 
+    public static final String CURRENT_FRAGMENT_ID = "current_fragment_id";
+
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({
             ID_LIST_VARIATION,
@@ -43,6 +45,8 @@ public class FragmentSortingMain extends Fragment implements ChangeFragment {
 
     public static final int ID_LIST_VARIATION = 1;
     public static final int ID_DETAILS_VARIATION = 2;
+
+    private int currentFragmentID = -1;
 
     @Override
     public void onAttach(Context context) {
@@ -67,6 +71,12 @@ public class FragmentSortingMain extends Fragment implements ChangeFragment {
 
         toolbarTitle.setText(R.string.title_layout_campaign);
 
+        if(savedInstanceState != null) {
+            currentFragmentID = savedInstanceState.getInt(CURRENT_FRAGMENT_ID, ID_LIST_VARIATION);
+        } else {
+            currentFragmentID = ID_LIST_VARIATION;
+        }
+
         navigation.setOnClickListener(view1 -> {
             if (listener != null) {
                 listener.onToggle();
@@ -75,22 +85,33 @@ public class FragmentSortingMain extends Fragment implements ChangeFragment {
 
         loadFragments();
 
-        refresh.setOnClickListener(view12 -> loadFragments());
+        refresh.setOnClickListener(view12 -> {
+            if(currentFragmentID == ID_LIST_VARIATION) {
+                FragmentSorting fragment = (FragmentSorting) getChildFragmentManager().findFragmentByTag(TAG_VARIATION);
+                if(fragment != null && fragment.isVisible()) {
+                    fragment.onRefreshClicked();
+                } else {
+                    loadFragments();
+                }
+            } else {
+                loadFragments();
+            }
+        });
 
         return view;
     }
 
     private void loadFragments() {
-        loadFragment(null, ID_LIST_VARIATION, null);
+        loadFragment(null, currentFragmentID, null);
     }
 
     /**
-     * <b> This function is used to load a particular {@link android.app.Fragment} from the
-     * controlling {@link Activity} or {@link android.app.Fragment} </b>
+     * <b> This function is used to load a particular {@link Fragment} from the
+     * controlling {@link Activity} or {@link .Fragment} </b>
      *
-     * @param bundle     is the data to be passed to {@link android.app.Fragment}
-     * @param fragmentId is the id that identifies, which {@link android.app.Fragment} is to be loaded
-     * @param tag        is the tag that is attached to {@link android.app.Fragment} which is to be loaded
+     * @param bundle     is the data to be passed to {@link Fragment}
+     * @param fragmentId is the id that identifies, which {@link Fragment} is to be loaded
+     * @param tag        is the tag that is attached to {@link Fragment} which is to be loaded
      */
     @Override
     public void loadFragment(@Nullable Bundle bundle, int fragmentId, @Nullable String tag) {
@@ -104,6 +125,7 @@ public class FragmentSortingMain extends Fragment implements ChangeFragment {
                     getChildFragmentManager().beginTransaction().replace(R.id.sorting_variation_container,
                             fragment, tag).commit();
                 }
+                currentFragmentID = fragmentId;
                 break;
             case ID_DETAILS_VARIATION:
                 if (bundle != null) {
@@ -111,9 +133,16 @@ public class FragmentSortingMain extends Fragment implements ChangeFragment {
                     getChildFragmentManager().beginTransaction().replace(R.id.sorting_variation_container,
                             detailsFragment, null).addToBackStack(null).commit();
                 }
+                currentFragmentID = fragmentId;
                 break;
             default:
                 throw new IllegalArgumentException("Unknown fragment id : " + fragmentId);
         }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putInt(CURRENT_FRAGMENT_ID, currentFragmentID);
+        super.onSaveInstanceState(outState);
     }
 }

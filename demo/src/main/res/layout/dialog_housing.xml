@@ -10,8 +10,8 @@
     android:layout_marginRight="8dp"
     android:layout_marginBottom="8dp"
     app:cardCornerRadius="5dp"
-    app:contentPadding="20dp"
-    app:cardElevation="8dp">
+    app:cardElevation="8dp"
+    app:contentPadding="15dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -23,33 +23,34 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginLeft="8dp"
-            android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginRight="8dp"
-            android:layout_marginBottom="100dp"
+            android:layout_marginBottom="8dp"
             android:text="@string/dialog_house_title"
             android:textColor="@color/black"
             android:textSize="25sp"
             android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/dialog_message_house"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.49" />
+            app:layout_constraintTop_toBottomOf="parent" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/dialog_message_house"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="57dp"
+            android:layout_marginStart="50dp"
+            android:layout_marginLeft="50dp"
             android:layout_marginTop="8dp"
+            android:layout_marginEnd="50dp"
+            android:layout_marginRight="50dp"
             android:layout_marginBottom="8dp"
-            android:paddingLeft="50dp"
-            android:paddingRight="50dp"
+            android:gravity="center"
             android:text="@string/dialog_house_message"
             android:textAlignment="center"
             android:textColor="@color/secondary_text"
             android:textSize="16sp"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/dialog_button_house"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/dialog_title_house"
@@ -65,16 +66,40 @@
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginRight="8dp"
+            android:layout_marginBottom="4dp"
+            android:background="@color/button_color"
+            android:gravity="center"
+            android:text="@string/dialog_house_button"
+            android:textAppearance="@color/white"
+            android:textSize="14sp"
+            app:cornerRadius="3dp"
+            app:layout_constraintBottom_toTopOf="@+id/dialog_button_dismiss"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/dialog_message_house"
+            app:layout_constraintVertical_chainStyle="spread" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/dialog_button_dismiss"
+            style="@style/Widget.MaterialComponents.Button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginRight="8dp"
             android:layout_marginBottom="8dp"
             android:background="@color/button_color"
+            android:gravity="center"
+            android:text="@string/dialog_button_cancel"
             android:textAppearance="@color/white"
-            android:text="@string/dialog_house_button"
             android:textSize="14sp"
             app:cornerRadius="3dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/dialog_message_house" />
+            app:layout_constraintTop_toBottomOf="@+id/dialog_button_house" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

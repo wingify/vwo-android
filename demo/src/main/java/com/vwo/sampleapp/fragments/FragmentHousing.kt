@@ -5,21 +5,19 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.widget.AppCompatEditText
-import androidx.appcompat.widget.AppCompatTextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.textfield.TextInputLayout
+import com.vwo.mobile.VWO
 import com.vwo.sample.extensions.inflate
 import com.vwo.sampleapp.R
 import com.vwo.sampleapp.adapters.HousingRecyclerAdapter
 import com.vwo.sampleapp.data.HousingViewModel
 import com.vwo.sampleapp.interfaces.NestedItemClickListener
 import com.vwo.sampleapp.models.HouseListing
-import com.vwo.sampleapp.utils.SharedPreferencesHelper
+import com.vwo.sampleapp.utils.Constants
 import kotlinx.android.synthetic.main.dialog_housing.view.*
 import kotlinx.android.synthetic.main.fragment_house_listing.view.*
 
@@ -47,18 +45,26 @@ class FragmentHousing : Fragment() {
                     val viewInflated = context!!.inflate(R.layout.dialog_housing, null)
                     // Set up the input
                     val title = viewInflated.dialog_title_house
-
                     val message = viewInflated.dialog_message_house
+
+                    title.text = VWO.getStringForKey(Constants.VWOKeys.KEY_DIALOG_HEADING, getString(R.string.dialog_house_title))
+                    message.text = VWO.getStringForKey(Constants.VWOKeys.KEY_DIALOG_CONTENT, getString(R.string.dialog_house_message))
+
                     val button = viewInflated.dialog_button_house
+                    val dismiss = viewInflated.dialog_button_dismiss
 
-
-                    button.text = getString(R.string.dialog_house_button, house.units, house.price)
+                    button.text = getString(R.string.dialog_house_button, house.units, 6)
                     builder.setView(viewInflated)
 
                     val dialog = builder.create()
                     dialog.show()
 
                     button.setOnClickListener {
+                        VWO.trackConversion(Constants.VWOKeys.GOAL_UPGRADE_CLICKED)
+                        dialog.dismiss()
+                    }
+
+                    dismiss.setOnClickListener {
                         dialog.dismiss()
                     }
 
