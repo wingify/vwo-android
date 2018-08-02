@@ -45,11 +45,15 @@ import androidx.appcompat.widget.AppCompatEditText;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.FragmentManager;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 public class MainActivity extends BaseActivity
         implements NavigationView.OnNavigationItemSelectedListener, NavigationToggleListener {
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
+
+    private static final String TAG_HOUSING = "housing";
+    private static final String TAG_SORTING = "sorting";
 
     private static final int ID_FRAGMENT_SORTING = 0;
     private static final int ID_FRAGMENT_HOUSING = 1;
@@ -106,14 +110,14 @@ public class MainActivity extends BaseActivity
 
                     // Do something with idString
                     if (validateAndSetApiKey(apiKey)) {
-                        initVWO(apiKey, true, customKeys);
+                        initVWO(apiKey, false, customKeys);
                     }
                 } else {
-                    initVWO(SharedPreferencesHelper.getApiKey(this), true, null);
+                    initVWO(SharedPreferencesHelper.getApiKey(this), false, null);
                 }
             }
         } else {
-            initVWO(SharedPreferencesHelper.getApiKey(this), true, null);
+            initVWO(SharedPreferencesHelper.getApiKey(this), false, null);
         }
     }
 
@@ -153,9 +157,9 @@ public class MainActivity extends BaseActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_layout_campaign) {
-            loadFragment(null, ID_FRAGMENT_SORTING, null);
+            loadFragment(null, ID_FRAGMENT_SORTING, TAG_SORTING);
         } else if (id == R.id.nav_onboarding_campaign) {
-            loadFragment(null, ID_FRAGMENT_HOUSING, null);
+            loadFragment(null, ID_FRAGMENT_HOUSING, TAG_HOUSING);
         } else if (id == R.id.action_clear_data) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.popup_theme);
             builder.setTitle(getString(R.string.confirm));
@@ -291,9 +295,16 @@ public class MainActivity extends BaseActivity
     private void loadFragments() {
         int fragmentID = getCurrentFragmentID();
         if (fragmentID == ID_FRAGMENT_HOUSING) {
-            new Handler(getMainLooper()).post(() -> loadFragment(null, ID_FRAGMENT_HOUSING, null));
+            new Handler(getMainLooper()).post(() -> loadFragment(null, ID_FRAGMENT_HOUSING, TAG_HOUSING));
         } else {
-            new Handler(getMainLooper()).post(() -> loadFragment(null, ID_FRAGMENT_SORTING, null));
+            new Handler(getMainLooper()).post(() -> loadFragment(null, ID_FRAGMENT_SORTING, TAG_SORTING));
+            // Uncomment below to Auto Reload
+/*            FragmentSortingMain fragmentSortingMain = (FragmentSortingMain) getSupportFragmentManager().findFragmentByTag(TAG_SORTING);
+            if(fragmentSortingMain != null && fragmentSortingMain.isVisible()) {
+                fragmentSortingMain.refreshChildFragments();
+            } else {
+                new Handler(getMainLooper()).post(() -> loadFragment(null, ID_FRAGMENT_SORTING, TAG_SORTING));
+            }*/
         }
     }
 

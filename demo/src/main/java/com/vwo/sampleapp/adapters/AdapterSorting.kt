@@ -33,7 +33,7 @@ private val type: Int, private val itemClickListener: ItemClickListener?) : Recy
 
     override fun onBindViewHolder(holder: AdapterSorting.ViewHolderList, position: Int) {
 
-        holder.itemName.text = mobiles!![position].name
+        holder.itemName.text = mobiles[position].name
         holder.itemImage.setImageResource(mobiles[position].imageId)
         holder.itemPrice.text = String.format(mContext.getString(R.string.price_format), mobiles[position].units, mobiles[position].price)
         holder.itemVendor.text = mContext.resources.getString(R.string.vendor_name, mobiles[position].vendor)
@@ -44,7 +44,7 @@ private val type: Int, private val itemClickListener: ItemClickListener?) : Recy
     }
 
     override fun getItemCount(): Int {
-        return mobiles?.size ?: 0
+        return mobiles.size
     }
 
     fun updateData(newMobiles: List<Mobile>) {

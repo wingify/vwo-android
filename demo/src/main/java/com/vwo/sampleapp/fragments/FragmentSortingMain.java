@@ -36,6 +36,19 @@ public class FragmentSortingMain extends Fragment implements ChangeFragment {
 
     public static final String CURRENT_FRAGMENT_ID = "current_fragment_id";
 
+    public void refreshChildFragments() {
+        if(currentFragmentID == ID_LIST_VARIATION) {
+            FragmentSorting fragment = (FragmentSorting) getChildFragmentManager().findFragmentByTag(TAG_VARIATION);
+            if(fragment != null && fragment.isVisible()) {
+                fragment.onRefreshClicked();
+            } else {
+                loadFragments();
+            }
+        } else {
+            loadFragments();
+        }
+    }
+
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({
             ID_LIST_VARIATION,
@@ -86,16 +99,7 @@ public class FragmentSortingMain extends Fragment implements ChangeFragment {
         loadFragments();
 
         refresh.setOnClickListener(view12 -> {
-            if(currentFragmentID == ID_LIST_VARIATION) {
-                FragmentSorting fragment = (FragmentSorting) getChildFragmentManager().findFragmentByTag(TAG_VARIATION);
-                if(fragment != null && fragment.isVisible()) {
-                    fragment.onRefreshClicked();
-                } else {
-                    loadFragments();
-                }
-            } else {
-                loadFragments();
-            }
+            refreshChildFragments();
         });
 
         return view;
