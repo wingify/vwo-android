@@ -8,7 +8,7 @@
     <string name="str_control">Control</string>
     <string name="str_list_view">(List View)</string>
     <string name="str_grid_view">(Grid View)</string>
-    <string name="title_layout_campaign">Layout Campaign</string>
+    <string name="title_layout_campaign">Sorting Campaign</string>
     <string name="str_variation">Variation</string>
     <string name="vendor_name" formatted="false">by %s</string>
     <string name="email">Email ID</string>

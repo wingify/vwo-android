@@ -80,6 +80,10 @@ public class MainActivity extends BaseActivity
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
+        navigationView = findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+        navigationView.setCheckedItem(R.id.nav_layout_campaign);
+
         progressBar = findViewById(R.id.loading_progress);
         Intent intent = getIntent();
 
@@ -111,10 +115,6 @@ public class MainActivity extends BaseActivity
         } else {
             initVWO(SharedPreferencesHelper.getApiKey(this), true, null);
         }
-
-        navigationView = findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
-        navigationView.setCheckedItem(R.id.nav_layout_campaign);
     }
 
     @Override
