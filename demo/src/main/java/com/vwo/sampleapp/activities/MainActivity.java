@@ -52,7 +52,7 @@ public class MainActivity extends BaseActivity
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
 
     private static final int ID_FRAGMENT_SORTING = 0;
-    private static final int ID_FRAGMENT_ONBOARDING = 1;
+    private static final int ID_FRAGMENT_HOUSING = 1;
     private ProgressBar progressBar;
     private NavigationView navigationView;
     private BroadcastReceiver receiver = new BroadcastReceiver() {
@@ -85,7 +85,7 @@ public class MainActivity extends BaseActivity
 
         Uri data = intent.getData();
         if (data != null) {
-            if(data.getPathSegments().size() == 2) {
+            if (data.getPathSegments().size() == 2) {
                 String apiKey = data.getPathSegments().get(1);
                 if (!TextUtils.isEmpty(apiKey)) {
 
@@ -115,7 +115,6 @@ public class MainActivity extends BaseActivity
         navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         navigationView.setCheckedItem(R.id.nav_layout_campaign);
-
     }
 
     @Override
@@ -155,10 +154,8 @@ public class MainActivity extends BaseActivity
 
         if (id == R.id.nav_layout_campaign) {
             loadFragment(null, ID_FRAGMENT_SORTING, null);
-            navigationView.setCheckedItem(id);
         } else if (id == R.id.nav_onboarding_campaign) {
-            loadFragment(null, ID_FRAGMENT_ONBOARDING, null);
-            navigationView.setCheckedItem(id);
+            loadFragment(null, ID_FRAGMENT_HOUSING, null);
         } else if (id == R.id.action_clear_data) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.popup_theme);
             builder.setTitle(getString(R.string.confirm));
@@ -273,7 +270,7 @@ public class MainActivity extends BaseActivity
                     if (showProgress) {
                         progressBar.setVisibility(View.GONE);
                     }
-                    new Handler(getMainLooper()).post(() -> loadFragment(null, ID_FRAGMENT_SORTING, null));
+                    loadFragments();
                 }
 
                 @Override
@@ -281,13 +278,22 @@ public class MainActivity extends BaseActivity
                     if (showProgress) {
                         progressBar.setVisibility(View.GONE);
                     }
-                    new Handler(getMainLooper()).post(() -> loadFragment(null, ID_FRAGMENT_SORTING, null));
+                    loadFragments();
                 }
             });
             VWO.setCustomVariable("userType", "free");
         } else {
             progressBar.setVisibility(View.GONE);
-            loadFragment(null, ID_FRAGMENT_SORTING, null);
+            loadFragments();
+        }
+    }
+
+    private void loadFragments() {
+        int fragmentID = getCurrentFragmentID();
+        if (fragmentID == ID_FRAGMENT_HOUSING) {
+            new Handler(getMainLooper()).post(() -> loadFragment(null, ID_FRAGMENT_HOUSING, null));
+        } else {
+            new Handler(getMainLooper()).post(() -> loadFragment(null, ID_FRAGMENT_SORTING, null));
         }
     }
 
@@ -302,13 +308,15 @@ public class MainActivity extends BaseActivity
         switch (fragmentId) {
             case ID_FRAGMENT_SORTING:
                 if (getCurrentFragmentID() != fragmentId) {
-                    getSupportFragmentManager().beginTransaction().replace(R.id.container_main, new FragmentSortingMain()).commit();
+                    getSupportFragmentManager().beginTransaction().replace(R.id.container_main, new FragmentSortingMain(), tag).commit();
                 }
+                navigationView.setCheckedItem(R.id.nav_layout_campaign);
                 break;
-            case ID_FRAGMENT_ONBOARDING:
+            case ID_FRAGMENT_HOUSING:
                 if (getCurrentFragmentID() != fragmentId) {
-                    getSupportFragmentManager().beginTransaction().replace(R.id.container_main, new FragmentHousingMain()).commit();
+                    getSupportFragmentManager().beginTransaction().replace(R.id.container_main, new FragmentHousingMain(), tag).commit();
                 }
+                navigationView.setCheckedItem(R.id.nav_onboarding_campaign);
                 break;
         }
         super.loadFragment(bundle, fragmentId, tag);
