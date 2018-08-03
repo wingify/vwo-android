@@ -10,12 +10,9 @@ import com.vwo.mobile.VWO;
 import com.vwo.sampleapp.R;
 import com.vwo.sampleapp.adapters.AdapterSorting;
 import com.vwo.sampleapp.data.MobileViewModel;
-import com.vwo.sampleapp.interfaces.ButtonClickListener;
 import com.vwo.sampleapp.interfaces.ChangeFragment;
 import com.vwo.sampleapp.interfaces.ItemClickListener;
 import com.vwo.sampleapp.utils.Constants;
-
-import org.jetbrains.annotations.NotNull;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -70,7 +67,10 @@ public class FragmentSorting extends Fragment implements ItemClickListener {
         adapterSortingList = new AdapterSorting(null, getContext(), type, this);
         recyclerView.setAdapter(adapterSortingList);
 
-        mobileViewModel.getMobiles().observe(this, mobiles -> adapterSortingList.updateData(mobiles));
+        mobileViewModel.getMobiles().observe(this, mobiles -> {
+            adapterSortingList.updateData(mobiles);
+            layoutManager.smoothScrollToPosition(recyclerView, null, 0);
+        });
 
         return view;
     }
