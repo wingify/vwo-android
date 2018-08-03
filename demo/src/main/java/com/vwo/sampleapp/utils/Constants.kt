@@ -14,8 +14,8 @@ class Constants {
             const val GOAL_PRODUCT_PURCHASED = "productPurchased"
 
             const val TEST_KEY_SORTING = "sorting"
-            const val TEST_KEY_VALUE_SORT_BY_NAME = "Control"
-            const val TEST_KEY_VALUE_SORT_BY_PRICE = "Variation-1"
+            const val TEST_KEY_VALUE_SORT_BY_NAME = "Sort-Alphabetically"
+            const val TEST_KEY_VALUE_SORT_BY_PRICE = "Sort-By-Price"
             const val GOAL_UPGRADE_CLICKED = "upgrade-clicked"
         }
     }
