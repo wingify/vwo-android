@@ -29,55 +29,37 @@ class MobileViewModel : ViewModel() {
                 R.drawable.mi_mix_2, "Mi", "Mi Max 2 Black, 4GB RAM and 32GB ROM", 4)
         val redmi = Mobile(8, "Redmi Y2 (Dark Grey, 32GB)", 129, "$", true, true,
                 R.drawable.redmi_y2, "Mi", "Redmi Y2 Dark Grey, 3GB RAM and 32GB ROM", 5)
-        val onePlus6 =  Mobile(8, "OnePlus 6 (Mirror Black 6GB RAM + 64GB Memory)", 459, "$", true, false,
+        val onePlus6 = Mobile(8, "OnePlus 6 (Mirror Black 6GB RAM + 64GB Memory)", 459, "$", true, false,
                 R.drawable.one_plus_6, "OnePlus", "OnePlus 6 Mirror Black 6GB RAM and 64GB Memory", 5)
 
         mobilesList = listOf(apple, samsung, pixel, ZTE, galaxy, honor, miMix, redmi, onePlus6)
-        sortById()
+        sortByPrice()
     }
 
     @JvmOverloads
     fun sortByPrice(asc: Boolean = true) {
-        if(asc) {
-            val sortedList = mobilesList.sortedWith(Comparator { first, second ->
-                first.price - second.price
-            })
-            mobiles.value = sortedList
+        if (asc) {
+            mobiles.value = mobilesList.sortedBy { it.price }.toList()
         } else {
-            val sortedList = mobilesList.sortedWith(Comparator { first, second ->
-                second.price - first.price
-            })
-            mobiles.value = sortedList
+            mobiles.value = mobilesList.sortedByDescending { it.price }
         }
     }
 
     @JvmOverloads
     fun sortByName(asc: Boolean = true) {
-        if(asc) {
-            val sortedList = mobilesList.sortedWith(Comparator {first, second ->
-                first.name.compareTo(second.name, true)
-            })
-            mobiles.value = sortedList
+        if (asc) {
+            mobiles.value = mobilesList.sortedBy { it.name.toLowerCase() }
         } else {
-            val sortedList = mobilesList.sortedWith(Comparator {first, second ->
-                second.name.compareTo(first.name, true)
-            })
-            mobiles.value = sortedList
+            mobiles.value = mobilesList.sortedByDescending { it.name.toLowerCase() }
         }
     }
 
     @JvmOverloads
     fun sortById(asc: Boolean = true) {
-        if(asc) {
-            val sortedList = mobilesList.sortedWith(Comparator { first, second ->
-                first.id - second.id
-            })
-            mobiles.value = sortedList
+        if (asc) {
+            mobiles.value = mobilesList.sortedBy { it.id }.toList()
         } else {
-            val sortedList = mobilesList.sortedWith(Comparator { first, second ->
-                second.id - first.id
-            })
-            mobiles.value = sortedList
+            mobiles.value = mobilesList.sortedByDescending { it.id }.toList()
         }
     }
 
