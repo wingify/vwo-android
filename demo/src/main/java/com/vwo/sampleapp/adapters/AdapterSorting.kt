@@ -9,7 +9,6 @@ import androidx.appcompat.widget.AppCompatTextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.vwo.sampleapp.R
-import com.vwo.sampleapp.fragments.FragmentSortingMain
 import com.vwo.sampleapp.interfaces.ItemClickListener
 import com.vwo.sampleapp.models.Mobile
 import com.vwo.sampleapp.utils.MobileDiffUtils
@@ -18,8 +17,7 @@ import com.vwo.sampleapp.utils.MobileDiffUtils
  * Created by aman on 07/08/17.
  */
 
-class AdapterSorting(mobiles: MutableList<Mobile>?, private val mContext: Context, @param:FragmentSortingMain.FragmentType @field:FragmentSortingMain.FragmentType
-private val type: Int, private val itemClickListener: ItemClickListener?) : RecyclerView.Adapter<AdapterSorting.ViewHolderList>() {
+class AdapterSorting(mobiles: MutableList<Mobile>?, private val mContext: Context, private val itemClickListener: ItemClickListener?) : RecyclerView.Adapter<AdapterSorting.ViewHolderList>() {
     private val mobiles: MutableList<Mobile> = mutableListOf()
 
     init {

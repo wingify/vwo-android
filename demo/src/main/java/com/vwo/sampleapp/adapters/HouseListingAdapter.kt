@@ -78,8 +78,8 @@ class HouseListingAdapter(private val houses: MutableList<House>?, private val p
     override fun onBindViewHolder(holder: HouseListingViewHolder, position: Int) {
         houses?.get(position)?.let { house ->
             holder.apply {
-                name.text = house.name ?: ""
-                description.text = house.description ?: ""
+                name.text = house.name
+                description.text = house.description
                 holder.image.setImageResource(house.image)
             }
         }

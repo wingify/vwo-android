@@ -30,7 +30,7 @@ public class FragmentSorting extends Fragment implements ItemClickListener {
 
     private static final String LOG_TAG = FragmentSorting.class.getSimpleName();
 
-    public static final String ARG_ITEM = "item";
+    static final String ARG_ITEM = "item";
     private static final String ARG_FRAGMENT_TYPE = "fragment_type";
 
     private int type;
@@ -64,7 +64,7 @@ public class FragmentSorting extends Fragment implements ItemClickListener {
 
         recyclerView.setLayoutManager(layoutManager);
 
-        adapterSortingList = new AdapterSorting(null, getContext(), type, this);
+        adapterSortingList = new AdapterSorting(null, getContext(), this);
         recyclerView.setAdapter(adapterSortingList);
 
         mobileViewModel.getMobiles().observe(this, mobiles -> {
@@ -76,7 +76,7 @@ public class FragmentSorting extends Fragment implements ItemClickListener {
     }
 
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         refreshVariation();
     }
@@ -102,7 +102,7 @@ public class FragmentSorting extends Fragment implements ItemClickListener {
         }
     }
 
-    public static FragmentSorting getInstance(@FragmentSortingMain.FragmentType int type) {
+    static FragmentSorting getInstance(@FragmentSortingMain.FragmentType int type) {
         Bundle bundle = new Bundle();
         bundle.putInt(ARG_FRAGMENT_TYPE, type);
 
