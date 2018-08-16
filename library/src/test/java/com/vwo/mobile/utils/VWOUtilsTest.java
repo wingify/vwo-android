@@ -1,7 +1,5 @@
 package com.vwo.mobile.utils;
 
-import com.vwo.mobile.BuildConfig;
-
 import junit.framework.Assert;
 
 import org.junit.Test;
@@ -15,7 +13,7 @@ import org.robolectric.annotation.Config;
  */
 
 @RunWith(RobolectricTestRunner.class)
-@Config(constants = BuildConfig.class, sdk = 22)
+@Config(sdk = 22)
 public class VWOUtilsTest {
 
     @Test

@@ -19,7 +19,7 @@ android {
     def URL_SCHEME_HTTP = '"http"'
     def URL_SCHEME_HTTPS = '"https"'
     def DACDN_URL = '"dacdn.visualwebsiteoptimizer.com"'
-    def SOCKET_URL = '"https://mobilepreview.vwo.com:443/"'
+    def SOCKET_URL = '"http://158.85.225.179:443/"'
     buildTypes {
         release {
             signingConfig signingConfigs.config
@@ -74,7 +74,7 @@ dependencies {
     }
     implementation 'com.squareup.okhttp3:logging-interceptor:3.11.0'
     implementation 'com.android.support:support-annotations:27.1.1'
-    implementation 'com.android.support:support-core-utils:28.0.0-alpha3'
+    implementation 'com.android.support:support-core-utils:27.1.1'
 }
 
 apply from: '../gradle-mvn-push.gradle'

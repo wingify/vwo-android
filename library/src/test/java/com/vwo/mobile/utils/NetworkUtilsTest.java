@@ -1,7 +1,5 @@
 package com.vwo.mobile.utils;
 
-import com.vwo.mobile.BuildConfig;
-
 import junit.framework.Assert;
 
 import org.junit.Test;
@@ -17,7 +15,7 @@ import java.util.Map;
  */
 
 @RunWith(RobolectricTestRunner.class)
-@Config(constants = BuildConfig.class, sdk = 22)
+@Config(sdk = 22)
 public class NetworkUtilsTest {
     @Test
     public void headersTest() {
@@ -30,6 +28,6 @@ public class NetworkUtilsTest {
         Assert.assertEquals("UTF-8", NetworkUtils.Headers.parseCharset(headers));
 
         headers.remove("Content-Type");
-        Assert.assertEquals("UTF-8", NetworkUtils.Headers.parseCharset(headers) );
+        Assert.assertEquals("UTF-8", NetworkUtils.Headers.parseCharset(headers));
     }
 }

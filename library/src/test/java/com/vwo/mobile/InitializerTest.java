@@ -21,7 +21,7 @@ import org.robolectric.annotation.Config;
  */
 @SuppressWarnings("deprecation")
 @RunWith(RobolectricTestRunner.class)
-@Config(constants = BuildConfig.class, sdk = 17,
+@Config(sdk = 17,
         shadows = {ShadowVWOUtils.class, ShadowHandler.class, ShadowVWODownloader.class})
 public class InitializerTest {
     private final Object lock = new Object();
