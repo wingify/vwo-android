@@ -3,10 +3,10 @@ apply plugin: 'com.android.library'
 android {
     compileSdkVersion 27
     defaultConfig {
-        versionCode 20
+        versionCode Integer.parseInt(project.VERSION_CODE)
         minSdkVersion 14
         targetSdkVersion 27
-        versionName "2.4.0"
+        versionName project.VERSION_NAME
     }
     signingConfigs {
         config {
@@ -71,26 +71,19 @@ dependencies {
     // Required -- JUnit 4 framework
     testImplementation 'junit:junit:4.12'
     // Optional -- Mockito framework
-    testImplementation 'org.mockito:mockito-core:2.18.3'
+    testImplementation 'org.mockito:mockito-core:2.19.0'
     testImplementation 'org.powermock:powermock-api-mockito2:2.0.0-beta.5'
     testImplementation 'org.powermock:powermock-module-junit4:2.0.0-beta.5'
     testImplementation 'org.powermock:powermock-module-junit4-rule:2.0.0-beta.5'
     testImplementation 'org.powermock:powermock-classloading-xstream:2.0.0-beta.5'
-    testImplementation 'org.robolectric:robolectric:3.8'
-    testImplementation 'com.squareup.okhttp3:mockwebserver:3.9.1'
+    testImplementation 'org.robolectric:robolectric:4.0-alpha-3'
+    testImplementation 'com.squareup.okhttp3:mockwebserver:3.11.0'
     implementation('io.socket:socket.io-client:1.0.0') {
         exclude group: 'org.json', module: 'json'
     }
-    implementation 'com.squareup.okhttp3:logging-interceptor:3.10.0'
+    implementation 'com.squareup.okhttp3:logging-interceptor:3.11.0'
     implementation 'com.android.support:support-annotations:27.1.1'
     implementation 'com.android.support:support-core-utils:27.1.1'
 }
 
-ext {
-
-    PUBLISH_GROUP_ID = 'com.vwo'
-    PUBLISH_ARTIFACT_ID = 'mobile'
-    PUBLISH_VERSION = android.defaultConfig.versionName
-}
-
-apply from: 'android-release-jar.gradle'
+apply from: '../gradle-mvn-push.gradle'

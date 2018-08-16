@@ -31,4 +31,11 @@
         <item name="colorAccent">@color/red</item>
     </style>
 
+    <style name="Material.Button" parent="Widget.MaterialComponents.Button">
+        <item name="cornerRadius">2dp</item>
+        <item name="backgroundTint">#4886FF</item>
+        <item name="android:color">#4886FF</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+
 </resources>

@@ -18,22 +18,23 @@ package com.vwo.sampleapp.interfaces;
 
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
+
+import androidx.annotation.Nullable;
 
 /**
  * <p> This interface is basically used for controlling different fragments from a central place
- * such as from an {@link android.app.Activity} or another {@link android.app.Fragment}
- * Controlling {@link android.app.Fragment} or {@link android.app.Activity}
+ * such as from an {@link android.app.Activity} or another {@link androidx.fragment.app.Fragment}
+ * Controlling {@link androidx.fragment.app.Fragment} or {@link android.app.Activity}
  * need to implement this interface</p>
  */
 public interface ChangeFragment {
     /**
-     * <b> This function is used to load a particular {@link android.app.Fragment} from the
-     * controlling {@link android.app.Activity} or {@link android.app.Fragment} </b>
+     * <b> This function is used to load a particular {@link androidx.fragment.app.Fragment} from the
+     * controlling {@link android.app.Activity} or {@link androidx.fragment.app.Fragment} </b>
      *
-     * @param bundle     is the data to be passed to {@link android.app.Fragment}
-     * @param fragmentId is the id that identifies, which {@link android.app.Fragment} is to be loaded
-     * @param tag        is the tag that is attached to {@link android.app.Fragment} which is to be loaded
+     * @param bundle     is the data to be passed to {@link androidx.fragment.app.Fragment}
+     * @param fragmentId is the id that identifies, which {@link androidx.fragment.app.Fragment} is to be loaded
+     * @param tag        is the tag that is attached to {@link androidx.fragment.app.Fragment} which is to be loaded
      */
     void loadFragment(@Nullable Bundle bundle, int fragmentId, @Nullable String tag);
 }

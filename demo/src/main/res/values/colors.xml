@@ -25,4 +25,6 @@
     <color name="button_color_buy_now">#AE7827</color>
     <color name="button_color_add_to_cart">#AFB52C</color>
 
+    <color name="button_color">#4886FF</color>
+
 </resources>

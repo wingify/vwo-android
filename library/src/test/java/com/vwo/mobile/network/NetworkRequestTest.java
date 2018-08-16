@@ -1,6 +1,5 @@
 package com.vwo.mobile.network;
 
-import com.vwo.mobile.BuildConfig;
 import com.vwo.mobile.mock.ShadowNetworkRequest;
 
 import junit.framework.Assert;
@@ -25,7 +24,7 @@ import okhttp3.mockwebserver.MockWebServer;
  */
 
 @RunWith(RobolectricTestRunner.class)
-@Config(constants = BuildConfig.class, sdk = 22,
+@Config(sdk = 22,
         shadows = {ShadowNetworkRequest.class})
 @PrepareForTest(NetworkRequest.class)
 @PowerMockIgnore({"javax.net.ssl.*", "java.net.*"})

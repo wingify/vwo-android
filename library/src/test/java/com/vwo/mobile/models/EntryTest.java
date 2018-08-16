@@ -1,6 +1,5 @@
 package com.vwo.mobile.models;
 
-import com.vwo.mobile.BuildConfig;
 import com.vwo.mobile.utils.Serializer;
 
 import org.junit.Assert;
@@ -15,7 +14,7 @@ import java.io.IOException;
  * Created by aman on Thu 09/11/17 11:18.
  */
 @RunWith(RobolectricTestRunner.class)
-@Config(constants = BuildConfig.class, sdk = 22)
+@Config(sdk = 22)
 public class EntryTest {
 
     @Test
