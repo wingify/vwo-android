@@ -1,5 +1,7 @@
 VWO Android SDK
 ======================================
+[![Status](https://travis-ci.org/wingify/vwo-android.svg)](https://travis-ci.org/wingify/vwo-android)
+
 
 This open source library allows you to A/B Test your Android app.
 
