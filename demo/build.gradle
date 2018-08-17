@@ -73,9 +73,9 @@ androidExtensions {
 }
 
 dependencies {
-    def lifecycle_version = "2.0.0-beta01"
-    def room_version = "2.0.0-beta01"
-    def paging_version = "2.0.0-beta01"
+    def lifecycle_version = "2.0.0-rc01"
+    def room_version = "2.0.0-rc01"
+    def paging_version = "2.0.0-rc01"
     def support_library = "1.0.0-rc01"
     def nav_version = "1.0.0-alpha03"
     def glide = "4.7.1"
