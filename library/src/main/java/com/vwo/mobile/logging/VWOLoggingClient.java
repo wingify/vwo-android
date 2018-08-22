@@ -11,6 +11,7 @@ import com.vwo.mobile.data.VWOMessageQueue;
 import com.vwo.mobile.models.VWOError;
 import com.vwo.mobile.network.VWODownloader;
 import com.vwo.mobile.utils.VWOUrlBuilder;
+import com.vwo.mobile.utils.VWOUtils;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -127,7 +128,12 @@ public class VWOLoggingClient {
                 deviceInfoExtra.put(VWOError.TOTAL_MEMORY, String.valueOf(memoryInfo.totalMem));
             }
         }
+
+        // Will help in identifying logs from same device
+        String deviceUUID = VWOUtils.getDeviceUUID(mVWO.getVwoPreference());
+
         builder.version(VWO.version())
+                .deviceUUID(deviceUUID)
                 .versionCode(VWO.versionCode())
                 .extras(extraData)
                 .deviceInfoExtras(deviceInfoExtra);
