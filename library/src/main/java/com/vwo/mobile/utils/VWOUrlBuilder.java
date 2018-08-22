@@ -23,6 +23,8 @@ public class VWOUrlBuilder {
 
     private static final String VALUE_DEVICE_TYPE = "android";
 
+    private static final String PARAM_HASH = "uHash";
+
     private static final String API_VERSION = "api-version";
     private static final String VALUE_API_VERSION = "2";
     private static final String ACCOUNT_ID = "a";
@@ -81,6 +83,11 @@ public class VWOUrlBuilder {
 
         if (!TextUtils.isEmpty(existingCampaignList)) {
             uriBuilder.appendQueryParameter(EXISTING_CAMPAIGN_LIST, existingCampaignList);
+        }
+
+        String hash = vwo.getConfig().getUserID();
+        if(!TextUtils.isEmpty(hash)) {
+            uriBuilder.appendQueryParameter(PARAM_HASH, hash);
         }
 
         return uriBuilder.build().toString();

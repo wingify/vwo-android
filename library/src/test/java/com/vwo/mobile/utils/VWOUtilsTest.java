@@ -155,4 +155,11 @@ public class VWOUtilsTest {
     public void scaleXxxhdpiTest() {
         Assert.assertEquals(4.0, VWOUtils.getScale(RuntimeEnvironment.application.getApplicationContext()));
     }
+
+    @Test
+    @Config(sdk = Config.ALL_SDKS)
+    public void toMD5HashTest() {
+        Assert.assertEquals("b6a5706e37a909488da39f9ec842a22c", VWOUtils.toMD5Hash("amandeep.anguralla@wingify.com"));
+        Assert.assertNotSame("b6a5706e37a909488da39f9ec842a22c", VWOUtils.toMD5Hash("amandeep.anguralla@wingify.co"));
+    }
 }
