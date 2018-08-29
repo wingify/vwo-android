@@ -76,7 +76,8 @@ dependencies {
     def lifecycle_version = "2.0.0-rc01"
     def room_version = "2.0.0-rc01"
     def paging_version = "2.0.0-rc01"
-    def support_library = "1.0.0-rc01"
+    def support_library = "1.0.0-rc02"
+    def material = "1.0.0-rc01"
     def nav_version = "1.0.0-alpha03"
     def glide = "4.7.1"
     def retrofit_version = "2.4.0"
@@ -90,7 +91,7 @@ dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'androidx.constraintlayout:constraintlayout:1.1.2'
     implementation "androidx.appcompat:appcompat:$support_library"
-    implementation "com.google.android.material:material:$support_library"
+    implementation "com.google.android.material:material:$material"
     implementation "androidx.vectordrawable:vectordrawable:$support_library"
     implementation project(path: ':library')
 //    implementation 'com.vwo:mobile:2.4.2@aar'
@@ -113,7 +114,7 @@ dependencies {
     // optional - Test helpers for LiveData
     testImplementation "androidx.arch.core:core-testing:$lifecycle_version"
 
-    implementation 'androidx.core:core-ktx:1.0.0-rc01'
+    implementation 'androidx.core:core-ktx:1.0.0-rc02'
 }
 repositories {
     mavenCentral()
