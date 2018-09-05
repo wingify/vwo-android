@@ -262,7 +262,7 @@ public class MainActivity extends BaseActivity
             VWOConfig.Builder vwoConfigBuilder = new VWOConfig.Builder();
 //            vwoConfigBuilder.disablePreview();
             vwoConfigBuilder.setOptOut(false);
-            vwoConfigBuilder.userID("amandeep.anguralla@wingify.com");
+            vwoConfigBuilder.userID("Amandeep.anguralla@wingify.com");
             if (keys == null) {
                 keys = new HashMap<>();
             }
