@@ -6,7 +6,7 @@ import android.os.Bundle;
 
 public class VWOActivityLifeCycle implements Application.ActivityLifecycleCallbacks {
 
-    private static int sResumed;
+    private static int sResumed = 1;
     private static int sPaused;
     private static int sStarted;
     private static int sStopped;
@@ -22,12 +22,15 @@ public class VWOActivityLifeCycle implements Application.ActivityLifecycleCallba
 
     @Override
     public void onActivityResumed(Activity activity) {
-        ++sResumed;
+        sResumed++;
     }
 
     @Override
     public void onActivityPaused(Activity activity) {
         ++sPaused;
+        if(sResumed - sPaused >= 1) {
+            sResumed--;
+        }
     }
 
     @Override
