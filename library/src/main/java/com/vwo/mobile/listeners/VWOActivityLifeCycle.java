@@ -22,14 +22,14 @@ public class VWOActivityLifeCycle implements Application.ActivityLifecycleCallba
 
     @Override
     public void onActivityResumed(Activity activity) {
-        sResumed++;
+        ++sResumed;
     }
 
     @Override
     public void onActivityPaused(Activity activity) {
         ++sPaused;
         if(sResumed - sPaused >= 1) {
-            sResumed--;
+            sResumed -= sPaused;
         }
     }
 
