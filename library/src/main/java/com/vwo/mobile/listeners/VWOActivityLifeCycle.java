@@ -29,7 +29,7 @@ public class VWOActivityLifeCycle implements Application.ActivityLifecycleCallba
     public void onActivityPaused(Activity activity) {
         ++sPaused;
         if(sResumed - sPaused >= 1) {
-            sResumed -= sPaused;
+            sResumed = sPaused;
         }
     }
 
