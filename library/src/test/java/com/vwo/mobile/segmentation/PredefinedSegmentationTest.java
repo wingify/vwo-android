@@ -1,6 +1,5 @@
 package com.vwo.mobile.segmentation;
 
-import com.vwo.mobile.BuildConfig;
 import com.vwo.mobile.TestUtils;
 import com.vwo.mobile.VWO;
 import com.vwo.mobile.data.VWOPersistData;
@@ -29,7 +28,7 @@ import java.io.IOException;
  */
 
 @RunWith(RobolectricTestRunner.class)
-@Config(constants = BuildConfig.class, sdk = 22, shadows = {
+@Config(sdk = 22, shadows = {
         VWOPersistDataShadow.class}, manifest = "AndroidManifest.xml")
 @PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "android.*", "org.json.*"})
 @PrepareForTest(VWOPersistData.class)
@@ -86,6 +85,6 @@ public class PredefinedSegmentationTest {
 
 
         PredefinedSegment segmentReturningUser = new PredefinedSegment(vwo, new JSONObject(returningUser));
-        Assert.assertEquals(segmentReturningUser.evaluate(), true);
+        Assert.assertTrue(segmentReturningUser.evaluate());
     }
 }

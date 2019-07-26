@@ -23,13 +23,13 @@ public class ScheduledRequestQueue extends ScheduledThreadPoolExecutor {
     @Override
     protected void afterExecute(Runnable r, Throwable t) {
         super.afterExecute(r, t);
-        VWOLog.e(VWOLog.QUEUE, "after execute", false, false);
+        VWOLog.e(VWOLog.QUEUE, "after execute", true, false);
     }
 
     @Override
     protected void beforeExecute(Thread t, Runnable r) {
         super.beforeExecute(t, r);
-        VWOLog.e(VWOLog.QUEUE, "before execute", false, false);
+        VWOLog.e(VWOLog.QUEUE, "before execute", true, false);
     }
 
     public static ScheduledRequestQueue getInstance(String tag) {

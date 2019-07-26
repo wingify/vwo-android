@@ -3,6 +3,7 @@ package com.vwo.mobile.mock;
 import android.content.Context;
 import android.text.TextUtils;
 
+import com.vwo.mobile.utils.VWOPreference;
 import com.vwo.mobile.utils.VWOUtils;
 
 import org.robolectric.annotation.Implementation;
@@ -34,4 +35,8 @@ public class ShadowVWOUtils {
         return true;
     }
 
+    @Implementation
+    public static String getDeviceUUID(VWOPreference vwoPreference) {
+        return "123e4567e89b12d3a456426655440000";
+    }
 }

@@ -33,6 +33,7 @@ public class VWOConfig {
     private String apiKey;
     private boolean previewEnabled;
     private VWOStatusListener statusListener;
+    private String userID;
 
     private VWOConfig(Builder builder) {
         this.customSegmentationMapping = builder.customSegmentationMapping;
@@ -43,6 +44,7 @@ public class VWOConfig {
         this.activityLifecycleListener = builder.lifecycleListener;
         this.previewEnabled = builder.previewEnabled;
         this.statusListener = builder.statusListener;
+        this.userID = builder.userID;
     }
 
     public Map<String, String> getCustomSegmentationMapping() {
@@ -73,6 +75,11 @@ public class VWOConfig {
 
     public ActivityLifecycleListener getActivityLifecycleListener() {
         return this.activityLifecycleListener;
+    }
+
+    @Nullable
+    public String getUserID() {
+        return this.userID;
     }
 
     @Nullable
@@ -162,6 +169,7 @@ public class VWOConfig {
         private ActivityLifecycleListener lifecycleListener;
         private boolean previewEnabled = true;
         private VWOStatusListener statusListener;
+        private String userID;
 
         /**
          * Generate the Configuration for the VWO SDK which can be passed to
@@ -185,6 +193,20 @@ public class VWOConfig {
         @NonNull
         public Builder setOptOut(boolean optOut) {
             this.optOut = optOut;
+            return this;
+        }
+
+        /**
+         * Function Set the unique ID for the user to serve same variations(subject to few conditions) across devices for users with same ID.
+         *
+         * Note: user id is case sensitive. And this id is not stored anywhere persistently.
+         *
+         * @param userID is the unique user id.
+         * @return the {@link Builder} object {@userId}.
+         */
+        @NonNull
+        public Builder userID(@NonNull String userID) {
+            this.userID = VWOUtils.toMD5Hash(userID);
             return this;
         }
 

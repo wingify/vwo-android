@@ -22,18 +22,19 @@ package com.vwo.sampleapp.activities;
 
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.CallSuper;
-import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
+import com.google.android.material.snackbar.Snackbar;
 import com.vwo.sampleapp.interfaces.ChangeFragment;
 
 import java.util.logging.Logger;
 
+import androidx.annotation.CallSuper;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+
 /**
- * This is the base Activity extending {@link android.support.v7.app.AppCompatActivity}.
+ * This is the base Activity extending {@link AppCompatActivity}.
  * <p>
  * All other activities extends from this activity, following an inheritance pattern.
  * </p>

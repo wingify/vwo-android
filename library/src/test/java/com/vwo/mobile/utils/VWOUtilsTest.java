@@ -1,7 +1,5 @@
 package com.vwo.mobile.utils;
 
-import com.vwo.mobile.BuildConfig;
-
 import junit.framework.Assert;
 
 import org.junit.Test;
@@ -15,7 +13,7 @@ import org.robolectric.annotation.Config;
  */
 
 @RunWith(RobolectricTestRunner.class)
-@Config(constants = BuildConfig.class, sdk = 22)
+@Config(sdk = 22)
 public class VWOUtilsTest {
 
     @Test
@@ -156,5 +154,11 @@ public class VWOUtilsTest {
     @Config(qualifiers = "en-rUS-w240dp-h320dp-xxxhdpi")
     public void scaleXxxhdpiTest() {
         Assert.assertEquals(4.0, VWOUtils.getScale(RuntimeEnvironment.application.getApplicationContext()));
+    }
+
+    @Test
+    public void toMD5HashTest() {
+        Assert.assertEquals("b6a5706e37a909488da39f9ec842a22c", VWOUtils.toMD5Hash("amandeep.anguralla@wingify.com"));
+        Assert.assertNotSame("b6a5706e37a909488da39f9ec842a22c", VWOUtils.toMD5Hash("Amandeep.anguralla@wingify.com"));
     }
 }

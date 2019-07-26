@@ -7,6 +7,7 @@ import com.vwo.mobile.data.VWOMessageQueue;
 import com.vwo.mobile.listeners.VWOActivityLifeCycle;
 import com.vwo.mobile.mock.ShadowLogUtils;
 import com.vwo.mobile.mock.ShadowVWOLog;
+import com.vwo.mobile.mock.ShadowVWOUtils;
 import com.vwo.mobile.mock.VWOMock;
 import com.vwo.mobile.models.Entry;
 import com.vwo.mobile.utils.NetworkUtils;
@@ -28,10 +29,11 @@ import org.robolectric.annotation.Config;
  */
 
 @RunWith(RobolectricTestRunner.class)
-@Config(sdk = 22, shadows = {ShadowVWOLog.class, ShadowLogUtils.class})
+@Config(sdk = 22, shadows = {ShadowVWOLog.class, ShadowLogUtils.class, ShadowVWOUtils.class})
 @PrepareForTest({VWOActivityLifeCycle.class, NetworkUtils.class, VWOLoggingClient.class})
 @PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "android.*", "org.json.*",
-        "com.vwo.mobile.utils.VWOLog", "com.vwo.mobile.logging.LogUtils"})
+        "com.vwo.mobile.utils.VWOLog", "com.vwo.mobile.logging.LogUtils", "com.vwo.mobile.utils.VWOUtils",
+        "com.vwo.mobile.utils.VWOPreference"})
 public class LoggingClientTest {
 
     @Rule

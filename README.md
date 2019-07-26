@@ -1,5 +1,7 @@
 VWO Android SDK
 ======================================
+[![Status](https://travis-ci.org/wingify/vwo-android.svg)](https://travis-ci.org/wingify/vwo-android)
+
 
 This open source library allows you to A/B Test your Android app.
 
@@ -39,9 +41,7 @@ In your top level build.gradle file add the following code under repositories.
     allprojects {
         repositories {
             ...
-            maven {
-                url 'https://raw.githubusercontent.com/wingify/vwo-mobile-android/master/'
-            }
+            mavenCentral()
             ...
         }
     }
@@ -50,7 +50,7 @@ Add dependencies to app/build.gradle file
 
 	dependencies {
 	    ...
-	    implementation 'com.vwo:mobile:2.4.2@aar'
+	    implementation 'com.vwo:mobile:2.5.1@aar'
         implementation ('io.socket:socket.io-client:1.0.0') {
             // excluding org.json which is provided by Android
             exclude group: 'org.json', module: 'json'
