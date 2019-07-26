@@ -5,7 +5,7 @@ package com.vwo.mobile.listeners;
  */
 
 public class ActivityLifecycleListener {
-    private int sResumed;
+    private int sResumed = 1;
     private int sPaused;
     private int sStarted;
     private int sStopped;
@@ -21,6 +21,9 @@ public class ActivityLifecycleListener {
 
     public void onPause() {
         ++sPaused;
+        if (sResumed - sPaused >= 1) {
+            sResumed = sPaused;
+        }
     }
 
     public void onStop() {
