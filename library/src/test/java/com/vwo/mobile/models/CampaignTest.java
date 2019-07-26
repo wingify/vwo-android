@@ -1,6 +1,5 @@
 package com.vwo.mobile.models;
 
-import com.vwo.mobile.BuildConfig;
 import com.vwo.mobile.TestUtils;
 import com.vwo.mobile.VWO;
 import com.vwo.mobile.mock.VWOMock;
@@ -24,7 +23,7 @@ import java.util.Set;
  */
 
 @RunWith(RobolectricTestRunner.class)
-@Config(constants = BuildConfig.class, sdk = 22, shadows = {ShadowLog.class})
+@Config(sdk = 22, shadows = {ShadowLog.class})
 public class CampaignTest {
 
     @Test

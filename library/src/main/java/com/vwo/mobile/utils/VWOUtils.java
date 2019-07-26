@@ -10,12 +10,15 @@ import android.content.res.Resources;
 import android.os.Build;
 import android.support.annotation.CheckResult;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 
 import com.vwo.mobile.constants.AppConstants;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Locale;
@@ -239,5 +242,23 @@ public class VWOUtils {
         }
 
         return Locale.getDefault().getCountry();
+    }
+
+    @Nullable
+    public static String toMD5Hash(String message) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            md.update(message.getBytes());
+            byte[] digest = md.digest();
+            StringBuilder builder = new StringBuilder();
+            for (byte b : digest) {
+                builder.append(String.format("%02x", b & 0xff));
+            }
+            return builder.toString();
+        } catch (NoSuchAlgorithmException exception) {
+            VWOLog.e(VWOLog.CONFIG_LOGS, "Unable to generate MD5 Hash", exception,
+                    true, true);
+        }
+        return null;
     }
 }

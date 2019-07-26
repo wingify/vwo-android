@@ -27,6 +27,7 @@ public class VWOError extends Entry {
     private static final String MESSAGE = "message";
     private static final String TIMESTAMP = "timestamp";
     private static final String ANDROID_VERSION = "android_version";
+    private static final String DEVICE_UUID = "device_uuid";
 
     public static final String MANUFACTURER = "manufacturer";
     public static final String BRAND = "brand";
@@ -62,6 +63,7 @@ public class VWOError extends Entry {
         jsonObject.put(MESSAGE, builder.message);
         jsonObject.put(TIMESTAMP, builder.timestamp);
         jsonObject.put(ANDROID_VERSION, builder.androidVersion);
+        jsonObject.put(DEVICE_UUID, builder.deviceUUID);
         if (builder.extras != null && builder.extras.size() != 0) {
             jsonObject.put(EXTRAS, new JSONObject(builder.extras));
         }
@@ -92,6 +94,7 @@ public class VWOError extends Entry {
         private String androidVersion;
         private Map<String, String> extras;
         private String id;
+        private String deviceUUID;
         private Map<String, String> deviceInfoExtras;
 
 
@@ -129,6 +132,11 @@ public class VWOError extends Entry {
 
         public Builder deviceInfoExtras(Map<String, String> extras) {
             this.deviceInfoExtras = extras;
+            return this;
+        }
+
+        public Builder deviceUUID(String deviceUUID) {
+            this.deviceUUID = deviceUUID;
             return this;
         }
 

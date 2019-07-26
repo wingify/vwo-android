@@ -1,23 +1,26 @@
 package com.vwo.sampleapp.fragments;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.vwo.mobile.VWO;
 import com.vwo.sampleapp.R;
-import com.vwo.sampleapp.adapters.AdapterSortingList;
+import com.vwo.sampleapp.adapters.AdapterSorting;
+import com.vwo.sampleapp.data.MobileViewModel;
 import com.vwo.sampleapp.interfaces.ChangeFragment;
 import com.vwo.sampleapp.interfaces.ItemClickListener;
-import com.vwo.sampleapp.models.Mobile;
+import com.vwo.sampleapp.utils.Constants;
 
-import java.util.ArrayList;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 /**
  * Created by aman on 07/08/17.
@@ -25,12 +28,16 @@ import java.util.ArrayList;
 
 public class FragmentSorting extends Fragment implements ItemClickListener {
 
-    public static final String ARG_ITEM = "item";
+    private static final String LOG_TAG = FragmentSorting.class.getSimpleName();
+
+    static final String ARG_ITEM = "item";
     private static final String ARG_FRAGMENT_TYPE = "fragment_type";
 
     private int type;
 
-    private AdapterSortingList adapterSortingList;
+    private MobileViewModel mobileViewModel;
+
+    private AdapterSorting adapterSortingList;
 
     @Nullable
     @Override
@@ -39,45 +46,63 @@ public class FragmentSorting extends Fragment implements ItemClickListener {
 
         RecyclerView recyclerView = view.findViewById(R.id.sorting_recycler_view);
 
-        ArrayList<Mobile> mobiles = new ArrayList<>();
-        Mobile apple = new Mobile("iPhone 6 (16GB, Black)", 399, "$", true,
-                true, R.drawable.iphone, "Apple", "Also Available in Space Grey and Rose Gold", 4);
-        Mobile samsung = new Mobile("Samsung Galaxy S8 (64GB, Midnight Black)", 799, "$",
-                true, false, R.drawable.s8, "Samsung", "Also available in Maple Gold and Orchid Grey", 4);
-        Mobile pixel = new Mobile("Google Pixel (32GB, Very Silver)", 699, "$", false,
-                false, R.drawable.pixel, "Google", "Also Available in Quite black", 5);
-        Mobile ZTE = new Mobile("ZTE Max XL (16GB)", 699, "$", true, false,
-                R.drawable.zte, "ZTE", "Available in 16GB", 3);
-
-        mobiles.add(apple);
-        mobiles.add(pixel);
-        mobiles.add(samsung);
-        mobiles.add(ZTE);
-
         if (savedInstanceState == null) {
             assert getArguments() != null;
-            type = getArguments().getInt(ARG_FRAGMENT_TYPE, FragmentSortingMain.ID_LIST_CONTROL);
+            type = getArguments().getInt(ARG_FRAGMENT_TYPE, FragmentSortingMain.ID_LIST_VARIATION);
         } else {
-            type = savedInstanceState.getInt(ARG_FRAGMENT_TYPE, FragmentSortingMain.ID_LIST_CONTROL);
+            type = savedInstanceState.getInt(ARG_FRAGMENT_TYPE, FragmentSortingMain.ID_LIST_VARIATION);
         }
 
+        mobileViewModel = ViewModelProviders.of(this).get(MobileViewModel.class);
+
         RecyclerView.LayoutManager layoutManager;
-        if (type == FragmentSortingMain.ID_LIST_CONTROL || type == FragmentSortingMain.ID_LIST_VARIATION) {
+        if (type == FragmentSortingMain.ID_LIST_VARIATION) {
             layoutManager = new LinearLayoutManager(getContext());
         } else {
             layoutManager = new GridLayoutManager(getContext(), 2);
         }
 
-        adapterSortingList = new AdapterSortingList(mobiles, getContext(), type, this);
-
         recyclerView.setLayoutManager(layoutManager);
+
+        adapterSortingList = new AdapterSorting(null, getContext(), this);
         recyclerView.setAdapter(adapterSortingList);
+
+        mobileViewModel.getMobiles().observe(this, mobiles -> {
+            adapterSortingList.updateData(mobiles);
+            layoutManager.smoothScrollToPosition(recyclerView, null, 0);
+        });
 
         return view;
     }
 
+    @Override
+    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        refreshVariation();
+    }
 
-    public static FragmentSorting getInstance(@FragmentSortingMain.FragmentType int type) {
+    private void refreshVariation() {
+        String variationName = VWO.getVariationNameForTestKey(Constants.VWOKeys.TEST_KEY_SORTING);
+
+        if (variationName != null) {
+            Log.d(LOG_TAG, "Received variation: " + variationName);
+            switch (variationName) {
+                case Constants.VWOKeys.TEST_KEY_VALUE_SORT_BY_NAME:
+                    mobileViewModel.sortByName();
+                    break;
+                case Constants.VWOKeys.TEST_KEY_VALUE_SORT_BY_PRICE:
+                    mobileViewModel.sortByPrice();
+                    break;
+                default:
+                    mobileViewModel.sortById();
+                    break;
+            }
+        } else {
+            mobileViewModel.sortById();
+        }
+    }
+
+    static FragmentSorting getInstance(@FragmentSortingMain.FragmentType int type) {
         Bundle bundle = new Bundle();
         bundle.putInt(ARG_FRAGMENT_TYPE, type);
 
@@ -99,11 +124,11 @@ public class FragmentSorting extends Fragment implements ItemClickListener {
             ChangeFragment listener = (ChangeFragment) getParentFragment();
             Bundle bundle = new Bundle();
             bundle.putParcelable(ARG_ITEM, adapterSortingList.getItemAt(position));
-            if (type == FragmentSortingMain.ID_LIST_CONTROL) {
-                listener.loadFragment(bundle, FragmentSortingMain.ID_DETAILS_CONTROL, FragmentSortingMain.TAG_CONTROL);
-            } else {
-                listener.loadFragment(bundle, FragmentSortingMain.ID_DETAILS_VARIATION, FragmentSortingMain.TAG_VARIATION);
-            }
+            listener.loadFragment(bundle, FragmentSortingMain.ID_DETAILS_VARIATION, FragmentSortingMain.TAG_VARIATION);
         }
+    }
+
+    public void onRefreshClicked() {
+        refreshVariation();
     }
 }

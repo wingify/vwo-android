@@ -1,16 +1,7 @@
 package com.vwo.sampleapp.fragments;
 
-import android.databinding.BindingAdapter;
-import android.databinding.DataBindingUtil;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v4.content.res.ResourcesCompat;
-import android.support.v7.widget.AppCompatButton;
-import android.support.v7.widget.AppCompatImageView;
-import android.support.v7.widget.AppCompatTextView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +12,16 @@ import com.vwo.sampleapp.databinding.FragmentItemDetailsBinding;
 import com.vwo.sampleapp.interfaces.ChangeFragment;
 import com.vwo.sampleapp.models.Mobile;
 import com.vwo.sampleapp.utils.Constants;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.AppCompatButton;
+import androidx.appcompat.widget.AppCompatImageView;
+import androidx.appcompat.widget.AppCompatTextView;
+import androidx.core.content.res.ResourcesCompat;
+import androidx.databinding.BindingAdapter;
+import androidx.databinding.DataBindingUtil;
+import androidx.fragment.app.Fragment;
 
 /**
  * Created by aman on 08/08/17.
@@ -47,14 +48,10 @@ public class FragmentItemDetails extends Fragment {
             if (getParentFragment() instanceof ChangeFragment) {
                 ChangeFragment listener = (ChangeFragment) getParentFragment();
                 Bundle bundle = new Bundle();
-                if (fragmentType == FragmentSortingMain.ID_DETAILS_CONTROL) {
-                    listener.loadFragment(bundle, FragmentSortingMain.ID_LIST_CONTROL, FragmentSortingMain.TAG_CONTROL);
-                } else {
-                    listener.loadFragment(bundle, FragmentSortingMain.ID_LIST_VARIATION, FragmentSortingMain.TAG_VARIATION);
-                }
+                listener.loadFragment(bundle, FragmentSortingMain.ID_LIST_VARIATION, FragmentSortingMain.TAG_VARIATION);
             }
         });
-        if(savedInstanceState == null) {
+        if (savedInstanceState == null) {
             assert getArguments() != null;
             mobile = getArguments().getParcelable(ARG_ITEM);
             fragmentType = getArguments().getInt(ARG_FRAGMENT_TYPE);
@@ -77,7 +74,7 @@ public class FragmentItemDetails extends Fragment {
 
     @BindingAdapter("app:inStock")
     public static void setInStock(AppCompatTextView textView, boolean inStock) {
-        if(inStock) {
+        if (inStock) {
             textView.setText(textView.getContext().getString(R.string.text_in_stock));
             textView.setTextColor(ResourcesCompat.getColor(textView.getContext().getResources(),
                     R.color.green, textView.getContext().getTheme()));
@@ -91,7 +88,7 @@ public class FragmentItemDetails extends Fragment {
 
     @BindingAdapter("app:codAvailable")
     public static void setCodAvailable(AppCompatTextView textView, boolean inStock) {
-        if(inStock) {
+        if (inStock) {
             textView.setText(textView.getContext().getString(R.string.cod_available));
         } else {
             textView.setText(textView.getContext().getString(R.string.cod_not_available));
