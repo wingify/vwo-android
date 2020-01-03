@@ -101,10 +101,10 @@ public class VWO implements VWODownloader.DownloadResult, PreviewListener {
         }
         if (sSharedInstance == null) {
             synchronized (lock) {
-                if (sSharedInstance == null) {
+//                if (sSharedInstance == null) { //null check is already defined above.
                     sSharedInstance = new Builder(context)
                             .build();
-                }
+//                }
             }
         }
         return new Initializer(sSharedInstance, apiKey, optOut);
