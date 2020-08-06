@@ -47,4 +47,9 @@ public class ScheduledRequestQueue extends ScheduledThreadPoolExecutor {
     public void setRunning(boolean running) {
         this.running = running;
     }
+
+    public void clearRunningQueue() {
+        queueMap = new WeakHashMap<>();
+        running = false;
+    }
 }

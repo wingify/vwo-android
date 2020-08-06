@@ -22,6 +22,7 @@ import com.vwo.mobile.models.Campaign;
 import com.vwo.mobile.models.VWOError;
 import com.vwo.mobile.models.Variation;
 import com.vwo.mobile.network.ErrorResponse;
+import com.vwo.mobile.network.ScheduledRequestQueue;
 import com.vwo.mobile.network.VWODownloader;
 import com.vwo.mobile.utils.VWOLog;
 import com.vwo.mobile.utils.VWOPreference;
@@ -671,6 +672,7 @@ public class VWO implements VWODownloader.DownloadResult, PreviewListener {
     }
 
     void clearData() {
+        ScheduledRequestQueue.getInstance("").clearRunningQueue();
         messageQueue = null;
         failureQueue = null;
         mVWOUrlBuilder = null;
