@@ -666,6 +666,22 @@ public class VWO implements VWODownloader.DownloadResult, PreviewListener {
         initializePreviewMode();
     }
 
+    public static void clearVWOInstance(Context context) {
+        VWO.with(context.getApplicationContext(), "").clearInstance();
+    }
+
+    void clearData() {
+        messageQueue = null;
+        failureQueue = null;
+        mVWOUrlBuilder = null;
+        mVWOSocket = null;
+        mVWOData = null;
+        mVWOLocalData = null;
+        mVWOStartState = NOT_STARTED;
+        new VWOPreference(getCurrentContext()).clear();
+        mVWOPreference = null;
+        sSharedInstance = null;
+    }
     /**
      * Initialize socket to use VWO in preview mode.
      * Cases in which socket is not initialized:

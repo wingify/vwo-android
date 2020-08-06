@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -18,18 +19,23 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.facebook.stetho.Stetho;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.textfield.TextInputLayout;
+import com.vwo.mobile.Initializer;
 import com.vwo.mobile.VWO;
 import com.vwo.mobile.VWOConfig;
+import com.vwo.mobile.constants.AppConstants;
 import com.vwo.mobile.events.VWOStatusListener;
 import com.vwo.mobile.utils.VWOLog;
+import com.vwo.sampleapp.LoginActivity;
 import com.vwo.sampleapp.R;
 import com.vwo.sampleapp.fragments.FragmentHousingMain;
 import com.vwo.sampleapp.fragments.FragmentSortingMain;
 import com.vwo.sampleapp.interfaces.NavigationToggleListener;
 import com.vwo.sampleapp.utils.SharedPreferencesHelper;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -48,8 +54,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.FragmentManager;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
-public class MainActivity extends BaseActivity
-        implements NavigationView.OnNavigationItemSelectedListener, NavigationToggleListener {
+public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener, NavigationToggleListener {
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
 
     private static final String TAG_HOUSING = "housing";
@@ -68,8 +73,7 @@ public class MainActivity extends BaseActivity
             String variationId = extras.getString(VWO.Constants.ARG_VARIATION_ID);
             String variationName = extras.getString(VWO.Constants.ARG_VARIATION_NAME);
             // Write your Analytics code here
-            Log.d("BroadcastReceiver", String.format("User became part of Campaign %s with id %s " +
-                    "\nVariation %s with id %s", campaignName, campaignId, variationName, variationId));
+            Log.d("BroadcastReceiver", String.format("User became part of Campaign %s with id %s " + "\nVariation %s with id %s", campaignName, campaignId, variationName, variationId));
         }
     };
 
@@ -77,10 +81,10 @@ public class MainActivity extends BaseActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+//        Stetho.initializeWithDefaults(this);
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, null, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, null, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
@@ -90,35 +94,39 @@ public class MainActivity extends BaseActivity
 
         progressBar = findViewById(R.id.loading_progress);
         Intent intent = getIntent();
+        loadFragments();
 
-        Uri data = intent.getData();
-        if (data != null) {
-            if (data.getPathSegments().size() == 2) {
-                String apiKey = data.getPathSegments().get(1);
-                if (!TextUtils.isEmpty(apiKey)) {
 
-                    Log.d(LOG_TAG, "API_KEY: " + apiKey);
-
-                    Set<String> list = data.getQueryParameterNames();
-                    Map<String, String> customKeys = new HashMap<>();
-                    for (String key : list) {
-                        if (key.startsWith("__vwo__")) {
-                            customKeys.put(key.replace("__vwo__", ""), data.getQueryParameter(key));
-                            Log.d(LOG_TAG, String.format(Locale.ENGLISH, "KEY: %s, VALUE: %s", key.replace("__vwo__", ""), data.getQueryParameter(key)));
-                        }
-                    }
-
-                    // Do something with idString
-                    if (validateAndSetApiKey(apiKey)) {
-                        initVWO(apiKey, false, customKeys);
-                    }
-                } else {
-                    initVWO(SharedPreferencesHelper.getApiKey(this), false, null);
-                }
-            }
-        } else {
-            initVWO(SharedPreferencesHelper.getApiKey(this), false, null);
-        }
+        //        Uri data = intent.getData();
+//        if (data != null) {
+//            if (data.getPathSegments().size() == 2) {
+//                String apiKey = data.getPathSegments().get(1);
+//                if (!TextUtils.isEmpty(apiKey)) {
+//
+//                    Log.d(LOG_TAG, "API_KEY: " + apiKey);
+//
+//                    Set<String> list = data.getQueryParameterNames();
+//                    Map<String, String> customKeys = new HashMap<>();
+//                    for (String key : list) {
+//                        if (key.startsWith("__vwo__")) {
+//                            customKeys.put(key.replace("__vwo__", ""), data.getQueryParameter(key));
+//                            Log.d(LOG_TAG, String.format(Locale.ENGLISH, "KEY: %s, VALUE: %s", key.replace("__vwo__", ""), data
+//                                    .getQueryParameter(key)));
+//                        }
+//                    }
+//
+//                    // Do something with idString
+//                    if (validateAndSetApiKey(apiKey)) {
+//                        initVWO(apiKey, false, customKeys);
+//                    }
+//                } else {
+//                    initVWO(SharedPreferencesHelper.getApiKey(this), false, null);
+//                }
+//            }
+//        } else {
+//            initVWO("653a9dcd6c43ce70ec730c9af3c30594-469557", false, null);
+//            //            initVWO(SharedPreferencesHelper.getApiKey(this), false, null);
+//        }
     }
 
     @Override
@@ -164,15 +172,24 @@ public class MainActivity extends BaseActivity
             AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.popup_theme);
             builder.setTitle(getString(R.string.confirm));
             builder.setMessage(getString(R.string.clear_data_message));
-            builder.setNegativeButton(R.string.clear_data_negative, (dialogInterface, i) -> dialogInterface.dismiss());
+            builder.setNegativeButton(R.string.clear_data_negative, (dialogInterface, i) -> dialogInterface
+                    .dismiss());
             builder.setPositiveButton(R.string.clear_data_positive, (dialogInterface, i) -> {
                 SharedPreferencesHelper.clearData(MainActivity.this);
                 dialogInterface.dismiss();
-                Toast.makeText(MainActivity.this, getString(R.string.data_cleared), Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, getString(R.string.data_cleared), Toast.LENGTH_SHORT)
+                        .show();
             });
             builder.show();
         } else if (id == R.id.action_enter_api_key) {
-            showApiKeyDialog();
+//            showApiKeyDialog();
+        } else if (id == R.id.logout) {
+            //clear all the storage
+             VWO.clearVWOInstance(this);
+
+            Intent i = new Intent(MainActivity.this, LoginActivity.class);
+            startActivity(i);
+            finish();
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -190,7 +207,8 @@ public class MainActivity extends BaseActivity
         final AppCompatEditText input = textInputLayout.findViewById(R.id.input);
         final AppCompatTextView currentKeyTextView = viewInflated.findViewById(R.id.current_key);
         if (SharedPreferencesHelper.getApiKey(this) != null) {
-            currentKeyTextView.setText(getString(R.string.str_current_api_key, SharedPreferencesHelper.getApiKey(this)));
+            currentKeyTextView.setText(getString(R.string.str_current_api_key, SharedPreferencesHelper
+                    .getApiKey(this)));
         } else {
             currentKeyTextView.setVisibility(View.GONE);
         }
@@ -243,7 +261,8 @@ public class MainActivity extends BaseActivity
         Pattern pattern = Pattern.compile(regex);
 
         if (!TextUtils.isEmpty(apiKey) && pattern.matcher(apiKey).matches()) {
-            Toast.makeText(MainActivity.this, getString(R.string.api_key_set), Toast.LENGTH_SHORT).show();
+            Toast.makeText(MainActivity.this, getString(R.string.api_key_set), Toast.LENGTH_SHORT)
+                    .show();
             SharedPreferencesHelper.setApiKey(apiKey, MainActivity.this);
             return true;
         }
@@ -252,7 +271,8 @@ public class MainActivity extends BaseActivity
     }
 
 
-    private void initVWO(String key, final boolean showProgress, @Nullable Map<String, String> keys) {
+    private void initVWO(
+            String key, final boolean showProgress, @Nullable Map<String, String> keys) {
         Log.d("INIT", "Calling initVWO");
         if (!TextUtils.isEmpty(key)) {
             if (showProgress) {
@@ -260,32 +280,40 @@ public class MainActivity extends BaseActivity
             }
             VWOLog.setLogLevel(VWOLog.ALL);
             VWOConfig.Builder vwoConfigBuilder = new VWOConfig.Builder();
-//            vwoConfigBuilder.disablePreview();
+            //            vwoConfigBuilder.disablePreview();
             vwoConfigBuilder.setOptOut(false);
             vwoConfigBuilder.userID("Amandeep.anguralla@wingify.com");
             if (keys == null) {
                 keys = new HashMap<>();
             }
-//            keys.put("userType", "free");
+            //            keys.put("userType", "free");
             vwoConfigBuilder.setCustomVariables(keys);
 
-            VWO.with(this, key).config(vwoConfigBuilder.build()).launch(new VWOStatusListener() {
-                @Override
-                public void onVWOLoaded() {
-                    if (showProgress) {
-                        progressBar.setVisibility(View.GONE);
-                    }
-                    loadFragments();
-                }
 
-                @Override
-                public void onVWOLoadFailure(String s) {
-                    if (showProgress) {
-                        progressBar.setVisibility(View.GONE);
-                    }
-                    loadFragments();
-                }
-            });
+            VWO.with(this,key).config((vwoConfigBuilder.build())).launchSynchronously(3000);
+
+            if (showProgress) {
+                progressBar.setVisibility(View.GONE);
+            }
+            loadFragments();
+//            VWO.with(this, key).config(vwoConfigBuilder.build()).launch(new VWOStatusListener() {
+//                @Override
+//                public void onVWOLoaded() {
+//
+//                    if (showProgress) {
+//                        progressBar.setVisibility(View.GONE);
+//                    }
+//                    loadFragments();
+//                }
+//
+//                @Override
+//                public void onVWOLoadFailure(String s) {
+//                    if (showProgress) {
+//                        progressBar.setVisibility(View.GONE);
+//                    }
+//                    loadFragments();
+//                }
+//            });
             VWO.setCustomVariable("userType", "free");
         } else {
             progressBar.setVisibility(View.GONE);
@@ -320,13 +348,17 @@ public class MainActivity extends BaseActivity
         switch (fragmentId) {
             case ID_FRAGMENT_SORTING:
                 if (getCurrentFragmentID() != fragmentId) {
-                    getSupportFragmentManager().beginTransaction().replace(R.id.container_main, new FragmentSortingMain(), tag).commit();
+                    getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.container_main, new FragmentSortingMain(), tag)
+                            .commit();
                 }
                 navigationView.setCheckedItem(R.id.nav_layout_campaign);
                 break;
             case ID_FRAGMENT_HOUSING:
                 if (getCurrentFragmentID() != fragmentId) {
-                    getSupportFragmentManager().beginTransaction().replace(R.id.container_main, new FragmentHousingMain(), tag).commit();
+                    getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.container_main, new FragmentHousingMain(), tag)
+                            .commit();
                 }
                 navigationView.setCheckedItem(R.id.nav_onboarding_campaign);
                 break;

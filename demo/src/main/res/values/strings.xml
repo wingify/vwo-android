@@ -54,4 +54,5 @@
     <string name="dialog_house_title">Use our House Agent!</string>
     <string name="dialog_house_button" formatted="false">Upgrade with %s%d</string>
     <string name="dialog_button_cancel">Cancel</string>
+    <string name="logout">Logout</string>
 </resources>
