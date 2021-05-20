@@ -11,6 +11,7 @@ import com.vwo.mobile.mock.ShadowVWOUtils;
 import com.vwo.mobile.mock.VWOMock;
 import com.vwo.mobile.models.Entry;
 import com.vwo.mobile.utils.NetworkUtils;
+import com.vwo.mobile.utils.VWOPreference;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -22,6 +23,7 @@ import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.rule.PowerMockRule;
 import org.robolectric.RobolectricTestRunner;
+import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
 /**
@@ -46,6 +48,7 @@ public class LoggingClientTest {
 
         PowerMockito.mockStatic(VWOActivityLifeCycle.class);
         PowerMockito.when(VWOActivityLifeCycle.isApplicationInForeground()).thenReturn(true);
+        PowerMockito.when(vwo.getVwoPreference()).thenReturn(new VWOPreference(RuntimeEnvironment.application.getApplicationContext()));
         PowerMockito.mockStatic(NetworkUtils.class);
         PowerMockito.when(NetworkUtils.shouldAttemptNetworkCall(ArgumentMatchers.any(Context.class))).thenReturn(true);
 

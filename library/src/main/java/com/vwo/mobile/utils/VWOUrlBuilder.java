@@ -19,6 +19,7 @@ public class VWOUrlBuilder {
     private static final String PATH_DACDN_GOAL = "track-goal";
 //    private static final String PATH_DACDN_CAMPAIGN = "l.gif";
     private static final String PATH_DACDN_CAMPAIGN = "track-user";
+    private static final String PATH_DACDN_CUSTOM_DIMENSION = "mobile-app/push";
     private static final String PATH_LOG_ERROR = "log-error";
 
     private static final String VALUE_DEVICE_TYPE = "android";
@@ -46,6 +47,8 @@ public class VWOUrlBuilder {
     private static final String EXTRA_DATA = "ed";
     private static final String REVENUE = "r";
     private static final String GOAL_ID = "goal_id";
+    private static final String TAGS = "tags";
+    private static final String SID = "sId";
 
 
     private static final String EXTRA_TIME_IN_SECONDS = "lt";
@@ -88,6 +91,7 @@ public class VWOUrlBuilder {
         String hash = vwo.getConfig().getUserID();
         if(!TextUtils.isEmpty(hash)) {
             uriBuilder.appendQueryParameter(PARAM_HASH, hash);
+            vwo.getVwoPreference().putString(AppConstants.DEVICE_UUID, hash);
         }
 
         return uriBuilder.build().toString();
@@ -101,6 +105,8 @@ public class VWOUrlBuilder {
 
         int session = vwo.getVwoPreference().getInt(AppConstants.DEVICE_SESSION, 0);
 
+        String customDimensionData = vwo.getConfig().getCustomDimension();
+
         Uri.Builder uriBuilder = new Uri.Builder().scheme(DACDN_URL_SCHEME)
                 .authority(DACDN_URL)
                 .appendEncodedPath(PATH_DACDN_CAMPAIGN)
@@ -109,9 +115,13 @@ public class VWOUrlBuilder {
                 .appendQueryParameter(COMBINATION, String.valueOf(variationId))
                 .appendQueryParameter(UUID, deviceUuid)
                 .appendQueryParameter(SESSION, String.valueOf(session))
+                .appendQueryParameter(SID, String.valueOf(System.currentTimeMillis() / 1000))
                 .appendQueryParameter(GOAL_RANDOM, String.valueOf(VWOUtils.getRandomNumber()))
                 .appendQueryParameter(EXTRA_DATA, getExtraData());
 
+        if (customDimensionData != null && !customDimensionData.isEmpty()) {
+            uriBuilder.appendQueryParameter(TAGS, customDimensionData);
+        }
 
         return uriBuilder.build().toString();
     }
@@ -131,6 +141,7 @@ public class VWOUrlBuilder {
                 .appendQueryParameter(UUID, deviceUuid)
                 .appendQueryParameter(SESSION, String.valueOf(session))
                 .appendQueryParameter(GOAL_RANDOM, String.valueOf(VWOUtils.getRandomNumber()))
+                .appendQueryParameter(SID, String.valueOf(System.currentTimeMillis() / 1000))
                 .appendQueryParameter(GOAL_ID, String.valueOf(goalId))
                 .appendQueryParameter(EXTRA_DATA, getExtraData());
 
@@ -139,6 +150,26 @@ public class VWOUrlBuilder {
         String url = uriBuilder.build().toString();
         VWOLog.v(VWOLog.URL_LOGS, "Goal URL: " + url);
         return url;
+    }
+
+    public String getCustomDimensionUrl(String customDimensionKey, String customDimensionValue) {
+        String deviceUuid = VWOUtils.getDeviceUUID(vwo.getVwoPreference());
+
+        String accountId = vwo.getConfig().getAccountId();
+
+        int session = vwo.getVwoPreference().getInt(AppConstants.DEVICE_SESSION, 0);
+
+        Uri.Builder uriBuilder = new Uri.Builder().scheme(DACDN_URL_SCHEME)
+                .authority(DACDN_URL)
+                .appendEncodedPath(PATH_DACDN_CUSTOM_DIMENSION)
+                .appendQueryParameter(GOAL_ACCOUNT_ID, accountId)
+                .appendQueryParameter(UUID, deviceUuid)
+                .appendQueryParameter(TAGS, "{\"u\":{\"" + customDimensionKey + "\":\"" + customDimensionValue + "\"}}")
+                .appendQueryParameter(SESSION, String.valueOf(session))
+                .appendQueryParameter(SID, String.valueOf(System.currentTimeMillis() / 1000))
+                .appendQueryParameter(GOAL_RANDOM, String.valueOf(VWOUtils.getRandomNumber()));
+
+        return uriBuilder.build().toString();
     }
 
     /**

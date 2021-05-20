@@ -27,6 +27,7 @@ import com.vwo.mobile.utils.VWOLog;
 import com.vwo.mobile.utils.VWOPreference;
 import com.vwo.mobile.utils.VWOUrlBuilder;
 import com.vwo.mobile.utils.VWOUtils;
+import com.vwo.mobile.BuildConfig;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -491,6 +492,41 @@ public class VWO implements VWODownloader.DownloadResult, PreviewListener {
             } else {
                 VWOLog.e(VWOLog.NETWORK_LOGS, "SDK not initialized completely",
                         false, false);
+            }
+        }
+    }
+
+    /**
+     * This function can be used to push the custom dimensions to the VWO servers.
+     * This will help to filter out the reports on VWO web-app.
+     *
+     * @param customDimensionKey    is the key for the custom dimension
+     * @param customDimensionValue  is the value corresponding to the given customDimensionKey
+     */
+    public static void pushCustomDimension(@NonNull String customDimensionKey, @NonNull String customDimensionValue) {
+        if (TextUtils.isEmpty(customDimensionKey)) {
+            throw new IllegalArgumentException("customDimensionKey cannot be null or empty");
+        }
+        if (TextUtils.isEmpty(customDimensionValue)) {
+            throw new IllegalArgumentException("customDimensionValue cannot be null or empty");
+        }
+        synchronized (lock) {
+            if (sSharedInstance != null) {
+                if (sSharedInstance.mVWOStartState >= STARTED) {
+                    sSharedInstance.mVWOData.sendCustomDimension(customDimensionKey, customDimensionValue);
+                } else if (sSharedInstance.mVWOStartState == OPTED_OUT) {
+                    VWOLog.e(VWOLog.DATA_LOGS, "Custom Dimension not sent. User opted out.",
+                             true, false);
+                } else if (sSharedInstance.mVWOStartState == FAILED) {
+                    VWOLog.e(VWOLog.DATA_LOGS, "Custom Dimension not sent. SDK Failed to Initialize",
+                             true, false);
+                } else {
+                    VWOLog.e(VWOLog.DATA_LOGS, "Custom Dimension not sent. SDK is initializing",
+                             true, false);
+                }
+            } else {
+                VWOLog.e(VWOLog.NETWORK_LOGS, "SDK not initialized completely",
+                         false, false);
             }
         }
     }

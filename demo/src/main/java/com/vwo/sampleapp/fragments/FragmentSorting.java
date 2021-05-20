@@ -1,6 +1,7 @@
 package com.vwo.sampleapp.fragments;
 
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -86,6 +87,9 @@ public class FragmentSorting extends Fragment implements ItemClickListener {
 
         if (variationName != null) {
             Log.d(LOG_TAG, "Received variation: " + variationName);
+            if (!TextUtils.isEmpty(Constants.VWOKeys.CUSTOM_DIMENSION_KEY) && !TextUtils.isEmpty(Constants.VWOKeys.CUSTOM_DIMENSION_VALUE)) {
+                VWO.pushCustomDimension(Constants.VWOKeys.CUSTOM_DIMENSION_KEY, Constants.VWOKeys.CUSTOM_DIMENSION_VALUE);
+            }
             switch (variationName) {
                 case Constants.VWOKeys.TEST_KEY_VALUE_SORT_BY_NAME:
                     mobileViewModel.sortByName();

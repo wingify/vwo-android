@@ -28,6 +28,7 @@ import com.vwo.sampleapp.R;
 import com.vwo.sampleapp.fragments.FragmentHousingMain;
 import com.vwo.sampleapp.fragments.FragmentSortingMain;
 import com.vwo.sampleapp.interfaces.NavigationToggleListener;
+import com.vwo.sampleapp.utils.Constants;
 import com.vwo.sampleapp.utils.SharedPreferencesHelper;
 
 import java.util.HashMap;
@@ -262,12 +263,15 @@ public class MainActivity extends BaseActivity
             VWOConfig.Builder vwoConfigBuilder = new VWOConfig.Builder();
 //            vwoConfigBuilder.disablePreview();
             vwoConfigBuilder.setOptOut(false);
-            vwoConfigBuilder.userID("Amandeep.anguralla@wingify.com");
+            vwoConfigBuilder.userID("userId");
             if (keys == null) {
                 keys = new HashMap<>();
             }
 //            keys.put("userType", "free");
             vwoConfigBuilder.setCustomVariables(keys);
+//            if (!TextUtils.isEmpty(Constants.VWOKeys.CUSTOM_DIMENSION_KEY) && !TextUtils.isEmpty(Constants.VWOKeys.CUSTOM_DIMENSION_VALUE)) {
+//                vwoConfigBuilder.setCustomDimension(Constants.VWOKeys.CUSTOM_DIMENSION_KEY, Constants.VWOKeys.CUSTOM_DIMENSION_VALUE);
+//            }
 
             VWO.with(this, key).config(vwoConfigBuilder.build()).launch(new VWOStatusListener() {
                 @Override

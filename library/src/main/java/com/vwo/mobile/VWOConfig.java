@@ -19,6 +19,7 @@ import java.util.Map;
 public class VWOConfig {
     // This variable
     private Map<String, String> customSegmentationMapping;
+    private String customDimensionMapping;
     private String mAppKey;
     private String mAccountId;
     private boolean optOut;
@@ -34,6 +35,7 @@ public class VWOConfig {
 
     private VWOConfig(Builder builder) {
         this.customSegmentationMapping = builder.customSegmentationMapping;
+        this.customDimensionMapping = builder.customDimensionMapping;
         if (builder.apiKey != null) {
             setApiKey(builder.apiKey);
         }
@@ -67,6 +69,10 @@ public class VWOConfig {
 
     public String getAppKey() {
         return mAppKey;
+    }
+
+    public String getCustomDimension() {
+        return this.customDimensionMapping;
     }
 
     @Nullable
@@ -157,6 +163,7 @@ public class VWOConfig {
         private boolean previewEnabled = true;
         private VWOStatusListener statusListener;
         private String userID;
+        private String customDimensionMapping;
 
         /**
          * Generate the Configuration for the VWO SDK which can be passed to
@@ -236,6 +243,28 @@ public class VWOConfig {
                 throw new IllegalArgumentException("Mapping cannot be null");
             }
             this.customSegmentationMapping = customSegmentationMapping;
+            return this;
+        }
+
+        /**
+         * This function can be used to set the custom dimensions.
+         * The custom dimensions will sent along with the track-user network call to VWO servers.
+         *
+         * @param customDimensionKey    is the key for the custom dimension
+         * @param customDimensionValue  is the value associated with the customDimensionKey.
+         * @return  the current {@link Builder} object.
+         */
+        @NonNull
+        public Builder setCustomDimension(@NonNull String customDimensionKey, @NonNull String customDimensionValue) {
+            if (TextUtils.isEmpty(customDimensionKey)) {
+                throw new IllegalArgumentException("customDimensionKey cannot be null or empty");
+            }
+
+            if (TextUtils.isEmpty(customDimensionValue)) {
+                throw new IllegalArgumentException("customDimensionValue cannot be null or empty");
+            }
+
+            this.customDimensionMapping = "{\"u\":{\"" + customDimensionKey + "\":\"" + customDimensionValue + "\"}}";
             return this;
         }
 

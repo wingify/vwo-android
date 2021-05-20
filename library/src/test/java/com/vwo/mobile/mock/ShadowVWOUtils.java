@@ -35,8 +35,8 @@ public class ShadowVWOUtils {
         return true;
     }
 
-    @Implementation
-    public static String getDeviceUUID(VWOPreference vwoPreference) {
-        return "123e4567e89b12d3a456426655440000";
-    }
+//    @Implementation
+//    public static String getDeviceUUID(VWOPreference vwoPreference) {
+//        return "123e4567e89b12d3a456426655440000";
+//    }
 }

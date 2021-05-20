@@ -50,7 +50,7 @@ Add dependencies to app/build.gradle file
 
 	dependencies {
 	    ...
-	    implementation 'com.vwo:mobile:2.5.1@aar'
+	    implementation 'com.vwo:mobile:2.6.0@aar'
         implementation ('io.socket:socket.io-client:1.0.0') {
             // excluding org.json which is provided by Android
             exclude group: 'org.json', module: 'json'
@@ -73,7 +73,7 @@ Update your project AndroidManifest.xml with following permissions:
 ```text
     MIT License
     
-    Copyright (c) 2018 Wingify Software Pvt. Ltd.
+    Copyright (c) 2018-2021 Wingify Software Pvt. Ltd.
     
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal

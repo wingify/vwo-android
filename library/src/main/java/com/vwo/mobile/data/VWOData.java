@@ -9,6 +9,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import com.vwo.mobile.VWO;
 import com.vwo.mobile.models.Campaign;
 import com.vwo.mobile.models.CampaignEntry;
+import com.vwo.mobile.models.CustomDimensionEntry;
 import com.vwo.mobile.models.Goal;
 import com.vwo.mobile.models.GoalEntry;
 import com.vwo.mobile.models.Variation;
@@ -258,6 +259,16 @@ public class VWOData {
                     }
                 }
             }
+        }
+    }
+
+    public void sendCustomDimension(String customDimensionKey, String customDimensionValue) {
+        try {
+            String customDimensionUrl = mVWO.getVwoUrlBuilder().getCustomDimensionUrl(customDimensionKey, customDimensionValue);
+            CustomDimensionEntry customDimensionEntry = new CustomDimensionEntry(customDimensionUrl, customDimensionKey, customDimensionValue);
+            mVWO.getMessageQueue().add(customDimensionEntry);
+        } catch (Exception exception) {
+            VWOLog.w(VWOLog.CAMPAIGN_LOGS, "Unable to send custom dimension to VWO server", exception, true);
         }
     }
 
