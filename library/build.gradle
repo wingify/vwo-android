@@ -26,7 +26,7 @@ android {
             it.buildConfigField 'String', 'SCHEME', URL_SCHEME_HTTPS
             it.buildConfigField 'Boolean', 'ENABLE_SOCKET_LOGS', "false"
             it.buildConfigField 'int', 'VERSION_CODE', "${project.VERSION_CODE}"
-            it.buildConfigField 'String', 'VERSION_NAME', "${project.VERSION_NAME}"
+            it.buildConfigField 'String', 'VERSION_NAME', "\"${project.VERSION_NAME}\""
 
             postprocessing {
                 removeUnusedCode true
@@ -44,7 +44,7 @@ android {
             it.buildConfigField 'String', 'SCHEME', URL_SCHEME_HTTP
             it.buildConfigField 'Boolean', 'ENABLE_SOCKET_LOGS', "false"
             it.buildConfigField 'int', 'VERSION_CODE', "${project.VERSION_CODE}"
-            it.buildConfigField 'String', 'VERSION_NAME', "${project.VERSION_NAME}"
+            it.buildConfigField 'String', 'VERSION_NAME', "\"${project.VERSION_NAME}\""
         }
     }
     lintOptions {

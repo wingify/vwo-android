@@ -5,11 +5,11 @@ apply plugin: 'kotlin-kapt'
 apply plugin: "androidx.navigation.safeargs"
 
 android {
-    compileSdkVersion 27
+    compileSdkVersion 28
     defaultConfig {
         versionCode 9
         minSdkVersion 14
-        targetSdkVersion 27
+        targetSdkVersion 28
         applicationId "com.vwo.sampleapp"
         versionCode 1
         versionName "1.0"
