@@ -94,7 +94,7 @@ dependencies {
     implementation "com.google.android.material:material:$material"
     implementation "androidx.vectordrawable:vectordrawable:$support_library"
     implementation project(path: ':library')
-//    implementation 'com.vwo:mobile:2.4.2@aar'
+//    implementation 'com.vwo:mobile:2.6.1@aar'
 //    implementation('io.socket:socket.io-client:1.0.0') {
 //        // excluding org.json which is provided by Android
 //        exclude group: 'org.json', module: 'json'
