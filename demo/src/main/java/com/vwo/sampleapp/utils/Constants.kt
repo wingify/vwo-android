@@ -17,6 +17,8 @@ class Constants {
             const val TEST_KEY_VALUE_SORT_BY_NAME = "Sort-Alphabetically"
             const val TEST_KEY_VALUE_SORT_BY_PRICE = "Sort-By-Price"
             const val GOAL_UPGRADE_CLICKED = "upgrade-clicked"
+            const val CUSTOM_DIMENSION_KEY = ""
+            const val CUSTOM_DIMENSION_VALUE = ""
         }
     }
 }

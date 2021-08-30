@@ -35,6 +35,11 @@
 -renamesourcefileattribute SourceFile
 -keepattributes Exceptions,InnerClasses,Signature,Deprecated,SourceFile,LineNumberTable,*Annotation*,EnclosingMethod
 
+-flattenpackagehierarchy 'com.vwo.mobile'
+-allowaccessmodification
+-useuniqueclassmembernames
+-keeppackagenames doNotKeepAThing
+
 # Support libraries
 -keep class android.support.v4.content.LocalBroadcastManager
 

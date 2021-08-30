@@ -16,6 +16,7 @@ import java.util.regex.Pattern;
 @Keep
 public abstract class Entry implements Serializable {
     public static final String TYPE_GOAL = "goal";
+    public static final String TYPE_CUSTOM_DIMENSION = "custom_dimension";
     public static final String TYPE_CAMPAIGN = "campaign";
 
     private String url;
