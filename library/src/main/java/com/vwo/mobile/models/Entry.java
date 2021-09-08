@@ -1,13 +1,11 @@
 package com.vwo.mobile.models;
 
-import android.support.annotation.Keep;
-import android.support.annotation.NonNull;
+import androidx.annotation.Keep;
+import androidx.annotation.NonNull;
 import android.text.TextUtils;
-import android.util.Patterns;
 
 import java.io.Serializable;
 import java.util.Locale;
-import java.util.regex.Pattern;
 
 /**
  * Created by aman on 16/09/17.

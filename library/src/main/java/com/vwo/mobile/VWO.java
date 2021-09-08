@@ -6,8 +6,8 @@ import android.content.Context;
 import android.hardware.SensorManager;
 import android.os.Build;
 import android.os.Handler;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import android.text.TextUtils;
 
 import com.vwo.mobile.constants.AppConstants;
@@ -27,7 +27,6 @@ import com.vwo.mobile.utils.VWOLog;
 import com.vwo.mobile.utils.VWOPreference;
 import com.vwo.mobile.utils.VWOUrlBuilder;
 import com.vwo.mobile.utils.VWOUtils;
-import com.vwo.mobile.BuildConfig;
 
 import org.json.JSONArray;
 import org.json.JSONException;

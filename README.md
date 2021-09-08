@@ -50,7 +50,7 @@ Add dependencies to app/build.gradle file
 
 	dependencies {
 	    ...
-	    implementation 'com.vwo:mobile:2.6.1@aar'
+	    implementation 'com.vwo:mobile:2.7.0@aar'
         implementation ('io.socket:socket.io-client:1.0.0') {
             // excluding org.json which is provided by Android
             exclude group: 'org.json', module: 'json'

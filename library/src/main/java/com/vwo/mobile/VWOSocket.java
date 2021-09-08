@@ -1,6 +1,6 @@
 package com.vwo.mobile;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.vwo.mobile.events.PreviewListener;
 import com.vwo.mobile.utils.VWOLog;

@@ -1,7 +1,7 @@
 package com.vwo.mobile.data;
 
 import android.content.Context;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import com.vwo.mobile.data.io.QueueFile;
 import com.vwo.mobile.models.Entry;

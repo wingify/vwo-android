@@ -4,18 +4,13 @@ import android.app.ActivityManager;
 import android.content.Context;
 import android.os.Environment;
 import android.os.StatFs;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import android.util.Log;
 
 import com.vwo.mobile.utils.VWOLog;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.io.File;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * Created by aman on Fri 13:14.

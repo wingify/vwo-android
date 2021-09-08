@@ -1,9 +1,9 @@
 package com.vwo.mobile.network;
 
-import android.support.annotation.IntDef;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.annotation.StringDef;
+import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.StringDef;
 
 import com.vwo.mobile.utils.NetworkUtils;
 import com.vwo.mobile.utils.VWOLog;

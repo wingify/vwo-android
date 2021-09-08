@@ -2,9 +2,9 @@ package com.vwo.mobile.data;
 
 
 import android.content.Intent;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.content.LocalBroadcastManager;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.vwo.mobile.VWO;
 import com.vwo.mobile.models.Campaign;
@@ -201,11 +201,13 @@ public class VWOData {
                 intent.putExtra(VWO.Constants.ARG_VARIATION_ID, String.valueOf(campaign.getVariation().getId()));
                 intent.putExtra(VWO.Constants.ARG_VARIATION_NAME, campaign.getVariation().getName());
                 intent.setAction(VWO.Constants.NOTIFY_USER_TRACKING_STARTED);
-                if(VWOUtils.checkIfClassExists("android.support.v4.content.LocalBroadcastManager")) {
+                if(VWOUtils.checkIfClassExists("android.support.v4.content.LocalBroadcastManager") ||
+                    VWOUtils.checkIfClassExists("androidx.localbroadcastmanager.content.LocalBroadcastManager")) {
                     LocalBroadcastManager.getInstance(mVWO.getCurrentContext()).sendBroadcast(intent);
                 } else {
                     VWOLog.e(VWOLog.CAMPAIGN_LOGS, "Add following dependency to your build.gradle" +
-                            "\ncompile 'com.android.support:support-core-utils:26.0.1'\n to receive broadcasts.",
+                            "\nimplementation 'com.android.support:support-core-utils:26.0.1'\n" +
+                                    "\nimplementation 'androidx.legacy:legacy-support-core-utils:1.0.0'\n to receive broadcasts.",
                             false, false);
                 }
                 return true;

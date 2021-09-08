@@ -1,11 +1,11 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 27
+    compileSdkVersion 31
     defaultConfig {
         versionCode Integer.parseInt(project.VERSION_CODE)
         minSdkVersion 14
-        targetSdkVersion 27
+        targetSdkVersion 31
         versionName project.VERSION_NAME
     }
     signingConfigs {
@@ -86,8 +86,8 @@ dependencies {
         exclude group: 'org.json', module: 'json'
     }
     implementation 'com.squareup.okhttp3:logging-interceptor:3.11.0'
-    implementation 'com.android.support:support-annotations:27.1.1'
-    implementation 'com.android.support:support-core-utils:27.1.1'
+    implementation 'androidx.annotation:annotation:1.0.0'
+    implementation 'androidx.legacy:legacy-support-core-utils:1.0.0'
 }
 
 apply from: '../gradle-mvn-push.gradle'

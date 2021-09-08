@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RatingBar;
 
 import com.vwo.mobile.VWO;
 import com.vwo.sampleapp.R;
@@ -22,6 +23,9 @@ import androidx.core.content.res.ResourcesCompat;
 import androidx.databinding.BindingAdapter;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * Created by aman on 08/08/17.
@@ -42,8 +46,9 @@ public class FragmentItemDetails extends Fragment {
         AppCompatImageView closeButton = view.findViewById(R.id.button_close);
         AppCompatButton addToCart = view.findViewById(R.id.button_add_to_cart);
         AppCompatButton buyNow = view.findViewById(R.id.button_buy);
+        RatingBar ratingWidget = view.findViewById(R.id.detail_item_rating);
         addToCart.setOnClickListener(view1 -> VWO.trackConversion("AddToCart"));
-        buyNow.setOnClickListener(view12 -> VWO.trackConversion("Bought", mobile.getPrice()));
+        buyNow.setOnClickListener(view12 -> VWO.trackConversion(Constants.VWOKeys.ORDER_VALUE, mobile.getPrice()));
         closeButton.setOnClickListener(view13 -> {
             if (getParentFragment() instanceof ChangeFragment) {
                 ChangeFragment listener = (ChangeFragment) getParentFragment();
@@ -59,6 +64,25 @@ public class FragmentItemDetails extends Fragment {
             mobile = savedInstanceState.getParcelable(ARG_ITEM);
             fragmentType = savedInstanceState.getInt(ARG_FRAGMENT_TYPE);
         }
+
+        boolean showRatingValue =  VWO.getBooleanForKey(Constants.VWOKeys.SHOW_RATING, false);
+        if (showRatingValue) {
+            ratingWidget.setVisibility(View.VISIBLE);
+        }
+
+        try {
+            String buyNowValue = VWO.getStringForKey(Constants.VWOKeys.BUY_NOW, "{'color': 0xFFFF0000,'text':'Buy Now'}");
+            JSONObject buyNowJson = new JSONObject(buyNowValue);
+            buyNow.setText(buyNowJson.getString("text"));
+            buyNow.setBackgroundColor(buyNowJson.getInt("color"));
+            buyNow.setTextColor(0xFFFFFFFF);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        String addToCartValue = VWO.getStringForKey(Constants.VWOKeys.ADD_TO_CART, "Add To Cart");
+        addToCart.setText(addToCartValue);
+
 
         binding.setMobile(mobile);
         VWO.trackConversion(Constants.VWOKeys.GOAL_PRODUCT_VIEWED);

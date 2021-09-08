@@ -1,7 +1,7 @@
 package com.vwo.mobile.network;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 /**
  * Created by aman on 05/09/17.

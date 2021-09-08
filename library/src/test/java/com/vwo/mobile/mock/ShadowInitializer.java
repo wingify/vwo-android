@@ -1,6 +1,6 @@
 package com.vwo.mobile.mock;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import com.vwo.mobile.Initializer;
 import com.vwo.mobile.events.VWOStatusListener;
