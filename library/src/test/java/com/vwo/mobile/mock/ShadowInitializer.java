@@ -12,7 +12,7 @@ import org.robolectric.annotation.RealObject;
 /**
  * Created by aman on Fri 09/03/18 13:10.
  */
-@Implements(value = com.vwo.mobile.Initializer.class, inheritImplementationMethods = true)
+@Implements(value = com.vwo.mobile.Initializer.class)
 public class ShadowInitializer {
 
     @RealObject

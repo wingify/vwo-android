@@ -217,7 +217,7 @@ public class VWOMessageQueueTest {
 
     @Test
     public void insertRemoveTest() throws InterruptedException {
-        final int count = 10000;
+        final int count = 10;
         Thread writeThread = new Thread(new Runnable() {
             @Override
             public void run() {

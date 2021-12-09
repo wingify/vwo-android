@@ -14,6 +14,7 @@ import org.json.JSONObject;
 public class VWOUrlBuilder {
     private static final String DACDN_URL = BuildConfig.DACDN_URL;
     private static final String DACDN_URL_SCHEME = BuildConfig.SCHEME;
+    private static final String CHINA_DACDN_URL = BuildConfig.CHINA_DACDN_URL;
     private static final String PATH_MOBILE = "mobile";
 //    private static final String PATH_DACDN_GOAL = "c.gif";
     private static final String PATH_DACDN_GOAL = "track-goal";
@@ -74,7 +75,7 @@ public class VWOUrlBuilder {
         double randomNo = VWOUtils.getRandomNumber();
 
         Uri.Builder uriBuilder = new Uri.Builder().scheme(DACDN_URL_SCHEME)
-                .authority(DACDN_URL)
+                .authority(this.vwo.getConfig().getIsChinaCDN() ? CHINA_DACDN_URL : DACDN_URL)
                 .appendEncodedPath(PATH_MOBILE)
                 .appendQueryParameter(API_VERSION, VALUE_API_VERSION)
                 .appendQueryParameter(ACCOUNT_ID, accountId)
@@ -108,7 +109,7 @@ public class VWOUrlBuilder {
         String customDimensionData = vwo.getConfig().getCustomDimension();
 
         Uri.Builder uriBuilder = new Uri.Builder().scheme(DACDN_URL_SCHEME)
-                .authority(DACDN_URL)
+                .authority(this.vwo.getConfig().getIsChinaCDN() ? CHINA_DACDN_URL : DACDN_URL)
                 .appendEncodedPath(PATH_DACDN_CAMPAIGN)
                 .appendQueryParameter(EXPERIMENT_ID, String.valueOf(experimentId))
                 .appendQueryParameter(GOAL_ACCOUNT_ID, accountId)
@@ -133,7 +134,7 @@ public class VWOUrlBuilder {
         int session = vwo.getVwoPreference().getInt(AppConstants.DEVICE_SESSION, 0);
 
         Uri.Builder uriBuilder = new Uri.Builder().scheme(DACDN_URL_SCHEME)
-                .authority(DACDN_URL)
+                .authority(this.vwo.getConfig().getIsChinaCDN() ? CHINA_DACDN_URL : DACDN_URL)
                 .appendEncodedPath(PATH_DACDN_GOAL)
                 .appendQueryParameter(EXPERIMENT_ID, String.valueOf(experimentId))
                 .appendQueryParameter(GOAL_ACCOUNT_ID, accountId)
@@ -160,7 +161,7 @@ public class VWOUrlBuilder {
         int session = vwo.getVwoPreference().getInt(AppConstants.DEVICE_SESSION, 0);
 
         Uri.Builder uriBuilder = new Uri.Builder().scheme(DACDN_URL_SCHEME)
-                .authority(DACDN_URL)
+                .authority(this.vwo.getConfig().getIsChinaCDN() ? CHINA_DACDN_URL : DACDN_URL)
                 .appendEncodedPath(PATH_DACDN_CUSTOM_DIMENSION)
                 .appendQueryParameter(GOAL_ACCOUNT_ID, accountId)
                 .appendQueryParameter(UUID, deviceUuid)
@@ -193,7 +194,7 @@ public class VWOUrlBuilder {
 
     public String getLoggingUrl() {
         Uri.Builder uriBuilder = new Uri.Builder().scheme(DACDN_URL_SCHEME)
-                .authority(DACDN_URL)
+                .authority(this.vwo.getConfig().getIsChinaCDN() ? CHINA_DACDN_URL : DACDN_URL)
                 .appendEncodedPath(PATH_LOG_ERROR);
         return uriBuilder.build().toString();
     }

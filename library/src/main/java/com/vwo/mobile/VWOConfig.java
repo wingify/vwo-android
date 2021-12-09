@@ -32,6 +32,7 @@ public class VWOConfig {
     private boolean previewEnabled;
     private VWOStatusListener statusListener;
     private String userID;
+    private boolean isChinaCDN = false;
 
     private VWOConfig(Builder builder) {
         this.customSegmentationMapping = builder.customSegmentationMapping;
@@ -43,6 +44,7 @@ public class VWOConfig {
         this.previewEnabled = builder.previewEnabled;
         this.statusListener = builder.statusListener;
         this.userID = builder.userID;
+        this.isChinaCDN = builder.isChinaCDN;
     }
 
     public Map<String, String> getCustomSegmentationMapping() {
@@ -91,6 +93,10 @@ public class VWOConfig {
 
     public String getAccountId() {
         return mAccountId;
+    }
+
+    public boolean getIsChinaCDN() {
+        return isChinaCDN;
     }
 
     /**
@@ -164,6 +170,7 @@ public class VWOConfig {
         private VWOStatusListener statusListener;
         private String userID;
         private String customDimensionMapping;
+        private boolean isChinaCDN = false;
 
         /**
          * Generate the Configuration for the VWO SDK which can be passed to
@@ -270,6 +277,11 @@ public class VWOConfig {
 
         Builder setVWOStatusListener(@NonNull VWOStatusListener vwoStatusListener) {
             this.statusListener = vwoStatusListener;
+            return this;
+        }
+
+        public Builder isChinaCDN(boolean chinaCDN) {
+            isChinaCDN = chinaCDN;
             return this;
         }
     }

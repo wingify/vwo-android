@@ -263,6 +263,7 @@ public class MainActivity extends BaseActivity
             VWOConfig.Builder vwoConfigBuilder = new VWOConfig.Builder();
 //            vwoConfigBuilder.disablePreview();
             vwoConfigBuilder.setOptOut(false);
+//            vwoConfigBuilder.isChinaCDN(false);
             vwoConfigBuilder.userID("userId");
             if (keys == null) {
                 keys = new HashMap<>();

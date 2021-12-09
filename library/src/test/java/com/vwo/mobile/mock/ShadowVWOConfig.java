@@ -9,7 +9,7 @@ import org.robolectric.annotation.Implements;
  * Created by aman on Tue 02/01/18 16:05.
  */
 
-@Implements(value = VWOConfig.class, inheritImplementationMethods = true)
+@Implements(value = VWOConfig.class)
 public class ShadowVWOConfig {
 
     @Implementation

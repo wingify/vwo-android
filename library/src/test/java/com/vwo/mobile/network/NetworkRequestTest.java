@@ -33,6 +33,7 @@ public class NetworkRequestTest {
 
     @Before
     public void startServer() throws Exception {
+        System.setProperty("javax.net.ssl.trustStore", "NONE");
         mockWebServer = new MockWebServer();
         InetAddress inetAddress = InetAddress.getByName("127.0.0.1");
         mockWebServer.start(inetAddress, 6666);

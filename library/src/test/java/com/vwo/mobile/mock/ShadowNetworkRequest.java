@@ -17,7 +17,7 @@ import java.net.URL;
  * Created by aman on Tue 12/12/17 16:42.
  */
 
-@Implements(value = NetworkRequest.class, inheritImplementationMethods = true)
+@Implements(value = NetworkRequest.class)
 @PrepareForTest(NetworkRequest.class)
 public class ShadowNetworkRequest {
 
