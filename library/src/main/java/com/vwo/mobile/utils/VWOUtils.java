@@ -179,7 +179,7 @@ public class VWOUtils {
      * @return {@link Boolean#TRUE} is app is running in debug mode else {@link Boolean#FALSE}
      */
     public static boolean isApplicationDebuggable(@NonNull Context context) {
-        return (0 != (context.getApplicationInfo().flags &= ApplicationInfo.FLAG_DEBUGGABLE));
+        return (0 != (context.getApplicationInfo().flags & ApplicationInfo.FLAG_DEBUGGABLE));
     }
 
     /**
