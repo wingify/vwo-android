@@ -9,7 +9,7 @@ Getting Started
 ---------------
 
 1. Download the latest [VWO Android SDK](https://github.com/wingify/vwo-android/releases).
-2. Have a look at [integrating SDK article](https://vwo.com/knowledge/integrating-android-sdk/)
+2. Have a look at [integrating SDK article](https://developers.vwo.com/reference/android-introduction)
    on the VWO Knowledge Base Website.
 
 ## Requirements
