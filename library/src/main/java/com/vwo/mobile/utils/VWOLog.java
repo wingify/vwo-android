@@ -36,6 +36,10 @@ public class VWOLog {
      */
     public static final String URL_LOGS = "url";
     /**
+     *The constant MEG_LOGS.
+     */
+    public static final String MEG_LOGS = "meg";
+    /**
      * The constant SEGMENTATION_LOGS.
      */
     public static final String SEGMENTATION_LOGS = "segmentation";

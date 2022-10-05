@@ -2,6 +2,7 @@ package com.vwo.mobile.data;
 
 
 import android.content.Intent;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
@@ -33,6 +34,7 @@ import java.util.Map;
 public class VWOData {
     public static final String CAMPAIGN_RUNNING = "RUNNING";
     public static final String CAMPAIGN_EXCLUDED = "EXCLUDED";
+    public static final String TYPE_GROUPS = "groups";
 
     private ArrayList<Campaign> mCampaigns;
     private Map<String, Campaign> mVariations;
@@ -49,7 +51,10 @@ public class VWOData {
     public void parseData(JSONArray data) {
         for (int i = 0; i < data.length(); i++) {
             try {
-                switch (data.getJSONObject(i).getString(Campaign.STATUS)) {
+                if (data.getJSONObject(i).optString(Campaign.TYPE).equals(TYPE_GROUPS)) {
+                    continue;
+                }
+                switch (data.getJSONObject(i).optString(Campaign.STATUS)) {
                     case CAMPAIGN_RUNNING:
                         // Only saving campaign if it has a variation object
                         if (data.getJSONObject(i).has(Campaign.VARIATION)) {
@@ -103,8 +108,8 @@ public class VWOData {
 
     /**
      * Returns the value corresponding to he key for a any variation.
-     * @param key is the identifier corresponding to which a value needs to be fetched.
      *
+     * @param key is the identifier corresponding to which a value needs to be fetched.
      * @return the variation value for the given key
      */
     @Nullable
@@ -126,15 +131,15 @@ public class VWOData {
         // Check if key exists in campaigns that user is not part of.
         boolean foundAnyCampaign = false;
         List<Campaign> campaignsToBeRemoved = new ArrayList<>();
-        for(Campaign campaign : mUntrackedCampaigns) {
-            if(campaign.getVariation().hasKey(key)) {
+        for (Campaign campaign : mUntrackedCampaigns) {
+            if (campaign.getVariation().hasKey(key)) {
                 evaluateAndMakeUserPartOfCampaign(campaign);
                 campaignsToBeRemoved.add(campaign);
                 foundAnyCampaign = true;
             }
         }
 
-        if(foundAnyCampaign) {
+        if (foundAnyCampaign) {
             mUntrackedCampaigns.removeAll(campaignsToBeRemoved);
             generateVariationHash();
             variation = getVariationForKey(key);
@@ -151,7 +156,6 @@ public class VWOData {
 
         Variation variation = null;
 
-
         // Check is user is accessing key for the campaign that user is already part of.
         if (mCampaignKeyVariationMap.containsKey(testKey)) {
             variation = mCampaignKeyVariationMap.get(testKey);
@@ -160,15 +164,15 @@ public class VWOData {
         // Check if key exists in campaigns that user is not part of.
         boolean foundAnyCampaign = false;
         List<Campaign> campaignsToBeRemoved = new ArrayList<>();
-        for(Campaign campaign : mUntrackedCampaigns) {
-            if(campaign.getTestKey().equals(testKey)) {
+        for (Campaign campaign : mUntrackedCampaigns) {
+            if (campaign.getTestKey().equals(testKey)) {
                 evaluateAndMakeUserPartOfCampaign(campaign);
                 campaignsToBeRemoved.add(campaign);
                 foundAnyCampaign = true;
             }
         }
 
-        if(foundAnyCampaign) {
+        if (foundAnyCampaign) {
             mUntrackedCampaigns.removeAll(campaignsToBeRemoved);
             generateVariationHash();
             variation = getVariationForCampaign(testKey);
@@ -184,7 +188,7 @@ public class VWOData {
             String campaignRecordUrl = mVWO.getVwoUrlBuilder().getCampaignUrl(campaign.getId(), campaign.getVariation().getId());
             VWOLog.v(VWOLog.CAMPAIGN_LOGS, "Campaign \"" + campaign.getName() + "\" is a new and valid campaign");
             VWOLog.v(VWOLog.CAMPAIGN_LOGS, "Making user part of campaign \"" + campaign.getId() + "\"\nand variation with id: "
-                            + campaign.getVariation().getId());
+                    + campaign.getVariation().getId());
 
             VWOPersistData vwoPersistData = new VWOPersistData(campaign.getId(), campaign.getVariation().getId());
             vwoPersistData.saveCampaign(mVWO.getVwoPreference());
@@ -201,12 +205,12 @@ public class VWOData {
                 intent.putExtra(VWO.Constants.ARG_VARIATION_ID, String.valueOf(campaign.getVariation().getId()));
                 intent.putExtra(VWO.Constants.ARG_VARIATION_NAME, campaign.getVariation().getName());
                 intent.setAction(VWO.Constants.NOTIFY_USER_TRACKING_STARTED);
-                if(VWOUtils.checkIfClassExists("android.support.v4.content.LocalBroadcastManager") ||
-                    VWOUtils.checkIfClassExists("androidx.localbroadcastmanager.content.LocalBroadcastManager")) {
+                if (VWOUtils.checkIfClassExists("android.support.v4.content.LocalBroadcastManager") ||
+                        VWOUtils.checkIfClassExists("androidx.localbroadcastmanager.content.LocalBroadcastManager")) {
                     LocalBroadcastManager.getInstance(mVWO.getCurrentContext()).sendBroadcast(intent);
                 } else {
                     VWOLog.e(VWOLog.CAMPAIGN_LOGS, "Add following dependency to your build.gradle" +
-                            "\nimplementation 'com.android.support:support-core-utils:26.0.1'\n" +
+                                    "\nimplementation 'com.android.support:support-core-utils:26.0.1'\n" +
                                     "\nimplementation 'androidx.legacy:legacy-support-core-utils:1.0.0'\n to receive broadcasts.",
                             false, false);
                 }
@@ -225,7 +229,7 @@ public class VWOData {
      * Mark goal as achieved with revenue
      *
      * @param goalIdentifier is the goal id set on dashboard
-     * @param value is the revenue value
+     * @param value          is the revenue value
      */
     public void saveGoal(@NonNull String goalIdentifier, Double value) {
         for (Campaign campaign : mCampaigns) {
@@ -241,7 +245,7 @@ public class VWOData {
                                 vwoPersistData.saveCampaign(mVWO.getVwoPreference());
 
                                 String goalUrl;
-                                if(value != null) {
+                                if (value != null) {
                                     goalUrl = mVWO.getVwoUrlBuilder().getGoalUrl(campaign.getId(),
                                             campaign.getVariation().getId(), goal.getId(), value);
                                 } else {

@@ -6,8 +6,10 @@ import android.content.Context;
 import android.hardware.SensorManager;
 import android.os.Build;
 import android.os.Handler;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
 import android.text.TextUtils;
 
 import com.vwo.mobile.constants.AppConstants;
@@ -18,6 +20,9 @@ import com.vwo.mobile.events.PreviewListener;
 import com.vwo.mobile.gestures.ShakeDetector;
 import com.vwo.mobile.listeners.VWOActivityLifeCycle;
 import com.vwo.mobile.logging.VWOLoggingClient;
+import com.vwo.mobile.meg.CampaignGroupMapper;
+import com.vwo.mobile.meg.Group;
+import com.vwo.mobile.meg.MutuallyExclusiveGroups;
 import com.vwo.mobile.models.Campaign;
 import com.vwo.mobile.models.VWOError;
 import com.vwo.mobile.models.Variation;
@@ -30,6 +35,7 @@ import com.vwo.mobile.utils.VWOUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -58,6 +64,10 @@ public class VWO implements VWODownloader.DownloadResult, PreviewListener {
         public static final String ARG_CAMPAIGN_NAME = "vwo_campaign_name";
         public static final String ARG_VARIATION_ID = "vwo_variation_id";
         public static final String ARG_VARIATION_NAME = "vwo_variation_name";
+        public static final String CAMPAIGN_TYPE = "type";
+        public static final String CAMPAIGN_ID = "id";
+        private static final String CAMPAIGN_GROUPS = "groups";
+        public static final String CAMPAIGN_TEST_KEY = "test_key";
     }
 
     private static final String MESSAGE_QUEUE_NAME = "queue_v2.vwo";
@@ -73,7 +83,7 @@ public class VWO implements VWODownloader.DownloadResult, PreviewListener {
     private VWOSocket mVWOSocket;
 
     private VWOData mVWOData;
-    private VWOLocalData mVWOLocalData;
+    private static VWOLocalData mVWOLocalData;
     private VWOConfig vwoConfig;
 
     private static Boolean optOut = null;
@@ -108,6 +118,38 @@ public class VWO implements VWODownloader.DownloadResult, PreviewListener {
             }
         }
         return new Initializer(sSharedInstance, apiKey, optOut);
+    }
+
+    public static String getCampaign(String userId, HashMap<String, String> args) {
+
+        if (userId == null || TextUtils.isEmpty(userId)) {
+            // use the (default | random) user id
+            VWOPreference vwoPreference = new VWOPreference(sSharedInstance.getCurrentContext());
+            userId = VWOUtils.getDeviceUUID(vwoPreference);
+        }
+
+        JSONArray campaignsData = mVWOLocalData.getData();
+        JSONObject megGroupsData = new JSONObject();
+
+        if (campaignsData != null && campaignsData.length() > 0) {
+            for (int i = 0; i < campaignsData.length(); i++) {
+                try {
+                    JSONObject groupDataItem = campaignsData.getJSONObject(i);
+                    if (groupDataItem.optString(Constants.CAMPAIGN_TYPE, "").equals(Constants.CAMPAIGN_GROUPS)) {
+                        megGroupsData = groupDataItem;
+                        break;
+                    }
+                } catch (JSONException exception) {
+                    VWOLog.e(VWOLog.DATA_LOGS, exception, true, false);
+                }
+            }
+        }
+
+        HashMap<String, Group> mappedData = CampaignGroupMapper.createAndGetGroups(megGroupsData);
+
+        MutuallyExclusiveGroups meg = new MutuallyExclusiveGroups(userId);
+        meg.addGroups(mappedData);
+        return meg.getCampaign(args, campaignsData);
     }
 
     @Nullable
@@ -178,7 +220,7 @@ public class VWO implements VWODownloader.DownloadResult, PreviewListener {
             try {
                 if (!(data instanceof Integer)) {
                     VWOLog.w(VWOLog.DATA_LOGS, String.format(Locale.ENGLISH, "Casting %s to %s.",
-                            data.getClass().getName(), int.class.getName()),
+                                    data.getClass().getName(), int.class.getName()),
                             false);
                 }
                 return Integer.parseInt(String.valueOf(data));
@@ -228,13 +270,13 @@ public class VWO implements VWODownloader.DownloadResult, PreviewListener {
             try {
                 if (!(data instanceof String)) {
                     VWOLog.w(VWOLog.DATA_LOGS, String.format(Locale.ENGLISH, "Casting %s to %s.",
-                            data.getClass().getName(), String.class.getName()),
+                                    data.getClass().getName(), String.class.getName()),
                             false);
                 }
                 return String.valueOf(data);
             } catch (ClassCastException exception) {
                 VWOLog.e(VWOLog.DATA_LOGS, String.format(Locale.ENGLISH, "Cannot cast %s to %s. Returning Default value.",
-                        data.getClass().getName(), String.class.getName()), exception,
+                                data.getClass().getName(), String.class.getName()), exception,
                         false, false);
             } catch (Exception exception) {
                 VWOLog.e(VWOLog.DATA_LOGS, "Parse Exception. Returning Default value", exception,
@@ -279,13 +321,13 @@ public class VWO implements VWODownloader.DownloadResult, PreviewListener {
             try {
                 if (!(data instanceof Double)) {
                     VWOLog.w(VWOLog.DATA_LOGS, String.format(Locale.ENGLISH, "Casting %s to %s.",
-                            data.getClass().getName(), double.class.getName()),
+                                    data.getClass().getName(), double.class.getName()),
                             false);
                 }
                 return Double.parseDouble(String.valueOf(data));
             } catch (ClassCastException | NumberFormatException exception) {
                 VWOLog.e(VWOLog.DATA_LOGS, String.format(Locale.ENGLISH, "Cannot cast %s to %s. Returning Default value.",
-                        data.getClass().getName(), double.class.getName()), exception,
+                                data.getClass().getName(), double.class.getName()), exception,
                         false, false);
             } catch (Exception exception) {
                 VWOLog.e(VWOLog.DATA_LOGS, "Parse Exception. Returning Default value", exception,
@@ -330,13 +372,13 @@ public class VWO implements VWODownloader.DownloadResult, PreviewListener {
             try {
                 if (!(data instanceof Boolean)) {
                     VWOLog.w(VWOLog.DATA_LOGS, String.format(Locale.ENGLISH, "Casting %s to %s.",
-                            data.getClass().getName(), double.class.getName()),
+                                    data.getClass().getName(), double.class.getName()),
                             false);
                 }
                 return Boolean.parseBoolean(String.valueOf(data));
             } catch (ClassCastException exception) {
                 VWOLog.e(VWOLog.DATA_LOGS, String.format(Locale.ENGLISH, "Cannot cast %s to %s. Returning Default value.",
-                        data.getClass().getName(), boolean.class.getName()), exception,
+                                data.getClass().getName(), boolean.class.getName()), exception,
                         false, false);
             } catch (Exception exception) {
                 VWOLog.e(VWOLog.DATA_LOGS, "Parse Exception. Returning Default value", exception,
@@ -499,8 +541,8 @@ public class VWO implements VWODownloader.DownloadResult, PreviewListener {
      * This function can be used to push the custom dimensions to the VWO servers.
      * This will help to filter out the reports on VWO web-app.
      *
-     * @param customDimensionKey    is the key for the custom dimension
-     * @param customDimensionValue  is the value corresponding to the given customDimensionKey
+     * @param customDimensionKey   is the key for the custom dimension
+     * @param customDimensionValue is the value corresponding to the given customDimensionKey
      */
     public static void pushCustomDimension(@NonNull String customDimensionKey, @NonNull String customDimensionValue) {
         if (TextUtils.isEmpty(customDimensionKey)) {
@@ -515,17 +557,17 @@ public class VWO implements VWODownloader.DownloadResult, PreviewListener {
                     sSharedInstance.mVWOData.sendCustomDimension(customDimensionKey, customDimensionValue);
                 } else if (sSharedInstance.mVWOStartState == OPTED_OUT) {
                     VWOLog.e(VWOLog.DATA_LOGS, "Custom Dimension not sent. User opted out.",
-                             true, false);
+                            true, false);
                 } else if (sSharedInstance.mVWOStartState == FAILED) {
                     VWOLog.e(VWOLog.DATA_LOGS, "Custom Dimension not sent. SDK Failed to Initialize",
-                             true, false);
+                            true, false);
                 } else {
                     VWOLog.e(VWOLog.DATA_LOGS, "Custom Dimension not sent. SDK is initializing",
-                             true, false);
+                            true, false);
                 }
             } else {
                 VWOLog.e(VWOLog.NETWORK_LOGS, "SDK not initialized completely",
-                         false, false);
+                        false, false);
             }
         }
     }

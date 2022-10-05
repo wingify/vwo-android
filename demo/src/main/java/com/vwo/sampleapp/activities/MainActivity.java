@@ -7,6 +7,7 @@ import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -274,9 +275,23 @@ public class MainActivity extends BaseActivity
 //                vwoConfigBuilder.setCustomDimension(Constants.VWOKeys.CUSTOM_DIMENSION_KEY, Constants.VWOKeys.CUSTOM_DIMENSION_VALUE);
 //            }
 
+//            new Handler(Looper.getMainLooper()).postDelayed(() -> {
+//                HashMap<String, String> args = new HashMap<>();
+//                args.put("campaignKey", "491");
+//                args.put("groupId", "10");
+//                VWO.getCampaign("mark@facebook.com", args);
+//            }, 4000);
+
             VWO.with(this, key).config(vwoConfigBuilder.build()).launch(new VWOStatusListener() {
                 @Override
                 public void onVWOLoaded() {
+                    HashMap<String, String> args = new HashMap<>();
+                    args.put("test_key", "TestKey");
+                    args.put("groupId", "4");
+//                    Log.d("ReturnCampaignKey",VWO.getCampaign("mark@facebook.com", args)+" ");
+
+                    Log.d("VariationNameForTestKey", VWO.getVariationNameForTestKey(VWO.getCampaign("mark@facebook.com", args)));
+
                     if (showProgress) {
                         progressBar.setVisibility(View.GONE);
                     }
