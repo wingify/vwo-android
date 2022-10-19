@@ -237,6 +237,47 @@ public class VWO implements VWODownloader.DownloadResult, PreviewListener {
     }
 
     /**
+     * Get an {@link Integer} value for a given key and testKey. returns control if key does not exist in any
+     * Campaigns.
+     * <p>
+     * <p>
+     * This function will return an {@link Integer} value for a given key and testKey. This function will search for key in
+     * all the currently active campaigns and match the selected campaign testKey with input testKey.
+     * </p>
+     *
+     * @param testKey      is the testKey of the campaign which is used along with key to fetch the variation.
+     * @param key          is the key for which variation is to be requested
+     * @param defaultValue is the {@link Integer} value to be returned in case of missing key or invalid value.
+     * @return an {@link Integer} value corresponding to given key.
+     */
+    public static int getIntegerForKey(@NonNull String testKey, @NonNull String key, int defaultValue) {
+        if (TextUtils.isEmpty(key)) {
+            throw new NullPointerException("key cannot be null or empty");
+        }
+        Object data = getObjectForKey(testKey, key, defaultValue);
+        if (data == null) {
+            return defaultValue;
+        } else {
+            try {
+                if (!(data instanceof Integer)) {
+                    VWOLog.w(VWOLog.DATA_LOGS, String.format(Locale.ENGLISH, "Casting %s to %s.",
+                                    data.getClass().getName(), int.class.getName()),
+                            false);
+                }
+                return Integer.parseInt(String.valueOf(data));
+            } catch (ClassCastException | NumberFormatException exception) {
+                VWOLog.e(VWOLog.DATA_LOGS, String.format(Locale.ENGLISH,
+                        "Cannot cast %s to %s. Returning default value",
+                        data.getClass().getName(), int.class.getName()), exception, false, false);
+            } catch (Exception exception) {
+                VWOLog.e(VWOLog.DATA_LOGS, "Parse Exception. Returning Default value", exception,
+                        false, false);
+            }
+        }
+        return defaultValue;
+    }
+
+    /**
      * Get a {@link String} value for a given key. returns control if key does not exist in any
      * Campaigns.
      * <p>
@@ -264,6 +305,48 @@ public class VWO implements VWODownloader.DownloadResult, PreviewListener {
             throw new NullPointerException("key cannot be null or empty");
         }
         Object data = getObjectForKey(key, defaultValue);
+        if (data == null) {
+            return defaultValue;
+        } else {
+            try {
+                if (!(data instanceof String)) {
+                    VWOLog.w(VWOLog.DATA_LOGS, String.format(Locale.ENGLISH, "Casting %s to %s.",
+                                    data.getClass().getName(), String.class.getName()),
+                            false);
+                }
+                return String.valueOf(data);
+            } catch (ClassCastException exception) {
+                VWOLog.e(VWOLog.DATA_LOGS, String.format(Locale.ENGLISH, "Cannot cast %s to %s. Returning Default value.",
+                                data.getClass().getName(), String.class.getName()), exception,
+                        false, false);
+            } catch (Exception exception) {
+                VWOLog.e(VWOLog.DATA_LOGS, "Parse Exception. Returning Default value", exception,
+                        false, false);
+                return defaultValue;
+            }
+        }
+        return defaultValue;
+    }
+
+    /**
+     * Get an {@link String} value for a given key and testKey. returns control if key does not exist in any
+     * Campaigns.
+     * <p>
+     * <p>
+     * This function will return an {@link String} value for a given key and testKey. This function will search for key in
+     * all the currently active campaigns and match the selected campaign testKey with input testKey.
+     * </p>
+     *
+     * @param testKey      is the testKey of the campaign which is used along with key to fetch the variation.
+     * @param key          is the key for which variation is to be requested
+     * @param defaultValue is the {@link String} value to be returned in case of missing key or invalid value.
+     * @return an {@link String} value corresponding to given key.
+     */
+    public static String getStringForKey(@NonNull String testKey, @NonNull String key, @Nullable String defaultValue) {
+        if (TextUtils.isEmpty(key)) {
+            throw new NullPointerException("key cannot be null or empty");
+        }
+        Object data = getObjectForKey(testKey, key, defaultValue);
         if (data == null) {
             return defaultValue;
         } else {
@@ -339,6 +422,48 @@ public class VWO implements VWODownloader.DownloadResult, PreviewListener {
     }
 
     /**
+     * Get an {@link Double} value for a given key and testKey. returns control if key does not exist in any
+     * Campaigns.
+     * <p>
+     * <p>
+     * This function will return an {@link Double} value for a given key and testKey. This function will search for key in
+     * all the currently active campaigns and match the selected campaign testKey with input testKey.
+     * </p>
+     *
+     * @param testKey      is the testKey of the campaign which is used along with key to fetch the variation.
+     * @param key          is the key for which variation is to be requested
+     * @param defaultValue is the {@link Double} value to be returned in case of missing key or invalid value.
+     * @return an {@link Double} value corresponding to given key.
+     */
+    public static double getDoubleForKey(@NonNull String testKey, @NonNull String key, double defaultValue) {
+        if (TextUtils.isEmpty(key)) {
+            throw new NullPointerException("key cannot be empty");
+        }
+        Object data = getObjectForKey(testKey, key, defaultValue);
+        if (data == null) {
+            return defaultValue;
+        } else {
+            try {
+                if (!(data instanceof Double)) {
+                    VWOLog.w(VWOLog.DATA_LOGS, String.format(Locale.ENGLISH, "Casting %s to %s.",
+                                    data.getClass().getName(), double.class.getName()),
+                            false);
+                }
+                return Double.parseDouble(String.valueOf(data));
+            } catch (ClassCastException | NumberFormatException exception) {
+                VWOLog.e(VWOLog.DATA_LOGS, String.format(Locale.ENGLISH, "Cannot cast %s to %s. Returning Default value.",
+                                data.getClass().getName(), double.class.getName()), exception,
+                        false, false);
+            } catch (Exception exception) {
+                VWOLog.e(VWOLog.DATA_LOGS, "Parse Exception. Returning Default value", exception,
+                        false, false);
+            }
+        }
+
+        return defaultValue;
+    }
+
+    /**
      * Get a {@link Boolean} value for a given key. returns control if key does not exist in any
      * Campaigns.
      * <p>
@@ -366,6 +491,47 @@ public class VWO implements VWODownloader.DownloadResult, PreviewListener {
             throw new NullPointerException("key cannot be null or empty");
         }
         Object data = getObjectForKey(key, defaultValue);
+        if (data == null) {
+            return defaultValue;
+        } else {
+            try {
+                if (!(data instanceof Boolean)) {
+                    VWOLog.w(VWOLog.DATA_LOGS, String.format(Locale.ENGLISH, "Casting %s to %s.",
+                                    data.getClass().getName(), double.class.getName()),
+                            false);
+                }
+                return Boolean.parseBoolean(String.valueOf(data));
+            } catch (ClassCastException exception) {
+                VWOLog.e(VWOLog.DATA_LOGS, String.format(Locale.ENGLISH, "Cannot cast %s to %s. Returning Default value.",
+                                data.getClass().getName(), boolean.class.getName()), exception,
+                        false, false);
+            } catch (Exception exception) {
+                VWOLog.e(VWOLog.DATA_LOGS, "Parse Exception. Returning Default value", exception,
+                        false, false);
+            }
+        }
+        return defaultValue;
+    }
+
+    /**
+     * Get an {@link Boolean} value for a given key and testKey. returns control if key does not exist in any
+     * Campaigns.
+     * <p>
+     * <p>
+     * This function will return an {@link Boolean} value for a given key and testKey. This function will search for key in
+     * all the currently active campaigns and match the selected campaign testKey with input testKey.
+     * </p>
+     *
+     * @param testKey      is the testKey of the campaign which is used along with key to fetch the variation.
+     * @param key          is the key for which variation is to be requested
+     * @param defaultValue is the {@link Boolean} value to be returned in case of missing key or invalid value.
+     * @return an {@link Boolean} value corresponding to given key.
+     */
+    public static boolean getBooleanForKey(@NonNull String testKey, @NonNull String key, boolean defaultValue) {
+        if (TextUtils.isEmpty(key)) {
+            throw new NullPointerException("key cannot be null or empty");
+        }
+        Object data = getObjectForKey(testKey, key, defaultValue);
         if (data == null) {
             return defaultValue;
         } else {
@@ -419,6 +585,27 @@ public class VWO implements VWODownloader.DownloadResult, PreviewListener {
     }
 
     /**
+     * Get variation for a given key and testKey. returns control if key does not exist in any
+     * Campaigns.
+     * <p>
+     * <p>
+     * This function will return a variation for a given key and testKey. This function will search for key in
+     * all the currently active campaigns and match the selected campaign testKey with input testKey.
+     * </p>
+     *
+     * @param testKey      is the testKey of the campaign which is used along with key to fetch the variation.
+     * @param key          is the key for which variation is to be requested
+     * @param defaultValue is the {@link Boolean} value to be returned in case of missing key or invalid value.
+     * @return an {@link Object} corresponding to given key.
+     * @deprecated use {@link VWO#getObjectForKey(String, Object)} instead
+     */
+    @Deprecated
+    @Nullable
+    public static Object getVariationForKey(@NonNull String testKey, @NonNull String key, @Nullable Object defaultValue) {
+        return getObjectForKey(testKey, key, defaultValue);
+    }
+
+    /**
      * Get variation for a given key. returns control if key does not exist in any
      * Campaigns.
      * <p>
@@ -454,6 +641,54 @@ public class VWO implements VWODownloader.DownloadResult, PreviewListener {
                         data = sSharedInstance.getVwoSocket().getVariationForKey(key);
                     } else {
                         data = sSharedInstance.getVwoData().getVariationForKey(key);
+                    }
+                } else if (sSharedInstance.mVWOStartState == OPTED_OUT) {
+                    message = "User opted out.";
+                } else if (sSharedInstance.mVWOStartState == FAILED) {
+                    message = "SDK failed to Initialize.";
+                } else {
+                    message = "SDK is initializing";
+                }
+            } else {
+                message = "SDK is not initialized";
+            }
+        }
+        if (data == null) {
+            VWOLog.w(VWOLog.DATA_LOGS, String.format(Locale.ENGLISH,
+                    "No variation found for key: \"%s\"\nReason: %s, returning default value",
+                    key, !TextUtils.isEmpty(message) ? message : "Key does not exist"), false);
+            return defaultValue;
+        } else {
+            return data;
+        }
+    }
+
+    /**
+     * Get variation for a given key and testKey. returns control if key does not exist in any
+     * Campaigns.
+     * <p>
+     * <p>
+     * This function will return a variation for a given key and testKey. This function will search for key in
+     * all the currently active campaigns and match the selected campaign testKey with input testKey.
+     * </p>
+     * @param testKey      is the testKey of the campaign which is used along with key to fetch the variation.
+     * @param key          is the key for which variation is to be requested
+     * @param defaultValue is the default value to be returned if key is not found in any of the campaigns.
+     * @return an {@link Object} corresponding to given key.
+     */
+    public static Object getObjectForKey(@NonNull String testKey, @NonNull String key, @Nullable Object defaultValue) {
+        if (TextUtils.isEmpty(key)) {
+            throw new NullPointerException("key cannot be null or empty");
+        }
+        Object data = null;
+        String message = "";
+        synchronized (lock) {
+            if (sSharedInstance != null) {
+                if (sSharedInstance.mVWOStartState >= STARTED) {
+                    if (sSharedInstance.isEditMode()) {
+                        data = sSharedInstance.getVwoSocket().getVariationForKey(key);
+                    } else {
+                        data = sSharedInstance.getVwoData().getVariationForKey(testKey, key);
                     }
                 } else if (sSharedInstance.mVWOStartState == OPTED_OUT) {
                     message = "User opted out.";

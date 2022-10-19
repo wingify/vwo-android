@@ -262,35 +262,65 @@ public class MainActivity extends BaseActivity
             }
             VWOLog.setLogLevel(VWOLog.ALL);
             VWOConfig.Builder vwoConfigBuilder = new VWOConfig.Builder();
-//            vwoConfigBuilder.disablePreview();
-            vwoConfigBuilder.setOptOut(false);
-//            vwoConfigBuilder.isChinaCDN(false);
-            vwoConfigBuilder.userID("userId");
-            if (keys == null) {
-                keys = new HashMap<>();
-            }
-//            keys.put("userType", "free");
-            vwoConfigBuilder.setCustomVariables(keys);
-//            if (!TextUtils.isEmpty(Constants.VWOKeys.CUSTOM_DIMENSION_KEY) && !TextUtils.isEmpty(Constants.VWOKeys.CUSTOM_DIMENSION_VALUE)) {
-//                vwoConfigBuilder.setCustomDimension(Constants.VWOKeys.CUSTOM_DIMENSION_KEY, Constants.VWOKeys.CUSTOM_DIMENSION_VALUE);
-//            }
 
-//            new Handler(Looper.getMainLooper()).postDelayed(() -> {
-//                HashMap<String, String> args = new HashMap<>();
-//                args.put("campaignKey", "491");
-//                args.put("groupId", "10");
-//                VWO.getCampaign("mark@facebook.com", args);
-//            }, 4000);
+            /* use the below line of code to disable preview mode
+
+                     vwoConfigBuilder.disablePreview();
+            **/
+
+            vwoConfigBuilder.setOptOut(false);
+
+            //vwoConfigBuilder.isChinaCDN(false);
+
+            /* use the below commented code to set userId
+
+                     vwoConfigBuilder.userID("userId");
+            **/
+
+            /* use below code to set customVariables
+
+                     if (keys == null) {
+                         keys = new HashMap<>();
+                     }
+                     keys.put("userType", "free");
+                     vwoConfigBuilder.setCustomVariables(keys);
+            **/
 
             VWO.with(this, key).config(vwoConfigBuilder.build()).launch(new VWOStatusListener() {
                 @Override
                 public void onVWOLoaded() {
-                    HashMap<String, String> args = new HashMap<>();
-                    args.put("test_key", "TestKey");
-                    args.put("groupId", "4");
-//                    Log.d("ReturnCampaignKey",VWO.getCampaign("mark@facebook.com", args)+" ");
 
-                    Log.d("VariationNameForTestKey", VWO.getVariationNameForTestKey(VWO.getCampaign("mark@facebook.com", args)));
+                    /* use the below commented code to use MEG functionality
+
+                             HashMap<String, String> args = new HashMap<>();
+                             args.put("test_key", "TestKey");
+                             args.put("groupId", "4");
+                             Log.d("ReturnCampaignKey",VWO.getCampaign("mark@facebook.com", args)+" ");
+                             Log.d("VariationNameForTestKey", VWO.getVariationNameForTestKey(VWO.getCampaign("mark@facebook.com", args)));
+                    **/
+
+                    /* use the below commented code to get the variationName and perform actions accordingly
+
+                            String testKey = "Camp test 1";
+                            String variationName = VWO.getVariationNameForTestKey(testKey);
+                            if (variationName != null && variationName == "Control") {
+                                // TODO: code for Control
+                            } else if (variationName != null && variationName == "Variation-1") {
+                                // TODO: code for Variation-1
+                            } else {
+                                // TODO: default case
+                            }
+                    **/
+
+                    /* use the below code to make visitor part of all campaigns who are using this TestVariable
+
+                             int testVariable1 = VWO.getIntegerForKey("TestVariable1", 1);
+                    **/
+
+                    /* use the below code to make visitor part of the specific campaign whose testKey we are using
+
+                             int testVariable1 = VWO.getIntegerForKey(testKey, "TestVariable1", 1);
+                    **/
 
                     if (showProgress) {
                         progressBar.setVisibility(View.GONE);

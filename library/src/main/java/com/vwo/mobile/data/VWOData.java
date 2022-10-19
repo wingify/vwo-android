@@ -148,6 +148,48 @@ public class VWOData {
         return variation;
     }
 
+    /**
+     * Returns the value corresponding to the testKey of the campaign and the key for a any variation.
+     *
+     * @param testKey is the identifier containing the value of testKey of campaign corresponding to which a value needs to be fetched.
+     * @param key is the identifier corresponding to which a value needs to be fetched.
+     * @return the variation value for the given key
+     */
+    @Nullable
+    public Object getVariationForKey(String testKey, String key) {
+
+        if (mVariations == null) {
+            return null;
+        }
+
+        Object variation = null;
+
+        // Check if user is accessing key for the campaign that user is already part of.
+        if (mVariations.containsKey(key)) {
+            Campaign campaign = mVariations.get(key);
+            variation = campaign.getVariation().getKey(key);
+        }
+
+        // Check if key exists in campaigns that user is not part of.
+        boolean foundAnyCampaign = false;
+        List<Campaign> campaignsToBeRemoved = new ArrayList<>();
+        for (Campaign campaign : mUntrackedCampaigns) {
+            if (campaign.getVariation().hasKey(key) && campaign.getTestKey().equals(testKey)) {
+                evaluateAndMakeUserPartOfCampaign(campaign);
+                campaignsToBeRemoved.add(campaign);
+                foundAnyCampaign = true;
+            }
+        }
+
+        if (foundAnyCampaign) {
+            mUntrackedCampaigns.removeAll(campaignsToBeRemoved);
+            generateVariationHash();
+            variation = getVariationForKey(testKey, key);
+        }
+
+        return variation;
+    }
+
     @Nullable
     public Variation getVariationForCampaign(String testKey) {
         if (mVariations == null) {
