@@ -1,11 +1,13 @@
 package com.vwo.mobile;
 
 import android.Manifest;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresPermission;
 
 import com.vwo.mobile.events.VWOStatusListener;
+import com.vwo.mobile.timetracker.TimeTracker;
 import com.vwo.mobile.utils.VWOLog;
 
 /**
@@ -38,8 +40,14 @@ public class Initializer {
             Manifest.permission.INTERNET,
             Manifest.permission.ACCESS_NETWORK_STATE})
     public void launch(@Nullable VWOStatusListener statusListener) {
+
+        if (vwo.getConfig() != null && vwo.getConfig().isEnableBenchmarking()) {
+            TimeTracker.startTracking(TimeTracker.KEY_TOTAL_INIT_DURATION);
+            TimeTracker.startTracking(TimeTracker.KEY_BEFORE_API_INIT_DURATION);
+        }
+
         if (statusListener != null) {
-            if(vwo.getConfig() == null) {
+            if (vwo.getConfig() == null) {
                 VWOConfig vwoConfig = new VWOConfig.Builder().setVWOStatusListener(statusListener).build();
                 vwo.setConfig(vwoConfig);
             } else {
@@ -92,7 +100,7 @@ public class Initializer {
         } else {
             VWOConfig vwoConfig = this.vwo.getConfig();
             vwoConfig.setApiKey(apiKey);
-            if(optOut != null) {
+            if (optOut != null) {
                 vwoConfig.setOptOut(optOut);
             }
         }

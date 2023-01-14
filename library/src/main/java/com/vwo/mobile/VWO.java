@@ -28,6 +28,7 @@ import com.vwo.mobile.models.VWOError;
 import com.vwo.mobile.models.Variation;
 import com.vwo.mobile.network.ErrorResponse;
 import com.vwo.mobile.network.VWODownloader;
+import com.vwo.mobile.timetracker.TimeTracker;
 import com.vwo.mobile.utils.VWOLog;
 import com.vwo.mobile.utils.VWOPreference;
 import com.vwo.mobile.utils.VWOUrlBuilder;
@@ -671,6 +672,7 @@ public class VWO implements VWODownloader.DownloadResult, PreviewListener {
      * This function will return a variation for a given key and testKey. This function will search for key in
      * all the currently active campaigns and match the selected campaign testKey with input testKey.
      * </p>
+     *
      * @param testKey      is the testKey of the campaign which is used along with key to fetch the variation.
      * @param key          is the key for which variation is to be requested
      * @param defaultValue is the default value to be returned if key is not found in any of the campaigns.
@@ -1020,6 +1022,10 @@ public class VWO implements VWODownloader.DownloadResult, PreviewListener {
             new Handler(getCurrentContext().getMainLooper()).post(new Runnable() {
                 @Override
                 public void run() {
+                    if (vwoConfig.isEnableBenchmarking()) {
+                        TimeTracker.updateTracking(TimeTracker.KEY_AFTER_API_INIT_DURATION);
+                        TimeTracker.updateTracking(TimeTracker.KEY_TOTAL_INIT_DURATION);
+                    }
                     vwoConfig.getStatusListener().onVWOLoaded();
                 }
             });

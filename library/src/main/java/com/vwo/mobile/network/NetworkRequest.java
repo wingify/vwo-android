@@ -5,6 +5,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringDef;
 
+import com.vwo.mobile.timetracker.TimeTracker;
+import com.vwo.mobile.timetracker.APITimeTracker;
 import com.vwo.mobile.utils.NetworkUtils;
 import com.vwo.mobile.utils.VWOLog;
 
@@ -48,6 +50,7 @@ public abstract class NetworkRequest<T> implements Runnable, Comparable<NetworkR
     private List<Response.ErrorListener> mErrorListeners;
     private String requestTag;
     private boolean canceled;
+    private boolean isEnableBenchmarking;
     private Thread currentThread;
     private boolean executed;
 
@@ -80,10 +83,10 @@ public abstract class NetworkRequest<T> implements Runnable, Comparable<NetworkR
         this.requestTag = requestTag;
         this.mResponseListeners = new ArrayList<>();
         this.mErrorListeners = new ArrayList<>();
-        if(listener != null) {
+        if (listener != null) {
             this.mResponseListeners.add(listener);
         }
-        if(errorListener != null) {
+        if (errorListener != null) {
             this.mErrorListeners.add(errorListener);
         }
         this.priority = PRIORITY_NORMAL;
@@ -161,6 +164,7 @@ public abstract class NetworkRequest<T> implements Runnable, Comparable<NetworkR
     @Override
     public void run() {
         HttpURLConnection urlConnection;
+//        ResponseTimeTracker.trackFor(url.toString());
         try {
             urlConnection = (HttpURLConnection) url.openConnection();
         } catch (IOException exception) {
@@ -207,11 +211,19 @@ public abstract class NetworkRequest<T> implements Runnable, Comparable<NetworkR
                 throw new InterruptedException();
             }
 
+            if (isEnableBenchmarking)
+                APITimeTracker.trackFor(url.toString());
+
             // Connect
             urlConnection.connect();
 
             if (Thread.interrupted() || isCanceled()) {
                 throw new InterruptedException();
+            }
+
+            if (isEnableBenchmarking) {
+                APITimeTracker.updateFor(url.toString());
+                TimeTracker.startTracking(TimeTracker.KEY_AFTER_API_INIT_DURATION);
             }
 
             // Check if we get any response.
@@ -275,7 +287,7 @@ public abstract class NetworkRequest<T> implements Runnable, Comparable<NetworkR
             notifyErrorListeners(new ErrorResponse(exception));
 
             VWOLog.e(VWOLog.NETWORK_LOGS, exception, false, true);
-        }catch (final IOException exception) {
+        } catch (final IOException exception) {
             notifyErrorListeners(new ErrorResponse(exception));
 
             VWOLog.e(VWOLog.NETWORK_LOGS, exception, true, false);
@@ -293,7 +305,7 @@ public abstract class NetworkRequest<T> implements Runnable, Comparable<NetworkR
 
     private void notifyErrorListeners(ErrorResponse exception) {
         executed = true;
-        for(Response.ErrorListener mErrorListener : mErrorListeners) {
+        for (Response.ErrorListener mErrorListener : mErrorListeners) {
             mErrorListener.onFailure(exception);
         }
     }
@@ -326,6 +338,10 @@ public abstract class NetworkRequest<T> implements Runnable, Comparable<NetworkR
 
     public boolean isCanceled() {
         return canceled;
+    }
+
+    public void setEnableBenchmarking(boolean isEnableBenchmarking) {
+        this.isEnableBenchmarking = isEnableBenchmarking;
     }
 
     public void cancel() {

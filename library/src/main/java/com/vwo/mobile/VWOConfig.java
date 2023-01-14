@@ -2,6 +2,7 @@ package com.vwo.mobile;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
 import android.text.TextUtils;
 
 import com.vwo.mobile.events.VWOStatusListener;
@@ -23,6 +24,7 @@ public class VWOConfig {
     private String mAppKey;
     private String mAccountId;
     private boolean optOut;
+    private boolean enableBenchmarking;
 
     // Timeout in case data is fetched synchronously
     private Long timeout;
@@ -41,6 +43,7 @@ public class VWOConfig {
             setApiKey(builder.apiKey);
         }
         this.optOut = builder.optOut;
+        this.enableBenchmarking = builder.enableBenchmarking;
         this.previewEnabled = builder.previewEnabled;
         this.statusListener = builder.statusListener;
         this.userID = builder.userID;
@@ -56,7 +59,7 @@ public class VWOConfig {
     }
 
     void setApiKey(String apiKey) {
-        if(!VWOUtils.isValidVwoAppKey(apiKey)) {
+        if (!VWOUtils.isValidVwoAppKey(apiKey)) {
             VWOLog.e(VWOLog.CONFIG_LOGS, new InvalidKeyException("Invalid api key"), false, false);
             return;
         }
@@ -106,6 +109,13 @@ public class VWOConfig {
         return this.optOut;
     }
 
+    /**
+     * @return whether benchmarking is enabled or not.
+     */
+    public boolean isEnableBenchmarking() {
+        return this.enableBenchmarking;
+    }
+
     boolean isPreviewEnabled() {
         return this.previewEnabled;
     }
@@ -124,7 +134,7 @@ public class VWOConfig {
      * @param value {@link String} is the value of custom segment.
      */
     void addCustomSegment(String key, String value) {
-        if(customSegmentationMapping == null) {
+        if (customSegmentationMapping == null) {
             customSegmentationMapping = new HashMap<>();
         }
         this.customSegmentationMapping.put(key, value);
@@ -134,11 +144,15 @@ public class VWOConfig {
         this.optOut = optOut;
     }
 
+    void setEnableBenchmarking(boolean enableBenchmarking) {
+        this.enableBenchmarking = enableBenchmarking;
+    }
+
     /**
      * @param customSegments add multiple custom segment key value pairs
      */
     void addCustomSegments(Map<String, String> customSegments) {
-        if(customSegmentationMapping == null) {
+        if (customSegmentationMapping == null) {
             customSegmentationMapping = new HashMap<>();
         }
         this.customSegmentationMapping.putAll(customSegments);
@@ -165,6 +179,7 @@ public class VWOConfig {
         // This variable
         private Map<String, String> customSegmentationMapping;
         private boolean optOut;
+        private boolean enableBenchmarking;
         private String apiKey = null;
         private boolean previewEnabled = true;
         private VWOStatusListener statusListener;
@@ -176,7 +191,8 @@ public class VWOConfig {
          * Generate the Configuration for the VWO SDK which can be passed to
          * {@link Initializer#config(VWOConfig)} during SDK's initialization.
          */
-        public Builder(){}
+        public Builder() {
+        }
 
         @NonNull
         public VWOConfig build() {
@@ -198,8 +214,27 @@ public class VWOConfig {
         }
 
         /**
-         * Function Set the unique ID for the user to serve same variations(subject to few conditions) across devices for users with same ID.
+         * Function to set whether you want to enable the benchmarking of certain functionalities or not.
+         * set {@link Boolean#TRUE} to enable the benchmarking otherwise {@link Boolean#FALSE}.
+         * it defaults to {@link Boolean#FALSE}.
          *
+         * @param enableBenchmarking set {@link Boolean#TRUE} to enable the benchmarking otherwise {@link Boolean#FALSE}.
+         *                           *               it defaults to {@link Boolean#FALSE}.
+         * @return the {@link Builder} object
+         */
+        @NonNull
+        public Builder setEnableBenchmarking(boolean enableBenchmarking) {
+            this.enableBenchmarking = enableBenchmarking;
+            return this;
+        }
+
+        public boolean isEnableBenchmarking() {
+            return enableBenchmarking;
+        }
+
+        /**
+         * Function Set the unique ID for the user to serve same variations(subject to few conditions) across devices for users with same ID.
+         * <p>
          * Note: user id is case sensitive. And this id is not stored anywhere persistently.
          *
          * @param userID is the unique user id.
@@ -241,7 +276,6 @@ public class VWOConfig {
          * @param customSegmentationMapping is the key value pair mapping for custom segments based on
          *                                  which it is decided that given user will be a part of
          *                                  campaign or not.
-         *
          * @return the current {@link Builder} object.
          */
         @NonNull
@@ -257,9 +291,9 @@ public class VWOConfig {
          * This function can be used to set the custom dimensions.
          * The custom dimensions will sent along with the track-user network call to VWO servers.
          *
-         * @param customDimensionKey    is the key for the custom dimension
-         * @param customDimensionValue  is the value associated with the customDimensionKey.
-         * @return  the current {@link Builder} object.
+         * @param customDimensionKey   is the key for the custom dimension
+         * @param customDimensionValue is the value associated with the customDimensionKey.
+         * @return the current {@link Builder} object.
          */
         @NonNull
         public Builder setCustomDimension(@NonNull String customDimensionKey, @NonNull String customDimensionValue) {

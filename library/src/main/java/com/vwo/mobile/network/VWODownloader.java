@@ -3,6 +3,7 @@ package com.vwo.mobile.network;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.vwo.mobile.timetracker.TimeTracker;
 import com.vwo.mobile.VWO;
 import com.vwo.mobile.data.VWOMessageQueue;
 import com.vwo.mobile.listeners.VWOActivityLifeCycle;
@@ -38,7 +39,8 @@ public class VWODownloader {
 
         if (vwo.getConfig().getTimeout() != null) {
             try {
-                downloadResult.onDownloadSuccess(downloadDataSynchronous(url, downloadResult, vwo));
+                String downloadData = downloadDataSynchronous(url, downloadResult, vwo);
+                downloadResult.onDownloadSuccess(downloadData);
             } catch (InterruptedException exception) {
                 String message = "Request timed out";
                 downloadResult.onDownloadError(exception, message);
@@ -85,6 +87,7 @@ public class VWODownloader {
         NetworkStringRequest request = new NetworkStringRequest(url, NetworkRequest.GET,
                 NetworkUtils.Headers.getBasicHeaders(), futureNetworkRequest, futureNetworkRequest);
         request.setGzipEnabled(true);
+        request.setEnableBenchmarking(vwo.getConfig().isEnableBenchmarking());
         PriorityRequestQueue.getInstance().addToQueue(request);
         assert vwo.getConfig().getTimeout() != null;
         return futureNetworkRequest.get(vwo.getConfig().getTimeout(), TimeUnit.MILLISECONDS);
@@ -96,6 +99,10 @@ public class VWODownloader {
             return;
         }
         try {
+
+            if (vwo.getConfig() != null && vwo.getConfig().isEnableBenchmarking())
+                TimeTracker.updateTracking(TimeTracker.KEY_BEFORE_API_INIT_DURATION);
+
             NetworkStringRequest request = new NetworkStringRequest(url, NetworkRequest.GET,
                     NetworkUtils.Headers.getBasicHeaders(), new Response.Listener<String>() {
                 @Override
@@ -119,6 +126,7 @@ public class VWODownloader {
                 }
             });
             request.setGzipEnabled(true);
+            request.setEnableBenchmarking(vwo.getConfig().isEnableBenchmarking());
             PriorityRequestQueue.getInstance().addToQueue(request);
         } catch (MalformedURLException exception) {
             VWOLog.e(VWOLog.NETWORK_LOGS, exception, true, true);
@@ -145,6 +153,7 @@ public class VWODownloader {
                                 NetworkRequest.GET, NetworkUtils.Headers.getBasicHeaders(),
                                 futureNetworkRequest, futureNetworkRequest);
                         request.setGzipEnabled(true);
+                        request.setEnableBenchmarking(vwo.getConfig().isEnableBenchmarking());
                         PriorityRequestQueue.getInstance().addToQueue(request);
                         String data = futureNetworkRequest.get();
                         VWOLog.v(VWOLog.NETWORK_LOGS, String.format("Completed Upload Request with url : %s \ndata : %s", entry.getUrl(), data));
@@ -231,6 +240,7 @@ public class VWODownloader {
                                 NetworkRequest.GET, NetworkUtils.Headers.getBasicHeaders(),
                                 futureNetworkRequest, futureNetworkRequest);
                         request.setGzipEnabled(true);
+                        request.setEnableBenchmarking(vwo.getConfig().isEnableBenchmarking());
                         PriorityRequestQueue.getInstance().addToQueue(request);
                         String data = futureNetworkRequest.get();
                         VWOLog.v(VWOLog.NETWORK_LOGS, String.format("Completed Upload Request with url : %s \ndata : %s", entry.getUrl(), data));
@@ -305,6 +315,7 @@ public class VWODownloader {
                                 vwo.getConfig().getAppKey()), error.getErrorAsJSON().toString(),
                                 futureNetworkRequest, futureNetworkRequest);
                         request.setGzipEnabled(true);
+                        request.setEnableBenchmarking(vwo.getConfig().isEnableBenchmarking());
                         PriorityRequestQueue.getInstance().addToQueue(request);
                         String response = futureNetworkRequest.get();
                         VWOLog.v(VWOLog.NETWORK_LOGS, String.format("Logging error completed Request with data : %s \nand Response: %s",

@@ -16,9 +16,9 @@ public class VWOUrlBuilder {
     private static final String DACDN_URL_SCHEME = BuildConfig.SCHEME;
     private static final String CHINA_DACDN_URL = BuildConfig.CHINA_DACDN_URL;
     private static final String PATH_MOBILE = "mobile";
-//    private static final String PATH_DACDN_GOAL = "c.gif";
+    //    private static final String PATH_DACDN_GOAL = "c.gif";
     private static final String PATH_DACDN_GOAL = "track-goal";
-//    private static final String PATH_DACDN_CAMPAIGN = "l.gif";
+    //    private static final String PATH_DACDN_CAMPAIGN = "l.gif";
     private static final String PATH_DACDN_CAMPAIGN = "track-user";
     private static final String PATH_DACDN_CUSTOM_DIMENSION = "mobile-app/push";
     private static final String PATH_LOG_ERROR = "log-error";
@@ -37,6 +37,8 @@ public class VWOUrlBuilder {
     // To prevent cached results
     private static final String RANDOM_NUMBER = "r";
     private static final String EXISTING_CAMPAIGN_LIST = "k";
+    private static final String DEVICE_ID = "dID";
+    private static final String NETWORK_TYPE = "nT";
 
 
     private static final String EXPERIMENT_ID = "experiment_id";
@@ -73,6 +75,7 @@ public class VWOUrlBuilder {
         String currentDeviceSystemVersion = VWOUtils.androidVersion();
         String existingCampaignList = vwo.getVwoPreference().getString(VWOPersistData.CAMPAIGN_LIST);
         double randomNo = VWOUtils.getRandomNumber();
+        String deviceUuid = VWOUtils.getDeviceUUID(vwo.getVwoPreference());
 
         Uri.Builder uriBuilder = new Uri.Builder().scheme(DACDN_URL_SCHEME)
                 .authority(this.vwo.getConfig().getIsChinaCDN() ? CHINA_DACDN_URL : DACDN_URL)
@@ -81,6 +84,8 @@ public class VWOUrlBuilder {
                 .appendQueryParameter(ACCOUNT_ID, accountId)
                 .appendQueryParameter(SDK_VERSION, sdkVersion)
                 .appendQueryParameter(APP_KEY, appKey)
+                .appendQueryParameter(DEVICE_ID, deviceUuid)
+                .appendQueryParameter(NETWORK_TYPE, NetworkUtils.getNetworkType(vwo.getCurrentContext()))
                 .appendQueryParameter(DEVICE_TYPE, VALUE_DEVICE_TYPE)
                 .appendQueryParameter(DEVICE_SYSTEM_VERSION, currentDeviceSystemVersion)
                 .appendQueryParameter(RANDOM_NUMBER, String.valueOf(randomNo));
@@ -90,7 +95,7 @@ public class VWOUrlBuilder {
         }
 
         String hash = vwo.getConfig().getUserID();
-        if(!TextUtils.isEmpty(hash)) {
+        if (!TextUtils.isEmpty(hash)) {
             uriBuilder.appendQueryParameter(PARAM_HASH, hash);
             vwo.getVwoPreference().putString(AppConstants.DEVICE_UUID, hash);
         }
@@ -147,7 +152,6 @@ public class VWOUrlBuilder {
                 .appendQueryParameter(EXTRA_DATA, getExtraData());
 
 
-
         String url = uriBuilder.build().toString();
         VWOLog.v(VWOLog.URL_LOGS, "Goal URL: " + url);
         return url;
@@ -177,10 +181,9 @@ public class VWOUrlBuilder {
      * Generate the revenue goal URL
      *
      * @param experimentId is the campaign id
-     * @param variationId is the variation id
-     * @param goalId is the goal id
-     * @param revenue is the goal revenue
-     *
+     * @param variationId  is the variation id
+     * @param goalId       is the goal id
+     * @param revenue      is the goal revenue
      * @return the revenue goal URL
      */
     public String getGoalUrl(long experimentId, int variationId, int goalId, double revenue) {
