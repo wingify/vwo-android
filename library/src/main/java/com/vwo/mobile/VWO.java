@@ -21,8 +21,6 @@ import com.vwo.mobile.gestures.ShakeDetector;
 import com.vwo.mobile.listeners.VWOActivityLifeCycle;
 import com.vwo.mobile.logging.VWOLoggingClient;
 import com.vwo.mobile.meg.CampaignGroupMapper;
-import com.vwo.mobile.meg.Group;
-import com.vwo.mobile.meg.MutuallyExclusiveGroups;
 import com.vwo.mobile.models.Campaign;
 import com.vwo.mobile.models.VWOError;
 import com.vwo.mobile.models.Variation;
@@ -33,6 +31,10 @@ import com.vwo.mobile.utils.VWOLog;
 import com.vwo.mobile.utils.VWOPreference;
 import com.vwo.mobile.utils.VWOUrlBuilder;
 import com.vwo.mobile.utils.VWOUtils;
+import com.vwo.mobile.v3.EUManager;
+import com.vwo.mobile.v3.MEGManager;
+import com.vwo.mobile.v3.MockServerResponse;
+import com.vwo.mobile.v3.ServerResponse;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -42,6 +44,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
 import static com.vwo.mobile.Connection.FAILED;
 import static com.vwo.mobile.Connection.NOT_STARTED;
@@ -67,7 +70,7 @@ public class VWO implements VWODownloader.DownloadResult, PreviewListener {
         public static final String ARG_VARIATION_NAME = "vwo_variation_name";
         public static final String CAMPAIGN_TYPE = "type";
         public static final String CAMPAIGN_ID = "id";
-        private static final String CAMPAIGN_GROUPS = "groups";
+        public static final String CAMPAIGN_GROUPS = "groups";
         public static final String CAMPAIGN_TEST_KEY = "test_key";
     }
 
@@ -113,8 +116,7 @@ public class VWO implements VWODownloader.DownloadResult, PreviewListener {
         if (sSharedInstance == null) {
             synchronized (lock) {
                 if (sSharedInstance == null) {
-                    sSharedInstance = new Builder(context)
-                            .build();
+                    sSharedInstance = new Builder(context).build();
                 }
             }
         }
@@ -122,35 +124,8 @@ public class VWO implements VWODownloader.DownloadResult, PreviewListener {
     }
 
     public static String getCampaign(String userId, HashMap<String, String> args) {
-
-        if (userId == null || TextUtils.isEmpty(userId)) {
-            // use the (default | random) user id
-            VWOPreference vwoPreference = new VWOPreference(sSharedInstance.getCurrentContext());
-            userId = VWOUtils.getDeviceUUID(vwoPreference);
-        }
-
-        JSONArray campaignsData = mVWOLocalData.getData();
-        JSONObject megGroupsData = new JSONObject();
-
-        if (campaignsData != null && campaignsData.length() > 0) {
-            for (int i = 0; i < campaignsData.length(); i++) {
-                try {
-                    JSONObject groupDataItem = campaignsData.getJSONObject(i);
-                    if (groupDataItem.optString(Constants.CAMPAIGN_TYPE, "").equals(Constants.CAMPAIGN_GROUPS)) {
-                        megGroupsData = groupDataItem;
-                        break;
-                    }
-                } catch (JSONException exception) {
-                    VWOLog.e(VWOLog.DATA_LOGS, exception, true, false);
-                }
-            }
-        }
-
-        HashMap<String, Group> mappedData = CampaignGroupMapper.createAndGetGroups(megGroupsData);
-
-        MutuallyExclusiveGroups meg = new MutuallyExclusiveGroups(userId);
-        meg.addGroups(mappedData);
-        return meg.getCampaign(args, campaignsData);
+        MEGManager megManager = new MEGManager(sSharedInstance);
+        return megManager.getCampaign(userId, args);
     }
 
     @Nullable
@@ -178,9 +153,7 @@ public class VWO implements VWODownloader.DownloadResult, PreviewListener {
         }
 
         if (variation == null) {
-            VWOLog.w(VWOLog.DATA_LOGS, String.format(Locale.ENGLISH,
-                    "No campaign found for given test key : %s, reason: %s",
-                    testKey, !TextUtils.isEmpty(message) ? message : "Campaign does not exist."), false);
+            VWOLog.w(VWOLog.DATA_LOGS, String.format(Locale.ENGLISH, "No campaign found for given test key : %s, reason: %s", testKey, !TextUtils.isEmpty(message) ? message : "Campaign does not exist."), false);
             return null;
         } else {
             return variation.getName();
@@ -220,18 +193,13 @@ public class VWO implements VWODownloader.DownloadResult, PreviewListener {
         } else {
             try {
                 if (!(data instanceof Integer)) {
-                    VWOLog.w(VWOLog.DATA_LOGS, String.format(Locale.ENGLISH, "Casting %s to %s.",
-                                    data.getClass().getName(), int.class.getName()),
-                            false);
+                    VWOLog.w(VWOLog.DATA_LOGS, String.format(Locale.ENGLISH, "Casting %s to %s.", data.getClass().getName(), int.class.getName()), false);
                 }
                 return Integer.parseInt(String.valueOf(data));
             } catch (ClassCastException | NumberFormatException exception) {
-                VWOLog.e(VWOLog.DATA_LOGS, String.format(Locale.ENGLISH,
-                        "Cannot cast %s to %s. Returning default value",
-                        data.getClass().getName(), int.class.getName()), exception, false, false);
+                VWOLog.e(VWOLog.DATA_LOGS, String.format(Locale.ENGLISH, "Cannot cast %s to %s. Returning default value", data.getClass().getName(), int.class.getName()), exception, false, false);
             } catch (Exception exception) {
-                VWOLog.e(VWOLog.DATA_LOGS, "Parse Exception. Returning Default value", exception,
-                        false, false);
+                VWOLog.e(VWOLog.DATA_LOGS, "Parse Exception. Returning Default value", exception, false, false);
             }
         }
         return defaultValue;
@@ -261,18 +229,13 @@ public class VWO implements VWODownloader.DownloadResult, PreviewListener {
         } else {
             try {
                 if (!(data instanceof Integer)) {
-                    VWOLog.w(VWOLog.DATA_LOGS, String.format(Locale.ENGLISH, "Casting %s to %s.",
-                                    data.getClass().getName(), int.class.getName()),
-                            false);
+                    VWOLog.w(VWOLog.DATA_LOGS, String.format(Locale.ENGLISH, "Casting %s to %s.", data.getClass().getName(), int.class.getName()), false);
                 }
                 return Integer.parseInt(String.valueOf(data));
             } catch (ClassCastException | NumberFormatException exception) {
-                VWOLog.e(VWOLog.DATA_LOGS, String.format(Locale.ENGLISH,
-                        "Cannot cast %s to %s. Returning default value",
-                        data.getClass().getName(), int.class.getName()), exception, false, false);
+                VWOLog.e(VWOLog.DATA_LOGS, String.format(Locale.ENGLISH, "Cannot cast %s to %s. Returning default value", data.getClass().getName(), int.class.getName()), exception, false, false);
             } catch (Exception exception) {
-                VWOLog.e(VWOLog.DATA_LOGS, "Parse Exception. Returning Default value", exception,
-                        false, false);
+                VWOLog.e(VWOLog.DATA_LOGS, "Parse Exception. Returning Default value", exception, false, false);
             }
         }
         return defaultValue;
@@ -311,18 +274,13 @@ public class VWO implements VWODownloader.DownloadResult, PreviewListener {
         } else {
             try {
                 if (!(data instanceof String)) {
-                    VWOLog.w(VWOLog.DATA_LOGS, String.format(Locale.ENGLISH, "Casting %s to %s.",
-                                    data.getClass().getName(), String.class.getName()),
-                            false);
+                    VWOLog.w(VWOLog.DATA_LOGS, String.format(Locale.ENGLISH, "Casting %s to %s.", data.getClass().getName(), String.class.getName()), false);
                 }
                 return String.valueOf(data);
             } catch (ClassCastException exception) {
-                VWOLog.e(VWOLog.DATA_LOGS, String.format(Locale.ENGLISH, "Cannot cast %s to %s. Returning Default value.",
-                                data.getClass().getName(), String.class.getName()), exception,
-                        false, false);
+                VWOLog.e(VWOLog.DATA_LOGS, String.format(Locale.ENGLISH, "Cannot cast %s to %s. Returning Default value.", data.getClass().getName(), String.class.getName()), exception, false, false);
             } catch (Exception exception) {
-                VWOLog.e(VWOLog.DATA_LOGS, "Parse Exception. Returning Default value", exception,
-                        false, false);
+                VWOLog.e(VWOLog.DATA_LOGS, "Parse Exception. Returning Default value", exception, false, false);
                 return defaultValue;
             }
         }
@@ -353,18 +311,13 @@ public class VWO implements VWODownloader.DownloadResult, PreviewListener {
         } else {
             try {
                 if (!(data instanceof String)) {
-                    VWOLog.w(VWOLog.DATA_LOGS, String.format(Locale.ENGLISH, "Casting %s to %s.",
-                                    data.getClass().getName(), String.class.getName()),
-                            false);
+                    VWOLog.w(VWOLog.DATA_LOGS, String.format(Locale.ENGLISH, "Casting %s to %s.", data.getClass().getName(), String.class.getName()), false);
                 }
                 return String.valueOf(data);
             } catch (ClassCastException exception) {
-                VWOLog.e(VWOLog.DATA_LOGS, String.format(Locale.ENGLISH, "Cannot cast %s to %s. Returning Default value.",
-                                data.getClass().getName(), String.class.getName()), exception,
-                        false, false);
+                VWOLog.e(VWOLog.DATA_LOGS, String.format(Locale.ENGLISH, "Cannot cast %s to %s. Returning Default value.", data.getClass().getName(), String.class.getName()), exception, false, false);
             } catch (Exception exception) {
-                VWOLog.e(VWOLog.DATA_LOGS, "Parse Exception. Returning Default value", exception,
-                        false, false);
+                VWOLog.e(VWOLog.DATA_LOGS, "Parse Exception. Returning Default value", exception, false, false);
                 return defaultValue;
             }
         }
@@ -404,18 +357,13 @@ public class VWO implements VWODownloader.DownloadResult, PreviewListener {
         } else {
             try {
                 if (!(data instanceof Double)) {
-                    VWOLog.w(VWOLog.DATA_LOGS, String.format(Locale.ENGLISH, "Casting %s to %s.",
-                                    data.getClass().getName(), double.class.getName()),
-                            false);
+                    VWOLog.w(VWOLog.DATA_LOGS, String.format(Locale.ENGLISH, "Casting %s to %s.", data.getClass().getName(), double.class.getName()), false);
                 }
                 return Double.parseDouble(String.valueOf(data));
             } catch (ClassCastException | NumberFormatException exception) {
-                VWOLog.e(VWOLog.DATA_LOGS, String.format(Locale.ENGLISH, "Cannot cast %s to %s. Returning Default value.",
-                                data.getClass().getName(), double.class.getName()), exception,
-                        false, false);
+                VWOLog.e(VWOLog.DATA_LOGS, String.format(Locale.ENGLISH, "Cannot cast %s to %s. Returning Default value.", data.getClass().getName(), double.class.getName()), exception, false, false);
             } catch (Exception exception) {
-                VWOLog.e(VWOLog.DATA_LOGS, "Parse Exception. Returning Default value", exception,
-                        false, false);
+                VWOLog.e(VWOLog.DATA_LOGS, "Parse Exception. Returning Default value", exception, false, false);
             }
         }
 
@@ -446,18 +394,13 @@ public class VWO implements VWODownloader.DownloadResult, PreviewListener {
         } else {
             try {
                 if (!(data instanceof Double)) {
-                    VWOLog.w(VWOLog.DATA_LOGS, String.format(Locale.ENGLISH, "Casting %s to %s.",
-                                    data.getClass().getName(), double.class.getName()),
-                            false);
+                    VWOLog.w(VWOLog.DATA_LOGS, String.format(Locale.ENGLISH, "Casting %s to %s.", data.getClass().getName(), double.class.getName()), false);
                 }
                 return Double.parseDouble(String.valueOf(data));
             } catch (ClassCastException | NumberFormatException exception) {
-                VWOLog.e(VWOLog.DATA_LOGS, String.format(Locale.ENGLISH, "Cannot cast %s to %s. Returning Default value.",
-                                data.getClass().getName(), double.class.getName()), exception,
-                        false, false);
+                VWOLog.e(VWOLog.DATA_LOGS, String.format(Locale.ENGLISH, "Cannot cast %s to %s. Returning Default value.", data.getClass().getName(), double.class.getName()), exception, false, false);
             } catch (Exception exception) {
-                VWOLog.e(VWOLog.DATA_LOGS, "Parse Exception. Returning Default value", exception,
-                        false, false);
+                VWOLog.e(VWOLog.DATA_LOGS, "Parse Exception. Returning Default value", exception, false, false);
             }
         }
 
@@ -497,18 +440,13 @@ public class VWO implements VWODownloader.DownloadResult, PreviewListener {
         } else {
             try {
                 if (!(data instanceof Boolean)) {
-                    VWOLog.w(VWOLog.DATA_LOGS, String.format(Locale.ENGLISH, "Casting %s to %s.",
-                                    data.getClass().getName(), double.class.getName()),
-                            false);
+                    VWOLog.w(VWOLog.DATA_LOGS, String.format(Locale.ENGLISH, "Casting %s to %s.", data.getClass().getName(), double.class.getName()), false);
                 }
                 return Boolean.parseBoolean(String.valueOf(data));
             } catch (ClassCastException exception) {
-                VWOLog.e(VWOLog.DATA_LOGS, String.format(Locale.ENGLISH, "Cannot cast %s to %s. Returning Default value.",
-                                data.getClass().getName(), boolean.class.getName()), exception,
-                        false, false);
+                VWOLog.e(VWOLog.DATA_LOGS, String.format(Locale.ENGLISH, "Cannot cast %s to %s. Returning Default value.", data.getClass().getName(), boolean.class.getName()), exception, false, false);
             } catch (Exception exception) {
-                VWOLog.e(VWOLog.DATA_LOGS, "Parse Exception. Returning Default value", exception,
-                        false, false);
+                VWOLog.e(VWOLog.DATA_LOGS, "Parse Exception. Returning Default value", exception, false, false);
             }
         }
         return defaultValue;
@@ -538,18 +476,13 @@ public class VWO implements VWODownloader.DownloadResult, PreviewListener {
         } else {
             try {
                 if (!(data instanceof Boolean)) {
-                    VWOLog.w(VWOLog.DATA_LOGS, String.format(Locale.ENGLISH, "Casting %s to %s.",
-                                    data.getClass().getName(), double.class.getName()),
-                            false);
+                    VWOLog.w(VWOLog.DATA_LOGS, String.format(Locale.ENGLISH, "Casting %s to %s.", data.getClass().getName(), double.class.getName()), false);
                 }
                 return Boolean.parseBoolean(String.valueOf(data));
             } catch (ClassCastException exception) {
-                VWOLog.e(VWOLog.DATA_LOGS, String.format(Locale.ENGLISH, "Cannot cast %s to %s. Returning Default value.",
-                                data.getClass().getName(), boolean.class.getName()), exception,
-                        false, false);
+                VWOLog.e(VWOLog.DATA_LOGS, String.format(Locale.ENGLISH, "Cannot cast %s to %s. Returning Default value.", data.getClass().getName(), boolean.class.getName()), exception, false, false);
             } catch (Exception exception) {
-                VWOLog.e(VWOLog.DATA_LOGS, "Parse Exception. Returning Default value", exception,
-                        false, false);
+                VWOLog.e(VWOLog.DATA_LOGS, "Parse Exception. Returning Default value", exception, false, false);
             }
         }
         return defaultValue;
@@ -655,9 +588,7 @@ public class VWO implements VWODownloader.DownloadResult, PreviewListener {
             }
         }
         if (data == null) {
-            VWOLog.w(VWOLog.DATA_LOGS, String.format(Locale.ENGLISH,
-                    "No variation found for key: \"%s\"\nReason: %s, returning default value",
-                    key, !TextUtils.isEmpty(message) ? message : "Key does not exist"), false);
+            VWOLog.w(VWOLog.DATA_LOGS, String.format(Locale.ENGLISH, "No variation found for key: \"%s\"\nReason: %s, returning default value", key, !TextUtils.isEmpty(message) ? message : "Key does not exist"), false);
             return defaultValue;
         } else {
             return data;
@@ -704,9 +635,7 @@ public class VWO implements VWODownloader.DownloadResult, PreviewListener {
             }
         }
         if (data == null) {
-            VWOLog.w(VWOLog.DATA_LOGS, String.format(Locale.ENGLISH,
-                    "No variation found for key: \"%s\"\nReason: %s, returning default value",
-                    key, !TextUtils.isEmpty(message) ? message : "Key does not exist"), false);
+            VWOLog.w(VWOLog.DATA_LOGS, String.format(Locale.ENGLISH, "No variation found for key: \"%s\"\nReason: %s, returning default value", key, !TextUtils.isEmpty(message) ? message : "Key does not exist"), false);
             return defaultValue;
         } else {
             return data;
@@ -730,15 +659,12 @@ public class VWO implements VWODownloader.DownloadResult, PreviewListener {
                         sSharedInstance.mVWOData.saveGoal(goalIdentifier, null);
                     }
                 } else if (sSharedInstance.mVWOStartState == OPTED_OUT) {
-                    VWOLog.e(VWOLog.DATA_LOGS, "Conversion not tracked. User opted out.",
-                            true, false);
+                    VWOLog.e(VWOLog.DATA_LOGS, "Conversion not tracked. User opted out.", true, false);
                 } else if (sSharedInstance.mVWOStartState == FAILED) {
-                    VWOLog.e(VWOLog.DATA_LOGS, "Conversion not tracked. SDK Failed to Initialize",
-                            true, false);
+                    VWOLog.e(VWOLog.DATA_LOGS, "Conversion not tracked. SDK Failed to Initialize", true, false);
                 }
             } else {
-                VWOLog.e(VWOLog.NETWORK_LOGS, "SDK not initialized completely",
-                        false, false);
+                VWOLog.e(VWOLog.NETWORK_LOGS, "SDK not initialized completely", false, false);
             }
         }
     }
@@ -761,15 +687,12 @@ public class VWO implements VWODownloader.DownloadResult, PreviewListener {
                         sSharedInstance.mVWOData.saveGoal(goalIdentifier, value);
                     }
                 } else if (sSharedInstance.mVWOStartState == OPTED_OUT) {
-                    VWOLog.e(VWOLog.DATA_LOGS, "Conversion not tracked. User opted out.",
-                            true, false);
+                    VWOLog.e(VWOLog.DATA_LOGS, "Conversion not tracked. User opted out.", true, false);
                 } else if (sSharedInstance.mVWOStartState == FAILED) {
-                    VWOLog.e(VWOLog.DATA_LOGS, "Conversion not tracked. SDK Failed to Initialize",
-                            true, false);
+                    VWOLog.e(VWOLog.DATA_LOGS, "Conversion not tracked. SDK Failed to Initialize", true, false);
                 }
             } else {
-                VWOLog.e(VWOLog.NETWORK_LOGS, "SDK not initialized completely",
-                        false, false);
+                VWOLog.e(VWOLog.NETWORK_LOGS, "SDK not initialized completely", false, false);
             }
         }
     }
@@ -793,18 +716,14 @@ public class VWO implements VWODownloader.DownloadResult, PreviewListener {
                 if (sSharedInstance.mVWOStartState >= STARTED) {
                     sSharedInstance.mVWOData.sendCustomDimension(customDimensionKey, customDimensionValue);
                 } else if (sSharedInstance.mVWOStartState == OPTED_OUT) {
-                    VWOLog.e(VWOLog.DATA_LOGS, "Custom Dimension not sent. User opted out.",
-                            true, false);
+                    VWOLog.e(VWOLog.DATA_LOGS, "Custom Dimension not sent. User opted out.", true, false);
                 } else if (sSharedInstance.mVWOStartState == FAILED) {
-                    VWOLog.e(VWOLog.DATA_LOGS, "Custom Dimension not sent. SDK Failed to Initialize",
-                            true, false);
+                    VWOLog.e(VWOLog.DATA_LOGS, "Custom Dimension not sent. SDK Failed to Initialize", true, false);
                 } else {
-                    VWOLog.e(VWOLog.DATA_LOGS, "Custom Dimension not sent. SDK is initializing",
-                            true, false);
+                    VWOLog.e(VWOLog.DATA_LOGS, "Custom Dimension not sent. SDK is initializing", true, false);
                 }
             } else {
-                VWOLog.e(VWOLog.NETWORK_LOGS, "SDK not initialized completely",
-                        false, false);
+                VWOLog.e(VWOLog.NETWORK_LOGS, "SDK not initialized completely", false, false);
             }
         }
     }
@@ -837,8 +756,7 @@ public class VWO implements VWODownloader.DownloadResult, PreviewListener {
 
     @SuppressWarnings("SpellCheckingInspection")
     boolean startVwoInstance() {
-        VWOLog.i(VWOLog.INITIALIZATION_LOGS, String.format("**** Starting VWO version: %s Build: %s ****",
-                version(), versionCode()), false);
+        VWOLog.i(VWOLog.INITIALIZATION_LOGS, String.format("**** Starting VWO version: %s Build: %s ****", version(), versionCode()), false);
         assert getConfig() != null;
         if (getConfig().isOptOut()) {
             this.mVWOStartState = OPTED_OUT;
@@ -848,10 +766,8 @@ public class VWO implements VWODownloader.DownloadResult, PreviewListener {
             return true;
         }
         if (!VWOUtils.checkForInternetPermissions(mContext)) {
-            String errMsg = "Internet permission not added to Manifest. Please add" +
-                    "\n\n<uses-permission android:name=\"android.permission.INTERNET\"/> \n\npermission to your app Manifest file.";
-            VWOLog.e(VWOLog.INITIALIZATION_LOGS, errMsg,
-                    false, false);
+            String errMsg = "Internet permission not added to Manifest. Please add" + "\n\n<uses-permission android:name=\"android.permission.INTERNET\"/> \n\npermission to your app Manifest file.";
+            VWOLog.e(VWOLog.INITIALIZATION_LOGS, errMsg, false, false);
             onLoadFailure("Missing internet permission");
             return false;
         } else if (!isAndroidSDKSupported()) {
@@ -860,17 +776,14 @@ public class VWO implements VWODownloader.DownloadResult, PreviewListener {
             onLoadFailure(errMsg);
             return false;
         } else if (!VWOUtils.isValidVwoAppKey(vwoConfig.getApiKey())) {
-            VWOLog.e(VWOLog.INITIALIZATION_LOGS, "Invalid API Key: " + vwoConfig.getAppKey(),
-                    false, false);
+            VWOLog.e(VWOLog.INITIALIZATION_LOGS, "Invalid API Key: " + vwoConfig.getAppKey(), false, false);
             onLoadFailure("Invalid API Key.");
             return false;
         } else if (this.mVWOStartState == STARTING) {
-            VWOLog.w(VWOLog.INITIALIZATION_LOGS, "VWO is already initializing.",
-                    true);
+            VWOLog.w(VWOLog.INITIALIZATION_LOGS, "VWO is already initializing.", true);
             return true;
         } else if (this.mVWOStartState >= STARTED) {
-            VWOLog.w(VWOLog.INITIALIZATION_LOGS, "VWO is already initialized.",
-                    true);
+            VWOLog.w(VWOLog.INITIALIZATION_LOGS, "VWO is already initialized.", true);
             onLoadSuccess();
             return true;
         } else {
@@ -897,23 +810,97 @@ public class VWO implements VWODownloader.DownloadResult, PreviewListener {
 
     @Override
     public void onDownloadSuccess(@Nullable String data) {
+
         if (TextUtils.isEmpty(data)) {
-            VWOLog.e(VWOLog.DATA_LOGS, "Empty data downloaded : " + data,
-                    true, true);
+
+            VWOLog.e(VWOLog.DATA_LOGS, "Empty data downloaded : " + data, true, true);
             onDownloadError(new Exception(), "Empty data downloaded");
         } else {
-            try {
-                JSONArray jsonArray = new JSONArray(data);
 
-                VWOLog.i(VWOLog.INITIALIZATION_LOGS, jsonArray.toString(4), true);
+            // If server isn't ready mock your own data
+            // Will cause no side effects even in release build.
+            StringBuilder sb = new StringBuilder(Objects.requireNonNull(data));
+            MockServerResponse.replaceWithApiV3EuModificationResponse(sb);
+            data = sb.toString();
 
-                mVWOData.parseData(jsonArray);
-                mVWOLocalData.saveData(jsonArray);
-                mVWOStartState = STARTED;
-                onLoadSuccess();
-            } catch (JSONException exception) {
-                onDownloadError(exception, "Unable to parse data");
+            ServerResponse.log("response sent by the server ...");
+            ServerResponse.log(data);
+
+            ServerResponse serverResponse = new ServerResponse(data);
+
+            if (serverResponse.isNewStandardApi()) {
+
+                EUManager.putCollectionPrefix(sSharedInstance, data);
+                parseAndContinueWithNewStandardData(serverResponse);
+            } else if (serverResponse.isLegacyApi()) {
+
+                parseAndContinueWithLegacyData(data);
+            } else {
+
+                // ------
+                // SHOULD NEVER HAPPEN, UNLESS SOMETHING WRONG WITH SERVER
+                // ------
+                onDownloadError(new Exception("Invalid response from SERVER."), "Unable to parse data");
             }
+        }
+    }
+
+    private void continueWithInitialization(JSONArray data) throws JSONException {
+        VWOLog.i(VWOLog.INITIALIZATION_LOGS, data.toString(4), true);
+        mVWOData.parseData(data);
+        mVWOLocalData.saveData(data);
+        mVWOStartState = STARTED;
+        onLoadSuccess();
+    }
+
+    private void parseAndContinueWithNewStandardData(ServerResponse response) {
+        ServerResponse.log("Parsing the new V3 data, EU Version.");
+        try {
+            JSONObject jsonObject = response.getV3Json();
+            JSONArray campaignsJsonArray = convertV3ToLegacyMEGStructure(jsonObject);
+            continueWithInitialization(campaignsJsonArray);
+        } catch (JSONException exception) {
+            onDownloadError(exception, "Unable to parse data");
+        }
+    }
+
+    private JSONArray convertV3ToLegacyMEGStructure(JSONObject jsonObject) throws JSONException {
+
+        // extract campaigns to make it as same as previous structure
+        JSONArray campaignsJsonArray = jsonObject.getJSONArray(CampaignGroupMapper.KEY_CAMPAIGNS);
+
+        // build legacy structure for parsing the campaigns and MEG too
+        // because the code structure isn't as straight forward
+        // the previous structure is last item in the campaigns array is the data for MEG
+        // using this format ensures backward compatibility, will not have any adverse effects
+        // because the campaign parsing logic is not as straight forward as we may think.
+        JSONObject meg = new JSONObject();
+        meg.put("type", CampaignGroupMapper.KEY_GROUPS);
+
+        boolean hasGroups = jsonObject.has(CampaignGroupMapper.KEY_GROUPS);
+        if (hasGroups) {
+            meg.put(CampaignGroupMapper.KEY_GROUPS, jsonObject.getJSONObject(CampaignGroupMapper.KEY_GROUPS));
+        }
+
+        boolean hasCampaignGroups = jsonObject.has(CampaignGroupMapper.KEY_CAMPAIGN_GROUPS);
+        if (hasCampaignGroups) {
+            meg.put(CampaignGroupMapper.KEY_CAMPAIGN_GROUPS, jsonObject.getJSONObject(CampaignGroupMapper.KEY_CAMPAIGN_GROUPS));
+        }
+
+        if (hasGroups || hasCampaignGroups) {
+            campaignsJsonArray.put(meg);
+        }
+
+        return campaignsJsonArray;
+    }
+
+    private void parseAndContinueWithLegacyData(String data) {
+        ServerResponse.log("Parsing the old V2 data, NON-EU Version.");
+        try {
+            JSONArray jsonArray = new JSONArray(data);
+            continueWithInitialization(jsonArray);
+        } catch (JSONException exception) {
+            onDownloadError(exception, "Unable to parse data");
         }
     }
 
@@ -937,8 +924,7 @@ public class VWO implements VWODownloader.DownloadResult, PreviewListener {
         if (mVWOLocalData.isLocalDataPresent()) {
             mVWOData.parseData(mVWOLocalData.getData());
             mVWOStartState = STARTED;
-            VWOLog.w(VWOLog.INITIALIZATION_LOGS, "Failed to fetch data serving cached data.",
-                    false);
+            VWOLog.w(VWOLog.INITIALIZATION_LOGS, "Failed to fetch data serving cached data.", false);
             onLoadSuccess();
         } else {
             onLoadFailure(message);
@@ -996,10 +982,7 @@ public class VWO implements VWODownloader.DownloadResult, PreviewListener {
                 mVWOSocket.init();
             }
         } else {
-            VWOLog.e(VWOLog.INITIALIZATION_LOGS, "You need to add following dependency\n" +
-                            "\t\tcompile 'io.socket:socket.io-client:1.0.0\n" +
-                            "to your build.gradle file in order to use VWO's preview mode.",
-                    false, false);
+            VWOLog.e(VWOLog.INITIALIZATION_LOGS, "You need to add following dependency\n" + "\t\tcompile 'io.socket:socket.io-client:1.0.0\n" + "to your build.gradle file in order to use VWO's preview mode.", false, false);
         }
     }
 

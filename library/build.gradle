@@ -17,6 +17,9 @@ android {
         }
     }
     def URL_SCHEME_HTTPS = '"https"'
+    // use this flag to enable use of static data on debug builds
+    // will cause no side effect even if it is left in release builds
+    def SHOULD_USE_MOCK_DATA_IN_DEBUG = 'false'
     def DACDN_URL = '"dacdn.visualwebsiteoptimizer.com"'
     def CHINA_DACDN_URL = '"cdn-cn.vwo-analytics.com"'
     def SOCKET_URL = '"https://mobilepreview.vwo.com:443/"'
@@ -52,11 +55,13 @@ android {
         abortOnError false
     }
     buildTypes.each {
+        it.buildConfigField 'Boolean', 'SHOULD_USE_MOCK_DATA_IN_DEBUG', SHOULD_USE_MOCK_DATA_IN_DEBUG
         it.buildConfigField 'String', 'DACDN_URL', DACDN_URL
         it.buildConfigField 'String', 'SOCKET_URL', SOCKET_URL
         it.buildConfigField 'String', 'CHINA_DACDN_URL', CHINA_DACDN_URL
     }
     testOptions {
+        unitTests.returnDefaultValues = true
         unitTests {
             includeAndroidResources = true
             all {
@@ -73,6 +78,8 @@ android {
 }
 
 dependencies {
+    // Required -- Android JSON Test Dependency
+    testImplementation 'org.json:json:20210307'
     // Required -- JUnit 4 framework
     testImplementation 'junit:junit:4.13.1'
     // Optional -- Mockito framework

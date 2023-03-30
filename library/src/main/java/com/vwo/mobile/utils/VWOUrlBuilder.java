@@ -7,6 +7,7 @@ import com.vwo.mobile.BuildConfig;
 import com.vwo.mobile.VWO;
 import com.vwo.mobile.constants.AppConstants;
 import com.vwo.mobile.data.VWOPersistData;
+import com.vwo.mobile.v3.EUManager;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -27,8 +28,8 @@ public class VWOUrlBuilder {
 
     private static final String PARAM_HASH = "uHash";
 
-    private static final String API_VERSION = "api-version";
-    private static final String VALUE_API_VERSION = "2";
+    public static final String API_VERSION = "api-version";
+    public static final String VALUE_API_VERSION = "3";
     private static final String ACCOUNT_ID = "a";
     private static final String SDK_VERSION = "v";
     private static final String APP_KEY = "i";
@@ -36,9 +37,9 @@ public class VWOUrlBuilder {
     private static final String DEVICE_SYSTEM_VERSION = "os";
     // To prevent cached results
     private static final String RANDOM_NUMBER = "r";
-    private static final String EXISTING_CAMPAIGN_LIST = "k";
     private static final String DEVICE_ID = "dID";
     private static final String NETWORK_TYPE = "nT";
+    private static final String EXISTING_CAMPAIGN_LIST = "k";
 
 
     private static final String EXPERIMENT_ID = "experiment_id";
@@ -115,7 +116,7 @@ public class VWOUrlBuilder {
 
         Uri.Builder uriBuilder = new Uri.Builder().scheme(DACDN_URL_SCHEME)
                 .authority(this.vwo.getConfig().getIsChinaCDN() ? CHINA_DACDN_URL : DACDN_URL)
-                .appendEncodedPath(PATH_DACDN_CAMPAIGN)
+                .appendEncodedPath(EUManager.getEuAwarePath(vwo, PATH_DACDN_CAMPAIGN))
                 .appendQueryParameter(EXPERIMENT_ID, String.valueOf(experimentId))
                 .appendQueryParameter(GOAL_ACCOUNT_ID, accountId)
                 .appendQueryParameter(COMBINATION, String.valueOf(variationId))
@@ -140,7 +141,7 @@ public class VWOUrlBuilder {
 
         Uri.Builder uriBuilder = new Uri.Builder().scheme(DACDN_URL_SCHEME)
                 .authority(this.vwo.getConfig().getIsChinaCDN() ? CHINA_DACDN_URL : DACDN_URL)
-                .appendEncodedPath(PATH_DACDN_GOAL)
+                .appendEncodedPath(EUManager.getEuAwarePath(vwo, PATH_DACDN_GOAL))
                 .appendQueryParameter(EXPERIMENT_ID, String.valueOf(experimentId))
                 .appendQueryParameter(GOAL_ACCOUNT_ID, accountId)
                 .appendQueryParameter(COMBINATION, String.valueOf(variationId))
@@ -166,7 +167,7 @@ public class VWOUrlBuilder {
 
         Uri.Builder uriBuilder = new Uri.Builder().scheme(DACDN_URL_SCHEME)
                 .authority(this.vwo.getConfig().getIsChinaCDN() ? CHINA_DACDN_URL : DACDN_URL)
-                .appendEncodedPath(PATH_DACDN_CUSTOM_DIMENSION)
+                .appendEncodedPath(EUManager.getEuAwarePath(vwo, PATH_DACDN_CUSTOM_DIMENSION))
                 .appendQueryParameter(GOAL_ACCOUNT_ID, accountId)
                 .appendQueryParameter(UUID, deviceUuid)
                 .appendQueryParameter(TAGS, "{\"u\":{\"" + customDimensionKey + "\":\"" + customDimensionValue + "\"}}")
