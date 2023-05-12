@@ -1,12 +1,9 @@
-package com.vwo.mobile.v3;
+package com.vwo.mobile.meg;
 
 import android.text.TextUtils;
 
 import com.vwo.mobile.VWO;
 import com.vwo.mobile.data.VWOLocalData;
-import com.vwo.mobile.meg.CampaignGroupMapper;
-import com.vwo.mobile.meg.Group;
-import com.vwo.mobile.meg.MutuallyExclusiveGroups;
 import com.vwo.mobile.utils.VWOLog;
 import com.vwo.mobile.utils.VWOPreference;
 import com.vwo.mobile.utils.VWOUtils;
@@ -24,22 +21,51 @@ public class MEGManager {
 
     private static final String EMPTY = "";
 
+    // previously calculated winner campaigns for
+    private static final String KEY_SAVED_ARRAY_OF_WINNER_CAMPAIGNS = "winner_mappings";
+
     private final VWO sSharedInstance;
 
     private final VWOLocalData mVWOLocalData;
 
+    private final WinnerManager winnerManager;
+
     public MEGManager(VWO sSharedInstance) {
         this.sSharedInstance = sSharedInstance;
         this.mVWOLocalData = new VWOLocalData(sSharedInstance);
+        winnerManager = new WinnerManager(sSharedInstance);
+    }
+
+    private void iLog(String message) {
+        MutuallyExclusiveGroups.log(message);
     }
 
     public String getCampaign(String userId, HashMap<String, String> args) {
 
+        iLog("trying to figure out MEG winner campaign.");
+
         if (userId == null || TextUtils.isEmpty(userId)) {
+            iLog("User not passed for MEG, using the SDK's logic for userId generation.");
             // use the (default | random) user id
             VWOPreference vwoPreference = new VWOPreference(sSharedInstance.getCurrentContext());
             userId = VWOUtils.getDeviceUUID(vwoPreference);
         }
+
+        WinnerManager.Response localResponse = winnerManager.getSavedDetailsFor(userId, args);
+        if (localResponse.shouldServePreviousWinnerCampaign()) {
+            // user doesn't exist, should continue processing
+            String savedWinnerCampaign = localResponse.getWinnerCampaign();
+            String servingNull;
+            if (savedWinnerCampaign == null) {
+                servingNull = "null";
+            } else {
+                servingNull = savedWinnerCampaign;
+            }
+            MutuallyExclusiveGroups.log("will serve campaign: " + servingNull + " for user: " + userId + " which is based on previous runs.");
+            return savedWinnerCampaign;
+        }
+
+        MutuallyExclusiveGroups.log("response -> isQualified: " + localResponse.shouldServePreviousWinnerCampaign() + " ; isNewUser: " + localResponse.isNewUser() + " ; getWinnerCampaign: " + localResponse.getWinnerCampaign());
 
         JSONArray campaignsData = mVWOLocalData.getData();
         if (campaignsData == null || campaignsData.length() == 0) return null; // MEG data not found
@@ -49,9 +75,12 @@ public class MEGManager {
 
         HashMap<String, Group> mappedData = CampaignGroupMapper.createAndGetGroups(megGroupsData);
 
-        MutuallyExclusiveGroups meg = new MutuallyExclusiveGroups(userId);
+        MutuallyExclusiveGroups meg = new MutuallyExclusiveGroups(sSharedInstance, userId);
         meg.addGroups(mappedData);
-        return meg.getCampaign(args, campaignsData);
+
+        String winner = meg.getCampaign(args, campaignsData);
+        winnerManager.save(userId, winner, args);
+        return winner;
     }
 
     private JSONObject getMEGData(JSONArray campaignsData) {

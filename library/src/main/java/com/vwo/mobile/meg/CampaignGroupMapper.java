@@ -33,17 +33,17 @@ public class CampaignGroupMapper {
                 String key = itrJsonGroups.next();
 
                 JSONObject objGroup = jsonGroups.getJSONObject(key);
-                JSONArray arrCampaigns = objGroup.getJSONArray(KEY_CAMPAIGNS);
-
-                String groupName = objGroup.getString(KEY_NAME);
 
                 Group group = new Group();
-                group.setName(groupName);
                 group.setId(Integer.parseInt(key));
 
-                for (int index = 0; index < arrCampaigns.length(); index++) {
-                    group.addCampaign(arrCampaigns.getString(index));
-                }
+                String groupName = objGroup.getString(KEY_NAME);
+                group.setName(groupName);
+
+                prepareWeight(objGroup, group);
+                prepareCampaigns(objGroup, group);
+                prepareEt(objGroup, group);
+                preparePriority(objGroup, group);
 
                 groups.put(groupName, group);
             }
@@ -52,6 +52,49 @@ public class CampaignGroupMapper {
         }
 
         return groups;
+    }
+
+    private static void preparePriority(JSONObject source, Group destination) throws JSONException {
+        if (!source.has(Group.KEY_PRIORITY)) return;
+
+        JSONArray priority = source.getJSONArray(Group.KEY_PRIORITY);
+        MutuallyExclusiveGroups.log("priority should be given to these campaigns -> " + priority);
+        for (int pIndex = 0; pIndex < priority.length(); ++pIndex) {
+            destination.addPriority(priority.getString(pIndex));
+        }
+    }
+
+    private static void prepareEt(JSONObject source, Group destination) throws JSONException {
+        if (!source.has(Group.KEY_ET)) return;
+
+        int et = source.getInt(Group.KEY_ET);
+        destination.addEt(et);
+    }
+
+    private static void prepareCampaigns(JSONObject source, Group destination) throws JSONException {
+        if (!source.has(KEY_CAMPAIGNS)) return;
+
+        JSONArray arrCampaigns = source.getJSONArray(KEY_CAMPAIGNS);
+        for (int index = 0; index < arrCampaigns.length(); index++) {
+            destination.addCampaign(arrCampaigns.getString(index));
+        }
+    }
+
+    private static void prepareWeight(JSONObject source, Group destination) throws JSONException {
+        if (!source.has(Group.KEY_WEIGHT)) return;
+
+        MutuallyExclusiveGroups.log("------------------------------------------------------------");
+        MutuallyExclusiveGroups.log("preparing for -> " + destination.getName());
+        MutuallyExclusiveGroups.log("found weight sent from server, preparing the weight value for later usage.");
+        MutuallyExclusiveGroups.log("NOTE: these weight will only be applied if no priority campaign exist.");
+        JSONObject weights = source.getJSONObject(Group.KEY_WEIGHT);
+        Iterator<String> campaigns = weights.keys();
+        while (campaigns.hasNext()) {
+            String c = campaigns.next();
+            int w = weights.getInt(c);
+            destination.addWeight(c, w);
+        }
+        MutuallyExclusiveGroups.log("------------------------------------------------------------");
     }
 
     private static JSONObject getGroups(JSONObject jsonObject) {

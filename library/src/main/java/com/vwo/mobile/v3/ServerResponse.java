@@ -1,7 +1,5 @@
 package com.vwo.mobile.v3;
 
-import android.util.Log;
-
 import androidx.annotation.Nullable;
 
 import com.vwo.mobile.utils.VWOLog;

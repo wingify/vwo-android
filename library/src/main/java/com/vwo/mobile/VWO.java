@@ -32,7 +32,7 @@ import com.vwo.mobile.utils.VWOPreference;
 import com.vwo.mobile.utils.VWOUrlBuilder;
 import com.vwo.mobile.utils.VWOUtils;
 import com.vwo.mobile.v3.EUManager;
-import com.vwo.mobile.v3.MEGManager;
+import com.vwo.mobile.meg.MEGManager;
 import com.vwo.mobile.v3.MockServerResponse;
 import com.vwo.mobile.v3.ServerResponse;
 

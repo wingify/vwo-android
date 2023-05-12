@@ -35,6 +35,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
 import androidx.annotation.CheckResult;
@@ -289,24 +290,32 @@ public class MainActivity extends BaseActivity
                 @Override
                 public void onVWOLoaded() {
 
-                /* Use the below code to print the different sdk-init duration after enabling the benchmarking
-                    if (vwoConfigBuilder.isEnableBenchmarking()) {
-                        String initDuration = "Time taken to before api call -> " + TimeTracker.getBeforeApiInitDuration() + " ms." + " \n" +
-                                "Time taken to load URL response -> " + TimeTracker.getApiInitDuration() + " ms." + " \n" +
-                                "Time taken to after api call -> " + TimeTracker.getAfterApiInitDuration() + " ms." + " \n" +
-                                "Time taken to reach callback -> " + TimeTracker.getTotalInitDuration() + " ms." + " \n";
+                    System.out.println("VWODACDN: load success!!! -> ");
+                    /* Use the below code to print the different sdk-init duration after enabling the benchmarking
+                        if (vwoConfigBuilder.isEnableBenchmarking()) {
+                            String initDuration = "Time taken to before api call -> " + TimeTracker.getBeforeApiInitDuration() + " ms." + " \n" +
+                                    "Time taken to load URL response -> " + TimeTracker.getApiInitDuration() + " ms." + " \n" +
+                                    "Time taken to after api call -> " + TimeTracker.getAfterApiInitDuration() + " ms." + " \n" +
+                                    "Time taken to reach callback -> " + TimeTracker.getTotalInitDuration() + " ms." + " \n";
 
-                        VWOLog.v("LoadTime", initDuration);
+                            VWOLog.v("LoadTime", initDuration);
+                        }
+                    **/
+
+                    long start = System.nanoTime();
+                    // use the below commented code to use MEG functionality
+                    HashMap<String, String> args = new HashMap<>();
+                    args.put("test_key", "demo_two");
+                    // args.put("groupId", "3");
+
+                    String c = VWO.getCampaign("mark181@facebook.com", args);
+                    String vnftk = VWO.getVariationNameForTestKey(c);
+                    if (vnftk != null && c != null) {
+                        Log.d("VariationNameForTestKey", "vn: " + vnftk + " c: " + c);
                     }
-                **/
+                    long end = System.nanoTime();
+                    Log.d("meg", "onVWOLoaded: time taken ms -> " + TimeUnit.NANOSECONDS.toMillis(end - start));
 
-                /* use the below commented code to use MEG functionality
-                             HashMap<String, String> args = new HashMap<>();
-                             args.put("test_key", "TestKey");
-                             args.put("groupId", "4");
-                             Log.d("ReturnCampaignKey",VWO.getCampaign("mark@facebook.com", args)+" ");
-                             Log.d("VariationNameForTestKey", VWO.getVariationNameForTestKey(VWO.getCampaign("mark@facebook.com", args)));
-                **/
 
                 /* use the below commented code to get the variationName and perform actions accordingly
                             String testKey = "Camp test 1";
@@ -339,6 +348,7 @@ public class MainActivity extends BaseActivity
                     if (showProgress) {
                         progressBar.setVisibility(View.GONE);
                     }
+                    System.out.println("VWODACDN: failed -> " + s);
                     loadFragments();
                 }
             });
