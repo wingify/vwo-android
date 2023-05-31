@@ -5,6 +5,7 @@ import android.text.TextUtils;
 
 import com.vwo.mobile.BuildConfig;
 import com.vwo.mobile.VWO;
+import com.vwo.mobile.VWOConfig;
 import com.vwo.mobile.constants.AppConstants;
 import com.vwo.mobile.data.VWOPersistData;
 import com.vwo.mobile.v3.EUManager;
@@ -14,10 +15,11 @@ import org.json.JSONObject;
 
 public class VWOUrlBuilder {
     private static final String DACDN_URL = BuildConfig.DACDN_URL;
-    private static final String DACDN_URL_SCHEME = BuildConfig.SCHEME;
+    public static final String DACDN_URL_SCHEME = BuildConfig.SCHEME;
     private static final String CHINA_DACDN_URL = BuildConfig.CHINA_DACDN_URL;
     private static final String PATH_MOBILE = "mobile";
     //    private static final String PATH_DACDN_GOAL = "c.gif";
+    public static final String PATH_EVENTS = "events/t";
     private static final String PATH_DACDN_GOAL = "track-goal";
     //    private static final String PATH_DACDN_CAMPAIGN = "l.gif";
     private static final String PATH_DACDN_CAMPAIGN = "track-user";

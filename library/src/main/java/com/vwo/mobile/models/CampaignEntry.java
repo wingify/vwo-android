@@ -11,12 +11,18 @@ import java.util.Locale;
  */
 
 @Keep
-public class CampaignEntry extends Entry {
+public class CampaignEntry extends PostEntry {
     private long campaignId;
     private int variationId;
 
     public CampaignEntry(@NonNull String url, long campaignId, int variationId) {
         super(url);
+        this.campaignId = campaignId;
+        this.variationId = variationId;
+    }
+
+    public CampaignEntry(@NonNull String url, long campaignId, int variationId, String requestBody,boolean isEventArchEnabled) {
+        super(url, requestBody,isEventArchEnabled);
         this.campaignId = campaignId;
         this.variationId = variationId;
     }
@@ -47,6 +53,6 @@ public class CampaignEntry extends Entry {
     public String toString() {
         String data = super.toString();
         return String.format(Locale.ENGLISH,
-                "%sCampaignId: %d\nVariationId: %d\n", data, this.campaignId, this.variationId);
+                "%s CampaignId: %d\nVariationId: %d\n", data, this.campaignId, this.variationId);
     }
 }

@@ -8,6 +8,10 @@ import androidx.annotation.Nullable;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.vwo.mobile.VWO;
+import com.vwo.mobile.VWOConfig;
+import com.vwo.mobile.events.TrackGoalPostEvent;
+import com.vwo.mobile.events.TrackUserPostEvent;
+import com.vwo.mobile.events.VisitorSyncEvent;
 import com.vwo.mobile.models.Campaign;
 import com.vwo.mobile.models.CampaignEntry;
 import com.vwo.mobile.models.CustomDimensionEntry;
@@ -152,7 +156,7 @@ public class VWOData {
      * Returns the value corresponding to the testKey of the campaign and the key for a any variation.
      *
      * @param testKey is the identifier containing the value of testKey of campaign corresponding to which a value needs to be fetched.
-     * @param key is the identifier corresponding to which a value needs to be fetched.
+     * @param key     is the identifier corresponding to which a value needs to be fetched.
      * @return the variation value for the given key
      */
     @Nullable
@@ -227,7 +231,6 @@ public class VWOData {
         if (SegmentUtils.evaluateSegmentation(campaign)) {
             mCampaigns.add(campaign);
 
-            String campaignRecordUrl = mVWO.getVwoUrlBuilder().getCampaignUrl(campaign.getId(), campaign.getVariation().getId());
             VWOLog.v(VWOLog.CAMPAIGN_LOGS, "Campaign \"" + campaign.getName() + "\" is a new and valid campaign");
             VWOLog.v(VWOLog.CAMPAIGN_LOGS, "Making user part of campaign \"" + campaign.getId() + "\"\nand variation with id: "
                     + campaign.getVariation().getId());
@@ -238,8 +241,7 @@ public class VWOData {
             // Make user part of campaign and avoid duplication
             if (!mVWO.getVwoPreference().isPartOfCampaign(String.valueOf(campaign.getId()))) {
                 mVWO.getVwoPreference().setPartOfCampaign(String.valueOf(campaign.getId()));
-                CampaignEntry campaignEntry = new CampaignEntry(campaignRecordUrl, campaign.getId(),
-                        campaign.getVariation().getId());
+                CampaignEntry campaignEntry = getCampaignRequestEntry(campaign);
                 mVWO.getMessageQueue().add(campaignEntry);
                 Intent intent = new Intent();
                 intent.putExtra(VWO.Constants.ARG_CAMPAIGN_ID, String.valueOf(campaign.getId()));
@@ -267,6 +269,28 @@ public class VWOData {
         return false;
     }
 
+    private CampaignEntry getCampaignRequestEntry(Campaign campaign) {
+        VWOConfig config = mVWO.getConfig();
+        boolean isEventArchEnabled = false;
+        if (config != null)
+            isEventArchEnabled = config.isEventArchEnabled();
+
+        int variationId = campaign.getVariation().getId();
+        long campaignId = campaign.getId();
+
+        String body = null;
+        String campaignRecordUrl;
+
+        if (isEventArchEnabled) {
+            TrackUserPostEvent event = new TrackUserPostEvent(mVWO);
+            body = event.getBody(campaignId, variationId);
+            campaignRecordUrl = event.getUrl();
+        } else {
+            campaignRecordUrl = mVWO.getVwoUrlBuilder().getCampaignUrl(campaignId, variationId);
+        }
+        return new CampaignEntry(campaignRecordUrl, campaignId, variationId, body, isEventArchEnabled);
+    }
+
     /**
      * Mark goal as achieved with revenue
      *
@@ -282,21 +306,11 @@ public class VWOData {
                         try {
                             JSONObject jsonObject = new JSONObject(campaignData);
                             VWOPersistData vwoPersistData = new VWOPersistData(jsonObject);
-                            if (!vwoPersistData.isGoalExists(goal.getId())) {
+                            if (goal.isRecurringGoal() || !vwoPersistData.isGoalExists(goal.getId())) {
                                 vwoPersistData.addGoal(goal.getId());
                                 vwoPersistData.saveCampaign(mVWO.getVwoPreference());
 
-                                String goalUrl;
-                                if (value != null) {
-                                    goalUrl = mVWO.getVwoUrlBuilder().getGoalUrl(campaign.getId(),
-                                            campaign.getVariation().getId(), goal.getId(), value);
-                                } else {
-                                    goalUrl = mVWO.getVwoUrlBuilder().getGoalUrl(campaign.getId(),
-                                            campaign.getVariation().getId(), goal.getId());
-                                }
-
-                                GoalEntry goalEntry = new GoalEntry(goalUrl, campaign.getId(),
-                                        campaign.getVariation().getId(), goal.getId());
+                                GoalEntry goalEntry = getGoalRequestEntry(campaign, goal, value);
                                 mVWO.getMessageQueue().add(goalEntry);
                             } else {
                                 VWOLog.w(VWOLog.CAMPAIGN_LOGS, "Duplicate goal identifier: " + goalIdentifier, true);
@@ -310,11 +324,53 @@ public class VWOData {
         }
     }
 
+    private GoalEntry getGoalRequestEntry(Campaign campaign, Goal goal, Double value) {
+        VWOConfig config = mVWO.getConfig();
+        boolean isEventArchEnabled = false;
+        if (config != null)
+            isEventArchEnabled = config.isEventArchEnabled();
+
+        int variationId = campaign.getVariation().getId();
+        long campaignId = campaign.getId();
+        int goalId = goal.getId();
+
+        String body = null;
+        String goalUrl;
+
+        if (isEventArchEnabled) {
+            TrackGoalPostEvent event = new TrackGoalPostEvent(mVWO, goal);
+            body = event.getBody(campaignId, value);
+            goalUrl = event.getUrl();
+        } else {
+            if (value != null) {
+                goalUrl = mVWO.getVwoUrlBuilder().getGoalUrl(campaignId, variationId, goalId, value);
+            } else {
+                goalUrl = mVWO.getVwoUrlBuilder().getGoalUrl(campaignId, variationId, goalId);
+            }
+        }
+        return new GoalEntry(goalUrl, campaignId, variationId, goalId, body, isEventArchEnabled);
+    }
+
     public void sendCustomDimension(String customDimensionKey, String customDimensionValue) {
         try {
-            String customDimensionUrl = mVWO.getVwoUrlBuilder().getCustomDimensionUrl(customDimensionKey, customDimensionValue);
-            CustomDimensionEntry customDimensionEntry = new CustomDimensionEntry(customDimensionUrl, customDimensionKey, customDimensionValue);
-            mVWO.getMessageQueue().add(customDimensionEntry);
+            VWOConfig config = mVWO.getConfig();
+            boolean isEventArchEnabled = false;
+            if (config != null)
+                isEventArchEnabled = config.isEventArchEnabled();
+
+            String body = null;
+            String customDimensionUrl;
+            if (isEventArchEnabled) {
+                VisitorSyncEvent event = new VisitorSyncEvent(mVWO);
+                body = event.getBody(customDimensionKey, customDimensionValue);
+                customDimensionUrl = event.getUrl();
+            } else {
+                customDimensionUrl = mVWO.getVwoUrlBuilder().getCustomDimensionUrl(customDimensionKey, customDimensionValue);
+            }
+            CustomDimensionEntry entry = new CustomDimensionEntry(customDimensionUrl,
+                    customDimensionKey, customDimensionValue, body, isEventArchEnabled);
+
+            mVWO.getMessageQueue().add(entry);
         } catch (Exception exception) {
             VWOLog.w(VWOLog.CAMPAIGN_LOGS, "Unable to send custom dimension to VWO server", exception, true);
         }

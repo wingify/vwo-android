@@ -85,6 +85,9 @@ public class NetworkUtils {
         public static final String HEADER_CACHE_CONTROL = "Cache-Control";
         public static final String CACHE_NO = "no-cache";
 
+        public static final String HEADER_USER_AGENT = "User-Agent";
+        public static final String USER_AGENT_VALUE = "vwo-android-sdk";
+
         private static String parseCharset(Map<String, String> headers, String defaultCharset) {
             String contentType = headers.get(HEADER_CONTENT_TYPE);
             if (contentType != null) {
@@ -114,8 +117,19 @@ public class NetworkUtils {
             return headers;
         }
 
-        public static Map<String, String> getAuthHeaders(String accountID, String appKey) {
+        public static Map<String, String> getPostHeaders() {
             Map<String, String> headers = getBasicHeaders();
+            headers.put(HEADER_USER_AGENT, USER_AGENT_VALUE);
+            return headers;
+        }
+
+        public static Map<String, String> getAuthHeaders(String accountID, String appKey, boolean isEventArchEnabled) {
+            Map<String, String> headers;
+            if (isEventArchEnabled)
+                headers = getPostHeaders();
+            else
+                headers = getBasicHeaders();
+
             headers.put(HEADER_ACCOUNT_ID, accountID);
             headers.put(HEADER_APP_KEY, appKey);
             return headers;

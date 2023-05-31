@@ -4,8 +4,12 @@ import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import android.text.TextUtils;
 
+import com.vwo.mobile.network.NetworkRequest;
+import com.vwo.mobile.utils.NetworkUtils;
+
 import java.io.Serializable;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * Created by aman on 16/09/17.
@@ -27,6 +31,14 @@ public abstract class Entry implements Serializable {
 
     public String getUrl() {
         return url;
+    }
+
+    public String getRequestType() {
+        return NetworkRequest.GET;
+    }
+
+    public Map<String, String> getHeaders() {
+        return NetworkUtils.Headers.getBasicHeaders();
     }
 
     public void setUrl(String url) {

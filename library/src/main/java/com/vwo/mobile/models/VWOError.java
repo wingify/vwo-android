@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.vwo.mobile.logging.LogUtils;
+import com.vwo.mobile.utils.NetworkUtils;
 import com.vwo.mobile.utils.VWOUtils;
 
 import org.json.JSONException;
@@ -81,6 +82,16 @@ public class VWOError extends Entry {
     @Override
     public String getKey() {
         return builder.id;
+    }
+
+    public Map<String, String> getHeaders(String accountID, String appKey) {
+        return NetworkUtils.Headers.getAuthHeaders(accountID, appKey, false);
+    }
+
+    @Override
+    public Map<String, String> getHeaders() {
+        //"Please use getHeaders(String accountID, String appKey) instead to get headers."
+        return null;
     }
 
 

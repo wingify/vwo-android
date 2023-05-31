@@ -50,6 +50,27 @@ public class AppConstants {
     public static final String DEVICE_TYPE_PHONE = "Phone";
     public static final String DEVICE_TYPE_TABLET = "Tablet";
 
+    //region Keys in Events
+    public static final String KEY_DATA = "d";
+    public static final String KEY_MSG_ID = "msgId";
+    public static final String KEY_UUID = "visId";
+    public static final String KEY_SESSION_ID = "sessionId";
+    public static final String KEY_EVENT = "event";
+    public static final String KEY_VISITOR = "visitor";
+    public static final String KEY_PROPS = "props";
+    public static final String KEY_NAME = "name";
+    public static final String KEY_TIME = "time";
+    public static final String KEY_SDK_NAME = "sdkName";
+    public static final String KEY_SDK_VERSION = "sdkVersion";
+    public static final String KEY_CUSTOM_EVENT = "isCustomEvent";
+    public static final String KEY_$VISITOR = "$visitor";
+    public static final String KEY_META = "vwoMeta";
+    public static final String KEY_ENV = "vwo_fs_environment";
+    public static final String KEY_METRIC = "metric";
+    public static final String KEY_ID = "id";
+    public static final String KEY_VARIATION = "variation";
+    public static final String KEY_IS_First = "isFirst";
+    //endregion
 
 
 }

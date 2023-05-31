@@ -108,4 +108,11 @@ public class ServerResponse {
         return data;
     }
 
+    public boolean isEventArchEnabled() {
+        if (v3Json == null)
+            return false;
+
+        return v3Json.optBoolean("isEventArchEnabled", false);
+    }
+
 }

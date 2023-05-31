@@ -829,11 +829,11 @@ public class VWO implements VWODownloader.DownloadResult, PreviewListener {
             ServerResponse serverResponse = new ServerResponse(data);
 
             if (serverResponse.isNewStandardApi()) {
-
+                vwoConfig.setEventArchEnabled(serverResponse.isEventArchEnabled());
                 EUManager.putCollectionPrefix(sSharedInstance, data);
                 parseAndContinueWithNewStandardData(serverResponse);
             } else if (serverResponse.isLegacyApi()) {
-
+                vwoConfig.setEventArchEnabled(false);
                 parseAndContinueWithLegacyData(data);
             } else {
 

@@ -35,6 +35,7 @@ public class VWOConfig {
     private VWOStatusListener statusListener;
     private String userID;
     private boolean isChinaCDN = false;
+    private boolean isEventArchEnabled = true;
 
     private VWOConfig(Builder builder) {
         this.customSegmentationMapping = builder.customSegmentationMapping;
@@ -114,6 +115,14 @@ public class VWOConfig {
      */
     public boolean isEnableBenchmarking() {
         return this.enableBenchmarking;
+    }
+
+    public boolean isEventArchEnabled() {
+        return this.isEventArchEnabled;
+    }
+
+    public void setEventArchEnabled(boolean eventArchEnabled) {
+        this.isEventArchEnabled = eventArchEnabled;
     }
 
     boolean isPreviewEnabled() {

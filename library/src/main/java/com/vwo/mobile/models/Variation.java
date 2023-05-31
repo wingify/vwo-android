@@ -10,7 +10,6 @@ import java.util.Iterator;
 import java.util.Map;
 
 public class Variation {
-
     public static final int EMPTY_VARIATION = -99;
     public static final String JSON_CONTENT = "changes";
     public static final String ID = "id";
