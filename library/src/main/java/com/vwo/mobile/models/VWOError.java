@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.vwo.mobile.logging.LogUtils;
+import com.vwo.mobile.network.NetworkRequest;
 import com.vwo.mobile.utils.NetworkUtils;
 import com.vwo.mobile.utils.VWOUtils;
 
@@ -82,6 +83,10 @@ public class VWOError extends Entry {
     @Override
     public String getKey() {
         return builder.id;
+    }
+
+    public String getRequestType() {
+        return NetworkRequest.POST;
     }
 
     public Map<String, String> getHeaders(String accountID, String appKey) {
