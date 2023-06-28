@@ -115,4 +115,10 @@ public class ServerResponse {
         return v3Json.optBoolean("isEventArchEnabled", false);
     }
 
+    public boolean isMobile360Enabled() {
+        if (v3Json == null)
+            return false;
+
+        return v3Json.optBoolean("isMobile360Enabled", false);
+    }
 }

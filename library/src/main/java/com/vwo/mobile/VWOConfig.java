@@ -35,7 +35,8 @@ public class VWOConfig {
     private VWOStatusListener statusListener;
     private String userID;
     private boolean isChinaCDN = false;
-    private boolean isEventArchEnabled = true;
+    private boolean isEventArchEnabled = false;
+    private boolean isMobile360Enabled = false;
 
     private VWOConfig(Builder builder) {
         this.customSegmentationMapping = builder.customSegmentationMapping;
@@ -118,11 +119,15 @@ public class VWOConfig {
     }
 
     public boolean isEventArchEnabled() {
-        return this.isEventArchEnabled;
+        return this.isEventArchEnabled && isMobile360Enabled;
     }
 
     public void setEventArchEnabled(boolean eventArchEnabled) {
         this.isEventArchEnabled = eventArchEnabled;
+    }
+
+    public void setMobile360Enabled(boolean mobile360Enabled) {
+        this.isMobile360Enabled = mobile360Enabled;
     }
 
     boolean isPreviewEnabled() {

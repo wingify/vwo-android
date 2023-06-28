@@ -830,10 +830,12 @@ public class VWO implements VWODownloader.DownloadResult, PreviewListener {
 
             if (serverResponse.isNewStandardApi()) {
                 vwoConfig.setEventArchEnabled(serverResponse.isEventArchEnabled());
+                vwoConfig.setMobile360Enabled(serverResponse.isMobile360Enabled());
                 EUManager.putCollectionPrefix(sSharedInstance, data);
                 parseAndContinueWithNewStandardData(serverResponse);
             } else if (serverResponse.isLegacyApi()) {
                 vwoConfig.setEventArchEnabled(false);
+                vwoConfig.setMobile360Enabled(false);
                 parseAndContinueWithLegacyData(data);
             } else {
 
