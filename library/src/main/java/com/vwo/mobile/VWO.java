@@ -869,7 +869,14 @@ public class VWO implements VWODownloader.DownloadResult, PreviewListener {
     private JSONArray convertV3ToLegacyMEGStructure(JSONObject jsonObject) throws JSONException {
 
         // extract campaigns to make it as same as previous structure
-        JSONArray campaignsJsonArray = jsonObject.getJSONArray(CampaignGroupMapper.KEY_CAMPAIGNS);
+        JSONArray campaignsJsonArray = new JSONArray();
+        try {
+            campaignsJsonArray = jsonObject.getJSONArray(CampaignGroupMapper.KEY_CAMPAIGNS);
+        } catch (Exception ex) {
+            // this is a limitation from DACDN
+            // "campaigns" should be an array but is received as an object
+            // in which case we should just continue with empty array
+        }
 
         // build legacy structure for parsing the campaigns and MEG too
         // because the code structure isn't as straight forward
