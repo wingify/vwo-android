@@ -47,6 +47,7 @@ public class VWOUrlBuilder {
     private static final String EXPERIMENT_ID = "experiment_id";
     private static final String GOAL_ACCOUNT_ID = "account_id";
     private static final String COMBINATION = "combination";
+    private static final String APPLICATION_VERSION = "av";
     private static final String UUID = "u";
     private static final String SESSION = "s";
     private static final String GOAL_RANDOM = "random";
@@ -74,6 +75,7 @@ public class VWOUrlBuilder {
     public String getDownloadUrl() {
         String sdkVersion = String.valueOf(VWO.versionCode());
         String accountId = vwo.getConfig().getAccountId();
+        String applicationVersion = String.valueOf(VWOUtils.applicationVersionName(vwo.getCurrentContext()));
         String appKey = vwo.getConfig().getAppKey();
         String currentDeviceSystemVersion = VWOUtils.androidVersion();
         String existingCampaignList = vwo.getVwoPreference().getString(VWOPersistData.CAMPAIGN_LIST);
@@ -85,6 +87,7 @@ public class VWOUrlBuilder {
                 .appendEncodedPath(PATH_MOBILE)
                 .appendQueryParameter(API_VERSION, VALUE_API_VERSION)
                 .appendQueryParameter(ACCOUNT_ID, accountId)
+                .appendQueryParameter(APPLICATION_VERSION, applicationVersion)
                 .appendQueryParameter(SDK_VERSION, sdkVersion)
                 .appendQueryParameter(APP_KEY, appKey)
                 .appendQueryParameter(DEVICE_ID, deviceUuid)
@@ -112,6 +115,8 @@ public class VWOUrlBuilder {
 
         String accountId = vwo.getConfig().getAccountId();
 
+        String applicationVersion = String.valueOf(VWOUtils.applicationVersionName(vwo.getCurrentContext()));
+
         int session = vwo.getVwoPreference().getInt(AppConstants.DEVICE_SESSION, 0);
 
         String customDimensionData = vwo.getConfig().getCustomDimension();
@@ -122,6 +127,7 @@ public class VWOUrlBuilder {
                 .appendQueryParameter(EXPERIMENT_ID, String.valueOf(experimentId))
                 .appendQueryParameter(GOAL_ACCOUNT_ID, accountId)
                 .appendQueryParameter(COMBINATION, String.valueOf(variationId))
+                .appendQueryParameter(APPLICATION_VERSION, applicationVersion)
                 .appendQueryParameter(UUID, deviceUuid)
                 .appendQueryParameter(SESSION, String.valueOf(session))
                 .appendQueryParameter(SID, String.valueOf(System.currentTimeMillis() / 1000))
@@ -138,6 +144,7 @@ public class VWOUrlBuilder {
     public String getGoalUrl(long experimentId, int variationId, int goalId) {
         String accountId = vwo.getConfig().getAccountId();
         String deviceUuid = VWOUtils.getDeviceUUID(vwo.getVwoPreference());
+        String applicationVersion = String.valueOf(VWOUtils.applicationVersionName(vwo.getCurrentContext()));
 
         int session = vwo.getVwoPreference().getInt(AppConstants.DEVICE_SESSION, 0);
 
@@ -147,6 +154,7 @@ public class VWOUrlBuilder {
                 .appendQueryParameter(EXPERIMENT_ID, String.valueOf(experimentId))
                 .appendQueryParameter(GOAL_ACCOUNT_ID, accountId)
                 .appendQueryParameter(COMBINATION, String.valueOf(variationId))
+                .appendQueryParameter(APPLICATION_VERSION, applicationVersion)
                 .appendQueryParameter(UUID, deviceUuid)
                 .appendQueryParameter(SESSION, String.valueOf(session))
                 .appendQueryParameter(GOAL_RANDOM, String.valueOf(VWOUtils.getRandomNumber()))
@@ -165,12 +173,15 @@ public class VWOUrlBuilder {
 
         String accountId = vwo.getConfig().getAccountId();
 
+        String applicationVersion = String.valueOf(VWOUtils.applicationVersionName(vwo.getCurrentContext()));
+
         int session = vwo.getVwoPreference().getInt(AppConstants.DEVICE_SESSION, 0);
 
         Uri.Builder uriBuilder = new Uri.Builder().scheme(DACDN_URL_SCHEME)
                 .authority(this.vwo.getConfig().getIsChinaCDN() ? CHINA_DACDN_URL : DACDN_URL)
                 .appendEncodedPath(EUManager.getEuAwarePath(vwo, PATH_DACDN_CUSTOM_DIMENSION))
                 .appendQueryParameter(GOAL_ACCOUNT_ID, accountId)
+                .appendQueryParameter(APPLICATION_VERSION, applicationVersion)
                 .appendQueryParameter(UUID, deviceUuid)
                 .appendQueryParameter(TAGS, "{\"u\":{\"" + customDimensionKey + "\":\"" + customDimensionValue + "\"}}")
                 .appendQueryParameter(SESSION, String.valueOf(session))
@@ -212,7 +223,7 @@ public class VWOUrlBuilder {
             jsonObject.put(EXTRA_TIME_IN_SECONDS, System.currentTimeMillis() / 1000);
             jsonObject.put(EXTRA_VERSION_CODE, VWO.versionCode());
             jsonObject.put(EXTRA_API_KEY, vwo.getConfig().getAppKey());
-            jsonObject.put(EXTRA_APPLICATION_VERSION, VWOUtils.applicationVersion(vwo.getCurrentContext()));
+            jsonObject.put(EXTRA_APPLICATION_VERSION, VWOUtils.applicationVersionName(vwo.getCurrentContext()));
             jsonObject.put(EXTRA_DEVICE_TYPE, VALUE_DEVICE_TYPE);
             jsonObject.put(EXTRA_OPERATING_SYSTEM, VWOUtils.androidVersion());
 

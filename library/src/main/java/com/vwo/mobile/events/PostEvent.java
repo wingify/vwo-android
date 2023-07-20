@@ -18,6 +18,7 @@ abstract class PostEvent {
 
     protected String EVENT_NAME_KEY = "en";
     protected String ACC_ID_KEY = "a";
+    protected String APPLICATION_VERSION = "av";
     protected String API_KEY = "env";
     protected String EVENT_TIME_KEY = "eTime";
     protected String RANDOM_KEY = "random";
@@ -37,12 +38,14 @@ abstract class PostEvent {
     public String getUrl() {
 
         String accountId = vwo.getConfig().getAccountId();
+        String applicationVersion = String.valueOf(VWOUtils.applicationVersionName(vwo.getCurrentContext()));
         Uri.Builder uriBuilder = new Uri.Builder()
                 .scheme(DACDN_URL_SCHEME)
                 .authority(getAuthority())
                 .appendEncodedPath(EUManager.getEuAwarePath(vwo, getPathForEventArchitecture()))
                 .appendQueryParameter(EVENT_NAME_KEY, getEventName())
                 .appendQueryParameter(ACC_ID_KEY, accountId)
+                .appendQueryParameter(APPLICATION_VERSION, applicationVersion)
                 .appendQueryParameter(API_KEY, getApiKey())
                 .appendQueryParameter(EVENT_TIME_KEY, String.valueOf(eventTime))
                 .appendQueryParameter(RANDOM_KEY, String.valueOf(VWOUtils.getRandomNumber()));

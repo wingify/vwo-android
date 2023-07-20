@@ -83,6 +83,21 @@ public class VWOUtils {
         return -1;
     }
 
+    public static String applicationVersionName(Context context) {
+        if (context != null) {
+            try {
+                PackageInfo packageInfo = context.getPackageManager().getPackageInfo(applicationName(context), 0);
+                if (packageInfo != null) {
+                    return packageInfo.versionName;
+                }
+            } catch (PackageManager.NameNotFoundException exception) {
+                VWOLog.e(VWOLog.CONFIG_LOGS, "Failed to get packaging info", exception, true, true);
+            }
+        }
+
+        return "NA";
+    }
+
     public static double getRandomNumber() {
         return new Random(System.currentTimeMillis() / 1000L + new Random().nextInt()).nextDouble();
     }
