@@ -42,7 +42,7 @@ abstract class PostEvent {
         Uri.Builder uriBuilder = new Uri.Builder()
                 .scheme(DACDN_URL_SCHEME)
                 .authority(getAuthority())
-                .appendEncodedPath(EUManager.getEuAwarePath(vwo, getPathForEventArchitecture()))
+                .appendEncodedPath(getPathForEventArchitecture())
                 .appendQueryParameter(EVENT_NAME_KEY, getEventName())
                 .appendQueryParameter(ACC_ID_KEY, accountId)
                 .appendQueryParameter(APPLICATION_VERSION, applicationVersion)
