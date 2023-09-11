@@ -156,6 +156,7 @@ public class NetworkUtils {
      */
     public static String getNetworkType(Context context) {
         NetworkInfo info = getNetworkInfo(context);
+        if (info == null) return ("Type :NA SubType:NA");
         return ("Type :" + info.getType() + " SubType: " + info.getSubtype());
     }
 
