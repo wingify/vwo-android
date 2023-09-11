@@ -1,5 +1,7 @@
 package com.vwo.mobile.events;
 
+import androidx.annotation.NonNull;
+
 import com.vwo.mobile.VWO;
 import com.vwo.mobile.models.EventL1;
 import com.vwo.mobile.models.EventL2;
@@ -11,15 +13,17 @@ import com.vwo.mobile.utils.VWOUtils;
 
 import org.json.JSONException;
 
+import java.util.HashMap;
+
 public class VisitorSyncEvent extends PostEvent {
 
     public VisitorSyncEvent(VWO vwo) {
         super(vwo);
     }
 
-    public String getBody(String tagKey, String tagValue) {
+    public String getBody(@NonNull HashMap<String, Object> dimensions) {
         try {
-            VisitorProps visitorProps = new VisitorProps(tagKey, tagValue);
+            VisitorProps visitorProps = new VisitorProps(dimensions);
             Visitor visitor = new Visitor(visitorProps);
 
             String sdkVersion = String.valueOf(VWO.version());

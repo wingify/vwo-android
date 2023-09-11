@@ -52,6 +52,6 @@ public abstract class PostEntry extends Entry {
     @NonNull
     @Override
     public String toString() {
-        return String.format(Locale.ENGLISH, "%s requestBody:%s ", super.toString(), requestBody);
+        return String.format(Locale.ENGLISH, "%s \nRequestBody:%s \nType:%s\n", super.toString(), requestBody, getRequestType());
     }
 }

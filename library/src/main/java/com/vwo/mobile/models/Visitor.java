@@ -10,7 +10,7 @@ import org.json.JSONObject;
  *
  * @author swapnilchaudhari
  */
-public class Visitor implements IEvent{
+public class Visitor implements IEvent {
     private final VisitorProps visitorProps;
 
     public Visitor(VisitorProps visitorProps) {
@@ -25,7 +25,6 @@ public class Visitor implements IEvent{
 
     @Override
     public JSONObject toJson() throws JSONException {
-        return new JSONObject()
-                .put(KEY_PROPS,visitorProps.toJson());
+        return new JSONObject().put(KEY_PROPS, visitorProps.toJson());
     }
 }

@@ -45,6 +45,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 import static com.vwo.mobile.Connection.FAILED;
 import static com.vwo.mobile.Connection.NOT_STARTED;
@@ -726,6 +727,63 @@ public class VWO implements VWODownloader.DownloadResult, PreviewListener {
                 VWOLog.e(VWOLog.NETWORK_LOGS, "SDK not initialized completely", false, false);
             }
         }
+    }
+
+    /**
+     * Send custom dimensions. Throws IllegalArgumentException of input is not valid.
+     * Acceptable values in Hashmap {String, Integer, Float, Double, Boolean}.
+     *
+     * @param dimensions HashMap<String, Object>
+     */
+    public static void pushCustomDimension(@NonNull HashMap<String, Object> dimensions) {
+        validateDimensions(dimensions);
+        synchronized (lock) {
+            if (sSharedInstance != null) {
+                if (sSharedInstance.mVWOStartState >= STARTED) {
+                    sSharedInstance.mVWOData.sendCustomDimension(dimensions);
+                } else if (sSharedInstance.mVWOStartState == OPTED_OUT) {
+                    VWOLog.e(VWOLog.DATA_LOGS, "Custom Dimension not sent. User opted out.", true, false);
+                } else if (sSharedInstance.mVWOStartState == FAILED) {
+                    VWOLog.e(VWOLog.DATA_LOGS, "Custom Dimension not sent. SDK Failed to Initialize", true, false);
+                } else {
+                    VWOLog.e(VWOLog.DATA_LOGS, "Custom Dimension not sent. SDK is initializing", true, false);
+                }
+            } else {
+                VWOLog.e(VWOLog.NETWORK_LOGS, "SDK not initialized completely", false, false);
+            }
+        }
+    }
+
+    /**
+     * Validator for custom dimension. Throws IllegalArgumentException of input is not valid.
+     * Acceptable values {String, Integer, Float, Double, Boolean}.
+     *
+     * @param dimensions HashMap<String, Object>
+     * @return true if valid
+     */
+    private static boolean validateDimensions(HashMap<String, Object> dimensions) {
+        if (dimensions == null)
+            throw new IllegalArgumentException("customDimensionKey cannot be null or empty");
+
+        Set<String> keys = dimensions.keySet();
+        for (String key : keys) {
+            if (key == null || key.isEmpty())
+                throw new IllegalArgumentException("customDimensionKey cannot be null or empty");
+
+            Object value = dimensions.get(key);
+            if (value == null)
+                throw new IllegalArgumentException("customDimensionValue cannot be null");
+            if (!(value instanceof String
+                    || value instanceof Integer
+                    || value instanceof Float
+                    || value instanceof Double
+                    || value instanceof Boolean))
+                throw new IllegalArgumentException("customDimensionValue can only be {String, Integer, Float, Double, Boolean}");
+
+            if (value instanceof String && ((String) value).isEmpty())
+                throw new IllegalArgumentException("customDimensionValue cannot be empty");
+        }
+        return true;
     }
 
     /**

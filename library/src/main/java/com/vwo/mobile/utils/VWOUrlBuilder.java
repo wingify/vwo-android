@@ -54,7 +54,7 @@ public class VWOUrlBuilder {
     private static final String EXTRA_DATA = "ed";
     private static final String REVENUE = "r";
     private static final String GOAL_ID = "goal_id";
-    private static final String TAGS = "tags";
+    public static final String TAGS = "tags";
     private static final String SID = "sId";
 
 

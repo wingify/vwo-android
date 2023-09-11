@@ -9,6 +9,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.vwo.mobile.VWO;
 import com.vwo.mobile.VWOConfig;
+import com.vwo.mobile.events.CustomDimensPostEvent;
 import com.vwo.mobile.events.TrackGoalPostEvent;
 import com.vwo.mobile.events.TrackUserPostEvent;
 import com.vwo.mobile.events.VisitorSyncEvent;
@@ -17,6 +18,7 @@ import com.vwo.mobile.models.CampaignEntry;
 import com.vwo.mobile.models.CustomDimensionEntry;
 import com.vwo.mobile.models.Goal;
 import com.vwo.mobile.models.GoalEntry;
+import com.vwo.mobile.models.MultiCustomDimensionEntry;
 import com.vwo.mobile.models.Variation;
 import com.vwo.mobile.segmentation.SegmentUtils;
 import com.vwo.mobile.utils.VWOLog;
@@ -361,14 +363,43 @@ public class VWOData {
             String body = null;
             String customDimensionUrl;
             if (isEventArchEnabled) {
+                HashMap<String, Object> dimension = new HashMap<>();
+                dimension.put(customDimensionKey, customDimensionValue);
                 VisitorSyncEvent event = new VisitorSyncEvent(mVWO);
-                body = event.getBody(customDimensionKey, customDimensionValue);
+                body = event.getBody(dimension);
                 customDimensionUrl = event.getUrl();
             } else {
                 customDimensionUrl = mVWO.getVwoUrlBuilder().getCustomDimensionUrl(customDimensionKey, customDimensionValue);
             }
             CustomDimensionEntry entry = new CustomDimensionEntry(customDimensionUrl,
                     customDimensionKey, customDimensionValue, body, isEventArchEnabled);
+
+            mVWO.getMessageQueue().add(entry);
+        } catch (Exception exception) {
+            VWOLog.w(VWOLog.CAMPAIGN_LOGS, "Unable to send custom dimension to VWO server", exception, true);
+        }
+    }
+
+    public void sendCustomDimension(@NonNull HashMap<String, Object> dimensions) {
+        try {
+            VWOConfig config = mVWO.getConfig();
+            boolean isEventArchEnabled = false;
+            if (config != null)
+                isEventArchEnabled = config.isEventArchEnabled();
+
+            String body = null;
+            String customDimensionUrl;
+            if (isEventArchEnabled) {
+                VisitorSyncEvent event = new VisitorSyncEvent(mVWO);
+                body = event.getBody(dimensions);
+                customDimensionUrl = event.getUrl();
+            } else {
+                CustomDimensPostEvent event = new CustomDimensPostEvent(mVWO);
+                body = event.getBody(dimensions);
+                customDimensionUrl = event.getUrl();
+            }
+            MultiCustomDimensionEntry entry = new MultiCustomDimensionEntry(customDimensionUrl,
+                    dimensions, body, isEventArchEnabled);
 
             mVWO.getMessageQueue().add(entry);
         } catch (Exception exception) {
