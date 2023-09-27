@@ -308,11 +308,11 @@ public class MainActivity extends BaseActivity
                     args.put("test_key", "demo_two");
                     // args.put("groupId", "3");
 
-                    String c = VWO.getCampaign("mark181@facebook.com", args);
-                    String vnftk = VWO.getVariationNameForTestKey(c);
-                    if (vnftk != null && c != null) {
-                        Log.d("VariationNameForTestKey", "vn: " + vnftk + " c: " + c);
-                    }
+                    //String c = VWO.getCampaign("Campaing1", args);
+                    String vnftk = VWO.getVariationNameForTestKey("Campaing1");
+                    //if (vnftk != null && c != null) {
+                    Log.d("VariationNameForTestKey", "vn: " + vnftk);
+                    //}
                     long end = System.nanoTime();
                     Log.d("meg", "onVWOLoaded: time taken ms -> " + TimeUnit.NANOSECONDS.toMillis(end - start));
 

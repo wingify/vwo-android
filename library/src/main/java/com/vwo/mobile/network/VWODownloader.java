@@ -215,6 +215,7 @@ public class VWODownloader {
     private static NetworkStringRequest getNetworkRequest(final Entry entry,
                                                           final FutureNetworkRequest<String> futureNetworkRequest) throws MalformedURLException {
         NetworkStringRequest request;
+        Log.d("SwapnilUrl", "SwapnilUrl before network call" + entry.getUrl());
         if (entry.getRequestType().equals(NetworkRequest.POST)) {
             String body = ((PostEntry) entry).getRequestBody();
             request = new NetworkStringRequest(entry.getUrl(),

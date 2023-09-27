@@ -243,8 +243,9 @@ public class VWOData {
             // Make user part of campaign and avoid duplication
             if (!mVWO.getVwoPreference().isPartOfCampaign(String.valueOf(campaign.getId()))) {
                 mVWO.getVwoPreference().setPartOfCampaign(String.valueOf(campaign.getId()));
-                CampaignEntry campaignEntry = getCampaignRequestEntry(campaign);
-                mVWO.getMessageQueue().add(campaignEntry);
+                //
+                //CampaignEntry campaignEntry = getCampaignRequestEntry(campaign);
+                //mVWO.getMessageQueue().add(campaignEntry);
                 Intent intent = new Intent();
                 intent.putExtra(VWO.Constants.ARG_CAMPAIGN_ID, String.valueOf(campaign.getId()));
                 intent.putExtra(VWO.Constants.ARG_CAMPAIGN_NAME, campaign.getName());

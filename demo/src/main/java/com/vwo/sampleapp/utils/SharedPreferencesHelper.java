@@ -58,10 +58,12 @@ public class SharedPreferencesHelper {
      *
      */
     public static String getApiKey(Context context) {
-        if(mSharedPreference == null) {
+        //return "f72d89bc1efaf86edf250c99569e7b20-771997";
+        return "f9ed6a2410fb185135dd10212dc20e9f-11000017";
+        /*if(mSharedPreference == null) {
             getSharedPrefs(context);
         }
-        return mSharedPreference.getString(API_KEY, null);
+        return mSharedPreference.getString(API_KEY, null);*/
     }
 
     public static void removeApiKey(Context context) {
