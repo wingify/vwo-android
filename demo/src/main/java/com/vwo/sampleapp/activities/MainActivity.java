@@ -23,6 +23,7 @@ import com.google.android.material.textfield.TextInputLayout;
 import com.vwo.mobile.VWO;
 import com.vwo.mobile.VWOConfig;
 import com.vwo.mobile.events.VWOStatusListener;
+import com.vwo.mobile.timetracker.TimeTracker;
 import com.vwo.mobile.utils.VWOLog;
 import com.vwo.sampleapp.R;
 import com.vwo.sampleapp.fragments.FragmentHousingMain;
@@ -35,6 +36,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
 import androidx.annotation.CheckResult;
@@ -46,7 +48,6 @@ import androidx.appcompat.widget.AppCompatEditText;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.fragment.app.FragmentManager;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 public class MainActivity extends BaseActivity
@@ -261,21 +262,82 @@ public class MainActivity extends BaseActivity
             }
             VWOLog.setLogLevel(VWOLog.ALL);
             VWOConfig.Builder vwoConfigBuilder = new VWOConfig.Builder();
-//            vwoConfigBuilder.disablePreview();
+
+            /* use the below line of code to disable preview mode
+
+                     vwoConfigBuilder.disablePreview();
+            **/
+
             vwoConfigBuilder.setOptOut(false);
-            vwoConfigBuilder.userID("userId");
-            if (keys == null) {
-                keys = new HashMap<>();
-            }
-//            keys.put("userType", "free");
-            vwoConfigBuilder.setCustomVariables(keys);
-//            if (!TextUtils.isEmpty(Constants.VWOKeys.CUSTOM_DIMENSION_KEY) && !TextUtils.isEmpty(Constants.VWOKeys.CUSTOM_DIMENSION_VALUE)) {
-//                vwoConfigBuilder.setCustomDimension(Constants.VWOKeys.CUSTOM_DIMENSION_KEY, Constants.VWOKeys.CUSTOM_DIMENSION_VALUE);
-//            }
+            vwoConfigBuilder.setEnableBenchmarking(true);
+
+            //vwoConfigBuilder.isChinaCDN(false);
+
+            /* use the below commented code to set userId
+
+                     vwoConfigBuilder.userID("userId");
+            **/
+
+            /* use below code to set customVariables
+
+                     if (keys == null) {
+                         keys = new HashMap<>();
+                     }
+                     keys.put("userType", "free");
+                     vwoConfigBuilder.setCustomVariables(keys);
+            **/
 
             VWO.with(this, key).config(vwoConfigBuilder.build()).launch(new VWOStatusListener() {
                 @Override
                 public void onVWOLoaded() {
+
+                    System.out.println("VWODACDN: load success!!! -> ");
+                    /* Use the below code to print the different sdk-init duration after enabling the benchmarking
+                        if (vwoConfigBuilder.isEnableBenchmarking()) {
+                            String initDuration = "Time taken to before api call -> " + TimeTracker.getBeforeApiInitDuration() + " ms." + " \n" +
+                                    "Time taken to load URL response -> " + TimeTracker.getApiInitDuration() + " ms." + " \n" +
+                                    "Time taken to after api call -> " + TimeTracker.getAfterApiInitDuration() + " ms." + " \n" +
+                                    "Time taken to reach callback -> " + TimeTracker.getTotalInitDuration() + " ms." + " \n";
+
+                            VWOLog.v("LoadTime", initDuration);
+                        }
+                    **/
+
+                    long start = System.nanoTime();
+                    // use the below commented code to use MEG functionality
+                    HashMap<String, String> args = new HashMap<>();
+                    args.put("test_key", "demo_two");
+                    // args.put("groupId", "3");
+
+                    String c = VWO.getCampaign("mark181@facebook.com", args);
+                    String vnftk = VWO.getVariationNameForTestKey(c);
+                    if (vnftk != null && c != null) {
+                        Log.d("VariationNameForTestKey", "vn: " + vnftk + " c: " + c);
+                    }
+                    long end = System.nanoTime();
+                    Log.d("meg", "onVWOLoaded: time taken ms -> " + TimeUnit.NANOSECONDS.toMillis(end - start));
+
+
+                /* use the below commented code to get the variationName and perform actions accordingly
+                            String testKey = "Camp test 1";
+                            String variationName = VWO.getVariationNameForTestKey(testKey);
+                            if (variationName != null && variationName == "Control") {
+                                // TODO: code for Control
+                            } else if (variationName != null && variationName == "Variation-1") {
+                                // TODO: code for Variation-1
+                            } else {
+                                // TODO: default case
+                            }
+                **/
+
+                /* use the below code to make visitor part of all campaigns who are using this TestVariable
+                             int testVariable1 = VWO.getIntegerForKey("TestVariable1", 1);
+                **/
+
+                /* use the below code to make visitor part of the specific campaign whose testKey we are using
+                             int testVariable1 = VWO.getIntegerForKey(testKey, "TestVariable1", 1);
+                **/
+
                     if (showProgress) {
                         progressBar.setVisibility(View.GONE);
                     }
@@ -287,6 +349,7 @@ public class MainActivity extends BaseActivity
                     if (showProgress) {
                         progressBar.setVisibility(View.GONE);
                     }
+                    System.out.println("VWODACDN: failed -> " + s);
                     loadFragments();
                 }
             });

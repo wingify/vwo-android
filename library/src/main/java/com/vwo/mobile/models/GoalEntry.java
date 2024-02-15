@@ -1,6 +1,7 @@
 package com.vwo.mobile.models;
 
-import android.support.annotation.Keep;
+import androidx.annotation.Keep;
+import androidx.annotation.NonNull;
 
 import java.util.Locale;
 
@@ -9,7 +10,7 @@ import java.util.Locale;
  */
 
 @Keep
-public class GoalEntry extends Entry {
+public class GoalEntry extends PostEntry {
     private long campaignId;
     private int goalId;
     private int variationId;
@@ -19,6 +20,13 @@ public class GoalEntry extends Entry {
         this.campaignId = campaignId;
         this.variationId = variationId;
         this.goalId = goalId;
+    }
+
+    public GoalEntry(@NonNull String url, long campaignId, int goalId, int variationId, String requestBody, boolean isEventArchEnabled) {
+        super(url, requestBody, isEventArchEnabled);
+        this.campaignId = campaignId;
+        this.goalId = goalId;
+        this.variationId = variationId;
     }
 
     @Override

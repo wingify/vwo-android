@@ -1,11 +1,11 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 27
+    compileSdkVersion 31
     defaultConfig {
         versionCode Integer.parseInt(project.VERSION_CODE)
         minSdkVersion 14
-        targetSdkVersion 27
+        targetSdkVersion 31
         versionName project.VERSION_NAME
     }
     signingConfigs {
@@ -16,9 +16,12 @@ android {
             storePassword 'buildmlearn'
         }
     }
-    def URL_SCHEME_HTTP = '"http"'
     def URL_SCHEME_HTTPS = '"https"'
+    // use this flag to enable use of static data on debug builds
+    // will cause no side effect even if it is left in release builds
+    def SHOULD_USE_MOCK_DATA_IN_DEBUG = 'false'
     def DACDN_URL = '"dacdn.visualwebsiteoptimizer.com"'
+    def CHINA_DACDN_URL = '"cdn-cn.vwo-analytics.com"'
     def SOCKET_URL = '"https://mobilepreview.vwo.com:443/"'
     buildTypes {
         release {
@@ -41,7 +44,7 @@ android {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.config
-            it.buildConfigField 'String', 'SCHEME', URL_SCHEME_HTTP
+            it.buildConfigField 'String', 'SCHEME', URL_SCHEME_HTTPS
             it.buildConfigField 'Boolean', 'ENABLE_SOCKET_LOGS', "false"
             it.buildConfigField 'int', 'VERSION_CODE', "${project.VERSION_CODE}"
             it.buildConfigField 'String', 'VERSION_NAME', "\"${project.VERSION_NAME}\""
@@ -52,10 +55,13 @@ android {
         abortOnError false
     }
     buildTypes.each {
+        it.buildConfigField 'Boolean', 'SHOULD_USE_MOCK_DATA_IN_DEBUG', SHOULD_USE_MOCK_DATA_IN_DEBUG
         it.buildConfigField 'String', 'DACDN_URL', DACDN_URL
         it.buildConfigField 'String', 'SOCKET_URL', SOCKET_URL
+        it.buildConfigField 'String', 'CHINA_DACDN_URL', CHINA_DACDN_URL
     }
     testOptions {
+        unitTests.returnDefaultValues = true
         unitTests {
             includeAndroidResources = true
             all {
@@ -72,22 +78,24 @@ android {
 }
 
 dependencies {
+    // Required -- Android JSON Test Dependency
+    testImplementation 'org.json:json:20210307'
     // Required -- JUnit 4 framework
-    testImplementation 'junit:junit:4.12'
+    testImplementation 'junit:junit:4.13.1'
     // Optional -- Mockito framework
-    testImplementation 'org.mockito:mockito-core:2.19.0'
+    testImplementation 'org.mockito:mockito-core:3.9.0'
     testImplementation 'org.powermock:powermock-api-mockito2:2.0.0-beta.5'
     testImplementation 'org.powermock:powermock-module-junit4:2.0.0-beta.5'
     testImplementation 'org.powermock:powermock-module-junit4-rule:2.0.0-beta.5'
     testImplementation 'org.powermock:powermock-classloading-xstream:2.0.0-beta.5'
-    testImplementation 'org.robolectric:robolectric:4.0-alpha-3'
-    testImplementation 'com.squareup.okhttp3:mockwebserver:3.11.0'
+    testImplementation 'org.robolectric:robolectric:4.3'
+    testImplementation 'com.squareup.okhttp3:mockwebserver:3.14.7'
     implementation('io.socket:socket.io-client:1.0.0') {
         exclude group: 'org.json', module: 'json'
     }
     implementation 'com.squareup.okhttp3:logging-interceptor:3.11.0'
-    implementation 'com.android.support:support-annotations:27.1.1'
-    implementation 'com.android.support:support-core-utils:27.1.1'
+    implementation 'androidx.annotation:annotation:1.2.0'
+    implementation 'androidx.legacy:legacy-support-core-utils:1.0.0'
 }
 
 apply from: '../gradle-mvn-push.gradle'

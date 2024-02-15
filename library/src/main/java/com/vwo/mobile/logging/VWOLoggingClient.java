@@ -3,13 +3,16 @@ package com.vwo.mobile.logging;
 import android.annotation.SuppressLint;
 import android.app.ActivityManager;
 import android.os.Build;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import android.util.Log;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.vwo.mobile.VWO;
 import com.vwo.mobile.data.VWOMessageQueue;
 import com.vwo.mobile.models.VWOError;
 import com.vwo.mobile.network.VWODownloader;
+import com.vwo.mobile.utils.VWOLog;
 import com.vwo.mobile.utils.VWOUrlBuilder;
 import com.vwo.mobile.utils.VWOUtils;
 
@@ -57,7 +60,7 @@ public class VWOLoggingClient {
 
     public void init(@NonNull VWO vwo, @Nullable Map<String, String> extras) {
         this.mVWO = vwo;
-        if(extras != null) {
+        if (extras != null) {
             this.extraData.putAll(extras);
         }
         this.extraData.put(VWOError.MANUFACTURER, Build.MANUFACTURER);
@@ -69,47 +72,57 @@ public class VWOLoggingClient {
     }
 
     public static void log(@NonNull Throwable throwable) {
-        if(getInstance() == null) {
-            throw new NullPointerException("Client not initialised");
+        if (getInstance() == null || getInstance().mVWO == null) {
+            showErrorWhileLoggingError("Exception: " + throwable.getMessage());
+            return;
         }
 
         VWOUrlBuilder vwoUrlBuilder = new VWOUrlBuilder(getInstance().mVWO);
         String url = vwoUrlBuilder.getLoggingUrl();
-        VWOError.Builder builder = new VWOError.Builder(url,
-                System.currentTimeMillis());
+        VWOError.Builder builder = new VWOError.Builder(url, System.currentTimeMillis());
         builder.exception(throwable);
         getInstance().sendData(builder);
     }
 
     public static void log(@NonNull String message) {
-        if(getInstance() == null) {
-            throw new NullPointerException("Client not initialized");
+        if (getInstance() == null || getInstance().mVWO == null) {
+            showErrorWhileLoggingError(message);
+            return;
         }
 
         VWOUrlBuilder vwoUrlBuilder = new VWOUrlBuilder(getInstance().mVWO);
         String url = vwoUrlBuilder.getLoggingUrl();
 
-        VWOError.Builder builder = new VWOError.Builder(url,
-                System.currentTimeMillis());
+        VWOError.Builder builder = new VWOError.Builder(url, System.currentTimeMillis());
         builder.message(message);
 
         getInstance().sendData(builder);
     }
 
+    private static void showErrorWhileLoggingError(String message) {
+        Log.e("VWO_ERROR", "** could not log -> \"" + message + "\", because VWO is not initialized. **");
+    }
+
     public static void log(@NonNull String message, @NonNull Throwable throwable) {
-        if(getInstance() == null) {
-            throw new NullPointerException("Client not initialized");
+        if (getInstance() == null || getInstance().mVWO == null) {
+            showErrorWhileLoggingError(message);
+            return;
         }
 
-        VWOUrlBuilder vwoUrlBuilder = new VWOUrlBuilder(getInstance().mVWO);
-        String url = vwoUrlBuilder.getLoggingUrl();
+        try {
+            VWOUrlBuilder vwoUrlBuilder = new VWOUrlBuilder(getInstance().mVWO);
+            String url = vwoUrlBuilder.getLoggingUrl();
 
-        VWOError.Builder builder = new VWOError.Builder(url,
-                System.currentTimeMillis());
-        builder.message(message);
-        builder.exception(throwable);
+            VWOError.Builder builder = new VWOError.Builder(url, System.currentTimeMillis());
+            builder.message(message);
+            builder.exception(throwable);
 
-        getInstance().sendData(builder);
+            getInstance().sendData(builder);
+        } catch (Exception exception) {
+            String errorMessage = "VWO [ " + VWO.version() + " (" + VWO.versionCode() + ") ] " + "Could not send error to server. Reason: " + exception.getMessage();
+            VWOLog.e(VWOLog.UNCAUGHT, errorMessage, true, false);
+        }
+
     }
 
     private void sendData(VWOError.Builder builder) {
@@ -121,7 +134,7 @@ public class VWOLoggingClient {
         deviceInfoExtra.put(VWOError.AVAILABLE_INTERNAL_STORAGE, String.valueOf(LogUtils.getUnusedInternalStorageSize()));
 
         ActivityManager.MemoryInfo memoryInfo = LogUtils.getAppMemoryInfo(mVWO.getCurrentContext());
-        if(memoryInfo != null) {
+        if (memoryInfo != null) {
             deviceInfoExtra.put(VWOError.AVAILABLE_MEMORY, String.valueOf(memoryInfo.availMem));
             deviceInfoExtra.put(VWOError.IS_MEMORY_LOW, String.valueOf(memoryInfo.lowMemory));
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
@@ -132,15 +145,11 @@ public class VWOLoggingClient {
         // Will help in identifying logs from same device
         String deviceUUID = VWOUtils.getDeviceUUID(mVWO.getVwoPreference());
 
-        builder.version(VWO.version())
-                .deviceUUID(deviceUUID)
-                .versionCode(VWO.versionCode())
-                .extras(extraData)
-                .deviceInfoExtras(deviceInfoExtra);
+        builder.version(VWO.version()).deviceUUID(deviceUUID).versionCode(VWO.versionCode()).extras(extraData).deviceInfoExtras(deviceInfoExtra);
 
         VWOError vwoError = builder.build();
 
-        if(getLoggingQueue() != null) {
+        if (getLoggingQueue() != null) {
             getLoggingQueue().add(vwoError);
         }
     }

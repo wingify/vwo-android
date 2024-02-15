@@ -1,6 +1,6 @@
 package com.vwo.mobile.mock;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import com.vwo.mobile.Initializer;
 import com.vwo.mobile.events.VWOStatusListener;
@@ -12,7 +12,7 @@ import org.robolectric.annotation.RealObject;
 /**
  * Created by aman on Fri 09/03/18 13:10.
  */
-@Implements(value = com.vwo.mobile.Initializer.class, inheritImplementationMethods = true)
+@Implements(value = com.vwo.mobile.Initializer.class)
 public class ShadowInitializer {
 
     @RealObject

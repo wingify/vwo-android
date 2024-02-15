@@ -5,11 +5,11 @@ apply plugin: 'kotlin-kapt'
 apply plugin: "androidx.navigation.safeargs"
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 31
     defaultConfig {
         versionCode 9
         minSdkVersion 14
-        targetSdkVersion 28
+        targetSdkVersion 31
         applicationId "com.vwo.sampleapp"
         versionCode 1
         versionName "1.0"
@@ -94,7 +94,7 @@ dependencies {
     implementation "com.google.android.material:material:$material"
     implementation "androidx.vectordrawable:vectordrawable:$support_library"
     implementation project(path: ':library')
-//    implementation 'com.vwo:mobile:2.6.1@aar'
+//    implementation 'com.vwo:mobile:2.8.0@aar'
 //    implementation('io.socket:socket.io-client:1.0.0') {
 //        // excluding org.json which is provided by Android
 //        exclude group: 'org.json', module: 'json'
@@ -114,7 +114,7 @@ dependencies {
     // optional - Test helpers for LiveData
     testImplementation "androidx.arch.core:core-testing:$lifecycle_version"
 
-    implementation 'androidx.core:core-ktx:1.0.0-rc02'
+    implementation 'androidx.core:core-ktx:1.0.0'
 }
 repositories {
     mavenCentral()

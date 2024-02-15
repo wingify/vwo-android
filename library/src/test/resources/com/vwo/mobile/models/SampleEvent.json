@@ -1,0 +1,32 @@
+{
+  "d":{
+    "msgId":"77E55027A98E5B4DB70F451F8B1DD86B-1632819038",
+    "visId":"77E55027A98E5B4DB70F451F8B1DD86B",
+    "sessionId":1632819038,
+    "event":{
+      "props":{
+        "sdkName":"vwo-node-sdk",
+        "sdkVersion":"1.22.1",
+        "isCustomEvent":true,
+        "$visitor":{
+          "props":{
+            "vwo_fs_environment":"sdkKey"
+          }
+        },
+        "vwoMeta":{
+          "metric":{
+            "id_10":"g_210"
+          },
+          "<revenue>":200
+        }
+      },
+      "name":"goalIdentifier",
+      "time":1632819037323
+    },
+    "visitor":{
+      "props":{
+        "vwo_fs_environment":"sdkKey"
+      }
+    }
+  }
+}

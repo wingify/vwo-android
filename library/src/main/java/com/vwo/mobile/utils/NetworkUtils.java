@@ -85,6 +85,9 @@ public class NetworkUtils {
         public static final String HEADER_CACHE_CONTROL = "Cache-Control";
         public static final String CACHE_NO = "no-cache";
 
+        public static final String HEADER_USER_AGENT = "User-Agent";
+        public static final String USER_AGENT_VALUE = "vwo-android-sdk";
+
         private static String parseCharset(Map<String, String> headers, String defaultCharset) {
             String contentType = headers.get(HEADER_CONTENT_TYPE);
             if (contentType != null) {
@@ -106,7 +109,7 @@ public class NetworkUtils {
             return parseCharset(headers, CHARSET_DEFAULT);
         }
 
-        public static  Map<String, String> getBasicHeaders() {
+        public static Map<String, String> getBasicHeaders() {
             Map<String, String> headers = new HashMap<>();
             headers.put(HEADER_CONTENT_TYPE, CONTENT_TYPE_JSON);
             headers.put(ACCEPT_CONTENT_TYPE, CONTENT_TYPE_JSON);
@@ -114,11 +117,103 @@ public class NetworkUtils {
             return headers;
         }
 
-        public static Map<String, String> getAuthHeaders(String accountID, String appKey) {
+        public static Map<String, String> getPostHeaders() {
             Map<String, String> headers = getBasicHeaders();
+            headers.put(HEADER_USER_AGENT, USER_AGENT_VALUE);
+            return headers;
+        }
+
+        public static Map<String, String> getAuthHeaders(String accountID, String appKey, boolean isEventArchEnabled) {
+            Map<String, String> headers;
+            if (isEventArchEnabled)
+                headers = getPostHeaders();
+            else
+                headers = getBasicHeaders();
+
             headers.put(HEADER_ACCOUNT_ID, accountID);
             headers.put(HEADER_APP_KEY, appKey);
             return headers;
+        }
+    }
+
+
+    /**
+     * Get the network info
+     *
+     * @param context
+     * @return
+     */
+    private static NetworkInfo getNetworkInfo(Context context) {
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        return cm.getActiveNetworkInfo();
+    }
+
+    /**
+     * Get the network type & subtype
+     *
+     * @param context
+     * @return
+     */
+    public static String getNetworkType(Context context) {
+        NetworkInfo info = getNetworkInfo(context);
+        if (info == null) return ("Type :NA SubType:NA");
+        return ("Type :" + info.getType() + " SubType: " + info.getSubtype());
+    }
+
+
+    /**
+     * Check if the connection is fast
+     *
+     * @param type
+     * @param subType
+     * @return
+     */
+    public static boolean isConnectionFast(int type, int subType) {
+        if (type == ConnectivityManager.TYPE_WIFI) {
+            return true;
+        } else if (type == ConnectivityManager.TYPE_MOBILE) {
+            switch (subType) {
+                case TelephonyManager.NETWORK_TYPE_1xRTT:
+                    return false; // ~ 50-100 kbps
+                case TelephonyManager.NETWORK_TYPE_CDMA:
+                    return false; // ~ 14-64 kbps
+                case TelephonyManager.NETWORK_TYPE_EDGE:
+                    return false; // ~ 50-100 kbps
+                case TelephonyManager.NETWORK_TYPE_EVDO_0:
+                    return true; // ~ 400-1000 kbps
+                case TelephonyManager.NETWORK_TYPE_EVDO_A:
+                    return true; // ~ 600-1400 kbps
+                case TelephonyManager.NETWORK_TYPE_GPRS:
+                    return false; // ~ 100 kbps
+                case TelephonyManager.NETWORK_TYPE_HSDPA:
+                    return true; // ~ 2-14 Mbps
+                case TelephonyManager.NETWORK_TYPE_HSPA:
+                    return true; // ~ 700-1700 kbps
+                case TelephonyManager.NETWORK_TYPE_HSUPA:
+                    return true; // ~ 1-23 Mbps
+                case TelephonyManager.NETWORK_TYPE_UMTS:
+                    return true; // ~ 400-7000 kbps
+                /*
+                 * Above API level 7, make sure to set android:targetSdkVersion
+                 * to appropriate level to use these
+                 */
+                case TelephonyManager.NETWORK_TYPE_EHRPD: // API level 11
+                    return true; // ~ 1-2 Mbps
+                case TelephonyManager.NETWORK_TYPE_EVDO_B: // API level 9
+                    return true; // ~ 5 Mbps
+                case TelephonyManager.NETWORK_TYPE_HSPAP: // API level 13
+                    return true; // ~ 10-20 Mbps
+                case TelephonyManager.NETWORK_TYPE_IDEN: // API level 8
+                    return false; // ~25 kbps
+                case TelephonyManager.NETWORK_TYPE_LTE: // API level 11
+                    return true; // ~ 10+ Mbps
+                // Unknown
+                case TelephonyManager.NETWORK_TYPE_UNKNOWN:
+                default:
+                    return false;
+            }
+        } else {
+            return false;
         }
     }
 

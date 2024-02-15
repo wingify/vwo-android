@@ -1,8 +1,10 @@
 package com.vwo.mobile.network;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
+import com.vwo.mobile.models.PostEntry;
+import com.vwo.mobile.timetracker.TimeTracker;
 import com.vwo.mobile.VWO;
 import com.vwo.mobile.data.VWOMessageQueue;
 import com.vwo.mobile.listeners.VWOActivityLifeCycle;
@@ -16,6 +18,7 @@ import org.json.JSONException;
 import java.io.IOException;
 import java.net.ConnectException;
 import java.net.MalformedURLException;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -38,7 +41,8 @@ public class VWODownloader {
 
         if (vwo.getConfig().getTimeout() != null) {
             try {
-                downloadResult.onDownloadSuccess(downloadDataSynchronous(url, downloadResult, vwo));
+                String downloadData = downloadDataSynchronous(url, downloadResult, vwo);
+                downloadResult.onDownloadSuccess(downloadData);
             } catch (InterruptedException exception) {
                 String message = "Request timed out";
                 downloadResult.onDownloadError(exception, message);
@@ -85,6 +89,7 @@ public class VWODownloader {
         NetworkStringRequest request = new NetworkStringRequest(url, NetworkRequest.GET,
                 NetworkUtils.Headers.getBasicHeaders(), futureNetworkRequest, futureNetworkRequest);
         request.setGzipEnabled(true);
+        request.setEnableBenchmarking(vwo.getConfig().isEnableBenchmarking());
         PriorityRequestQueue.getInstance().addToQueue(request);
         assert vwo.getConfig().getTimeout() != null;
         return futureNetworkRequest.get(vwo.getConfig().getTimeout(), TimeUnit.MILLISECONDS);
@@ -96,6 +101,10 @@ public class VWODownloader {
             return;
         }
         try {
+
+            if (vwo.getConfig() != null && vwo.getConfig().isEnableBenchmarking())
+                TimeTracker.updateTracking(TimeTracker.KEY_BEFORE_API_INIT_DURATION);
+
             NetworkStringRequest request = new NetworkStringRequest(url, NetworkRequest.GET,
                     NetworkUtils.Headers.getBasicHeaders(), new Response.Listener<String>() {
                 @Override
@@ -119,6 +128,7 @@ public class VWODownloader {
                 }
             });
             request.setGzipEnabled(true);
+            request.setEnableBenchmarking(vwo.getConfig().isEnableBenchmarking());
             PriorityRequestQueue.getInstance().addToQueue(request);
         } catch (MalformedURLException exception) {
             VWOLog.e(VWOLog.NETWORK_LOGS, exception, true, true);
@@ -141,13 +151,11 @@ public class VWODownloader {
                             break;
                         }
                         FutureNetworkRequest<String> futureNetworkRequest = FutureNetworkRequest.getInstance();
-                        NetworkStringRequest request = new NetworkStringRequest(entry.getUrl(),
-                                NetworkRequest.GET, NetworkUtils.Headers.getBasicHeaders(),
-                                futureNetworkRequest, futureNetworkRequest);
-                        request.setGzipEnabled(true);
+                        NetworkStringRequest request = getNetworkRequest(entry, futureNetworkRequest);
+                        request.setEnableBenchmarking(vwo.getConfig().isEnableBenchmarking());
                         PriorityRequestQueue.getInstance().addToQueue(request);
                         String data = futureNetworkRequest.get();
-                        VWOLog.v(VWOLog.NETWORK_LOGS, String.format("Completed Upload Request with url : %s \ndata : %s", entry.getUrl(), data));
+                        logRequestResponse(entry, data);
                         messageQueue.remove();
                         entry = messageQueue.peek();
                     } catch (MalformedURLException exception) {
@@ -199,6 +207,30 @@ public class VWODownloader {
         }
     }
 
+    private static void logRequestResponse(Entry entry, String data) {
+        VWOLog.d(VWOLog.NETWORK_LOGS, String.format("Completed Upload Request with : %s \ndata : %s", entry, data), false);
+    }
+
+    @NonNull
+    private static NetworkStringRequest getNetworkRequest(final Entry entry,
+                                                          final FutureNetworkRequest<String> futureNetworkRequest) throws MalformedURLException {
+        NetworkStringRequest request;
+        if (entry.getRequestType().equals(NetworkRequest.POST)) {
+            String body = ((PostEntry) entry).getRequestBody();
+            request = new NetworkStringRequest(entry.getUrl(),
+                    entry.getRequestType(),
+                    entry.getHeaders(),
+                    body,
+                    futureNetworkRequest, futureNetworkRequest);
+        } else {
+            request = new NetworkStringRequest(entry.getUrl(),
+                    entry.getRequestType(),
+                    entry.getHeaders(),
+                    futureNetworkRequest, futureNetworkRequest);
+        }
+        return request;
+    }
+
     private static void checkMessageQueueEntryStatus(Entry entry, VWOMessageQueue messageQueue, VWOMessageQueue failureQueue) {
         entry.incrementRetryCount();
         messageQueue.remove();
@@ -231,6 +263,7 @@ public class VWODownloader {
                                 NetworkRequest.GET, NetworkUtils.Headers.getBasicHeaders(),
                                 futureNetworkRequest, futureNetworkRequest);
                         request.setGzipEnabled(true);
+                        request.setEnableBenchmarking(vwo.getConfig().isEnableBenchmarking());
                         PriorityRequestQueue.getInstance().addToQueue(request);
                         String data = futureNetworkRequest.get();
                         VWOLog.v(VWOLog.NETWORK_LOGS, String.format("Completed Upload Request with url : %s \ndata : %s", entry.getUrl(), data));
@@ -299,12 +332,13 @@ public class VWODownloader {
                         }
 
                         VWOError error = (VWOError) entry;
+                        Map<String, String> headers = error.getHeaders(vwo.getConfig().getAccountId(), vwo.getConfig().getAppKey());
                         FutureNetworkRequest<String> futureNetworkRequest = FutureNetworkRequest.getInstance();
                         NetworkStringRequest request = new NetworkStringRequest(error.getUrl(),
-                                NetworkRequest.POST, NetworkUtils.Headers.getAuthHeaders(vwo.getConfig().getAccountId(),
-                                vwo.getConfig().getAppKey()), error.getErrorAsJSON().toString(),
+                                error.getRequestType(), headers, error.getErrorAsJSON().toString(),
                                 futureNetworkRequest, futureNetworkRequest);
                         request.setGzipEnabled(true);
+                        request.setEnableBenchmarking(vwo.getConfig().isEnableBenchmarking());
                         PriorityRequestQueue.getInstance().addToQueue(request);
                         String response = futureNetworkRequest.get();
                         VWOLog.v(VWOLog.NETWORK_LOGS, String.format("Logging error completed Request with data : %s \nand Response: %s",

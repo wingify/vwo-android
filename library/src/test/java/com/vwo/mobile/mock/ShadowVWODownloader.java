@@ -13,7 +13,7 @@ import java.io.IOException;
  * Created by aman on Thu 11/01/18 16:37.
  */
 
-@Implements(value = VWODownloader.class, inheritImplementationMethods = true)
+@Implements(value = VWODownloader.class)
 public class ShadowVWODownloader {
 
     @Implementation

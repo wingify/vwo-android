@@ -1,6 +1,6 @@
 package com.vwo.mobile.mock;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.vwo.mobile.utils.VWOLog;
 
@@ -11,7 +11,7 @@ import org.robolectric.annotation.Implements;
  * Created by aman on Fri 12/01/18 16:29.
  */
 
-@Implements(value = VWOLog.class, inheritImplementationMethods = true)
+@Implements(value = VWOLog.class)
 public class ShadowVWOLog {
 
     @Implementation

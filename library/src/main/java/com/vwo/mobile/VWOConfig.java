@@ -1,7 +1,8 @@
 package com.vwo.mobile;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import android.text.TextUtils;
 
 import com.vwo.mobile.listeners.ActivityLifecycleListener;
@@ -26,6 +27,7 @@ public class VWOConfig {
     @Nullable
     private ActivityLifecycleListener activityLifecycleListener;
     private boolean optOut;
+    private boolean enableBenchmarking;
 
     // Timeout in case data is fetched synchronously
     private Long timeout;
@@ -35,6 +37,9 @@ public class VWOConfig {
     private boolean previewEnabled;
     private VWOStatusListener statusListener;
     private String userID;
+    private boolean isChinaCDN = false;
+    private boolean isEventArchEnabled = false;
+    private boolean isMobile360Enabled = false;
 
     private VWOConfig(Builder builder) {
         this.customSegmentationMapping = builder.customSegmentationMapping;
@@ -43,10 +48,11 @@ public class VWOConfig {
             setApiKey(builder.apiKey);
         }
         this.optOut = builder.optOut;
-        this.activityLifecycleListener = builder.lifecycleListener;
+        this.enableBenchmarking = builder.enableBenchmarking;
         this.previewEnabled = builder.previewEnabled;
         this.statusListener = builder.statusListener;
         this.userID = builder.userID;
+        this.isChinaCDN = builder.isChinaCDN;
     }
 
     public Map<String, String> getCustomSegmentationMapping() {
@@ -58,7 +64,7 @@ public class VWOConfig {
     }
 
     void setApiKey(String apiKey) {
-        if(!VWOUtils.isValidVwoAppKey(apiKey)) {
+        if (!VWOUtils.isValidVwoAppKey(apiKey)) {
             VWOLog.e(VWOLog.CONFIG_LOGS, new InvalidKeyException("Invalid api key"), false, false);
             return;
         }
@@ -75,9 +81,6 @@ public class VWOConfig {
         return mAppKey;
     }
 
-    public ActivityLifecycleListener getActivityLifecycleListener() {
-        return this.activityLifecycleListener;
-    }
     public String getCustomDimension() {
         return this.customDimensionMapping;
     }
@@ -100,8 +103,16 @@ public class VWOConfig {
         return mAccountId;
     }
 
-    public void setActivityLifecycleListener(@NonNull ActivityLifecycleListener listener) {
-        this.activityLifecycleListener = listener;
+    public boolean getIsChinaCDN() {
+        return isChinaCDN;
+    }
+
+    public ActivityLifecycleListener getActivityLifecycleListener() {
+        return this.activityLifecycleListener;
+    }
+
+    public void setActivityLifecycleListener(ActivityLifecycleListener activityLifecycleListener) {
+        this.activityLifecycleListener = activityLifecycleListener;
     }
 
     /**
@@ -109,6 +120,25 @@ public class VWOConfig {
      */
     boolean isOptOut() {
         return this.optOut;
+    }
+
+    /**
+     * @return whether benchmarking is enabled or not.
+     */
+    public boolean isEnableBenchmarking() {
+        return this.enableBenchmarking;
+    }
+
+    public boolean isEventArchEnabled() {
+        return this.isEventArchEnabled && isMobile360Enabled;
+    }
+
+    public void setEventArchEnabled(boolean eventArchEnabled) {
+        this.isEventArchEnabled = eventArchEnabled;
+    }
+
+    public void setMobile360Enabled(boolean mobile360Enabled) {
+        this.isMobile360Enabled = mobile360Enabled;
     }
 
     boolean isPreviewEnabled() {
@@ -129,7 +159,7 @@ public class VWOConfig {
      * @param value {@link String} is the value of custom segment.
      */
     void addCustomSegment(String key, String value) {
-        if(customSegmentationMapping == null) {
+        if (customSegmentationMapping == null) {
             customSegmentationMapping = new HashMap<>();
         }
         this.customSegmentationMapping.put(key, value);
@@ -139,11 +169,15 @@ public class VWOConfig {
         this.optOut = optOut;
     }
 
+    void setEnableBenchmarking(boolean enableBenchmarking) {
+        this.enableBenchmarking = enableBenchmarking;
+    }
+
     /**
      * @param customSegments add multiple custom segment key value pairs
      */
     void addCustomSegments(Map<String, String> customSegments) {
-        if(customSegmentationMapping == null) {
+        if (customSegmentationMapping == null) {
             customSegmentationMapping = new HashMap<>();
         }
         this.customSegmentationMapping.putAll(customSegments);
@@ -170,18 +204,21 @@ public class VWOConfig {
         // This variable
         private Map<String, String> customSegmentationMapping;
         private boolean optOut;
+        private boolean enableBenchmarking;
         private String apiKey = null;
         private ActivityLifecycleListener lifecycleListener;
         private boolean previewEnabled = true;
         private VWOStatusListener statusListener;
         private String userID;
         private String customDimensionMapping;
+        private boolean isChinaCDN = false;
 
         /**
          * Generate the Configuration for the VWO SDK which can be passed to
          * {@link Initializer#config(VWOConfig)} during SDK's initialization.
          */
-        public Builder(){}
+        public Builder() {
+        }
 
         @NonNull
         public VWOConfig build() {
@@ -203,8 +240,27 @@ public class VWOConfig {
         }
 
         /**
-         * Function Set the unique ID for the user to serve same variations(subject to few conditions) across devices for users with same ID.
+         * Function to set whether you want to enable the benchmarking of certain functionalities or not.
+         * set {@link Boolean#TRUE} to enable the benchmarking otherwise {@link Boolean#FALSE}.
+         * it defaults to {@link Boolean#FALSE}.
          *
+         * @param enableBenchmarking set {@link Boolean#TRUE} to enable the benchmarking otherwise {@link Boolean#FALSE}.
+         *                           *               it defaults to {@link Boolean#FALSE}.
+         * @return the {@link Builder} object
+         */
+        @NonNull
+        public Builder setEnableBenchmarking(boolean enableBenchmarking) {
+            this.enableBenchmarking = enableBenchmarking;
+            return this;
+        }
+
+        public boolean isEnableBenchmarking() {
+            return enableBenchmarking;
+        }
+
+        /**
+         * Function Set the unique ID for the user to serve same variations(subject to few conditions) across devices for users with same ID.
+         * <p>
          * Note: user id is case sensitive. And this id is not stored anywhere persistently.
          *
          * @param userID is the unique user id.
@@ -246,7 +302,6 @@ public class VWOConfig {
          * @param customSegmentationMapping is the key value pair mapping for custom segments based on
          *                                  which it is decided that given user will be a part of
          *                                  campaign or not.
-         *
          * @return the current {@link Builder} object.
          */
         @NonNull
@@ -258,20 +313,13 @@ public class VWOConfig {
             return this;
         }
 
-        public Builder setLifecycleListener(@NonNull ActivityLifecycleListener listener) {
-            if (listener == null) {
-                throw new IllegalArgumentException("Listener cannot be null");
-            }
-            this.lifecycleListener = listener;
-            return this;
-        }
         /**
          * This function can be used to set the custom dimensions.
          * The custom dimensions will sent along with the track-user network call to VWO servers.
          *
-         * @param customDimensionKey    is the key for the custom dimension
-         * @param customDimensionValue  is the value associated with the customDimensionKey.
-         * @return  the current {@link Builder} object.
+         * @param customDimensionKey   is the key for the custom dimension
+         * @param customDimensionValue is the value associated with the customDimensionKey.
+         * @return the current {@link Builder} object.
          */
         @NonNull
         public Builder setCustomDimension(@NonNull String customDimensionKey, @NonNull String customDimensionValue) {
@@ -290,6 +338,15 @@ public class VWOConfig {
         Builder setVWOStatusListener(@NonNull VWOStatusListener vwoStatusListener) {
             this.statusListener = vwoStatusListener;
             return this;
+        }
+
+        public Builder isChinaCDN(boolean chinaCDN) {
+            isChinaCDN = chinaCDN;
+            return this;
+        }
+
+        public void setLifecycleListener(ActivityLifecycleListener activityLifecycleListener) {
+            this.lifecycleListener = activityLifecycleListener;
         }
     }
 }

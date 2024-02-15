@@ -1,7 +1,7 @@
 package com.vwo.mobile.utils;
 
-import android.support.annotation.IntDef;
-import android.support.annotation.NonNull;
+import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -35,6 +35,10 @@ public class VWOLog {
      * The constant URL_LOGS.
      */
     public static final String URL_LOGS = "url";
+    /**
+     *The constant MEG_LOGS.
+     */
+    public static final String MEG_LOGS = "meg";
     /**
      * The constant SEGMENTATION_LOGS.
      */

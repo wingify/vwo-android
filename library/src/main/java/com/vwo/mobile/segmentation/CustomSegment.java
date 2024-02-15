@@ -1,6 +1,6 @@
 package com.vwo.mobile.segmentation;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.text.TextUtils;
 
 import com.vwo.mobile.VWO;

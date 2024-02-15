@@ -8,9 +8,9 @@ import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Build;
-import android.support.annotation.CheckResult;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.CheckResult;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
@@ -81,6 +81,21 @@ public class VWOUtils {
         }
 
         return -1;
+    }
+
+    public static String applicationVersionName(Context context) {
+        if (context != null) {
+            try {
+                PackageInfo packageInfo = context.getPackageManager().getPackageInfo(applicationName(context), 0);
+                if (packageInfo != null) {
+                    return packageInfo.versionName;
+                }
+            } catch (PackageManager.NameNotFoundException exception) {
+                VWOLog.e(VWOLog.CONFIG_LOGS, "Failed to get packaging info", exception, true, true);
+            }
+        }
+
+        return "NA";
     }
 
     public static double getRandomNumber() {
@@ -179,7 +194,7 @@ public class VWOUtils {
      * @return {@link Boolean#TRUE} is app is running in debug mode else {@link Boolean#FALSE}
      */
     public static boolean isApplicationDebuggable(@NonNull Context context) {
-        return (0 != (context.getApplicationInfo().flags &= ApplicationInfo.FLAG_DEBUGGABLE));
+        return (0 != (context.getApplicationInfo().flags & ApplicationInfo.FLAG_DEBUGGABLE));
     }
 
     /**

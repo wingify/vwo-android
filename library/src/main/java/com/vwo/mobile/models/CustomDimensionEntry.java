@@ -1,13 +1,21 @@
 package com.vwo.mobile.models;
 
+import androidx.annotation.NonNull;
+
 import java.util.Locale;
 
-public class CustomDimensionEntry extends Entry {
+public class CustomDimensionEntry extends PostEntry {
     private String customDimensionKey;
     private String customDimensionValue;
 
     public CustomDimensionEntry(String url, String customDimensionKey, String customDimensionValue) {
         super(url);
+        this.customDimensionKey = customDimensionKey;
+        this.customDimensionValue = customDimensionValue;
+    }
+
+    public CustomDimensionEntry(@NonNull String url, String customDimensionKey, String customDimensionValue, String requestBody, boolean isEventArchEnabled) {
+        super(url, requestBody, isEventArchEnabled);
         this.customDimensionKey = customDimensionKey;
         this.customDimensionValue = customDimensionValue;
     }
@@ -34,11 +42,9 @@ public class CustomDimensionEntry extends Entry {
         this.customDimensionValue = customDimensionValue;
     }
 
-
     @Override
     public String toString() {
-        return String.format(Locale.ENGLISH,
-                             "%sCustomDimensionKey: %s\nCustomDimensionValue: %s\n", super.toString(),
-                             this.customDimensionKey, this.customDimensionValue);
+        return String.format(Locale.ENGLISH, "%sCustomDimensionKey: %s\nCustomDimensionValue: %s\n",
+                super.toString(), this.customDimensionKey, this.customDimensionValue);
     }
 }

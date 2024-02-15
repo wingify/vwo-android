@@ -2,7 +2,7 @@ package com.vwo.mobile.mock;
 
 import android.app.ActivityManager;
 import android.content.Context;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import com.vwo.mobile.logging.LogUtils;
 

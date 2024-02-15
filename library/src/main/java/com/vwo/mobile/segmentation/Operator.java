@@ -1,7 +1,7 @@
 package com.vwo.mobile.segmentation;
 
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 public class Operator implements Comparable<Operator> {
     private static final String STRING_OR = "OR";

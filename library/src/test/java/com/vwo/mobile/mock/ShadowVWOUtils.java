@@ -15,7 +15,7 @@ import java.util.regex.Pattern;
  * Created by aman on Tue 02/01/18 15:58.
  */
 
-@Implements(value = VWOUtils.class, inheritImplementationMethods = true)
+@Implements(value = VWOUtils.class)
 public class ShadowVWOUtils {
 
     @Implementation
@@ -34,7 +34,7 @@ public class ShadowVWOUtils {
     public static boolean checkIfClassExists(String className) {
         return true;
     }
-    
+
 //    @Implementation
 //    public static String getDeviceUUID(VWOPreference vwoPreference) {
 //        return "123e4567e89b12d3a456426655440000";
