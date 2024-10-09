@@ -47,7 +47,7 @@ public class AppConstants {
     public static final String USER_TYPE_NEW = "new";
     public static final String USER_TYPE_RETURNING = "ret";
 
-    public static final String DEVICE_TYPE_PHONE = "Phone";
+    public static final String DEVICE_TYPE_MOBILE = "Mobile";
     public static final String DEVICE_TYPE_TABLET = "Tablet";
 
     //region Keys in Events

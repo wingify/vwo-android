@@ -547,7 +547,7 @@ public enum CustomSegmentEvaluateEnum {
                 try {
                     String type = data.getString(i);
                     return isTablet && type.equalsIgnoreCase(AppConstants.DEVICE_TYPE_TABLET) ||
-                            !isTablet && type.equalsIgnoreCase(AppConstants.DEVICE_TYPE_PHONE);
+                            !isTablet && type.equalsIgnoreCase(AppConstants.DEVICE_TYPE_MOBILE);
                 } catch (Exception exception) {
                     VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse device type", exception,
                             false, false);
@@ -570,7 +570,7 @@ public enum CustomSegmentEvaluateEnum {
                 try {
                     String type = data.getString(i);
                     return !isTablet && type.equalsIgnoreCase(AppConstants.DEVICE_TYPE_TABLET) ||
-                            isTablet && type.equalsIgnoreCase(AppConstants.DEVICE_TYPE_PHONE);
+                            isTablet && type.equalsIgnoreCase(AppConstants.DEVICE_TYPE_MOBILE);
                 } catch (Exception exception) {
                     VWOLog.e(VWOLog.SEGMENTATION_LOGS, "Unable to parse device type", exception,
                             false, false);
